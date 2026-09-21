@@ -1,0 +1,242 @@
+name: Apply global GOTW authority
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-gotw-global-authority.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply global GOTW authority CSS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          marker = 'sf-gotw-global-authority-v1'
+          if marker in s:
+              print('Global GOTW authority already present.')
+          else:
+              css = """
+          <style id="sf-gotw-global-authority-v1">
+          /* Single authoritative GOTW responsive layout: phone -> tablet -> desktop. */
+          #overview #gotw,
+          #overview #gotw .gotw-collapsible,
+          #overview #gotw .gotw-carousel-shell,
+          #overview #gotw .gotw-carousel-stage,
+          #overview #gotw .gotw-carousel-slide,
+          #overview #gotw .gotw-body,
+          #overview #gotw .gotw-body.gotw-broadcast{
+            min-width:0!important;
+            box-sizing:border-box!important;
+          }
+
+          #overview #gotw,
+          #overview #gotw .gotw-collapsible,
+          #overview #gotw .gotw-carousel-shell,
+          #overview #gotw .gotw-carousel-stage,
+          #overview #gotw .gotw-carousel-slide,
+          #overview #gotw .gotw-body,
+          #overview #gotw .gotw-body.gotw-broadcast{
+            width:100%!important;
+            max-width:100%!important;
+          }
+
+          #overview #gotw .gotw-carousel-shell{
+            overflow:hidden!important;
+          }
+
+          #overview #gotw .gotw-carousel-stage{
+            display:flex!important;
+            gap:0!important;
+            padding-left:0!important;
+            padding-right:0!important;
+            margin-left:0!important;
+            margin-right:0!important;
+            overflow-x:auto!important;
+            overflow-y:hidden!important;
+            scroll-padding-inline:0!important;
+            scroll-snap-type:x mandatory!important;
+            overscroll-behavior-x:contain!important;
+          }
+
+          #overview #gotw .gotw-carousel-slide{
+            flex:0 0 100%!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:100%!important;
+            margin-left:0!important;
+            margin-right:0!important;
+            overflow:hidden!important;
+            scroll-snap-align:start!important;
+            scroll-snap-stop:always!important;
+            transform:none!important;
+          }
+
+          #overview #gotw .gotw-carousel-slide.active{
+            transform:none!important;
+          }
+
+          #overview #gotw .gotw-body.gotw-broadcast{
+            padding-left:clamp(10px,1.6vw,24px)!important;
+            padding-right:clamp(10px,1.6vw,24px)!important;
+            overflow:hidden!important;
+          }
+
+          #overview #gotw .gotw-matchup{
+            display:grid!important;
+            grid-template-columns:minmax(0,1fr) clamp(44px,5vw,64px) minmax(0,1fr)!important;
+            gap:clamp(8px,1.2vw,18px)!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            box-sizing:border-box!important;
+            align-items:center!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-side,
+          #overview #gotw .gotw-matchup .team-side.right{
+            display:grid!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            gap:clamp(8px,1vw,14px)!important;
+            align-items:center!important;
+            box-sizing:border-box!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-side{
+            grid-template-columns:clamp(48px,6vw,72px) minmax(0,1fr)!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-side.right{
+            grid-template-columns:minmax(0,1fr) clamp(48px,6vw,72px)!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-logo,
+          #overview #gotw .gotw-matchup .team-fallback{
+            width:clamp(48px,6vw,72px)!important;
+            height:clamp(48px,6vw,72px)!important;
+            min-width:0!important;
+            max-width:100%!important;
+            justify-self:center!important;
+            align-self:center!important;
+            margin:0 auto!important;
+            object-fit:contain!important;
+            object-position:center center!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-side>div:not(.team-fallback){
+            min-width:0!important;
+            max-width:100%!important;
+            overflow:hidden!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-name{
+            font-size:clamp(20px,3vw,40px)!important;
+            line-height:.98!important;
+            white-space:normal!important;
+            overflow-wrap:break-word!important;
+            word-break:normal!important;
+            hyphens:none!important;
+            max-width:100%!important;
+          }
+
+          #overview #gotw .gotw-matchup .team-side.right .team-name,
+          #overview #gotw .gotw-matchup .team-side.right .team-meta{
+            text-align:right!important;
+          }
+
+          #overview #gotw .gotw-matchup .vs{
+            width:clamp(44px,5vw,64px)!important;
+            height:clamp(44px,5vw,64px)!important;
+            min-width:0!important;
+            justify-self:center!important;
+            align-self:center!important;
+            font-size:clamp(16px,1.7vw,22px)!important;
+          }
+
+          #overview #gotw .gotw-vegas{
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            grid-template-columns:repeat(6,minmax(0,1fr))!important;
+            box-sizing:border-box!important;
+          }
+
+          #overview #gotw .gotw-vegas>div{
+            min-width:0!important;
+            overflow:hidden!important;
+            padding-left:clamp(4px,.7vw,10px)!important;
+            padding-right:clamp(4px,.7vw,10px)!important;
+          }
+
+          #overview #gotw .gotw-vegas b{
+            max-width:100%!important;
+            white-space:nowrap!important;
+            overflow:hidden!important;
+            text-overflow:ellipsis!important;
+          }
+
+          @media (max-width:700px){
+            #overview #gotw .gotw-matchup{
+              grid-template-columns:minmax(0,1fr)!important;
+              gap:14px!important;
+            }
+            #overview #gotw .gotw-matchup .team-side,
+            #overview #gotw .gotw-matchup .team-side.right{
+              grid-template-columns:56px minmax(0,1fr)!important;
+            }
+            #overview #gotw .gotw-matchup .team-side.right{
+              direction:ltr!important;
+            }
+            #overview #gotw .gotw-matchup .team-side.right .team-name,
+            #overview #gotw .gotw-matchup .team-side.right .team-meta{
+              text-align:left!important;
+            }
+            #overview #gotw .gotw-matchup .vs{
+              grid-column:1!important;
+              justify-self:center!important;
+            }
+            #overview #gotw .gotw-vegas{
+              grid-template-columns:repeat(2,minmax(0,1fr))!important;
+            }
+          }
+          </style>
+          <meta name="saturday-foundry-gotw-global-authority" content="v1">
+          """
+              css = '\n'.join(line[10:] if line.startswith('          ') else line for line in css.splitlines())
+              if '</head>' not in s:
+                  raise SystemExit('No </head> found')
+              s = s.replace('</head>', css + '\n</head>', 1)
+              p.write_text(s)
+          PY
+
+      - name: Validate patch
+        run: |
+          grep -q 'sf-gotw-global-authority-v1' index.html
+          grep -q 'saturday-foundry-gotw-global-authority' index.html
+          git diff --check
+
+      - name: Commit global GOTW authority
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Unify GOTW responsive layout'
+          git push origin main
