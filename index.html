@@ -13364,3 +13364,81 @@ img[data-sf-team-control="user"]{
 </script>
 <meta name="saturday-foundry-logo-system-preview" content="v2-transparent-human-accent">
 
+<style id="sf-logo-system-v2-size-authority">
+/* PREVIEW FIX: explicit logo footprints so legacy percentage sizing can never escape a component. */
+#schedule img.sf-team-season-logo{
+  width:62px!important;
+  height:62px!important;
+  min-width:62px!important;
+  max-width:62px!important;
+  min-height:62px!important;
+  max-height:62px!important;
+  flex:0 0 62px!important;
+}
+#schedule .sf-match-team img.sf-match-logo,
+#schedule .sf-match-team .sf-team-logo-plate-v5>img{
+  width:54px!important;
+  height:54px!important;
+  min-width:54px!important;
+  max-width:54px!important;
+  min-height:54px!important;
+  max-height:54px!important;
+}
+#overview #gotw img.team-logo,
+#overview #gotw .sf-team-logo-plate-v5>img{
+  width:clamp(52px,5.5vw,70px)!important;
+  height:clamp(52px,5.5vw,70px)!important;
+  min-width:clamp(52px,5.5vw,70px)!important;
+  max-width:clamp(52px,5.5vw,70px)!important;
+  min-height:clamp(52px,5.5vw,70px)!important;
+  max-height:clamp(52px,5.5vw,70px)!important;
+}
+.top25-row .sf-team-logo-plate-v5>img,
+.top25-row img[data-sf-team-control]{
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  min-height:28px!important;
+  max-height:28px!important;
+}
+.metric-title .sf-team-logo-plate-v5>img,
+.metric-title img[data-sf-team-control]{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+}
+#teamScreen img.v25-choice-logo-img{
+  width:100px!important;
+  height:100px!important;
+  min-width:100px!important;
+  max-width:100px!important;
+  min-height:100px!important;
+  max-height:100px!important;
+}
+@media(max-width:700px){
+  #schedule img.sf-team-season-logo{
+    width:50px!important;
+    height:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    flex-basis:50px!important;
+  }
+  #schedule .sf-match-team img.sf-match-logo,
+  #schedule .sf-match-team .sf-team-logo-plate-v5>img{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-system-preview" content="v2.1-explicit-sizes">
+
