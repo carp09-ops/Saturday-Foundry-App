@@ -32,246 +32,246 @@ jobs:
           marker = 'sf-gotw-true-final-authority-v1'
           if marker not in s:
               block = r'''
-<style id="sf-gotw-true-final-authority-v1">
-/* TRUE FINAL AUTHORITY: intentionally appended after every legacy body style. */
-#overview #gotw,
-#overview #gotw .gotw-collapsible,
-#overview #gotw .gotw-carousel-shell,
-#overview #gotw .gotw-carousel-stage,
-#overview #gotw .gotw-carousel-slide,
-#overview #gotw .gotw-body,
-#overview #gotw .gotw-body.gotw-broadcast{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  box-sizing:border-box!important;
-}
-
-#overview #gotw .gotw-carousel-shell{
-  overflow:hidden!important;
-}
-
-#overview #gotw .gotw-carousel-stage{
-  display:flex!important;
-  gap:0!important;
-  padding:0!important;
-  margin:0!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  scroll-snap-type:x mandatory!important;
-  scroll-padding-inline:0!important;
-  overscroll-behavior-x:contain!important;
-}
-
-#overview #gotw .gotw-carousel-slide{
-  flex:0 0 100%!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:100%!important;
-  margin:0!important;
-  overflow:hidden!important;
-  transform:none!important;
-  scroll-snap-align:start!important;
-  scroll-snap-stop:always!important;
-}
-
-#overview #gotw .gotw-carousel-slide.active{
-  transform:none!important;
-}
-
-#overview #gotw .gotw-body.gotw-broadcast{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:clamp(10px,1.2vw,16px)!important;
-  align-items:stretch!important;
-  padding:clamp(12px,1.5vw,22px)!important;
-  overflow:hidden!important;
-}
-
-#overview #gotw .gotw-matchup{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) clamp(44px,5vw,64px) minmax(0,1fr)!important;
-  gap:clamp(8px,1.2vw,18px)!important;
-  align-items:center!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-}
-
-#overview #gotw .gotw-matchup .team-side,
-#overview #gotw .gotw-matchup .team-side.right{
-  display:grid!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  gap:clamp(8px,1vw,14px)!important;
-  align-items:center!important;
-  padding:0!important;
-  margin:0!important;
-  border:0!important;
-  background:transparent!important;
-  box-sizing:border-box!important;
-}
-
-#overview #gotw .gotw-matchup .team-side{
-  grid-template-columns:clamp(48px,6vw,72px) minmax(0,1fr)!important;
-  text-align:left!important;
-}
-
-#overview #gotw .gotw-matchup .team-side.right{
-  grid-template-columns:minmax(0,1fr) clamp(48px,6vw,72px)!important;
-  text-align:right!important;
-}
-
-#overview #gotw .gotw-matchup .team-side.right>div:first-child{
-  grid-column:1!important;
-  min-width:0!important;
-  max-width:100%!important;
-  overflow:visible!important;
-}
-
-#overview #gotw .gotw-matchup .team-side.right>.team-logo,
-#overview #gotw .gotw-matchup .team-side.right>.team-fallback{
-  grid-column:2!important;
-}
-
-#overview #gotw .gotw-matchup .team-side:not(.right)>.team-logo,
-#overview #gotw .gotw-matchup .team-side:not(.right)>.team-fallback{
-  grid-column:1!important;
-}
-
-#overview #gotw .gotw-matchup .team-side:not(.right)>div:not(.team-fallback){
-  grid-column:2!important;
-  min-width:0!important;
-  max-width:100%!important;
-  overflow:visible!important;
-}
-
-#overview #gotw .gotw-matchup .team-logo,
-#overview #gotw .gotw-matchup .team-fallback{
-  width:clamp(48px,6vw,72px)!important;
-  height:clamp(48px,6vw,72px)!important;
-  min-width:0!important;
-  max-width:100%!important;
-  justify-self:center!important;
-  align-self:center!important;
-  margin:0 auto!important;
-  object-fit:contain!important;
-  object-position:center center!important;
-}
-
-#overview #gotw .gotw-matchup .team-name{
-  font-size:clamp(20px,2.7vw,38px)!important;
-  line-height:.98!important;
-  white-space:normal!important;
-  overflow:visible!important;
-  text-overflow:clip!important;
-  overflow-wrap:normal!important;
-  word-break:normal!important;
-  hyphens:none!important;
-  max-width:100%!important;
-}
-
-#overview #gotw .gotw-matchup .team-meta{
-  white-space:normal!important;
-  overflow:visible!important;
-  word-break:normal!important;
-}
-
-#overview #gotw .gotw-matchup .vs{
-  width:clamp(44px,5vw,64px)!important;
-  height:clamp(44px,5vw,64px)!important;
-  min-width:0!important;
-  justify-self:center!important;
-  align-self:center!important;
-  display:grid!important;
-  place-items:center!important;
-  font-size:clamp(16px,1.6vw,21px)!important;
-}
-
-#overview #gotw .hq-probability{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  border-left:0!important;
-  border-top:1px solid rgba(245,189,56,.25)!important;
-  padding:12px 0 0!important;
-  margin:0!important;
-}
-
-#overview #gotw .gotw-vegas{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-  box-sizing:border-box!important;
-}
-
-#overview #gotw .gotw-vegas>div{
-  min-width:0!important;
-  overflow:hidden!important;
-}
-
-#overview #gotw .gotw-vegas b{
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-}
-
-@media(max-width:700px){
-  #overview #gotw .gotw-matchup{
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:14px!important;
-  }
-  #overview #gotw .gotw-matchup .team-side,
-  #overview #gotw .gotw-matchup .team-side.right{
-    grid-template-columns:56px minmax(0,1fr)!important;
-    text-align:left!important;
-  }
-  #overview #gotw .gotw-matchup .team-side.right>div:first-child{
-    grid-column:2!important;
-  }
-  #overview #gotw .gotw-matchup .team-side.right>.team-logo,
-  #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
-    grid-column:1!important;
-  }
-  #overview #gotw .gotw-matchup .vs{
-    grid-column:1!important;
-    justify-self:center!important;
-  }
-  #overview #gotw .gotw-vegas{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  }
-}
-
-@media(min-width:701px) and (max-width:1366px){
-  #overview #gotw .gotw-body.gotw-broadcast{
-    padding:16px 18px!important;
-  }
-  #overview #gotw .gotw-matchup{
-    grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important;
-    gap:12px!important;
-  }
-  #overview #gotw .gotw-matchup .team-side{
-    grid-template-columns:62px minmax(0,1fr)!important;
-  }
-  #overview #gotw .gotw-matchup .team-side.right{
-    grid-template-columns:minmax(0,1fr) 62px!important;
-  }
-  #overview #gotw .gotw-matchup .team-logo,
-  #overview #gotw .gotw-matchup .team-fallback{
-    width:60px!important;
-    height:60px!important;
-  }
-  #overview #gotw .gotw-matchup .team-name{
-    font-size:clamp(22px,2.5vw,32px)!important;
-  }
-}
-</style>
-<meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
-'''
+          <style id="sf-gotw-true-final-authority-v1">
+          /* TRUE FINAL AUTHORITY: intentionally appended after every legacy body style. */
+          #overview #gotw,
+          #overview #gotw .gotw-collapsible,
+          #overview #gotw .gotw-carousel-shell,
+          #overview #gotw .gotw-carousel-stage,
+          #overview #gotw .gotw-carousel-slide,
+          #overview #gotw .gotw-body,
+          #overview #gotw .gotw-body.gotw-broadcast{
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            box-sizing:border-box!important;
+          }
+          
+          #overview #gotw .gotw-carousel-shell{
+            overflow:hidden!important;
+          }
+          
+          #overview #gotw .gotw-carousel-stage{
+            display:flex!important;
+            gap:0!important;
+            padding:0!important;
+            margin:0!important;
+            overflow-x:auto!important;
+            overflow-y:hidden!important;
+            scroll-snap-type:x mandatory!important;
+            scroll-padding-inline:0!important;
+            overscroll-behavior-x:contain!important;
+          }
+          
+          #overview #gotw .gotw-carousel-slide{
+            flex:0 0 100%!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:100%!important;
+            margin:0!important;
+            overflow:hidden!important;
+            transform:none!important;
+            scroll-snap-align:start!important;
+            scroll-snap-stop:always!important;
+          }
+          
+          #overview #gotw .gotw-carousel-slide.active{
+            transform:none!important;
+          }
+          
+          #overview #gotw .gotw-body.gotw-broadcast{
+            display:grid!important;
+            grid-template-columns:minmax(0,1fr)!important;
+            gap:clamp(10px,1.2vw,16px)!important;
+            align-items:stretch!important;
+            padding:clamp(12px,1.5vw,22px)!important;
+            overflow:hidden!important;
+          }
+          
+          #overview #gotw .gotw-matchup{
+            display:grid!important;
+            grid-template-columns:minmax(0,1fr) clamp(44px,5vw,64px) minmax(0,1fr)!important;
+            gap:clamp(8px,1.2vw,18px)!important;
+            align-items:center!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            margin:0!important;
+            box-sizing:border-box!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side,
+          #overview #gotw .gotw-matchup .team-side.right{
+            display:grid!important;
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            gap:clamp(8px,1vw,14px)!important;
+            align-items:center!important;
+            padding:0!important;
+            margin:0!important;
+            border:0!important;
+            background:transparent!important;
+            box-sizing:border-box!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side{
+            grid-template-columns:clamp(48px,6vw,72px) minmax(0,1fr)!important;
+            text-align:left!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side.right{
+            grid-template-columns:minmax(0,1fr) clamp(48px,6vw,72px)!important;
+            text-align:right!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+            grid-column:1!important;
+            min-width:0!important;
+            max-width:100%!important;
+            overflow:visible!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side.right>.team-logo,
+          #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+            grid-column:2!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side:not(.right)>.team-logo,
+          #overview #gotw .gotw-matchup .team-side:not(.right)>.team-fallback{
+            grid-column:1!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-side:not(.right)>div:not(.team-fallback){
+            grid-column:2!important;
+            min-width:0!important;
+            max-width:100%!important;
+            overflow:visible!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-logo,
+          #overview #gotw .gotw-matchup .team-fallback{
+            width:clamp(48px,6vw,72px)!important;
+            height:clamp(48px,6vw,72px)!important;
+            min-width:0!important;
+            max-width:100%!important;
+            justify-self:center!important;
+            align-self:center!important;
+            margin:0 auto!important;
+            object-fit:contain!important;
+            object-position:center center!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-name{
+            font-size:clamp(20px,2.7vw,38px)!important;
+            line-height:.98!important;
+            white-space:normal!important;
+            overflow:visible!important;
+            text-overflow:clip!important;
+            overflow-wrap:normal!important;
+            word-break:normal!important;
+            hyphens:none!important;
+            max-width:100%!important;
+          }
+          
+          #overview #gotw .gotw-matchup .team-meta{
+            white-space:normal!important;
+            overflow:visible!important;
+            word-break:normal!important;
+          }
+          
+          #overview #gotw .gotw-matchup .vs{
+            width:clamp(44px,5vw,64px)!important;
+            height:clamp(44px,5vw,64px)!important;
+            min-width:0!important;
+            justify-self:center!important;
+            align-self:center!important;
+            display:grid!important;
+            place-items:center!important;
+            font-size:clamp(16px,1.6vw,21px)!important;
+          }
+          
+          #overview #gotw .hq-probability{
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            border-left:0!important;
+            border-top:1px solid rgba(245,189,56,.25)!important;
+            padding:12px 0 0!important;
+            margin:0!important;
+          }
+          
+          #overview #gotw .gotw-vegas{
+            width:100%!important;
+            max-width:100%!important;
+            min-width:0!important;
+            grid-template-columns:repeat(6,minmax(0,1fr))!important;
+            box-sizing:border-box!important;
+          }
+          
+          #overview #gotw .gotw-vegas>div{
+            min-width:0!important;
+            overflow:hidden!important;
+          }
+          
+          #overview #gotw .gotw-vegas b{
+            white-space:nowrap!important;
+            overflow:hidden!important;
+            text-overflow:ellipsis!important;
+          }
+          
+          @media(max-width:700px){
+            #overview #gotw .gotw-matchup{
+              grid-template-columns:minmax(0,1fr)!important;
+              gap:14px!important;
+            }
+            #overview #gotw .gotw-matchup .team-side,
+            #overview #gotw .gotw-matchup .team-side.right{
+              grid-template-columns:56px minmax(0,1fr)!important;
+              text-align:left!important;
+            }
+            #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+              grid-column:2!important;
+            }
+            #overview #gotw .gotw-matchup .team-side.right>.team-logo,
+            #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+              grid-column:1!important;
+            }
+            #overview #gotw .gotw-matchup .vs{
+              grid-column:1!important;
+              justify-self:center!important;
+            }
+            #overview #gotw .gotw-vegas{
+              grid-template-columns:repeat(2,minmax(0,1fr))!important;
+            }
+          }
+          
+          @media(min-width:701px) and (max-width:1366px){
+            #overview #gotw .gotw-body.gotw-broadcast{
+              padding:16px 18px!important;
+            }
+            #overview #gotw .gotw-matchup{
+              grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important;
+              gap:12px!important;
+            }
+            #overview #gotw .gotw-matchup .team-side{
+              grid-template-columns:62px minmax(0,1fr)!important;
+            }
+            #overview #gotw .gotw-matchup .team-side.right{
+              grid-template-columns:minmax(0,1fr) 62px!important;
+            }
+            #overview #gotw .gotw-matchup .team-logo,
+            #overview #gotw .gotw-matchup .team-fallback{
+              width:60px!important;
+              height:60px!important;
+            }
+            #overview #gotw .gotw-matchup .team-name{
+              font-size:clamp(22px,2.5vw,32px)!important;
+            }
+          }
+          </style>
+          <meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
+          '''
               if '</body>' in s:
                   s = s.replace('</body>', block + "\\n</body>", 1)
               else:
