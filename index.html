@@ -13159,3 +13159,208 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.7-global-logo-normalization">
 
+<style id="sf-logo-system-v2-preview">
+/* PREVIEW: single transparent team-logo system.
+   Existing human/CPU runtime still classifies teams, but its wrapper becomes layout-transparent. */
+
+/* Kill all wrapper geometry/backgrounds so component grids/flex own positioning again. */
+.sf-team-logo-plate-v5,
+[class*="team-logo-plate"]{
+  display:contents!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+
+/* Universal team-logo image contract. */
+img[data-sf-team-control],
+img.sf-team-identity-logo-v5,
+img.team-logo,
+img.sf-match-logo,
+img.v23-team-logo,
+img.v23-archive-logo,
+img.v25-choice-logo-img{
+  display:block!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  transform:none!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+  justify-self:center!important;
+  align-self:center!important;
+  vertical-align:middle!important;
+}
+
+/* CPU logos stay clean and transparent. */
+.sf-team-logo-plate-v5.sf-cpu-controlled>img,
+img[data-sf-team-control="cpu"]{
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+}
+
+/* Human teams: transparent logo with gold accent only. No filled plate. */
+.sf-team-logo-plate-v5.sf-user-controlled>img,
+img[data-sf-team-control="user"]{
+  background:transparent!important;
+  border:0!important;
+  outline:2px solid rgba(230,191,73,.96)!important;
+  outline-offset:3px!important;
+  border-radius:10px!important;
+  box-shadow:0 0 0 1px rgba(230,191,73,.20),0 0 14px rgba(230,191,73,.28)!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+}
+
+/* GOTW: preserve DOM order and force each logo into the correct grid slot. */
+#overview #gotw .team-side:not(.right)>.sf-team-logo-plate-v5>img{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#overview #gotw .team-side.right>.sf-team-logo-plate-v5>img{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+#overview #gotw .team-side>.sf-team-logo-plate-v5>img,
+#overview #gotw img.team-logo{
+  width:clamp(52px,5.5vw,70px)!important;
+  height:clamp(52px,5.5vw,70px)!important;
+}
+
+/* Schedule: wrapper is display:contents, so assign the image itself to the team slot. */
+#schedule .sf-match-team:not(.home)>.sf-team-logo-plate-v5>img{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#schedule .sf-match-team.home>.sf-team-logo-plate-v5>img{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+#schedule .sf-match-team>.sf-team-logo-plate-v5>img{
+  width:54px!important;
+  height:54px!important;
+}
+@media(max-width:700px){
+  #schedule .sf-match-team>.sf-team-logo-plate-v5>img{
+    width:38px!important;
+    height:38px!important;
+  }
+}
+
+/* Surfaces with direct images must never reintroduce filled plates. */
+#overview #gotw img.team-logo,
+#schedule img.sf-match-logo,
+#schedule img.v23-team-logo,
+#schedule img.v23-archive-logo,
+#teamScreen img.v25-choice-logo-img{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+
+/* Fallbacks stay transparent and centered too. */
+.team-fallback,
+.sf-match-logo-fallback,
+.v23-team-logo.fallback,
+.v23-archive-logo-placeholder{
+  display:grid!important;
+  place-items:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#dbe6eb!important;
+}
+</style>
+
+<script id="sf-logo-system-v2-integrity">
+(function(){
+  'use strict';
+
+  const candidateSelector = [
+    'img[data-sf-team-control]',
+    'img.sf-team-identity-logo-v5',
+    'img.team-logo',
+    'img.sf-match-logo',
+    'img.v23-team-logo',
+    'img.v23-archive-logo',
+    'img.v25-choice-logo-img',
+    'img[alt$=" logo" i]'
+  ].join(',');
+
+  function teamName(img){
+    return String(img?.dataset?.teamName || img?.alt || '')
+      .replace(/\s+logo\s*$/i,'')
+      .trim();
+  }
+
+  async function repair(img){
+    if(!img || img.dataset.sfLogoRepairing==='1') return;
+    img.dataset.sfLogoRepairing='1';
+    const name=teamName(img);
+    try{
+      let src='';
+      if(name && window.CDHQLogoResolver?.resolve){
+        src=await window.CDHQLogoResolver.resolve(name);
+      }
+      if(!src && name && window.CDHQLogoResolver?.genericTeamBadge){
+        src=window.CDHQLogoResolver.genericTeamBadge(name);
+      }
+      if(src && src!==img.src){
+        img.src=src;
+      }
+    }catch(_e){}
+    finally{
+      img.dataset.sfLogoRepairing='0';
+    }
+  }
+
+  function normalize(root=document){
+    root.querySelectorAll?.(candidateSelector).forEach(img=>{
+      img.classList.add('sf-logo-system-v2');
+      img.style.background='transparent';
+      img.style.padding='0';
+      img.addEventListener('error',()=>repair(img),{once:false});
+      if(img.complete && img.naturalWidth===0) repair(img);
+    });
+  }
+
+  let queued=false;
+  const queue=()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{
+      queued=false;
+      normalize(document);
+    });
+  };
+
+  function boot(){
+    normalize(document);
+    const root=document.getElementById('app')||document.body;
+    new MutationObserver(queue).observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['src','class']});
+    window.addEventListener('pageshow',queue);
+    setTimeout(queue,250);
+    setTimeout(queue,800);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
+<meta name="saturday-foundry-logo-system-preview" content="v2-transparent-human-accent">
+
