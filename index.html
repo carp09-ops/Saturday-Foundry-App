@@ -13442,3 +13442,169 @@ img[data-sf-team-control="user"]{
 </style>
 <meta name="saturday-foundry-logo-system-preview" content="v2.1-explicit-sizes">
 
+<style id="sf-logo-system-v2-mobile-gotw-v22">
+/* PREVIEW v2.2 — high-specificity transparent logo authority + symmetrical phone GOTW rows. */
+
+/* Beat the legacy human/CPU plate selectors exactly. */
+.sf-team-logo-plate-v5.sf-user-controlled,
+.sf-team-logo-plate-v5.sf-cpu-controlled{
+  display:contents!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  margin:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  transform:none!important;
+}
+
+/* CPU: transparent art with a faint light halo so dark marks remain visible. */
+.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5,
+img[data-sf-team-control="cpu"].sf-team-identity-logo-v5{
+  outline:0!important;
+  border-radius:0!important;
+  filter:
+    drop-shadow(0 0 1px rgba(255,255,255,.72))
+    drop-shadow(0 2px 3px rgba(0,0,0,.72))!important;
+}
+
+/* Human: same transparent art, gold-only emphasis. */
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+img[data-sf-team-control="user"].sf-team-identity-logo-v5{
+  outline:2px solid rgba(230,191,73,.98)!important;
+  outline-offset:4px!important;
+  border-radius:10px!important;
+  filter:
+    drop-shadow(0 0 2px rgba(230,191,73,.82))
+    drop-shadow(0 3px 4px rgba(0,0,0,.72))!important;
+}
+
+/* Direct GOTW logos must also be transparent, even when they never receive a wrapper. */
+#overview #gotw img.team-logo{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* Probability logos use the same transparent treatment. */
+#overview #gotw .hq-probability img,
+#overview #gotw .gotw-probability img,
+#overview #gotw .probability img{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* PHONE GOTW: both teams use the exact same row structure. */
+@media(max-width:700px){
+  #overview #gotw .gotw-matchup{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:center!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-side,
+  #overview #gotw .gotw-matchup .team-side.right{
+    display:grid!important;
+    grid-template-columns:64px minmax(0,1fr)!important;
+    grid-template-rows:1fr!important;
+    gap:14px!important;
+    align-items:center!important;
+    width:min(100%,330px)!important;
+    max-width:330px!important;
+    min-width:0!important;
+    margin:0 auto!important;
+    padding:0!important;
+    text-align:left!important;
+    direction:ltr!important;
+  }
+
+  /* Logo always column 1, copy always column 2. */
+  #overview #gotw .gotw-matchup .team-side>.sf-team-logo-plate-v5>img,
+  #overview #gotw .gotw-matchup .team-side.right>.sf-team-logo-plate-v5>img,
+  #overview #gotw .gotw-matchup .team-side>img.team-logo,
+  #overview #gotw .gotw-matchup .team-side.right>img.team-logo,
+  #overview #gotw .gotw-matchup .team-side>.team-fallback,
+  #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+    grid-column:1!important;
+    grid-row:1!important;
+    justify-self:center!important;
+    align-self:center!important;
+    width:60px!important;
+    height:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    min-height:60px!important;
+    max-height:60px!important;
+    margin:0!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-side>div:not(.team-fallback),
+  #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-width:0!important;
+    width:100%!important;
+    text-align:left!important;
+    overflow:visible!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-name,
+  #overview #gotw .gotw-matchup .team-side.right .team-name{
+    text-align:left!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    word-break:normal!important;
+    overflow-wrap:normal!important;
+    font-size:clamp(26px,8vw,38px)!important;
+    line-height:.95!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-meta,
+  #overview #gotw .gotw-matchup .team-side.right .team-meta{
+    text-align:left!important;
+  }
+
+  #overview #gotw .gotw-matchup .vs{
+    grid-column:1!important;
+    justify-self:center!important;
+    margin:2px auto!important;
+  }
+
+  /* Probability logos: same size, same transparent visual treatment. */
+  #overview #gotw .hq-probability img,
+  #overview #gotw .gotw-probability img,
+  #overview #gotw .probability img{
+    width:58px!important;
+    height:58px!important;
+    max-width:58px!important;
+    max-height:58px!important;
+    margin:0 auto!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-system-preview" content="v2.2-mobile-gotw-transparent-authority">
+
