@@ -4752,6 +4752,35 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 </style>
 <meta name="saturday-foundry-qa-logo" content="9.6.17-gotw-logo-contrast">
 
+
+<style id="sf-logo-centering-v1">
+/* Phone Schedule + GOTW logo centering normalization */
+@media (max-width:700px){
+  #schedule .sf-match-team > .sf-team-logo-plate-v5,
+  #schedule .sf-match-team > .sf-match-logo,
+  #schedule .sf-match-team > .sf-match-logo-fallback{
+    justify-self:center!important;
+    align-self:center!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  #schedule .sf-team-logo-plate-v5 img,
+  #schedule .sf-match-logo img{
+    display:block!important;
+    margin:0 auto!important;
+    object-position:center center!important;
+  }
+}
+#overview #gotw .gotw-matchup .team-logo,
+#overview #gotw .gotw-matchup .team-fallback{
+  justify-self:center!important;
+  align-self:center!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  object-position:center center!important;
+}
+</style>
+<meta name="saturday-foundry-logo-centering" content="v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
