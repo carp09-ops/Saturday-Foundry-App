@@ -4509,7 +4509,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 .team-select-head h1:after{content:' · SATURDAY FOUNDRY';color:var(--sf-gold);font-size:.42em;letter-spacing:.08em;vertical-align:middle}
 @media(max-width:700px){#siteHeader .hq-site-brand{width:142px!important;height:46px!important}.sf-overview-hero{min-height:440px!important}.sf-overview-hero .sf-hero-backdrop{background:linear-gradient(180deg,rgba(5,6,6,.38),rgba(5,6,6,.68) 42%,rgba(5,6,6,.94) 76%),url('assets/saturday-foundry-mobile-wordless.webp') center 28%/cover no-repeat}.sf-overview-hero>.relative{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;min-height:440px!important;padding:18px!important}.sf-hero-copy{padding-top:205px!important}.sf-hero-lockup{width:285px!important;max-width:86vw!important}.sf-hero-tagline{font-size:9px!important;line-height:1.6!important;letter-spacing:.20em!important}.sf-overview-hero .ref-gotw{width:100%!important}.canonical-nav{display:none!important}}
 </style>
-  <meta name="saturday-foundry-production-release" content="9.6.15-race-regression-reconciled">
+  <meta name="saturday-foundry-production-release" content="9.6.17-gotw-logo-contrast">
 <style id="record-book-trading-cards-v1">
 /* Coaches Card — mockup-matched collectible coach cards */
 #records{--card-gold:#d5a83e;--card-cream:#f4e0a0}
@@ -4729,6 +4729,29 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-qa" content="9.6.16-ipad-gotw-snap-fix">
+
+<style id="sf-qa-gotw-logo-contrast">
+/* QA 9.6.17 — GOTW logos need a neutral plate because several NCAA marks are
+   black/dark or transparent and disappear against the broadcast card. */
+#overview #gotw .gotw-matchup .team-logo{
+  display:block!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:#f6f6f2!important;
+  padding:6px!important;
+  border:1px solid rgba(255,255,255,.82)!important;
+  border-radius:12px!important;
+  box-shadow:0 4px 16px rgba(0,0,0,.28)!important;
+  filter:none!important;
+}
+#overview #gotw .gotw-matchup .team-fallback{
+  background:#f6f6f2!important;
+  color:#091015!important;
+  border:1px solid rgba(255,255,255,.82)!important;
+}
+</style>
+<meta name="saturday-foundry-qa-logo" content="9.6.17-gotw-logo-contrast">
+
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
