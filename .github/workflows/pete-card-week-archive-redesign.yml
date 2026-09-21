@@ -1,0 +1,273 @@
+name: Restore Pete card and redesign Week-by-Week preview
+
+on:
+  push:
+    branches: [pete-card-week-archive-redesign]
+    paths:
+      - '.github/workflows/pete-card-week-archive-redesign.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore known-good Pete coach portrait
+        run: |
+          git checkout e62d4a2ab988cc7abd78da606c4d12a37e0792c3 -- assets/coach-cards/pete-coach-card.webp
+
+      - name: Rebuild Week-by-Week archive as schedule cards
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+
+          old='''       ${real.map(g=>{const displayRank=scheduleDisplayRanks(g);const dynastyGame=isDynastyScheduleGame(g);return `<div class="v21-archive-game" data-game-card="${g.id}">
+          <span class="v21-archive-coach">${dynastyGame?`<em class="dynasty-hq-badge archive">◆ HQ</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
+          <span class="v21-archive-match v23-archive-match">
+             ${logoFor(g.team_id,g.team_name)?`<img class="v23-archive-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.team_name||"")}"></span>`}
+             <span>${displayRank.team?`#${displayRank.team} `:""}${esc(g.team_name)} ${g.home_away==="away"?"@":"vs"} ${displayRank.opponent?`#${displayRank.opponent} `:""}${esc(g.opponent_team||"TBD")} <em class="conf-game-badge ${g.is_conference_game===true?"conf":"nonconf"}">${esc(gameClassification(g))}</em></span>
+             ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="v23-archive-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.opponent_team||"")}"></span>`}
+           </span>
+          ${(()=>{const p=controlledPerspectiveForGame(g);const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";const label=g.status==="completed"?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";return `<span class="v21-archive-result ${cls}">${label}</span>`})()}
+          <span class="v21-archive-broadcast">${liveStreamLinkMarkup(g,true)}</span>
+        </div>`}).join("")}'''
+
+          new='''       ${real.map(g=>{const displayRank=scheduleDisplayRanks(g);const dynastyGame=isDynastyScheduleGame(g);const p=controlledPerspectiveForGame(g);const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";const done=g.status==="completed";const resultLabel=done?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";return `<article class="sf-archive-matchup-card ${done?"final":"upcoming"} ${dynastyGame?"dynasty":""}" data-game-card="${g.id}">
+          <div class="sf-archive-card-top">
+            <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${esc(g.coach_name||(dynastyGame?"Dynasty":"National"))}</span>
+            <strong>${esc(gameClassification(g))}</strong>
+          </div>
+          <div class="sf-archive-card-main">
+            <div class="sf-archive-team-stack">
+              <div class="sf-archive-team-row">
+                ${logoFor(g.team_id,g.team_name)?`<img class="sf-archive-team-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="${esc(g.team_name||"Team")} logo">`:`<span class="sf-archive-team-logo sf-archive-logo-placeholder" data-team-logo-name="${esc(g.team_name||"")}"></span>`}
+                <div><span class="sf-archive-team-label">${g.home_away==="away"?"AWAY":"HOME"}</span><b>${displayRank.team?`#${displayRank.team} `:""}${esc(g.team_name||"TBD")}</b></div>
+              </div>
+              <div class="sf-archive-vs">${g.home_away==="away"?"AT":"VS"}</div>
+              <div class="sf-archive-team-row">
+                ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="sf-archive-team-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="${esc(g.opponent_team||"Opponent")} logo">`:`<span class="sf-archive-team-logo sf-archive-logo-placeholder" data-team-logo-name="${esc(g.opponent_team||"")}"></span>`}
+                <div><span class="sf-archive-team-label">${g.home_away==="away"?"HOME":"AWAY"}</span><b>${displayRank.opponent?`#${displayRank.opponent} `:""}${esc(g.opponent_team||"TBD")}</b></div>
+              </div>
+            </div>
+            <div class="sf-archive-score ${cls}">
+              ${done?`<b>${g.points_for??""}<i>–</i>${g.points_against??""}</b>`:`<b class="upcoming">—</b>`}
+              <span>${resultLabel}</span>
+            </div>
+          </div>
+          <div class="sf-archive-card-foot">
+            <span>${esc(g.week_label||`Week ${g.week_number}`)}</span>
+            <span class="sf-archive-stream">${liveStreamLinkMarkup(g,true)}</span>
+          </div>
+        </article>`}).join("")}'''
+
+          if old not in s:
+              raise SystemExit('Week-by-Week archive render block not found')
+          s=s.replace(old,new,1)
+
+          marker='sf-week-archive-schedule-card-v3'
+          css=r'''
+<style id="sf-week-archive-schedule-card-v3">
+/* QA: Schedule-style Week-by-Week cards. Fixed logo slots prevent compression. */
+#schedule .v21-season-archive{
+  margin-top:18px!important;
+  padding:18px!important;
+  border:1px solid rgba(244,197,66,.18)!important;
+  border-radius:18px!important;
+  background:radial-gradient(circle at 100% 0%,rgba(244,197,66,.055),transparent 31%),linear-gradient(180deg,rgba(4,14,19,.94),rgba(2,10,14,.97))!important;
+}
+#schedule .v21-week-groups{display:grid!important;gap:12px!important}
+#schedule .v21-week-group{
+  margin:0!important;
+  border:1px solid rgba(148,163,184,.13)!important;
+  border-radius:15px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(5,17,23,.93),rgba(3,11,15,.95))!important;
+}
+#schedule .v21-week-group summary{
+  min-height:54px!important;
+  padding:12px 14px!important;
+  border:0!important;
+  background:rgba(255,255,255,.018)!important;
+}
+#schedule .v21-week-group summary strong{font-family:'Barlow Condensed',Teko,sans-serif!important;font-size:25px!important;line-height:1!important}
+#schedule .v21-week-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  padding:0 10px 10px!important;
+}
+#schedule .sf-archive-matchup-card{
+  min-width:0!important;
+  overflow:hidden!important;
+  border:1px solid rgba(79,209,255,.16)!important;
+  border-radius:14px!important;
+  background:linear-gradient(145deg,rgba(5,22,29,.96),rgba(2,12,17,.96))!important;
+  box-shadow:inset 4px 0 0 rgba(79,209,255,.28)!important;
+}
+#schedule .sf-archive-matchup-card.dynasty{
+  border-color:rgba(244,197,66,.28)!important;
+  box-shadow:inset 4px 0 0 rgba(244,197,66,.52)!important;
+}
+#schedule .sf-archive-card-top,
+#schedule .sf-archive-card-foot{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding:9px 11px!important;
+  font-size:9px!important;
+  line-height:1.15!important;
+  letter-spacing:.07em!important;
+  text-transform:uppercase!important;
+  color:#7f929e!important;
+}
+#schedule .sf-archive-card-top{border-bottom:1px solid rgba(148,163,184,.10)!important}
+#schedule .sf-archive-card-foot{border-top:1px solid rgba(148,163,184,.10)!important}
+#schedule .sf-archive-card-top strong{color:#d8e2e7!important;font-size:9px!important;text-align:right!important}
+#schedule .sf-archive-card-main{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  gap:14px!important;
+  align-items:center!important;
+  padding:13px!important;
+}
+#schedule .sf-archive-team-stack{display:grid!important;gap:5px!important;min-width:0!important}
+#schedule .sf-archive-team-row{
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  min-width:0!important;
+}
+#schedule .sf-archive-team-logo{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+  display:grid!important;
+  place-items:center!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))!important;
+}
+#schedule .sf-archive-logo-placeholder:empty{background:rgba(148,163,184,.06)!important;border:1px dashed rgba(148,163,184,.14)!important;border-radius:10px!important;filter:none!important}
+#schedule .sf-archive-team-row>div{min-width:0!important}
+#schedule .sf-archive-team-label{
+  display:block!important;
+  margin-bottom:2px!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.10em!important;
+  color:#6e838f!important;
+}
+#schedule .sf-archive-team-row b{
+  display:block!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  font-size:14px!important;
+  line-height:1.12!important;
+  color:#f4f7f8!important;
+}
+#schedule .sf-archive-vs{
+  margin-left:56px!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.16em!important;
+  color:#617681!important;
+}
+#schedule .sf-archive-score{
+  min-width:76px!important;
+  display:grid!important;
+  justify-items:end!important;
+  align-content:center!important;
+  gap:5px!important;
+  text-align:right!important;
+}
+#schedule .sf-archive-score>b{
+  font-family:Teko,'Barlow Condensed',sans-serif!important;
+  font-size:34px!important;
+  line-height:.85!important;
+  color:#fff!important;
+  white-space:nowrap!important;
+}
+#schedule .sf-archive-score>b i{padding:0 4px!important;color:#566771!important;font-style:normal!important}
+#schedule .sf-archive-score>b.upcoming{color:#5f707a!important}
+#schedule .sf-archive-score>span{
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.06em!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+#schedule .sf-archive-score.pos>span{color:#74e4be!important}
+#schedule .sf-archive-score.neg>span{color:#ff8585!important}
+#schedule .sf-archive-stream{margin-left:auto!important;text-align:right!important}
+#schedule .v21-archive-game.bye{
+  grid-column:1/-1!important;
+  border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:11px!important;
+  background:rgba(255,255,255,.018)!important;
+}
+@media(max-width:980px){
+  #schedule .v21-week-list{grid-template-columns:1fr!important}
+}
+@media(max-width:700px){
+  #schedule .v21-season-archive{padding:13px!important;border-radius:15px!important}
+  #schedule .v21-week-groups{gap:9px!important}
+  #schedule .v21-week-group summary{min-height:50px!important;padding:10px 11px!important}
+  #schedule .v21-week-group summary strong{font-size:23px!important}
+  #schedule .v21-week-list{grid-template-columns:1fr!important;gap:8px!important;padding:0 8px 8px!important}
+  #schedule .sf-archive-card-main{grid-template-columns:minmax(0,1fr) 68px!important;gap:8px!important;padding:11px 10px!important}
+  #schedule .sf-archive-team-row{grid-template-columns:42px minmax(0,1fr)!important;gap:9px!important}
+  #schedule .sf-archive-team-logo{
+    width:40px!important;height:40px!important;
+    min-width:40px!important;max-width:40px!important;
+    min-height:40px!important;max-height:40px!important;
+  }
+  #schedule .sf-archive-vs{margin-left:51px!important}
+  #schedule .sf-archive-team-row b{font-size:13px!important}
+  #schedule .sf-archive-score{min-width:64px!important}
+  #schedule .sf-archive-score>b{font-size:30px!important}
+  #schedule .sf-archive-score>span{font-size:9px!important}
+  #schedule .sf-archive-card-top,#schedule .sf-archive-card-foot{padding:8px 10px!important}
+}
+</style>
+<meta name="saturday-foundry-week-archive-preview" content="v3-schedule-card-layout">
+'''
+          if marker not in s:
+              s=s.rstrip()+"\n"+css+"\n"
+          p.write_text(s)
+          PY
+
+      - name: Validate
+        run: |
+          grep -q 'sf-archive-matchup-card' index.html
+          grep -q 'sf-week-archive-schedule-card-v3' index.html
+          grep -q 'assets/coach-cards/pete-coach-card.webp' index.html
+          test -s assets/coach-cards/pete-coach-card.webp
+
+      - name: Commit preview changes
+        run: |
+          if git diff --quiet -- index.html assets/coach-cards/pete-coach-card.webp; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/coach-cards/pete-coach-card.webp
+          git commit -m 'Restore Pete card and redesign Week-by-Week'
+          git push origin pete-card-week-archive-redesign
