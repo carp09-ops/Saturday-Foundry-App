@@ -10556,6 +10556,142 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 </script>
 <meta name="saturday-foundry-reconciled-baseline" content="pre-schedule-backup-plus-v4-schedule-plus-team-control-plates-v5">
 
+
+<style id="sf-mobile-schedule-single-row-v5-2">
+/* QA V5.2 — authoritative phone matchup row. */
+@media(max-width:700px){
+  #schedule.sf-my-mode .sf-matchup,
+  #schedule.sf-v3-my-mode .sf-matchup{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)!important;
+    gap:4px!important;
+    align-items:center!important;
+    padding:9px 8px!important;
+    min-height:0!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team,
+  #schedule.sf-v3-my-mode .sf-match-team{
+    display:grid!important;
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:6px!important;
+    align-items:center!important;
+    min-width:0!important;
+    width:100%!important;
+    text-align:left!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team.home,
+  #schedule.sf-v3-my-mode .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    text-align:right!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
+  #schedule.sf-my-mode .sf-match-team.home .sf-match-logo,
+  #schedule.sf-my-mode .sf-match-team.home .sf-match-logo-fallback,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo-fallback{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team.home .sf-match-copy,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-copy{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
+  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-logo,
+  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-copy,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-copy{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-team>.sf-team-logo-plate-v5,
+  #schedule.sf-my-mode .sf-match-logo,
+  #schedule.sf-my-mode .sf-match-logo-fallback,
+  #schedule.sf-v3-my-mode .sf-match-team>.sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-logo-fallback{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-copy,
+  #schedule.sf-v3-my-mode .sf-match-copy{
+    min-width:0!important;
+    overflow:hidden!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-name,
+  #schedule.sf-v3-my-mode .sf-match-name{
+    font-size:14px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-role,
+  #schedule.sf-v3-my-mode .sf-match-role{
+    margin-bottom:2px!important;
+    font-size:6px!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-meta,
+  #schedule.sf-v3-my-mode .sf-match-meta{
+    margin-top:2px!important;
+    font-size:7px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-score,
+  #schedule.sf-v3-my-mode .sf-match-score{
+    margin-top:3px!important;
+    font-size:17px!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-sep,
+  #schedule.sf-v3-my-mode .sf-match-sep,
+  #schedule.sf-my-mode .sf-match-spine,
+  #schedule.sf-v3-my-mode .sf-match-spine{
+    margin:0!important;
+    min-width:0!important;
+    width:18px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-spine strong,
+  #schedule.sf-v3-my-mode .sf-match-spine strong{
+    font-size:10px!important;
+    line-height:1!important;
+  }
+
+  #schedule.sf-my-mode .sf-match-spine span,
+  #schedule.sf-v3-my-mode .sf-match-spine span{
+    display:none!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-mobile-schedule" content="v5.2-single-row-authority">
+
 </body>
 </html>
 
