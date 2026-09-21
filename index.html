@@ -4781,6 +4781,51 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-logo-centering" content="v1">
+
+<style id="sf-gotw-phone-containment-v1">
+/* Phone GOTW: show exactly one full slide, with no adjacent-card bleed. */
+@media (max-width:700px){
+  #overview #gotw{
+    min-width:0!important;
+    overflow:hidden!important;
+  }
+  #overview #gotw .gotw-carousel-shell,
+  #overview #gotw .gotw-carousel-stage{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  #overview #gotw .gotw-carousel-stage{
+    display:flex!important;
+    gap:0!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-padding-inline:0!important;
+    scroll-snap-type:x mandatory!important;
+  }
+  #overview #gotw .gotw-carousel-slide{
+    flex:0 0 100%!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:100%!important;
+    box-sizing:border-box!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    scroll-snap-align:start!important;
+    scroll-snap-stop:always!important;
+    transform:none!important;
+  }
+  #overview #gotw .gotw-carousel-slide.active{
+    transform:none!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-phone-containment" content="v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
