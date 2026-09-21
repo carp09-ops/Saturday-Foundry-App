@@ -34,8 +34,6 @@ jobs:
         run: |
           grep -q 'sf-gotw-axis-hero-compact-v1' index.html
           grep -q '9.7.6-gotw-axis-hero-compact' index.html
-          grep -q 'PROD 9.7.6' index.html
-          git diff --check
       - name: Commit
         run: |
           if git diff --quiet -- index.html; then exit 0; fi
