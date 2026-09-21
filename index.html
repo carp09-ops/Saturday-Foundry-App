@@ -13159,3 +13159,452 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.7-global-logo-normalization">
 
+<style id="sf-logo-system-v2-preview">
+/* PREVIEW: single transparent team-logo system.
+   Existing human/CPU runtime still classifies teams, but its wrapper becomes layout-transparent. */
+
+/* Kill all wrapper geometry/backgrounds so component grids/flex own positioning again. */
+.sf-team-logo-plate-v5,
+[class*="team-logo-plate"]{
+  display:contents!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+
+/* Universal team-logo image contract. */
+img[data-sf-team-control],
+img.sf-team-identity-logo-v5,
+img.team-logo,
+img.sf-match-logo,
+img.v23-team-logo,
+img.v23-archive-logo,
+img.v25-choice-logo-img{
+  display:block!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  transform:none!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+  justify-self:center!important;
+  align-self:center!important;
+  vertical-align:middle!important;
+}
+
+/* CPU logos stay clean and transparent. */
+.sf-team-logo-plate-v5.sf-cpu-controlled>img,
+img[data-sf-team-control="cpu"]{
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+}
+
+/* Human teams: transparent logo with gold accent only. No filled plate. */
+.sf-team-logo-plate-v5.sf-user-controlled>img,
+img[data-sf-team-control="user"]{
+  background:transparent!important;
+  border:0!important;
+  outline:2px solid rgba(230,191,73,.96)!important;
+  outline-offset:3px!important;
+  border-radius:10px!important;
+  box-shadow:0 0 0 1px rgba(230,191,73,.20),0 0 14px rgba(230,191,73,.28)!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;
+}
+
+/* GOTW: preserve DOM order and force each logo into the correct grid slot. */
+#overview #gotw .team-side:not(.right)>.sf-team-logo-plate-v5>img{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#overview #gotw .team-side.right>.sf-team-logo-plate-v5>img{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+#overview #gotw .team-side>.sf-team-logo-plate-v5>img,
+#overview #gotw img.team-logo{
+  width:clamp(52px,5.5vw,70px)!important;
+  height:clamp(52px,5.5vw,70px)!important;
+}
+
+/* Schedule: wrapper is display:contents, so assign the image itself to the team slot. */
+#schedule .sf-match-team:not(.home)>.sf-team-logo-plate-v5>img{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#schedule .sf-match-team.home>.sf-team-logo-plate-v5>img{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+#schedule .sf-match-team>.sf-team-logo-plate-v5>img{
+  width:54px!important;
+  height:54px!important;
+}
+@media(max-width:700px){
+  #schedule .sf-match-team>.sf-team-logo-plate-v5>img{
+    width:38px!important;
+    height:38px!important;
+  }
+}
+
+/* Surfaces with direct images must never reintroduce filled plates. */
+#overview #gotw img.team-logo,
+#schedule img.sf-match-logo,
+#schedule img.v23-team-logo,
+#schedule img.v23-archive-logo,
+#teamScreen img.v25-choice-logo-img{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+}
+
+/* Fallbacks stay transparent and centered too. */
+.team-fallback,
+.sf-match-logo-fallback,
+.v23-team-logo.fallback,
+.v23-archive-logo-placeholder{
+  display:grid!important;
+  place-items:center!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:#dbe6eb!important;
+}
+</style>
+
+<script id="sf-logo-system-v2-integrity">
+(function(){
+  'use strict';
+
+  const candidateSelector = [
+    'img[data-sf-team-control]',
+    'img.sf-team-identity-logo-v5',
+    'img.team-logo',
+    'img.sf-match-logo',
+    'img.v23-team-logo',
+    'img.v23-archive-logo',
+    'img.v25-choice-logo-img',
+    'img[alt$=" logo" i]'
+  ].join(',');
+
+  function teamName(img){
+    return String(img?.dataset?.teamName || img?.alt || '')
+      .replace(/\s+logo\s*$/i,'')
+      .trim();
+  }
+
+  async function repair(img){
+    if(!img || img.dataset.sfLogoRepairing==='1') return;
+    img.dataset.sfLogoRepairing='1';
+    const name=teamName(img);
+    try{
+      let src='';
+      if(name && window.CDHQLogoResolver?.resolve){
+        src=await window.CDHQLogoResolver.resolve(name);
+      }
+      if(!src && name && window.CDHQLogoResolver?.genericTeamBadge){
+        src=window.CDHQLogoResolver.genericTeamBadge(name);
+      }
+      if(src && src!==img.src){
+        img.src=src;
+      }
+    }catch(_e){}
+    finally{
+      img.dataset.sfLogoRepairing='0';
+    }
+  }
+
+  function normalize(root=document){
+    root.querySelectorAll?.(candidateSelector).forEach(img=>{
+      img.classList.add('sf-logo-system-v2');
+      img.style.background='transparent';
+      img.style.padding='0';
+      img.addEventListener('error',()=>repair(img),{once:false});
+      if(img.complete && img.naturalWidth===0) repair(img);
+    });
+  }
+
+  let queued=false;
+  const queue=()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{
+      queued=false;
+      normalize(document);
+    });
+  };
+
+  function boot(){
+    normalize(document);
+    const root=document.getElementById('app')||document.body;
+    new MutationObserver(queue).observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['src','class']});
+    window.addEventListener('pageshow',queue);
+    setTimeout(queue,250);
+    setTimeout(queue,800);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
+<meta name="saturday-foundry-logo-system-preview" content="v2-transparent-human-accent">
+
+<style id="sf-logo-system-v2-size-authority">
+/* PREVIEW FIX: explicit logo footprints so legacy percentage sizing can never escape a component. */
+#schedule img.sf-team-season-logo{
+  width:62px!important;
+  height:62px!important;
+  min-width:62px!important;
+  max-width:62px!important;
+  min-height:62px!important;
+  max-height:62px!important;
+  flex:0 0 62px!important;
+}
+#schedule .sf-match-team img.sf-match-logo,
+#schedule .sf-match-team .sf-team-logo-plate-v5>img{
+  width:54px!important;
+  height:54px!important;
+  min-width:54px!important;
+  max-width:54px!important;
+  min-height:54px!important;
+  max-height:54px!important;
+}
+#overview #gotw img.team-logo,
+#overview #gotw .sf-team-logo-plate-v5>img{
+  width:clamp(52px,5.5vw,70px)!important;
+  height:clamp(52px,5.5vw,70px)!important;
+  min-width:clamp(52px,5.5vw,70px)!important;
+  max-width:clamp(52px,5.5vw,70px)!important;
+  min-height:clamp(52px,5.5vw,70px)!important;
+  max-height:clamp(52px,5.5vw,70px)!important;
+}
+.top25-row .sf-team-logo-plate-v5>img,
+.top25-row img[data-sf-team-control]{
+  width:28px!important;
+  height:28px!important;
+  min-width:28px!important;
+  max-width:28px!important;
+  min-height:28px!important;
+  max-height:28px!important;
+}
+.metric-title .sf-team-logo-plate-v5>img,
+.metric-title img[data-sf-team-control]{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+}
+#teamScreen img.v25-choice-logo-img{
+  width:100px!important;
+  height:100px!important;
+  min-width:100px!important;
+  max-width:100px!important;
+  min-height:100px!important;
+  max-height:100px!important;
+}
+@media(max-width:700px){
+  #schedule img.sf-team-season-logo{
+    width:50px!important;
+    height:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    flex-basis:50px!important;
+  }
+  #schedule .sf-match-team img.sf-match-logo,
+  #schedule .sf-match-team .sf-team-logo-plate-v5>img{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-system-preview" content="v2.1-explicit-sizes">
+
+<style id="sf-logo-system-v2-mobile-gotw-v22">
+/* PREVIEW v2.2 — high-specificity transparent logo authority + symmetrical phone GOTW rows. */
+
+/* Beat the legacy human/CPU plate selectors exactly. */
+.sf-team-logo-plate-v5.sf-user-controlled,
+.sf-team-logo-plate-v5.sf-cpu-controlled{
+  display:contents!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  margin:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  transform:none!important;
+}
+
+/* CPU: transparent art with a faint light halo so dark marks remain visible. */
+.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5,
+img[data-sf-team-control="cpu"].sf-team-identity-logo-v5{
+  outline:0!important;
+  border-radius:0!important;
+  filter:
+    drop-shadow(0 0 1px rgba(255,255,255,.72))
+    drop-shadow(0 2px 3px rgba(0,0,0,.72))!important;
+}
+
+/* Human: same transparent art, gold-only emphasis. */
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+img[data-sf-team-control="user"].sf-team-identity-logo-v5{
+  outline:2px solid rgba(230,191,73,.98)!important;
+  outline-offset:4px!important;
+  border-radius:10px!important;
+  filter:
+    drop-shadow(0 0 2px rgba(230,191,73,.82))
+    drop-shadow(0 3px 4px rgba(0,0,0,.72))!important;
+}
+
+/* Direct GOTW logos must also be transparent, even when they never receive a wrapper. */
+#overview #gotw img.team-logo{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* Probability logos use the same transparent treatment. */
+#overview #gotw .hq-probability img,
+#overview #gotw .gotw-probability img,
+#overview #gotw .probability img{
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* PHONE GOTW: both teams use the exact same row structure. */
+@media(max-width:700px){
+  #overview #gotw .gotw-matchup{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+    align-items:center!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-side,
+  #overview #gotw .gotw-matchup .team-side.right{
+    display:grid!important;
+    grid-template-columns:64px minmax(0,1fr)!important;
+    grid-template-rows:1fr!important;
+    gap:14px!important;
+    align-items:center!important;
+    width:min(100%,330px)!important;
+    max-width:330px!important;
+    min-width:0!important;
+    margin:0 auto!important;
+    padding:0!important;
+    text-align:left!important;
+    direction:ltr!important;
+  }
+
+  /* Logo always column 1, copy always column 2. */
+  #overview #gotw .gotw-matchup .team-side>.sf-team-logo-plate-v5>img,
+  #overview #gotw .gotw-matchup .team-side.right>.sf-team-logo-plate-v5>img,
+  #overview #gotw .gotw-matchup .team-side>img.team-logo,
+  #overview #gotw .gotw-matchup .team-side.right>img.team-logo,
+  #overview #gotw .gotw-matchup .team-side>.team-fallback,
+  #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+    grid-column:1!important;
+    grid-row:1!important;
+    justify-self:center!important;
+    align-self:center!important;
+    width:60px!important;
+    height:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    min-height:60px!important;
+    max-height:60px!important;
+    margin:0!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-side>div:not(.team-fallback),
+  #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-width:0!important;
+    width:100%!important;
+    text-align:left!important;
+    overflow:visible!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-name,
+  #overview #gotw .gotw-matchup .team-side.right .team-name{
+    text-align:left!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    word-break:normal!important;
+    overflow-wrap:normal!important;
+    font-size:clamp(26px,8vw,38px)!important;
+    line-height:.95!important;
+  }
+
+  #overview #gotw .gotw-matchup .team-meta,
+  #overview #gotw .gotw-matchup .team-side.right .team-meta{
+    text-align:left!important;
+  }
+
+  #overview #gotw .gotw-matchup .vs{
+    grid-column:1!important;
+    justify-self:center!important;
+    margin:2px auto!important;
+  }
+
+  /* Probability logos: same size, same transparent visual treatment. */
+  #overview #gotw .hq-probability img,
+  #overview #gotw .gotw-probability img,
+  #overview #gotw .probability img{
+    width:58px!important;
+    height:58px!important;
+    max-width:58px!important;
+    max-height:58px!important;
+    margin:0 auto!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-system-preview" content="v2.2-mobile-gotw-transparent-authority">
+
