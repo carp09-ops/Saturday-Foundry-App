@@ -4626,6 +4626,85 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 @media(max-width:700px){.sf-match-team>.sf-team-logo-plate-v5{width:44px!important;height:44px!important}.sf-team-season-hero>.sf-team-logo-plate-v5{width:50px!important;height:50px!important}}
 </style>
 
+
+<style id="sf-mobile-schedule-single-row-v5-1">
+/* QA V5.1 — keep phone schedule matchups on one horizontal row. */
+@media(max-width:700px){
+  #schedule.sf-v3-my-mode .sf-matchup{
+    grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr)!important;
+    gap:6px!important;
+    align-items:center!important;
+    padding:10px 9px!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team{
+    grid-template-columns:40px minmax(0,1fr)!important;
+    gap:7px!important;
+    align-items:center!important;
+    min-width:0!important;
+    text-align:left!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 40px!important;
+    text-align:right!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo-fallback{
+    grid-column:2!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-copy{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback{
+    grid-column:1!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-copy{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team>.sf-team-logo-plate-v5,
+  #schedule.sf-v3-my-mode .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-logo-fallback{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-copy{min-width:0!important}
+  #schedule.sf-v3-my-mode .sf-match-name{
+    font-size:15px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-role{
+    margin-bottom:3px!important;
+    font-size:6px!important;
+    letter-spacing:.08em!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-meta{
+    margin-top:3px!important;
+    font-size:7px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-score{
+    margin-top:4px!important;
+    font-size:18px!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-sep{
+    margin:0!important;
+    text-align:center!important;
+    font-size:10px!important;
+    align-self:center!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
