@@ -273,12 +273,9 @@ jobs:
 <meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
 '''
               if '</body>' in s:
-                  s = s.replace('</body>', block + '
-</body>', 1)
+                  s = s.replace('</body>', block + "\\n</body>", 1)
               else:
-                  s += '
-' + block + '
-'
+                  s += "\\n" + block + "\\n"
 
           p.write_text(s)
           PY
