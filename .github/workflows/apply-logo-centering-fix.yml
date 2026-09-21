@@ -81,3 +81,5 @@ jobs:
           git add index.html
           git commit -m 'Center Schedule and GOTW team logos'
           git push origin main
+
+# trigger via PR merge
