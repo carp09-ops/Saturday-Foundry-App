@@ -5352,7 +5352,8 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     
 
     <section id="overview" class="view active"><div class="v13-overview">
-<section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></div></section>
+<section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div></div></section>
+<section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week"><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></section>
 <div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE LEGACY LINE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
 <section id="coaches" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5"></section>
 <section id="hqNewsDesk" class="hq-news-desk"><div class="hq-news-desk-head"><div><span>AROUND THE DYNASTY</span><h3>FOUNDRY NEWS DESK</h3></div><em>LIVE LEAGUE INTELLIGENCE</em></div><div class="hq-command-grid"><article class="hq-command-card hq-command-primary"><div class="hq-command-head"><div><span>LEAGUE INTEL</span><h3>Right Now</h3></div><b id="hqCommandWeek">LIVE</b></div><div id="hqCommandNow" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>CHRONICLE DESK</span><h3>Lead Story</h3></div><button type="button" onclick="switchView('storylines')">Open →</button></div><div id="hqCommandStory" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>RIVALRY WATCH</span><h3>Head-to-Head</h3></div><button type="button" onclick="switchView('rivalries')">Open →</button></div><div id="hqCommandRivalry" class="hq-command-body"></div></article></div></section>
@@ -10719,7 +10720,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10752,7 +10753,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11362,7 +11363,55 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 }
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
-\n</body>
+\n
+<style id="sf-gotw-standalone-v1">
+/* GOTW is now a first-class full-width Overview module, independent of the hero. */
+#overview .sf-gotw-standalone-shell{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:16px 0 14px!important;
+  box-sizing:border-box!important;
+}
+#overview .sf-gotw-standalone-shell>#gotw{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#overview .sf-overview-hero>.relative.z-10.grid{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+#overview .sf-overview-hero .sf-hero-copy{
+  width:min(720px,100%)!important;
+  max-width:720px!important;
+}
+@media(min-width:701px){
+  #overview .sf-overview-hero{
+    min-height:330px!important;
+  }
+  #overview .sf-overview-hero>.relative.z-10.grid{
+    min-height:330px!important;
+    align-items:center!important;
+  }
+}
+@media(max-width:700px){
+  #overview .sf-gotw-standalone-shell{
+    margin:12px 0 10px!important;
+  }
+  #overview .sf-overview-hero{
+    min-height:360px!important;
+  }
+  #overview .sf-overview-hero>.relative{
+    min-height:360px!important;
+  }
+  #overview .sf-hero-copy{
+    padding-top:150px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-production-release" content="9.7.5-gotw-standalone-module">
+</body>
 </html>
 
 <style id="phase5-screen-sweep-v1">
@@ -12266,7 +12315,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5';
   }
   function boot(){
     build();
@@ -12276,7 +12325,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.4';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.5';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12683,7 +12732,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.4';
+    if(m)m.textContent='PROD 9.7.5';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
