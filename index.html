@@ -4705,6 +4705,30 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 
+<style id="sf-qa-ipad-gotw-snap-fix">
+/* QA — iPad GOTW carousel containment. Each card owns exactly one stage width. */
+@media (min-width:769px) and (max-width:1366px){
+  #overview #gotw .gotw-carousel-stage{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    gap:0!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    scroll-padding-inline:0!important;
+  }
+  #overview #gotw .gotw-carousel-slide{
+    flex:0 0 100%!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:100%!important;
+    box-sizing:border-box!important;
+    transform:none!important;
+  }
+  #overview #gotw .gotw-carousel-slide.active{transform:none!important}
+}
+</style>
+<meta name="saturday-foundry-qa" content="9.6.16-ipad-gotw-snap-fix">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -11339,7 +11363,7 @@ html,body{max-width:100%;overflow-x:hidden}
     slides.forEach((el,n)=>{const on=n===i;el.classList.toggle('active',on);el.setAttribute('aria-hidden',on?'false':'true')});
     shell.querySelectorAll('[data-gotw-dot]').forEach((el,n)=>el.classList.toggle('active',n===i));
     const count=shell.querySelector('.gotw-carousel-count');if(count)count.textContent=`${i+1} OF ${slides.length}`;
-    if(scroll){slides[i].scrollIntoView({behavior:'smooth',block:'nearest',inline:'start'})}
+    if(scroll){stage.scrollTo({left:Math.max(0,slides[i].offsetLeft),behavior:'smooth'})}
   }
   try{setGotwSlide=function(index){const shell=document.getElementById('gotw');syncGotwIndex(shell,index,true)};window.setGotwSlide=setGotwSlide}catch(_e){window.setGotwSlide=index=>syncGotwIndex(document.getElementById('gotw'),index,true)}
 
@@ -11349,7 +11373,7 @@ html,body{max-width:100%;overflow-x:hidden}
     clearTimeout(scrollTimer);scrollTimer=setTimeout(()=>{
       const slides=[...stage.querySelectorAll('[data-gotw-slide]')];if(!slides.length)return;
       const left=stage.scrollLeft;let best=0,dist=Infinity;
-      slides.forEach((el,i)=>{const d=Math.abs(el.offsetLeft-stage.offsetLeft-left);if(d<dist){dist=d;best=i}});
+      slides.forEach((el,i)=>{const d=Math.abs(el.offsetLeft-left);if(d<dist){dist=d;best=i}});
       syncGotwIndex(document.getElementById('gotw'),best,false);
     },70);
   },true);
@@ -11358,12 +11382,14 @@ html,body{max-width:100%;overflow-x:hidden}
   let touch=null;
   document.addEventListener('touchstart',function(e){
     const stage=e.target?.closest?.('#gotw .gotw-carousel-stage');if(!stage||!e.touches?.[0])return;
-    const t=e.touches[0];touch={stage,x:t.clientX,y:t.clientY};
+    const t=e.touches[0];touch={stage,x:t.clientX,y:t.clientY,left:stage.scrollLeft};
   },{capture:true,passive:true});
   document.addEventListener('touchend',function(e){
     if(!touch||!e.changedTouches?.[0]){touch=null;return}
-    const t=e.changedTouches[0],dx=t.clientX-touch.x,dy=t.clientY-touch.y,stage=touch.stage;touch=null;
+    const t=e.changedTouches[0],dx=t.clientX-touch.x,dy=t.clientY-touch.y,stage=touch.stage,startLeft=touch.left;touch=null;
     if(Math.abs(dx)<38||Math.abs(dx)<=Math.abs(dy)*1.15)return;
+    /* Native scroll-snap already handled the gesture: do not advance a second time. */
+    if(Math.abs(stage.scrollLeft-startLeft)>12)return;
     const shell=document.getElementById('gotw'),slides=[...stage.querySelectorAll('[data-gotw-slide]')];if(slides.length<2)return;
     let current=slides.findIndex(s=>s.classList.contains('active'));if(current<0)current=0;
     syncGotwIndex(shell,Math.max(0,Math.min(slides.length-1,current+(dx<0?1:-1))),true);
@@ -11372,8 +11398,13 @@ html,body{max-width:100%;overflow-x:hidden}
   function afterGotwRender(){
     const shell=document.getElementById('gotw');if(!shell)return;
     const stage=shell.querySelector('.gotw-carousel-stage');if(!stage)return;
-    let current=[...stage.querySelectorAll('[data-gotw-slide]')].findIndex(s=>s.classList.contains('active'));if(current<0)current=0;
-    requestAnimationFrame(()=>syncGotwIndex(shell,current,false));
+    const slides=[...stage.querySelectorAll('[data-gotw-slide]')];
+    let current=slides.findIndex(s=>s.classList.contains('active'));if(current<0)current=0;
+    requestAnimationFrame(()=>{
+      syncGotwIndex(shell,current,false);
+      /* Re-renders reset scrollLeft in Safari; restore the active card exactly. */
+      if(slides[current])stage.scrollLeft=Math.max(0,slides[current].offsetLeft);
+    });
   }
   const gotw=document.getElementById('gotw');if(gotw)new MutationObserver(()=>requestAnimationFrame(afterGotwRender)).observe(gotw,{childList:true,subtree:false});
   setTimeout(()=>{fixDynastiesIcon();afterGotwRender()},700);
