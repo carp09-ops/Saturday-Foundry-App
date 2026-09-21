@@ -1,0 +1,141 @@
+name: Extract GOTW from hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/extract-gotw-from-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move GOTW into standalone module
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          marker = 'sf-gotw-standalone-v1'
+
+          if marker not in s:
+              hero_start = s.find('<section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero">')
+              if hero_start < 0:
+                  raise SystemExit('Overview hero not found')
+
+              gotw = '<div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div>'
+              gotw_pos = s.find(gotw, hero_start)
+              if gotw_pos < 0:
+                  raise SystemExit('GOTW render target not found inside hero')
+
+              hero_end = s.find('</section>', gotw_pos)
+              if hero_end < 0:
+                  raise SystemExit('Hero closing section not found')
+              hero_end += len('</section>')
+
+              hero = s[hero_start:hero_end]
+              hero_clean = hero.replace(gotw, '', 1)
+              standalone = (
+                  '\n<section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week">'
+                  + gotw +
+                  '</section>'
+              )
+              s = s[:hero_start] + hero_clean + standalone + s[hero_end:]
+
+              css = r'''
+          <style id="sf-gotw-standalone-v1">
+          /* GOTW is now a first-class full-width Overview module, independent of the hero. */
+          #overview .sf-gotw-standalone-shell{
+            width:100%!important;
+            max-width:none!important;
+            min-width:0!important;
+            margin:16px 0 14px!important;
+            box-sizing:border-box!important;
+          }
+          #overview .sf-gotw-standalone-shell>#gotw{
+            width:100%!important;
+            max-width:none!important;
+            min-width:0!important;
+            margin:0!important;
+          }
+          #overview .sf-overview-hero>.relative.z-10.grid{
+            grid-template-columns:minmax(0,1fr)!important;
+          }
+          #overview .sf-overview-hero .sf-hero-copy{
+            width:min(720px,100%)!important;
+            max-width:720px!important;
+          }
+          @media(min-width:701px){
+            #overview .sf-overview-hero{
+              min-height:330px!important;
+            }
+            #overview .sf-overview-hero>.relative.z-10.grid{
+              min-height:330px!important;
+              align-items:center!important;
+            }
+          }
+          @media(max-width:700px){
+            #overview .sf-gotw-standalone-shell{
+              margin:12px 0 10px!important;
+            }
+            #overview .sf-overview-hero{
+              min-height:360px!important;
+            }
+            #overview .sf-overview-hero>.relative{
+              min-height:360px!important;
+            }
+            #overview .sf-hero-copy{
+              padding-top:150px!important;
+            }
+          }
+          </style>
+          <meta name="saturday-foundry-production-release" content="9.7.5-gotw-standalone-module">
+          '''
+              css = '\n'.join(line[10:] if line.startswith('          ') else line for line in css.splitlines())
+              if '</body>' in s:
+                  s = s.replace('</body>', css + '\n</body>', 1)
+              else:
+                  s += '\n' + css + '\n'
+
+          s = s.replace('PROD 9.7.4', 'PROD 9.7.5')
+          p.write_text(s)
+          PY
+
+      - name: Validate structure
+        run: |
+          grep -q 'sf-gotw-standalone-v1' index.html
+          grep -q '9.7.5-gotw-standalone-module' index.html
+          grep -q 'PROD 9.7.5' index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text()
+          hero_start=s.index('<section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero">')
+          hero_end=s.index('</section>',hero_start)
+          gotw=s.index('id="gotw"')
+          if hero_start < gotw < hero_end:
+              raise SystemExit('GOTW is still inside hero')
+          if gotw < hero_end:
+              raise SystemExit('GOTW is not after hero')
+          print('GOTW successfully extracted from hero')
+          PY
+          git diff --check
+
+      - name: Commit standalone GOTW
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Move GOTW into standalone Overview module'
+          git push origin main
