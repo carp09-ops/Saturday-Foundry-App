@@ -1,0 +1,45 @@
+name: Align GOTW logos and compact hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/align-gotw-logos-compact-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply EOF layout authority
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-gotw-axis-hero-compact-v1'
+          css="\n<style id=\"sf-gotw-axis-hero-compact-v1\">\n/* Final EOF authority: compact hero + symmetrical GOTW team axis. */\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup{\n  display:grid!important;\n  grid-template-columns:minmax(0,1fr) clamp(46px,4.8vw,62px) minmax(0,1fr)!important;\n  gap:clamp(10px,1.2vw,18px)!important;\n  align-items:center!important;\n  width:100%!important;\n  min-width:0!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side,\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right{\n  display:grid!important;\n  grid-template-rows:1fr!important;\n  align-items:center!important;\n  width:100%!important;\n  min-width:0!important;\n  gap:12px!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side{\n  grid-template-columns:clamp(52px,5.5vw,70px) minmax(0,1fr)!important;\n  text-align:left!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right{\n  grid-template-columns:minmax(0,1fr) clamp(52px,5.5vw,70px)!important;\n  text-align:right!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side:not(.right)>.team-logo,\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side:not(.right)>.team-fallback{\n  grid-column:1!important;grid-row:1!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side:not(.right)>div:not(.team-fallback){\n  grid-column:2!important;grid-row:1!important;min-width:0!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>div:first-child{\n  grid-column:1!important;grid-row:1!important;min-width:0!important;order:initial!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>.team-logo,\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>.team-fallback{\n  grid-column:2!important;grid-row:1!important;order:initial!important;\n}\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-logo,\n#overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-fallback{\n  width:clamp(52px,5.5vw,70px)!important;\n  height:clamp(52px,5.5vw,70px)!important;\n  align-self:center!important;\n  justify-self:center!important;\n  margin:0!important;\n  object-fit:contain!important;\n  object-position:center center!important;\n}\n@media (min-width:701px) and (max-width:1366px){\n  #overview .sf-overview-hero{min-height:245px!important}\n  #overview .sf-overview-hero>.relative.z-10.grid{min-height:245px!important;padding:16px 20px!important}\n  #overview .sf-overview-hero .sf-hero-copy{width:min(620px,100%)!important;max-width:620px!important}\n  #overview .sf-overview-hero .sf-hero-lockup{width:min(300px,48vw)!important;max-width:300px!important}\n  #overview .sf-overview-hero .sf-hero-tagline{font-size:9px!important;line-height:1.35!important;letter-spacing:.16em!important;margin-top:8px!important}\n  #overview .sf-overview-hero .ref-kicker{font-size:10px!important}\n}\n@media (max-width:700px){\n  #overview .sf-overview-hero{min-height:285px!important}\n  #overview .sf-overview-hero>.relative{min-height:285px!important;padding:12px 14px 14px!important}\n  #overview .sf-overview-hero .sf-hero-copy{padding-top:92px!important}\n  #overview .sf-overview-hero .sf-hero-lockup{width:220px!important;max-width:68vw!important}\n  #overview .sf-overview-hero .sf-hero-tagline{margin-top:7px!important;font-size:8px!important;line-height:1.4!important;letter-spacing:.15em!important}\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side,\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right{\n    grid-template-columns:54px minmax(0,1fr)!important;text-align:left!important;\n  }\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>div:first-child{grid-column:2!important;grid-row:1!important}\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>.team-logo,\n  #overview .sf-gotw-standalone-shell #gotw .gotw-matchup .team-side.right>.team-fallback{grid-column:1!important;grid-row:1!important}\n}\n</style>\n<meta name=\"saturday-foundry-production-release\" content=\"9.7.6-gotw-axis-hero-compact\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+css+"\n"
+          s=s.replace('PROD 9.7.5','PROD 9.7.6')
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-gotw-axis-hero-compact-v1' index.html
+          grep -q '9.7.6-gotw-axis-hero-compact' index.html
+          grep -q 'PROD 9.7.6' index.html
+          git diff --check
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Align GOTW logos and compact hero'
+          git push origin main
