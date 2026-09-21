@@ -13966,3 +13966,44 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-logo-sizing-preview" content="v1.1-coach-card-alignment">
 
+<style id="sf-coach-trading-logo-optical-align-v1">
+/* Preview-only: optically center the program logo block on collectible coach cards. */
+#records .coach-card-front-bottom{
+  align-items:center!important;
+}
+
+#records .coach-card-program{
+  display:grid!important;
+  justify-items:center!important;
+  align-content:center!important;
+  align-self:center!important;
+  min-width:0!important;
+  transform:translateY(-3px)!important;
+}
+
+#records .coach-card-program img{
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0 auto 2px!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+#records .coach-card-program strong{
+  margin:0!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+
+@media(max-width:700px){
+  #records .coach-card-program{
+    transform:translateY(-2px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-sizing-preview" content="v1.2-coach-trading-optical-align">
+
