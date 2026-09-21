@@ -1,0 +1,45 @@
+name: Apply logo system v2 preview
+
+on:
+  push:
+    branches: [logo-system-v2-preview]
+    paths:
+      - '.github/workflows/apply-logo-system-v2-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply preview-only logo system
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-logo-system-v2-preview'
+          patch="\n<style id=\"sf-logo-system-v2-preview\">\n/* PREVIEW: single transparent team-logo system.\n   Existing human/CPU runtime still classifies teams, but its wrapper becomes layout-transparent. */\n\n/* Kill all wrapper geometry/backgrounds so component grids/flex own positioning again. */\n.sf-team-logo-plate-v5,\n[class*=\"team-logo-plate\"]{\n  display:contents!important;\n  background:transparent!important;\n  border:0!important;\n  box-shadow:none!important;\n  padding:0!important;\n  margin:0!important;\n  width:auto!important;\n  height:auto!important;\n  min-width:0!important;\n  min-height:0!important;\n  overflow:visible!important;\n}\n\n/* Universal team-logo image contract. */\nimg[data-sf-team-control],\nimg.sf-team-identity-logo-v5,\nimg.team-logo,\nimg.sf-match-logo,\nimg.v23-team-logo,\nimg.v23-archive-logo,\nimg.v25-choice-logo-img{\n  display:block!important;\n  box-sizing:border-box!important;\n  background:transparent!important;\n  border:0!important;\n  outline:0!important;\n  box-shadow:none!important;\n  padding:0!important;\n  margin:0!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n  transform:none!important;\n  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;\n  justify-self:center!important;\n  align-self:center!important;\n  vertical-align:middle!important;\n}\n\n/* CPU logos stay clean and transparent. */\n.sf-team-logo-plate-v5.sf-cpu-controlled>img,\nimg[data-sf-team-control=\"cpu\"]{\n  background:transparent!important;\n  border:0!important;\n  outline:0!important;\n  box-shadow:none!important;\n  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;\n}\n\n/* Human teams: transparent logo with gold accent only. No filled plate. */\n.sf-team-logo-plate-v5.sf-user-controlled>img,\nimg[data-sf-team-control=\"user\"]{\n  background:transparent!important;\n  border:0!important;\n  outline:2px solid rgba(230,191,73,.96)!important;\n  outline-offset:3px!important;\n  border-radius:10px!important;\n  box-shadow:0 0 0 1px rgba(230,191,73,.20),0 0 14px rgba(230,191,73,.28)!important;\n  filter:drop-shadow(0 2px 3px rgba(0,0,0,.68))!important;\n}\n\n/* GOTW: preserve DOM order and force each logo into the correct grid slot. */\n#overview #gotw .team-side:not(.right)>.sf-team-logo-plate-v5>img{\n  grid-column:1!important;\n  grid-row:1!important;\n}\n#overview #gotw .team-side.right>.sf-team-logo-plate-v5>img{\n  grid-column:2!important;\n  grid-row:1!important;\n}\n#overview #gotw .team-side>.sf-team-logo-plate-v5>img,\n#overview #gotw img.team-logo{\n  width:clamp(52px,5.5vw,70px)!important;\n  height:clamp(52px,5.5vw,70px)!important;\n}\n\n/* Schedule: wrapper is display:contents, so assign the image itself to the team slot. */\n#schedule .sf-match-team:not(.home)>.sf-team-logo-plate-v5>img{\n  grid-column:1!important;\n  grid-row:1!important;\n}\n#schedule .sf-match-team.home>.sf-team-logo-plate-v5>img{\n  grid-column:2!important;\n  grid-row:1!important;\n}\n#schedule .sf-match-team>.sf-team-logo-plate-v5>img{\n  width:54px!important;\n  height:54px!important;\n}\n@media(max-width:700px){\n  #schedule .sf-match-team>.sf-team-logo-plate-v5>img{\n    width:38px!important;\n    height:38px!important;\n  }\n}\n\n/* Surfaces with direct images must never reintroduce filled plates. */\n#overview #gotw img.team-logo,\n#schedule img.sf-match-logo,\n#schedule img.v23-team-logo,\n#schedule img.v23-archive-logo,\n#teamScreen img.v25-choice-logo-img{\n  background:transparent!important;\n  border:0!important;\n  padding:0!important;\n  box-shadow:none!important;\n}\n\n/* Fallbacks stay transparent and centered too. */\n.team-fallback,\n.sf-match-logo-fallback,\n.v23-team-logo.fallback,\n.v23-archive-logo-placeholder{\n  display:grid!important;\n  place-items:center!important;\n  background:transparent!important;\n  border:0!important;\n  box-shadow:none!important;\n  color:#dbe6eb!important;\n}\n</style>\n\n<script id=\"sf-logo-system-v2-integrity\">\n(function(){\n  'use strict';\n\n  const candidateSelector = [\n    'img[data-sf-team-control]',\n    'img.sf-team-identity-logo-v5',\n    'img.team-logo',\n    'img.sf-match-logo',\n    'img.v23-team-logo',\n    'img.v23-archive-logo',\n    'img.v25-choice-logo-img',\n    'img[alt$=\" logo\" i]'\n  ].join(',');\n\n  function teamName(img){\n    return String(img?.dataset?.teamName || img?.alt || '')\n      .replace(/\\s+logo\\s*$/i,'')\n      .trim();\n  }\n\n  async function repair(img){\n    if(!img || img.dataset.sfLogoRepairing==='1') return;\n    img.dataset.sfLogoRepairing='1';\n    const name=teamName(img);\n    try{\n      let src='';\n      if(name && window.CDHQLogoResolver?.resolve){\n        src=await window.CDHQLogoResolver.resolve(name);\n      }\n      if(!src && name && window.CDHQLogoResolver?.genericTeamBadge){\n        src=window.CDHQLogoResolver.genericTeamBadge(name);\n      }\n      if(src && src!==img.src){\n        img.src=src;\n      }\n    }catch(_e){}\n    finally{\n      img.dataset.sfLogoRepairing='0';\n    }\n  }\n\n  function normalize(root=document){\n    root.querySelectorAll?.(candidateSelector).forEach(img=>{\n      img.classList.add('sf-logo-system-v2');\n      img.style.background='transparent';\n      img.style.padding='0';\n      img.addEventListener('error',()=>repair(img),{once:false});\n      if(img.complete && img.naturalWidth===0) repair(img);\n    });\n  }\n\n  let queued=false;\n  const queue=()=>{\n    if(queued)return;\n    queued=true;\n    requestAnimationFrame(()=>{\n      queued=false;\n      normalize(document);\n    });\n  };\n\n  function boot(){\n    normalize(document);\n    const root=document.getElementById('app')||document.body;\n    new MutationObserver(queue).observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['src','class']});\n    window.addEventListener('pageshow',queue);\n    setTimeout(queue,250);\n    setTimeout(queue,800);\n  }\n\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});\n  else boot();\n})();\n</script>\n<meta name=\"saturday-foundry-logo-system-preview\" content=\"v2-transparent-human-accent\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+
+      - name: Validate
+        run: |
+          grep -q 'sf-logo-system-v2-preview' index.html
+          grep -q 'v2-transparent-human-accent' index.html
+
+      - name: Commit preview logo system
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Preview transparent unified team logo system'
+          git push origin logo-system-v2-preview
