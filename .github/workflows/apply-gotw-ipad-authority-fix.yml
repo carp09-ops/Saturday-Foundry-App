@@ -1,0 +1,177 @@
+name: Apply iPad GOTW authority fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-gotw-ipad-authority-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply iPad GOTW authority CSS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          marker = 'sf-gotw-ipad-authority-fix-v1'
+          if marker in s:
+              print('iPad GOTW authority fix already present.')
+          else:
+              css = """
+          <style id="sf-gotw-ipad-authority-fix-v1">
+          /* iPad/tablet GOTW authority: prevent matchup and metric overflow. */
+          @media (min-width:701px) and (max-width:1366px){
+            #overview #gotw,
+            #overview #gotw .gotw-collapsible,
+            #overview #gotw .gotw-carousel-stage,
+            #overview #gotw .gotw-carousel-slide,
+            #overview #gotw .gotw-body,
+            #overview #gotw .gotw-body.gotw-broadcast{
+              width:100%!important;
+              max-width:100%!important;
+              min-width:0!important;
+              box-sizing:border-box!important;
+            }
+
+            #overview #gotw .gotw-carousel-stage{
+              gap:0!important;
+              padding-left:0!important;
+              padding-right:0!important;
+              overflow-x:auto!important;
+              overflow-y:hidden!important;
+            }
+
+            #overview #gotw .gotw-carousel-slide{
+              flex:0 0 100%!important;
+              width:100%!important;
+              max-width:100%!important;
+              min-width:100%!important;
+              overflow:hidden!important;
+              box-sizing:border-box!important;
+            }
+
+            #overview #gotw .gotw-body.gotw-broadcast{
+              padding-left:16px!important;
+              padding-right:16px!important;
+              overflow:hidden!important;
+            }
+
+            #overview #gotw .gotw-matchup{
+              display:grid!important;
+              grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important;
+              gap:12px!important;
+              width:100%!important;
+              max-width:100%!important;
+              min-width:0!important;
+              box-sizing:border-box!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-side,
+            #overview #gotw .gotw-matchup .team-side.right{
+              width:100%!important;
+              max-width:100%!important;
+              min-width:0!important;
+              gap:10px!important;
+              box-sizing:border-box!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-side{
+              grid-template-columns:64px minmax(0,1fr)!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-side.right{
+              grid-template-columns:minmax(0,1fr) 64px!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-logo,
+            #overview #gotw .gotw-matchup .team-fallback{
+              width:62px!important;
+              height:62px!important;
+              min-width:62px!important;
+              max-width:62px!important;
+              justify-self:center!important;
+              align-self:center!important;
+              object-fit:contain!important;
+              object-position:center center!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-side>div:not(.team-fallback){
+              min-width:0!important;
+              max-width:100%!important;
+            }
+
+            #overview #gotw .gotw-matchup .team-name{
+              font-size:clamp(22px,2.7vw,34px)!important;
+              line-height:.96!important;
+              white-space:normal!important;
+              overflow-wrap:normal!important;
+              word-break:normal!important;
+              hyphens:none!important;
+            }
+
+            #overview #gotw .gotw-matchup .vs{
+              width:50px!important;
+              height:50px!important;
+              min-width:50px!important;
+              font-size:17px!important;
+              justify-self:center!important;
+            }
+
+            #overview #gotw .gotw-vegas{
+              width:100%!important;
+              max-width:100%!important;
+              min-width:0!important;
+              grid-template-columns:repeat(6,minmax(0,1fr))!important;
+              box-sizing:border-box!important;
+            }
+
+            #overview #gotw .gotw-vegas>div{
+              min-width:0!important;
+              padding-left:6px!important;
+              padding-right:6px!important;
+              overflow:hidden!important;
+            }
+
+            #overview #gotw .gotw-vegas b{
+              max-width:100%!important;
+              white-space:nowrap!important;
+            }
+          }
+          </style>
+          <meta name="saturday-foundry-gotw-ipad-authority" content="v1">
+          """
+              css = '\n'.join(line[10:] if line.startswith('          ') else line for line in css.splitlines())
+              if '</head>' not in s:
+                  raise SystemExit('No </head> found')
+              s = s.replace('</head>', css + '\n</head>', 1)
+              p.write_text(s)
+          PY
+
+      - name: Validate patch
+        run: |
+          grep -q 'sf-gotw-ipad-authority-fix-v1' index.html
+          grep -q 'saturday-foundry-gotw-ipad-authority' index.html
+          git diff --check
+
+      - name: Commit iPad GOTW authority fix
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix iPad GOTW overflow authority'
+          git push origin main
