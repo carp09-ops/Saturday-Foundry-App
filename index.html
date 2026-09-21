@@ -10719,7 +10719,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.6.15'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10752,7 +10752,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.3'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11122,7 +11122,247 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 </style>
 <meta name="saturday-foundry-mobile-schedule" content="v5.2-single-row-authority">
 
-</body>
+
+<style id="sf-gotw-true-final-authority-v1">
+/* TRUE FINAL AUTHORITY: intentionally appended after every legacy body style. */
+#overview #gotw,
+#overview #gotw .gotw-collapsible,
+#overview #gotw .gotw-carousel-shell,
+#overview #gotw .gotw-carousel-stage,
+#overview #gotw .gotw-carousel-slide,
+#overview #gotw .gotw-body,
+#overview #gotw .gotw-body.gotw-broadcast{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+
+#overview #gotw .gotw-carousel-shell{
+  overflow:hidden!important;
+}
+
+#overview #gotw .gotw-carousel-stage{
+  display:flex!important;
+  gap:0!important;
+  padding:0!important;
+  margin:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-snap-type:x mandatory!important;
+  scroll-padding-inline:0!important;
+  overscroll-behavior-x:contain!important;
+}
+
+#overview #gotw .gotw-carousel-slide{
+  flex:0 0 100%!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:100%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  transform:none!important;
+  scroll-snap-align:start!important;
+  scroll-snap-stop:always!important;
+}
+
+#overview #gotw .gotw-carousel-slide.active{
+  transform:none!important;
+}
+
+#overview #gotw .gotw-body.gotw-broadcast{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:clamp(10px,1.2vw,16px)!important;
+  align-items:stretch!important;
+  padding:clamp(12px,1.5vw,22px)!important;
+  overflow:hidden!important;
+}
+
+#overview #gotw .gotw-matchup{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) clamp(44px,5vw,64px) minmax(0,1fr)!important;
+  gap:clamp(8px,1.2vw,18px)!important;
+  align-items:center!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+
+#overview #gotw .gotw-matchup .team-side,
+#overview #gotw .gotw-matchup .team-side.right{
+  display:grid!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  gap:clamp(8px,1vw,14px)!important;
+  align-items:center!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-sizing:border-box!important;
+}
+
+#overview #gotw .gotw-matchup .team-side{
+  grid-template-columns:clamp(48px,6vw,72px) minmax(0,1fr)!important;
+  text-align:left!important;
+}
+
+#overview #gotw .gotw-matchup .team-side.right{
+  grid-template-columns:minmax(0,1fr) clamp(48px,6vw,72px)!important;
+  text-align:right!important;
+}
+
+#overview #gotw .gotw-matchup .team-side.right>div:first-child{
+  grid-column:1!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+#overview #gotw .gotw-matchup .team-side.right>.team-logo,
+#overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+  grid-column:2!important;
+}
+
+#overview #gotw .gotw-matchup .team-side:not(.right)>.team-logo,
+#overview #gotw .gotw-matchup .team-side:not(.right)>.team-fallback{
+  grid-column:1!important;
+}
+
+#overview #gotw .gotw-matchup .team-side:not(.right)>div:not(.team-fallback){
+  grid-column:2!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+}
+
+#overview #gotw .gotw-matchup .team-logo,
+#overview #gotw .gotw-matchup .team-fallback{
+  width:clamp(48px,6vw,72px)!important;
+  height:clamp(48px,6vw,72px)!important;
+  min-width:0!important;
+  max-width:100%!important;
+  justify-self:center!important;
+  align-self:center!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+}
+
+#overview #gotw .gotw-matchup .team-name{
+  font-size:clamp(20px,2.7vw,38px)!important;
+  line-height:.98!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+  max-width:100%!important;
+}
+
+#overview #gotw .gotw-matchup .team-meta{
+  white-space:normal!important;
+  overflow:visible!important;
+  word-break:normal!important;
+}
+
+#overview #gotw .gotw-matchup .vs{
+  width:clamp(44px,5vw,64px)!important;
+  height:clamp(44px,5vw,64px)!important;
+  min-width:0!important;
+  justify-self:center!important;
+  align-self:center!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:clamp(16px,1.6vw,21px)!important;
+}
+
+#overview #gotw .hq-probability{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  border-left:0!important;
+  border-top:1px solid rgba(245,189,56,.25)!important;
+  padding:12px 0 0!important;
+  margin:0!important;
+}
+
+#overview #gotw .gotw-vegas{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  box-sizing:border-box!important;
+}
+
+#overview #gotw .gotw-vegas>div{
+  min-width:0!important;
+  overflow:hidden!important;
+}
+
+#overview #gotw .gotw-vegas b{
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+@media(max-width:700px){
+  #overview #gotw .gotw-matchup{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:14px!important;
+  }
+  #overview #gotw .gotw-matchup .team-side,
+  #overview #gotw .gotw-matchup .team-side.right{
+    grid-template-columns:56px minmax(0,1fr)!important;
+    text-align:left!important;
+  }
+  #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+    grid-column:2!important;
+  }
+  #overview #gotw .gotw-matchup .team-side.right>.team-logo,
+  #overview #gotw .gotw-matchup .team-side.right>.team-fallback{
+    grid-column:1!important;
+  }
+  #overview #gotw .gotw-matchup .vs{
+    grid-column:1!important;
+    justify-self:center!important;
+  }
+  #overview #gotw .gotw-vegas{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media(min-width:701px) and (max-width:1366px){
+  #overview #gotw .gotw-body.gotw-broadcast{
+    padding:16px 18px!important;
+  }
+  #overview #gotw .gotw-matchup{
+    grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+  #overview #gotw .gotw-matchup .team-side{
+    grid-template-columns:62px minmax(0,1fr)!important;
+  }
+  #overview #gotw .gotw-matchup .team-side.right{
+    grid-template-columns:minmax(0,1fr) 62px!important;
+  }
+  #overview #gotw .gotw-matchup .team-logo,
+  #overview #gotw .gotw-matchup .team-fallback{
+    width:60px!important;
+    height:60px!important;
+  }
+  #overview #gotw .gotw-matchup .team-name{
+    font-size:clamp(22px,2.5vw,32px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
+\n</body>
 </html>
 
 <style id="phase5-screen-sweep-v1">
@@ -12026,7 +12266,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.1';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.4';
   }
   function boot(){
     build();
@@ -12036,7 +12276,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.6.15';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.4';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12443,7 +12683,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.1';
+    if(m)m.textContent='PROD 9.7.4';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
