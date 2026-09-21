@@ -14322,3 +14322,40 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-week-archive-preview" content="v1-mobile-scoreboard">
 
+<style id="sf-week-archive-logo-scale-v2">
+/* Preview refinement: larger, readable archive logos without returning to oversized tiles. */
+#schedule .v21-archive-match,
+#schedule .v21-archive-match.v23-archive-match{
+  grid-template-columns:36px minmax(0,1fr) 36px!important;
+  gap:10px!important;
+}
+#schedule .v21-archive-match img.v23-archive-logo,
+#schedule .v21-archive-match .sf-team-logo-plate-v5>img,
+#schedule .v21-archive-match .v23-archive-logo-placeholder{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  max-width:34px!important;
+  min-height:34px!important;
+  max-height:34px!important;
+}
+@media(max-width:700px){
+  #schedule .v21-archive-match,
+  #schedule .v21-archive-match.v23-archive-match{
+    grid-template-columns:42px minmax(0,1fr) 42px!important;
+    gap:9px!important;
+  }
+  #schedule .v21-archive-match img.v23-archive-logo,
+  #schedule .v21-archive-match .sf-team-logo-plate-v5>img,
+  #schedule .v21-archive-match .v23-archive-logo-placeholder{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    max-width:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-week-archive-preview" content="v2-readable-logos-pete-restored">
+
