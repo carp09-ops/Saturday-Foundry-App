@@ -10720,7 +10720,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10753,7 +10753,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12315,7 +12315,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.5';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7';
   }
   function boot(){
     build();
@@ -12325,7 +12325,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.5';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.7';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12732,7 +12732,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.5';
+    if(m)m.textContent='PROD 9.7.7';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -13055,4 +13055,107 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
 }
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.6-gotw-axis-hero-compact">
+
+<style id="sf-global-logo-normalization-v1">
+/* Global team-logo normalization.
+   One neutral plate, one centering model, border-only control-state distinction. */
+
+/* Any explicit team-logo wrapper is the centering authority. */
+.sf-team-logo-plate-v5,
+[class*="team-logo-plate"]{
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  padding:0!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  line-height:0!important;
+  background:#f7f7f3!important;
+  transform:none!important;
+}
+
+/* Human / CPU identity stays in the border only. */
+.sf-team-logo-plate-v5.sf-user-controlled{
+  background:#f7f7f3!important;
+  border:2px solid #e6bf49!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;
+}
+.sf-team-logo-plate-v5.sf-cpu-controlled{
+  background:#f7f7f3!important;
+  border:2px solid rgba(255,255,255,.86)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;
+}
+
+/* The artwork itself is always centered inside the plate. */
+.sf-team-logo-plate-v5>img.sf-team-identity-logo-v5,
+[class*="team-logo-plate"]>img{
+  display:block!important;
+  width:72%!important;
+  height:72%!important;
+  max-width:72%!important;
+  max-height:72%!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  justify-self:center!important;
+  align-self:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  transform:none!important;
+}
+
+/* Direct logo images used on surfaces without a wrapper get the same visual model. */
+#app img.team-logo,
+#app img.sf-match-logo,
+#app img.v23-team-logo,
+#app img.v23-archive-logo{
+  display:block!important;
+  box-sizing:border-box!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:auto!important;
+  padding:10%!important;
+  background:#f7f7f3!important;
+  border:1px solid rgba(255,255,255,.84)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;
+  filter:none!important;
+  transform:none!important;
+}
+
+/* GOTW must not add a second inner plate on top of the global logo treatment. */
+#overview #gotw img.team-logo{
+  background:#f7f7f3!important;
+  padding:10%!important;
+  border:1px solid rgba(255,255,255,.84)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;
+  object-position:50% 50%!important;
+  margin:auto!important;
+}
+
+/* Fallback badges use the same box geometry. */
+#app .team-fallback,
+#app .sf-match-logo-fallback,
+#app .v23-team-logo.fallback,
+#app .v23-archive-logo-placeholder{
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box!important;
+  margin:auto!important;
+  background:#f7f7f3!important;
+  color:#091015!important;
+  border:1px solid rgba(255,255,255,.84)!important;
+}
+
+/* Explicitly neutralize older per-state image backgrounds. */
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5{
+  background:transparent!important;
+}
+</style>
+<meta name="saturday-foundry-production-release" content="9.7.7-global-logo-normalization">
 
