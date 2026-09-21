@@ -1,0 +1,42 @@
+name: Fix preview logo sizes
+
+on:
+  push:
+    branches: [logo-system-v2-preview]
+    paths:
+      - '.github/workflows/fix-preview-logo-sizes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append explicit logo sizes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-logo-system-v2-size-authority'
+          patch="\n<style id=\"sf-logo-system-v2-size-authority\">\n/* PREVIEW FIX: explicit logo footprints so legacy percentage sizing can never escape a component. */\n#schedule img.sf-team-season-logo{\n  width:62px!important;\n  height:62px!important;\n  min-width:62px!important;\n  max-width:62px!important;\n  min-height:62px!important;\n  max-height:62px!important;\n  flex:0 0 62px!important;\n}\n#schedule .sf-match-team img.sf-match-logo,\n#schedule .sf-match-team .sf-team-logo-plate-v5>img{\n  width:54px!important;\n  height:54px!important;\n  min-width:54px!important;\n  max-width:54px!important;\n  min-height:54px!important;\n  max-height:54px!important;\n}\n#overview #gotw img.team-logo,\n#overview #gotw .sf-team-logo-plate-v5>img{\n  width:clamp(52px,5.5vw,70px)!important;\n  height:clamp(52px,5.5vw,70px)!important;\n  min-width:clamp(52px,5.5vw,70px)!important;\n  max-width:clamp(52px,5.5vw,70px)!important;\n  min-height:clamp(52px,5.5vw,70px)!important;\n  max-height:clamp(52px,5.5vw,70px)!important;\n}\n.top25-row .sf-team-logo-plate-v5>img,\n.top25-row img[data-sf-team-control]{\n  width:28px!important;\n  height:28px!important;\n  min-width:28px!important;\n  max-width:28px!important;\n  min-height:28px!important;\n  max-height:28px!important;\n}\n.metric-title .sf-team-logo-plate-v5>img,\n.metric-title img[data-sf-team-control]{\n  width:42px!important;\n  height:42px!important;\n  min-width:42px!important;\n  max-width:42px!important;\n  min-height:42px!important;\n  max-height:42px!important;\n}\n#teamScreen img.v25-choice-logo-img{\n  width:100px!important;\n  height:100px!important;\n  min-width:100px!important;\n  max-width:100px!important;\n  min-height:100px!important;\n  max-height:100px!important;\n}\n@media(max-width:700px){\n  #schedule img.sf-team-season-logo{\n    width:50px!important;\n    height:50px!important;\n    min-width:50px!important;\n    max-width:50px!important;\n    min-height:50px!important;\n    max-height:50px!important;\n    flex-basis:50px!important;\n  }\n  #schedule .sf-match-team img.sf-match-logo,\n  #schedule .sf-match-team .sf-team-logo-plate-v5>img{\n    width:38px!important;\n    height:38px!important;\n    min-width:38px!important;\n    max-width:38px!important;\n    min-height:38px!important;\n    max-height:38px!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-logo-system-preview\" content=\"v2.1-explicit-sizes\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-logo-system-v2-size-authority' index.html
+          grep -q 'v2.1-explicit-sizes' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Constrain preview team logo sizes'
+          git push origin logo-system-v2-preview
