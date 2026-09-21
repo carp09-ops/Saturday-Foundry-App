@@ -1,0 +1,42 @@
+name: Apply logo system v2.2 mobile GOTW fix
+
+on:
+  push:
+    branches: [logo-system-v2-preview]
+    paths:
+      - '.github/workflows/apply-logo-system-v22-mobile-gotw.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append v2.2 preview authority
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-logo-system-v2-mobile-gotw-v22'
+          patch="\n<style id=\"sf-logo-system-v2-mobile-gotw-v22\">\n/* PREVIEW v2.2 — high-specificity transparent logo authority + symmetrical phone GOTW rows. */\n\n/* Beat the legacy human/CPU plate selectors exactly. */\n.sf-team-logo-plate-v5.sf-user-controlled,\n.sf-team-logo-plate-v5.sf-cpu-controlled{\n  display:contents!important;\n  background:transparent!important;\n  border:0!important;\n  box-shadow:none!important;\n  padding:0!important;\n  margin:0!important;\n  width:auto!important;\n  height:auto!important;\n  min-width:0!important;\n  min-height:0!important;\n  overflow:visible!important;\n}\n\n.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,\n.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5{\n  background:transparent!important;\n  border:0!important;\n  padding:0!important;\n  margin:0!important;\n  box-shadow:none!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n  transform:none!important;\n}\n\n/* CPU: transparent art with a faint light halo so dark marks remain visible. */\n.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5,\nimg[data-sf-team-control=\"cpu\"].sf-team-identity-logo-v5{\n  outline:0!important;\n  border-radius:0!important;\n  filter:\n    drop-shadow(0 0 1px rgba(255,255,255,.72))\n    drop-shadow(0 2px 3px rgba(0,0,0,.72))!important;\n}\n\n/* Human: same transparent art, gold-only emphasis. */\n.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,\nimg[data-sf-team-control=\"user\"].sf-team-identity-logo-v5{\n  outline:2px solid rgba(230,191,73,.98)!important;\n  outline-offset:4px!important;\n  border-radius:10px!important;\n  filter:\n    drop-shadow(0 0 2px rgba(230,191,73,.82))\n    drop-shadow(0 3px 4px rgba(0,0,0,.72))!important;\n}\n\n/* Direct GOTW logos must also be transparent, even when they never receive a wrapper. */\n#overview #gotw img.team-logo{\n  background:transparent!important;\n  border:0!important;\n  padding:0!important;\n  box-shadow:none!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n}\n\n/* Probability logos use the same transparent treatment. */\n#overview #gotw .hq-probability img,\n#overview #gotw .gotw-probability img,\n#overview #gotw .probability img{\n  background:transparent!important;\n  border:0!important;\n  padding:0!important;\n  box-shadow:none!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n}\n\n/* PHONE GOTW: both teams use the exact same row structure. */\n@media(max-width:700px){\n  #overview #gotw .gotw-matchup{\n    display:grid!important;\n    grid-template-columns:minmax(0,1fr)!important;\n    gap:14px!important;\n    align-items:center!important;\n  }\n\n  #overview #gotw .gotw-matchup .team-side,\n  #overview #gotw .gotw-matchup .team-side.right{\n    display:grid!important;\n    grid-template-columns:64px minmax(0,1fr)!important;\n    grid-template-rows:1fr!important;\n    gap:14px!important;\n    align-items:center!important;\n    width:min(100%,330px)!important;\n    max-width:330px!important;\n    min-width:0!important;\n    margin:0 auto!important;\n    padding:0!important;\n    text-align:left!important;\n    direction:ltr!important;\n  }\n\n  /* Logo always column 1, copy always column 2. */\n  #overview #gotw .gotw-matchup .team-side>.sf-team-logo-plate-v5>img,\n  #overview #gotw .gotw-matchup .team-side.right>.sf-team-logo-plate-v5>img,\n  #overview #gotw .gotw-matchup .team-side>img.team-logo,\n  #overview #gotw .gotw-matchup .team-side.right>img.team-logo,\n  #overview #gotw .gotw-matchup .team-side>.team-fallback,\n  #overview #gotw .gotw-matchup .team-side.right>.team-fallback{\n    grid-column:1!important;\n    grid-row:1!important;\n    justify-self:center!important;\n    align-self:center!important;\n    width:60px!important;\n    height:60px!important;\n    min-width:60px!important;\n    max-width:60px!important;\n    min-height:60px!important;\n    max-height:60px!important;\n    margin:0!important;\n  }\n\n  #overview #gotw .gotw-matchup .team-side>div:not(.team-fallback),\n  #overview #gotw .gotw-matchup .team-side.right>div:first-child{\n    grid-column:2!important;\n    grid-row:1!important;\n    min-width:0!important;\n    width:100%!important;\n    text-align:left!important;\n    overflow:visible!important;\n  }\n\n  #overview #gotw .gotw-matchup .team-name,\n  #overview #gotw .gotw-matchup .team-side.right .team-name{\n    text-align:left!important;\n    white-space:normal!important;\n    overflow:visible!important;\n    text-overflow:clip!important;\n    word-break:normal!important;\n    overflow-wrap:normal!important;\n    font-size:clamp(26px,8vw,38px)!important;\n    line-height:.95!important;\n  }\n\n  #overview #gotw .gotw-matchup .team-meta,\n  #overview #gotw .gotw-matchup .team-side.right .team-meta{\n    text-align:left!important;\n  }\n\n  #overview #gotw .gotw-matchup .vs{\n    grid-column:1!important;\n    justify-self:center!important;\n    margin:2px auto!important;\n  }\n\n  /* Probability logos: same size, same transparent visual treatment. */\n  #overview #gotw .hq-probability img,\n  #overview #gotw .gotw-probability img,\n  #overview #gotw .probability img{\n    width:58px!important;\n    height:58px!important;\n    max-width:58px!important;\n    max-height:58px!important;\n    margin:0 auto!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-logo-system-preview\" content=\"v2.2-mobile-gotw-transparent-authority\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-logo-system-v2-mobile-gotw-v22' index.html
+          grep -q 'v2.2-mobile-gotw-transparent-authority' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix preview mobile GOTW logo alignment'
+          git push origin logo-system-v2-preview
