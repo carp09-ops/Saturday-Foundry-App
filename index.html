@@ -5135,6 +5135,61 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-global-authority" content="v1">
+
+<style id="sf-week-archive-schedule-card-v3">
+/* QA: Week-by-Week now mirrors the regular Schedule card hierarchy. */
+#schedule .v21-season-archive{margin-top:20px!important;padding:18px!important;border:1px solid rgba(244,197,66,.18)!important;border-radius:18px!important;background:radial-gradient(circle at 100% 0%,rgba(244,197,66,.05),transparent 30%),linear-gradient(180deg,rgba(4,14,19,.94),rgba(2,10,14,.97))!important}
+#schedule .v21-week-groups{display:grid!important;gap:12px!important}
+#schedule .v21-week-group{border:1px solid rgba(148,163,184,.13)!important;border-radius:14px!important;overflow:hidden!important;background:rgba(3,12,17,.84)!important}
+#schedule .v21-week-group summary{min-height:54px!important;padding:12px 14px!important;border:0!important;background:rgba(255,255,255,.018)!important}
+#schedule .v21-week-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:0 10px 10px!important}
+#schedule .v21-archive-game.sf-archive-scorecard{display:block!important;min-width:0!important;padding:0!important;border:1px solid rgba(79,209,255,.18)!important;border-left:3px solid #f4c542!important;border-radius:12px!important;overflow:hidden!important;background:linear-gradient(145deg,rgba(5,22,29,.97),rgba(2,12,17,.96))!important}
+#schedule .v21-archive-game.sf-archive-scorecard.final{border-left-color:#19d39a!important}
+#schedule .sf-archive-card-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:9px 11px!important;border-bottom:1px solid rgba(148,163,184,.10)!important;background:rgba(255,255,255,.014)!important}
+#schedule .sf-archive-card-meta{display:flex!important;align-items:center!important;gap:7px!important;min-width:0!important}
+#schedule .sf-archive-card-meta .v21-archive-coach{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:9px!important}
+#schedule .sf-archive-card-meta .conf-game-badge{margin:0!important;flex:0 0 auto!important}
+#schedule .sf-archive-state{font-size:10px!important;font-weight:950!important;letter-spacing:.08em!important;white-space:nowrap!important}
+#schedule .sf-archive-matchup{display:grid!important;gap:0!important;padding:7px 11px!important}
+#schedule .sf-archive-team-row{display:grid!important;grid-template-columns:48px minmax(0,1fr) auto!important;align-items:center!important;gap:11px!important;min-height:60px!important}
+#schedule .sf-archive-team-row+.sf-archive-team-row{border-top:1px solid rgba(148,163,184,.08)!important}
+#schedule .sf-archive-team-logo{width:48px!important;height:48px!important;display:grid!important;place-items:center!important;overflow:visible!important}
+#schedule .sf-archive-team-logo img.v23-archive-logo,
+#schedule .sf-archive-team-logo .sf-team-logo-plate-v5>img,
+#schedule .sf-archive-team-logo .v23-archive-logo-placeholder{width:44px!important;height:44px!important;min-width:44px!important;max-width:44px!important;min-height:44px!important;max-height:44px!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 4px 8px rgba(0,0,0,.42))!important}
+#schedule .sf-archive-team-copy{display:grid!important;gap:2px!important;min-width:0!important}
+#schedule .sf-archive-team-copy>span{font-size:8px!important;color:#738792!important;font-weight:900!important;letter-spacing:.08em!important;text-transform:uppercase!important}
+#schedule .sf-archive-team-copy>strong{min-width:0!important;font-family:'Barlow Condensed',Teko,sans-serif!important;font-size:19px!important;line-height:1!important;color:#f5f7f8!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#schedule .sf-archive-score{font-family:Teko,'Barlow Condensed',sans-serif!important;font-size:31px!important;line-height:1!important;color:#f8fafc!important;text-align:right!important;min-width:30px!important}
+#schedule .sf-archive-card-foot{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:36px!important;padding:8px 11px!important;border-top:1px solid rgba(148,163,184,.10)!important;color:#728590!important}
+#schedule .sf-archive-site{font-size:8px!important;font-weight:900!important;letter-spacing:.08em!important}
+#schedule .sf-archive-card-foot .v21-archive-broadcast{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important;text-align:right!important}
+#schedule .v21-archive-game.bye{grid-column:1/-1!important}
+@media(max-width:900px){#schedule .v21-week-list{grid-template-columns:1fr!important}}
+@media(max-width:700px){
+ #schedule .v21-season-archive{padding:13px!important;border-radius:15px!important}
+ #schedule .v21-week-list{padding:0 8px 8px!important;gap:8px!important}
+ #schedule .sf-archive-card-head{padding:9px 10px!important}
+ #schedule .sf-archive-card-meta .v21-archive-coach{font-size:8px!important}
+ #schedule .sf-archive-team-row{grid-template-columns:52px minmax(0,1fr) auto!important;gap:10px!important;min-height:64px!important}
+ #schedule .sf-archive-team-logo{width:52px!important;height:52px!important}
+ #schedule .sf-archive-team-logo img.v23-archive-logo,
+ #schedule .sf-archive-team-logo .sf-team-logo-plate-v5>img,
+ #schedule .sf-archive-team-logo .v23-archive-logo-placeholder{width:48px!important;height:48px!important;min-width:48px!important;max-width:48px!important;min-height:48px!important;max-height:48px!important}
+ #schedule .sf-archive-team-copy>strong{font-size:18px!important}
+ #schedule .sf-archive-score{font-size:30px!important}
+ #schedule .sf-archive-card-foot{padding:8px 10px!important}
+}
+@media(max-width:390px){
+ #schedule .sf-archive-team-row{grid-template-columns:46px minmax(0,1fr) auto!important;gap:8px!important}
+ #schedule .sf-archive-team-logo{width:46px!important;height:46px!important}
+ #schedule .sf-archive-team-logo img.v23-archive-logo,
+ #schedule .sf-archive-team-logo .sf-team-logo-plate-v5>img,
+ #schedule .sf-archive-team-logo .v23-archive-logo-placeholder{width:42px!important;height:42px!important;min-width:42px!important;max-width:42px!important;min-height:42px!important;max-height:42px!important}
+}
+</style>
+<meta name="saturday-foundry-qa" content="week-archive-schedule-card-v3-pete-recovery">
+
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -7134,16 +7189,36 @@ function renderSchedule(){
        <div class="${done?"pos":real.some(g=>g.status==="completed")?"":"v21-muted"}">${done?"COMPLETE":w.n===selectedWeek?"ACTIVE":"VIEW"}</div>
      </summary>
      <div class="v21-week-list">
-       ${real.map(g=>{const displayRank=scheduleDisplayRanks(g);const dynastyGame=isDynastyScheduleGame(g);return `<div class="v21-archive-game" data-game-card="${g.id}">
-          <span class="v21-archive-coach">${dynastyGame?`<em class="dynasty-hq-badge archive">◆ HQ</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
-          <span class="v21-archive-match v23-archive-match">
-             ${logoFor(g.team_id,g.team_name)?`<img class="v23-archive-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.team_name||"")}"></span>`}
-             <span>${displayRank.team?`#${displayRank.team} `:""}${esc(g.team_name)} ${g.home_away==="away"?"@":"vs"} ${displayRank.opponent?`#${displayRank.opponent} `:""}${esc(g.opponent_team||"TBD")} <em class="conf-game-badge ${g.is_conference_game===true?"conf":"nonconf"}">${esc(gameClassification(g))}</em></span>
-             ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="v23-archive-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.opponent_team||"")}"></span>`}
-           </span>
-          ${(()=>{const p=controlledPerspectiveForGame(g);const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";const label=g.status==="completed"?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";return `<span class="v21-archive-result ${cls}">${label}</span>`})()}
-          <span class="v21-archive-broadcast">${liveStreamLinkMarkup(g,true)}</span>
-        </div>`}).join("")}
+       ${real.map(g=>{
+         const displayRank=scheduleDisplayRanks(g),dynastyGame=isDynastyScheduleGame(g),done=g.status==="completed";
+         const perspective=controlledPerspectiveForGame(g),resultClass=perspective?.result==="W"?"pos":perspective?.result==="L"?"neg":"";
+         const resultLabel=done?(perspective?`${perspective.result} · FINAL`:"FINAL"):"UPCOMING";
+         const teamLogo=logoFor(g.team_id,g.team_name),oppLogo=logoFor(g.opponent_team_id,g.opponent_team);
+         return `<article class="v21-archive-game sf-archive-scorecard ${done?"final":"upcoming"}" data-game-card="${g.id}">
+           <header class="sf-archive-card-head">
+             <div class="sf-archive-card-meta">
+               <span class="v21-archive-coach">${dynastyGame?`<em class="dynasty-hq-badge archive">◆ HQ</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
+               <em class="conf-game-badge ${g.is_conference_game===true?"conf":"nonconf"}">${esc(gameClassification(g))}</em>
+             </div>
+             <span class="v21-archive-result sf-archive-state ${resultClass}">${esc(resultLabel)}</span>
+           </header>
+           <div class="sf-archive-matchup">
+             <div class="sf-archive-team-row">
+               <div class="sf-archive-team-logo">${teamLogo?`<img class="v23-archive-logo" src="${esc(teamLogo)}" alt="${esc(g.team_name||"Team")} logo">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.team_name||"")}"></span>`}</div>
+               <div class="sf-archive-team-copy"><span>${displayRank.team?`#${displayRank.team}`:""}${g.home_away==="away"?"AWAY":"HOME"}</span><strong>${esc(g.team_name||"Team")}</strong></div>
+               <b class="sf-archive-score">${done?(g.points_for??"—"):"—"}</b>
+             </div>
+             <div class="sf-archive-team-row opponent">
+               <div class="sf-archive-team-logo">${oppLogo?`<img class="v23-archive-logo" src="${esc(oppLogo)}" alt="${esc(g.opponent_team||"Opponent")} logo">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.opponent_team||"")}"></span>`}</div>
+               <div class="sf-archive-team-copy"><span>${displayRank.opponent?`#${displayRank.opponent}`:""}${g.home_away==="away"?"HOME":"AWAY"}</span><strong>${esc(g.opponent_team||"TBD")}</strong></div>
+               <b class="sf-archive-score">${done?(g.points_against??"—"):"—"}</b>
+             </div>
+           </div>
+           <footer class="sf-archive-card-foot">
+             <span class="sf-archive-site">${g.home_away==="away"?"ROAD GAME":"HOME GAME"}</span>
+             <span class="v21-archive-broadcast">${liveStreamLinkMarkup(g,true)}</span>
+           </footer>
+         </article>`}).join("")}
        ${b.map(g=>`<div class="v21-archive-game bye"><span class="v21-archive-coach">${esc(g.coach_name||"—")}</span><span class="v21-archive-match">${esc(g.team_name||"Program")} · BYE</span><span class="v21-muted">BYE</span><span></span></div>`).join("")}
      </div>
    </details>`;
