@@ -1,0 +1,100 @@
+name: Apply phone GOTW containment fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-gotw-phone-containment.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply phone GOTW containment CSS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          marker = 'sf-gotw-phone-containment-v1'
+          if marker in s:
+              print('Phone GOTW containment fix already present.')
+          else:
+              css = """
+          <style id="sf-gotw-phone-containment-v1">
+          /* Phone GOTW: show exactly one full slide, with no adjacent-card bleed. */
+          @media (max-width:700px){
+            #overview #gotw{
+              min-width:0!important;
+              overflow:hidden!important;
+            }
+            #overview #gotw .gotw-carousel-shell,
+            #overview #gotw .gotw-carousel-stage{
+              width:100%!important;
+              max-width:100%!important;
+              min-width:0!important;
+              box-sizing:border-box!important;
+            }
+            #overview #gotw .gotw-carousel-stage{
+              display:flex!important;
+              gap:0!important;
+              padding-left:0!important;
+              padding-right:0!important;
+              margin-left:0!important;
+              margin-right:0!important;
+              overflow-x:auto!important;
+              overflow-y:hidden!important;
+              scroll-padding-inline:0!important;
+              scroll-snap-type:x mandatory!important;
+            }
+            #overview #gotw .gotw-carousel-slide{
+              flex:0 0 100%!important;
+              width:100%!important;
+              max-width:100%!important;
+              min-width:100%!important;
+              box-sizing:border-box!important;
+              margin-left:0!important;
+              margin-right:0!important;
+              scroll-snap-align:start!important;
+              scroll-snap-stop:always!important;
+              transform:none!important;
+            }
+            #overview #gotw .gotw-carousel-slide.active{
+              transform:none!important;
+            }
+          }
+          </style>
+          <meta name="saturday-foundry-gotw-phone-containment" content="v1">
+          """
+              css = '\n'.join(line[10:] if line.startswith('          ') else line for line in css.splitlines())
+              if '</head>' not in s:
+                  raise SystemExit('No </head> found')
+              s = s.replace('</head>', css + '\n</head>', 1)
+              p.write_text(s)
+          PY
+
+      - name: Validate patch
+        run: |
+          grep -q 'sf-gotw-phone-containment-v1' index.html
+          grep -q 'saturday-foundry-gotw-phone-containment' index.html
+          git diff --check
+
+      - name: Commit phone GOTW containment fix
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Contain phone GOTW to one full card'
+          git push origin main
