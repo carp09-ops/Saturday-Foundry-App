@@ -1,0 +1,47 @@
+name: Normalize team logos globally
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/normalize-team-logos-globally.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Append global logo authority
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-global-logo-normalization-v1'
+          css="\n<style id=\"sf-global-logo-normalization-v1\">\n/* Global team-logo normalization.\n   One neutral plate, one centering model, border-only control-state distinction. */\n\n/* Any explicit team-logo wrapper is the centering authority. */\n.sf-team-logo-plate-v5,\n[class*=\"team-logo-plate\"]{\n  display:grid!important;\n  place-items:center!important;\n  box-sizing:border-box!important;\n  overflow:hidden!important;\n  padding:0!important;\n  margin-left:auto!important;\n  margin-right:auto!important;\n  line-height:0!important;\n  background:#f7f7f3!important;\n  transform:none!important;\n}\n\n/* Human / CPU identity stays in the border only. */\n.sf-team-logo-plate-v5.sf-user-controlled{\n  background:#f7f7f3!important;\n  border:2px solid #e6bf49!important;\n  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;\n}\n.sf-team-logo-plate-v5.sf-cpu-controlled{\n  background:#f7f7f3!important;\n  border:2px solid rgba(255,255,255,.86)!important;\n  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;\n}\n\n/* The artwork itself is always centered inside the plate. */\n.sf-team-logo-plate-v5>img.sf-team-identity-logo-v5,\n[class*=\"team-logo-plate\"]>img{\n  display:block!important;\n  width:72%!important;\n  height:72%!important;\n  max-width:72%!important;\n  max-height:72%!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n  justify-self:center!important;\n  align-self:center!important;\n  margin:0!important;\n  padding:0!important;\n  background:transparent!important;\n  border:0!important;\n  border-radius:0!important;\n  box-shadow:none!important;\n  filter:none!important;\n  transform:none!important;\n}\n\n/* Direct logo images used on surfaces without a wrapper get the same visual model. */\n#app img.team-logo,\n#app img.sf-match-logo,\n#app img.v23-team-logo,\n#app img.v23-archive-logo{\n  display:block!important;\n  box-sizing:border-box!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n  margin:auto!important;\n  padding:10%!important;\n  background:#f7f7f3!important;\n  border:1px solid rgba(255,255,255,.84)!important;\n  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;\n  filter:none!important;\n  transform:none!important;\n}\n\n/* GOTW must not add a second inner plate on top of the global logo treatment. */\n#overview #gotw img.team-logo{\n  background:#f7f7f3!important;\n  padding:10%!important;\n  border:1px solid rgba(255,255,255,.84)!important;\n  box-shadow:0 2px 8px rgba(0,0,0,.22)!important;\n  object-position:50% 50%!important;\n  margin:auto!important;\n}\n\n/* Fallback badges use the same box geometry. */\n#app .team-fallback,\n#app .sf-match-logo-fallback,\n#app .v23-team-logo.fallback,\n#app .v23-archive-logo-placeholder{\n  display:grid!important;\n  place-items:center!important;\n  box-sizing:border-box!important;\n  margin:auto!important;\n  background:#f7f7f3!important;\n  color:#091015!important;\n  border:1px solid rgba(255,255,255,.84)!important;\n}\n\n/* Explicitly neutralize older per-state image backgrounds. */\n.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,\n.sf-team-logo-plate-v5.sf-cpu-controlled>img.sf-team-identity-logo-v5{\n  background:transparent!important;\n}\n</style>\n<meta name=\"saturday-foundry-production-release\" content=\"9.7.7-global-logo-normalization\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+css+"\n"
+          s=re.sub(r'PROD 9\.\d+\.\d+','PROD 9.7.7',s)
+          p.write_text(s)
+          PY
+
+      - name: Validate logo authority
+        run: |
+          grep -q 'sf-global-logo-normalization-v1' index.html
+          grep -q '9.7.7-global-logo-normalization' index.html
+
+      - name: Commit normalized logos
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Normalize team logo centering globally'
+          git push origin main
