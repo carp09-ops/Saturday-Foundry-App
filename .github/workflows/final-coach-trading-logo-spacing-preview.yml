@@ -1,0 +1,42 @@
+name: Final coach trading-card logo spacing preview
+
+on:
+  push:
+    branches: [logo-surface-sizing-preview]
+    paths:
+      - '.github/workflows/final-coach-trading-logo-spacing-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append final coach-card spacing override
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-coach-trading-logo-spacing-final-v1'
+          patch="\n<style id=\"sf-coach-trading-logo-spacing-final-v1\">\n/* Preview-only: preserve centered badge, add breathing room before program name. */\n#records .coach-card-program{\n  transform:translateY(-2px)!important;\n}\n#records .coach-card-program img{\n  margin:0 auto 6px!important;\n}\n#records .coach-card-program strong{\n  display:block!important;\n  margin:0!important;\n  line-height:1.15!important;\n  text-align:center!important;\n  transform:none!important;\n}\n@media(max-width:700px){\n  #records .coach-card-program{\n    transform:translateY(-1px)!important;\n  }\n  #records .coach-card-program img{\n    margin-bottom:5px!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-logo-sizing-preview\" content=\"v1.3-coach-trading-logo-spacing-final\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-coach-trading-logo-spacing-final-v1' index.html
+          grep -q 'v1.3-coach-trading-logo-spacing-final' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Refine coach trading card logo spacing'
+          git push origin logo-surface-sizing-preview

@@ -1,0 +1,42 @@
+name: Optical align coach trading-card logos preview
+
+on:
+  push:
+    branches: [logo-surface-sizing-preview]
+    paths:
+      - '.github/workflows/align-coach-trading-logo-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append coach trading-card optical alignment
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-coach-trading-logo-optical-align-v1'
+          patch="\n<style id=\"sf-coach-trading-logo-optical-align-v1\">\n/* Preview-only: optically center the program logo block on collectible coach cards. */\n#records .coach-card-front-bottom{\n  align-items:center!important;\n}\n\n#records .coach-card-program{\n  display:grid!important;\n  justify-items:center!important;\n  align-content:center!important;\n  align-self:center!important;\n  min-width:0!important;\n  transform:translateY(-3px)!important;\n}\n\n#records .coach-card-program img{\n  width:36px!important;\n  height:36px!important;\n  min-width:36px!important;\n  max-width:36px!important;\n  min-height:36px!important;\n  max-height:36px!important;\n  margin:0 auto 2px!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n}\n\n#records .coach-card-program strong{\n  margin:0!important;\n  line-height:1.05!important;\n  text-align:center!important;\n}\n\n@media(max-width:700px){\n  #records .coach-card-program{\n    transform:translateY(-2px)!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-logo-sizing-preview\" content=\"v1.2-coach-trading-optical-align\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-coach-trading-logo-optical-align-v1' index.html
+          grep -q 'v1.2-coach-trading-optical-align' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Optically align coach trading card logos'
+          git push origin logo-surface-sizing-preview

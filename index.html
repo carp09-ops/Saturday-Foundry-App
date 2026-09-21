@@ -7347,7 +7347,7 @@ function coachTradingCard(c,index,games){
        <div class="coach-card-chrome"></div>
        <div class="coach-card-front-top"><div class="coach-card-brand"><img src="assets/saturday-foundry-shield.webp" alt=""><span>SATURDAY<br>FOUNDRY</span></div><div class="coach-card-number">#${String(index+1).padStart(2,"0")}<small>Coach Card</small></div></div>
        <div class="coach-card-scribble left">${esc(identity.scribbleLeft)}</div><div class="coach-card-scribble right">${esc(identity.scribbleRight)}</div>
-       <div class="coach-card-front-copy"><div class="coach-card-signature">${esc(String(c.coach_name||'Coach').split(/\s+/)[0])}</div><div class="coach-card-role">Head Coach</div><div class="coach-card-name">${esc(c.coach_name)}</div><div class="coach-card-mantra">${esc(identity.mantra)}</div><div class="coach-card-front-bottom"><div><small>Career Record</small><b>${record}</b></div><div class="coach-card-program">${program.logo?`<img src="${esc(program.logo)}" alt="">`:''}<strong>${esc(program.team)}</strong></div><div><small>Status</small><span class="coach-card-status ${program.active?'':'retired'}">${program.active?'Active':'Retired'}</span></div></div></div>
+       <div class="coach-card-front-copy"><div class="coach-card-signature">${esc(String(c.coach_name||'Coach').split(/\s+/)[0])}</div><div class="coach-card-role">Head Coach</div><div class="coach-card-name">${esc(c.coach_name)}</div><div class="coach-card-mantra">${esc(identity.mantra)}</div><div class="coach-card-front-bottom"><div><small>Career Record</small><b>${record}</b></div><div class="coach-card-program">${program.logo?`<img src="${esc(program.logo)}" alt="${esc(program.team)} logo">`:''}</div><div><small>Status</small><span class="coach-card-status ${program.active?'':'retired'}">${program.active?'Active':'Retired'}</span></div></div></div>
        <button type="button" class="coach-card-flip" data-coach-card-flip aria-label="View ${esc(c.coach_name)} statistics">Stats ↻</button>
      </section>
      <section class="coach-card-face coach-card-back" aria-hidden="true">
@@ -13607,4 +13607,429 @@ img[data-sf-team-control="user"].sf-team-identity-logo-v5{
 }
 </style>
 <meta name="saturday-foundry-logo-system-preview" content="v2.2-mobile-gotw-transparent-authority">
+
+<style id="sf-logo-surface-sizing-v1">
+/* Preview: site-wide team logo sizing authority.
+   No percentages. 48px is the safe fallback; known surfaces override it. */
+
+/* Safe default for any classified team logo that slips through a component-specific rule. */
+.sf-team-logo-plate-v5>img.sf-team-identity-logo-v5,
+img[data-sf-team-control],
+img.sf-logo-system-v2{
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  flex:0 0 48px!important;
+}
+
+/* OVERVIEW — GOTW */
+#overview #gotw .team-side>.sf-team-logo-plate-v5>img,
+#overview #gotw img.team-logo{
+  width:64px!important;
+  height:64px!important;
+  min-width:64px!important;
+  max-width:64px!important;
+  min-height:64px!important;
+  max-height:64px!important;
+  flex:0 0 64px!important;
+}
+@media(max-width:700px){
+  #overview #gotw .team-side>.sf-team-logo-plate-v5>img,
+  #overview #gotw img.team-logo{
+    width:60px!important;
+    height:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    min-height:60px!important;
+    max-height:60px!important;
+    flex-basis:60px!important;
+  }
+}
+
+/* SCHEDULE — season hero + matchup cards + archived/legacy rows */
+#schedule img.sf-team-season-logo{
+  width:62px!important;
+  height:62px!important;
+  min-width:62px!important;
+  max-width:62px!important;
+  min-height:62px!important;
+  max-height:62px!important;
+  flex:0 0 62px!important;
+}
+#schedule .sf-match-team>.sf-team-logo-plate-v5>img,
+#schedule .sf-match-team img.sf-match-logo{
+  width:54px!important;
+  height:54px!important;
+  min-width:54px!important;
+  max-width:54px!important;
+  min-height:54px!important;
+  max-height:54px!important;
+  flex:0 0 54px!important;
+}
+#schedule img.v23-team-logo{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  flex:0 0 38px!important;
+}
+#schedule img.v23-archive-logo{
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  max-width:22px!important;
+  min-height:22px!important;
+  max-height:22px!important;
+  flex:0 0 22px!important;
+}
+@media(max-width:700px){
+  #schedule img.sf-team-season-logo{
+    width:50px!important;
+    height:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+    min-height:50px!important;
+    max-height:50px!important;
+    flex-basis:50px!important;
+  }
+  #schedule .sf-match-team>.sf-team-logo-plate-v5>img,
+  #schedule .sf-match-team img.sf-match-logo{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+    flex-basis:38px!important;
+  }
+  #schedule img.v23-team-logo{
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    max-width:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    flex-basis:32px!important;
+  }
+  #schedule img.v23-archive-logo{
+    width:18px!important;
+    height:18px!important;
+    min-width:18px!important;
+    max-width:18px!important;
+    min-height:18px!important;
+    max-height:18px!important;
+    flex-basis:18px!important;
+  }
+}
+
+/* TOP 25 */
+.top25-row .sf-team-logo-plate-v5>img,
+.top25-row img{
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important;
+  max-width:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  flex:0 0 26px!important;
+}
+@media(max-width:640px){
+  .top25-row .sf-team-logo-plate-v5>img,
+  .top25-row img{
+    width:23px!important;
+    height:23px!important;
+    min-width:23px!important;
+    max-width:23px!important;
+    min-height:23px!important;
+    max-height:23px!important;
+    flex-basis:23px!important;
+  }
+}
+
+/* INTELLIGENCE / ANALYTICS metric cards */
+.metric-title .sf-team-logo-plate-v5>img,
+.metric-title img.team-logo,
+.metric-title img[data-sf-team-control]{
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  flex:0 0 36px!important;
+}
+
+/* TROPHY ROOM / PROGRAM LEGACY CARDS */
+.legacy-program-logo .sf-team-logo-plate-v5>img,
+.legacy-program-logo img{
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  flex:0 0 48px!important;
+}
+.trophy-coach-logo .sf-team-logo-plate-v5>img,
+.trophy-coach-logo img{
+  width:43px!important;
+  height:43px!important;
+  min-width:43px!important;
+  max-width:43px!important;
+  min-height:43px!important;
+  max-height:43px!important;
+  flex:0 0 43px!important;
+}
+
+/* COACH CHRONICLES */
+.story-coach-logo .sf-team-logo-plate-v5>img,
+.story-coach-logo img{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  flex:0 0 42px!important;
+}
+
+/* DYNASTY CHOOSER + DYNASTY HUB */
+.dynasty-choice-logo .sf-team-logo-plate-v5>img,
+.dynasty-choice-logo img{
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  flex:0 0 48px!important;
+}
+.dynasty-hub-league-logo .sf-team-logo-plate-v5>img,
+.dynasty-hub-league-logo img{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  min-height:38px!important;
+  max-height:38px!important;
+  flex:0 0 38px!important;
+}
+@media(max-width:760px){
+  .dynasty-choice-logo .sf-team-logo-plate-v5>img,
+  .dynasty-choice-logo img{
+    width:43px!important;
+    height:43px!important;
+    min-width:43px!important;
+    max-width:43px!important;
+    min-height:43px!important;
+    max-height:43px!important;
+    flex-basis:43px!important;
+  }
+}
+
+/* TEAM SELECTION */
+#teamGrid .v25-choice-logo-img,
+#teamGrid .sf-team-logo-plate-v5>img{
+  width:100px!important;
+  height:100px!important;
+  min-width:100px!important;
+  max-width:100px!important;
+  min-height:100px!important;
+  max-height:100px!important;
+  flex:0 0 100px!important;
+}
+#teamSelectionDock .v25-dock-logo img,
+#teamSelectionDock .sf-team-logo-plate-v5>img{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  max-width:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  flex:0 0 46px!important;
+}
+@media(max-width:620px){
+  #teamGrid .v25-choice-logo-img,
+  #teamGrid .sf-team-logo-plate-v5>img{
+    width:66px!important;
+    height:66px!important;
+    min-width:66px!important;
+    max-width:66px!important;
+    min-height:66px!important;
+    max-height:66px!important;
+    flex-basis:66px!important;
+  }
+  #teamSelectionDock .v25-dock-logo img,
+  #teamSelectionDock .sf-team-logo-plate-v5>img{
+    width:38px!important;
+    height:38px!important;
+    min-width:38px!important;
+    max-width:38px!important;
+    min-height:38px!important;
+    max-height:38px!important;
+    flex-basis:38px!important;
+  }
+}
+
+/* Older GOTW2 fallback if that renderer is surfaced anywhere. */
+#overview .gotw2-logo,
+#overview .gotw2-team .sf-team-logo-plate-v5>img{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+}
+@media(min-width:1401px){
+  #overview .gotw2-logo,
+  #overview .gotw2-team .sf-team-logo-plate-v5>img{
+    width:62px!important;
+    height:62px!important;
+    min-width:62px!important;
+    max-width:62px!important;
+    min-height:62px!important;
+    max-height:62px!important;
+    flex-basis:62px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-sizing-preview" content="v1-surface-explicit-sizes">
+
+<style id="sf-coach-card-logo-alignment-v1">
+/* Preview: Overview coach cards only. Restore a fixed centering slot around the team logo. */
+#overview #coaches article .h-11.w-11{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  max-width:44px!important;
+  min-height:44px!important;
+  max-height:44px!important;
+  flex:0 0 44px!important;
+  display:grid!important;
+  place-items:center!important;
+  align-self:center!important;
+  overflow:visible!important;
+}
+
+#overview #coaches article .h-11.w-11>img,
+#overview #coaches article .h-11.w-11>.sf-team-logo-plate-v5>img{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  max-width:40px!important;
+  min-height:40px!important;
+  max-height:40px!important;
+  flex:0 0 40px!important;
+  justify-self:center!important;
+  align-self:center!important;
+  margin:0!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+/* Keep the adjacent coach identity block vertically centered with the logo slot. */
+#overview #coaches article .h-11.w-11 + div{
+  align-self:center!important;
+  min-width:0!important;
+}
+
+@media(max-width:700px){
+  #overview #coaches article .h-11.w-11{
+    width:40px!important;
+    height:40px!important;
+    min-width:40px!important;
+    max-width:40px!important;
+    min-height:40px!important;
+    max-height:40px!important;
+    flex-basis:40px!important;
+  }
+  #overview #coaches article .h-11.w-11>img,
+  #overview #coaches article .h-11.w-11>.sf-team-logo-plate-v5>img{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    max-width:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+    flex-basis:36px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-sizing-preview" content="v1.1-coach-card-alignment">
+
+<style id="sf-coach-trading-logo-optical-align-v1">
+/* Preview-only: optically center the program logo block on collectible coach cards. */
+#records .coach-card-front-bottom{
+  align-items:center!important;
+}
+
+#records .coach-card-program{
+  display:grid!important;
+  justify-items:center!important;
+  align-content:center!important;
+  align-self:center!important;
+  min-width:0!important;
+  transform:translateY(-3px)!important;
+}
+
+#records .coach-card-program img{
+  width:36px!important;
+  height:36px!important;
+  min-width:36px!important;
+  max-width:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0 auto 2px!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+}
+
+#records .coach-card-program strong{
+  margin:0!important;
+  line-height:1.05!important;
+  text-align:center!important;
+}
+
+@media(max-width:700px){
+  #records .coach-card-program{
+    transform:translateY(-2px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-sizing-preview" content="v1.2-coach-trading-optical-align">
+
+<style id="sf-coach-trading-logo-spacing-final-v1">
+/* Preview-only: preserve centered badge, add breathing room before program name. */
+#records .coach-card-program{
+  transform:translateY(-2px)!important;
+}
+#records .coach-card-program img{
+  margin:0 auto 6px!important;
+}
+#records .coach-card-program strong{
+  display:block!important;
+  margin:0!important;
+  line-height:1.15!important;
+  text-align:center!important;
+  transform:none!important;
+}
+@media(max-width:700px){
+  #records .coach-card-program{
+    transform:translateY(-1px)!important;
+  }
+  #records .coach-card-program img{
+    margin-bottom:5px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-logo-sizing-preview" content="v1.3-coach-trading-logo-spacing-final">
 
