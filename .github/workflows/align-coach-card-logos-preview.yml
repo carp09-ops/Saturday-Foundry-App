@@ -1,0 +1,42 @@
+name: Align Overview coach card logos preview
+
+on:
+  push:
+    branches: [logo-surface-sizing-preview]
+    paths:
+      - '.github/workflows/align-coach-card-logos-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append coach-card alignment override
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-coach-card-logo-alignment-v1'
+          patch="\n<style id=\"sf-coach-card-logo-alignment-v1\">\n/* Preview: Overview coach cards only. Restore a fixed centering slot around the team logo. */\n#overview #coaches article .h-11.w-11{\n  width:44px!important;\n  height:44px!important;\n  min-width:44px!important;\n  max-width:44px!important;\n  min-height:44px!important;\n  max-height:44px!important;\n  flex:0 0 44px!important;\n  display:grid!important;\n  place-items:center!important;\n  align-self:center!important;\n  overflow:visible!important;\n}\n\n#overview #coaches article .h-11.w-11>img,\n#overview #coaches article .h-11.w-11>.sf-team-logo-plate-v5>img{\n  width:40px!important;\n  height:40px!important;\n  min-width:40px!important;\n  max-width:40px!important;\n  min-height:40px!important;\n  max-height:40px!important;\n  flex:0 0 40px!important;\n  justify-self:center!important;\n  align-self:center!important;\n  margin:0!important;\n  object-fit:contain!important;\n  object-position:50% 50%!important;\n}\n\n/* Keep the adjacent coach identity block vertically centered with the logo slot. */\n#overview #coaches article .h-11.w-11 + div{\n  align-self:center!important;\n  min-width:0!important;\n}\n\n@media(max-width:700px){\n  #overview #coaches article .h-11.w-11{\n    width:40px!important;\n    height:40px!important;\n    min-width:40px!important;\n    max-width:40px!important;\n    min-height:40px!important;\n    max-height:40px!important;\n    flex-basis:40px!important;\n  }\n  #overview #coaches article .h-11.w-11>img,\n  #overview #coaches article .h-11.w-11>.sf-team-logo-plate-v5>img{\n    width:36px!important;\n    height:36px!important;\n    min-width:36px!important;\n    max-width:36px!important;\n    min-height:36px!important;\n    max-height:36px!important;\n    flex-basis:36px!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-logo-sizing-preview\" content=\"v1.1-coach-card-alignment\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+patch+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-coach-card-logo-alignment-v1' index.html
+          grep -q 'v1.1-coach-card-alignment' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Align coach card team logos'
+          git push origin logo-surface-sizing-preview
