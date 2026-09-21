@@ -1,0 +1,42 @@
+name: Refine archive logos and Pete preview
+
+on:
+  push:
+    branches: [week-archive-redesign-preview]
+    paths:
+      - '.github/workflows/refine-archive-logos-pete-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Append larger archive logo sizing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          marker='sf-week-archive-logo-scale-v2'
+          css="\n<style id=\"sf-week-archive-logo-scale-v2\">\n/* Preview refinement: larger, readable archive logos without returning to oversized tiles. */\n#schedule .v21-archive-match,\n#schedule .v21-archive-match.v23-archive-match{\n  grid-template-columns:36px minmax(0,1fr) 36px!important;\n  gap:10px!important;\n}\n#schedule .v21-archive-match img.v23-archive-logo,\n#schedule .v21-archive-match .sf-team-logo-plate-v5>img,\n#schedule .v21-archive-match .v23-archive-logo-placeholder{\n  width:34px!important;\n  height:34px!important;\n  min-width:34px!important;\n  max-width:34px!important;\n  min-height:34px!important;\n  max-height:34px!important;\n}\n@media(max-width:700px){\n  #schedule .v21-archive-match,\n  #schedule .v21-archive-match.v23-archive-match{\n    grid-template-columns:42px minmax(0,1fr) 42px!important;\n    gap:9px!important;\n  }\n  #schedule .v21-archive-match img.v23-archive-logo,\n  #schedule .v21-archive-match .sf-team-logo-plate-v5>img,\n  #schedule .v21-archive-match .v23-archive-logo-placeholder{\n    width:40px!important;\n    height:40px!important;\n    min-width:40px!important;\n    max-width:40px!important;\n    min-height:40px!important;\n    max-height:40px!important;\n  }\n}\n</style>\n<meta name=\"saturday-foundry-week-archive-preview\" content=\"v2-readable-logos-pete-restored\">\n"
+          if marker not in s:
+              s=s.rstrip()+"\n"+css+"\n"
+          p.write_text(s)
+          PY
+      - name: Validate
+        run: |
+          grep -q 'sf-week-archive-logo-scale-v2' index.html
+          grep -q 'v2-readable-logos-pete-restored' index.html
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Increase Week-by-Week archive logo size'
+          git push origin week-archive-redesign-preview
