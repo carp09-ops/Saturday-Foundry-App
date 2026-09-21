@@ -14033,3 +14033,292 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-logo-sizing-preview" content="v1.3-coach-trading-logo-spacing-final">
 
+<style id="sf-week-archive-redesign-preview-v1">
+/* Preview-only: Week-by-Week archive as compact scoreboard cards.
+   Data/render logic unchanged; this only re-establishes a clean visual hierarchy. */
+
+#schedule .v21-season-archive{
+  margin-top:18px!important;
+  padding:18px!important;
+  border:1px solid rgba(244,197,66,.18)!important;
+  border-radius:18px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(244,197,66,.05),transparent 30%),
+    linear-gradient(180deg,rgba(4,14,19,.92),rgba(2,10,14,.96))!important;
+}
+
+#schedule .v21-archive-head{
+  margin-bottom:14px!important;
+}
+#schedule .v21-archive-head h3{
+  margin:3px 0 0!important;
+  font-size:clamp(26px,3.2vw,38px)!important;
+  line-height:1!important;
+}
+#schedule .v21-archive-note{
+  margin-top:6px!important;
+  font-size:11px!important;
+  color:#8f9ca4!important;
+}
+
+#schedule .v21-week-groups{
+  display:grid!important;
+  gap:10px!important;
+}
+
+#schedule .v21-week-group{
+  margin:0!important;
+  border:1px solid rgba(148,163,184,.13)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:linear-gradient(180deg,rgba(5,17,23,.92),rgba(3,12,17,.94))!important;
+}
+
+#schedule .v21-week-group summary{
+  min-height:52px!important;
+  padding:11px 13px!important;
+  border:0!important;
+  background:rgba(255,255,255,.018)!important;
+}
+#schedule .v21-week-group summary>div:first-child{
+  gap:9px!important;
+}
+#schedule .v21-week-group summary strong{
+  font-family:'Barlow Condensed',Teko,sans-serif!important;
+  font-size:24px!important;
+  line-height:1!important;
+  letter-spacing:.02em!important;
+}
+#schedule .v21-week-group summary span{
+  font-size:10px!important;
+  color:#83949e!important;
+}
+#schedule .v21-week-group summary>div:last-child{
+  padding:5px 8px!important;
+  border:1px solid rgba(244,197,66,.24)!important;
+  border-radius:999px!important;
+  color:#f4c542!important;
+  background:rgba(244,197,66,.045)!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+  line-height:1!important;
+}
+
+#schedule .v21-week-list{
+  display:grid!important;
+  gap:8px!important;
+  padding:0 10px 10px!important;
+}
+
+#schedule .v21-archive-game{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:
+    "match result"
+    "coach broadcast"!important;
+  column-gap:12px!important;
+  row-gap:7px!important;
+  align-items:center!important;
+  min-width:0!important;
+  padding:11px 12px!important;
+  border:1px solid rgba(148,163,184,.10)!important;
+  border-radius:11px!important;
+  background:rgba(2,11,16,.62)!important;
+}
+
+#schedule .v21-archive-coach{
+  grid-area:coach!important;
+  min-width:0!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  color:#71848f!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+#schedule .v21-archive-match,
+#schedule .v21-archive-match.v23-archive-match{
+  grid-area:match!important;
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr) 26px!important;
+  gap:8px!important;
+  align-items:center!important;
+  min-width:0!important;
+  width:100%!important;
+  color:#f5f7f8!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+}
+
+#schedule .v21-archive-match>span:not(.sf-team-logo-plate-v5):not(.v23-archive-logo-placeholder){
+  min-width:0!important;
+  white-space:normal!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+#schedule .v21-archive-match .conf-game-badge{
+  display:inline-flex!important;
+  align-items:center!important;
+  margin-left:5px!important;
+  padding:2px 5px!important;
+  vertical-align:1px!important;
+  font-size:8px!important;
+  line-height:1!important;
+}
+
+#schedule .v21-archive-match img.v23-archive-logo,
+#schedule .v21-archive-match .sf-team-logo-plate-v5>img,
+#schedule .v21-archive-match .v23-archive-logo-placeholder{
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  max-width:24px!important;
+  min-height:24px!important;
+  max-height:24px!important;
+  margin:0!important;
+  padding:0!important;
+  justify-self:center!important;
+  align-self:center!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+#schedule .v21-archive-result{
+  grid-area:result!important;
+  display:grid!important;
+  justify-items:end!important;
+  align-content:center!important;
+  gap:5px!important;
+  min-width:max-content!important;
+  font-size:14px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+#schedule .v21-archive-result.pos{color:#7ce3be!important}
+#schedule .v21-archive-result.neg{color:#ff8585!important}
+
+#schedule .v21-archive-result [data-edit-game],
+#schedule .v21-archive-game [data-edit-game]{
+  min-height:32px!important;
+  width:auto!important;
+  margin:0!important;
+  padding:6px 9px!important;
+  border:1px solid rgba(244,197,66,.24)!important;
+  border-radius:8px!important;
+  background:rgba(244,197,66,.055)!important;
+  color:#e8c35b!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+
+#schedule .v21-archive-broadcast{
+  grid-area:broadcast!important;
+  justify-self:end!important;
+  min-width:0!important;
+  color:#7b8c95!important;
+  text-align:right!important;
+}
+
+#schedule .v21-archive-game.bye{
+  opacity:.7!important;
+}
+
+@media(max-width:700px){
+  #schedule .v21-season-archive{
+    padding:13px!important;
+    border-radius:15px!important;
+  }
+
+  #schedule .v21-archive-head h3{
+    max-width:290px!important;
+    font-size:29px!important;
+    line-height:1.02!important;
+  }
+
+  #schedule .v21-week-groups{
+    gap:9px!important;
+  }
+
+  #schedule .v21-week-group summary{
+    min-height:50px!important;
+    padding:10px 11px!important;
+  }
+  #schedule .v21-week-group summary strong{
+    font-size:23px!important;
+  }
+
+  #schedule .v21-week-list{
+    padding:0 8px 8px!important;
+  }
+
+  #schedule .v21-archive-game{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "match result"
+      "broadcast broadcast"!important;
+    column-gap:9px!important;
+    row-gap:8px!important;
+    padding:11px 10px!important;
+    border-radius:10px!important;
+  }
+
+  #schedule .v21-archive-coach{
+    display:none!important;
+  }
+
+  #schedule .v21-archive-match,
+  #schedule .v21-archive-match.v23-archive-match{
+    grid-template-columns:28px minmax(0,1fr) 28px!important;
+    gap:7px!important;
+    font-size:13px!important;
+    line-height:1.18!important;
+  }
+
+  #schedule .v21-archive-match img.v23-archive-logo,
+  #schedule .v21-archive-match .sf-team-logo-plate-v5>img,
+  #schedule .v21-archive-match .v23-archive-logo-placeholder{
+    width:26px!important;
+    height:26px!important;
+    min-width:26px!important;
+    max-width:26px!important;
+    min-height:26px!important;
+    max-height:26px!important;
+  }
+
+  #schedule .v21-archive-match .conf-game-badge{
+    display:block!important;
+    width:max-content!important;
+    max-width:100%!important;
+    margin:5px 0 0!important;
+  }
+
+  #schedule .v21-archive-result{
+    font-size:14px!important;
+    gap:6px!important;
+  }
+
+  #schedule .v21-archive-broadcast{
+    justify-self:stretch!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    gap:6px!important;
+    min-height:0!important;
+  }
+
+  #schedule .v21-archive-broadcast:empty{
+    display:none!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-week-archive-preview" content="v1-mobile-scoreboard">
+
