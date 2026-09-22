@@ -14411,3 +14411,34 @@ img.sf-logo-system-v2{
 }
 </style>
 <meta name="saturday-foundry-gotw-logo-plaque" content="v1-premium-foundry">
+
+<!-- Saturday Foundry QA 9.7.8 — GOTW team-name type scale -->
+<style id="sf-qa-9-7-8-gotw-team-type">
+#overview #gotw .gotw-matchup .team-name,
+#overview #gotw .gotw-matchup .team-side.right .team-name{
+  font-size:clamp(20px,2.35vw,32px)!important;
+}
+@media(max-width:700px){
+  #overview #gotw .gotw-matchup .team-name,
+  #overview #gotw .gotw-matchup .team-side.right .team-name{
+    font-size:clamp(23px,7vw,32px)!important;
+  }
+}
+@media (min-width:820px) and (max-width:1366px) and (orientation:landscape){
+  #overview #gotw .gotw-matchup .team-name,
+  #overview #gotw .gotw-matchup .team-side.right .team-name{
+    font-size:clamp(24px,2.2vw,32px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-qa-release" content="9.7.8-gotw-team-name-type-scale">
+<script id="sf-qa-9-7-8-marker">
+(function(){
+  function mark(){
+    var m=document.getElementById('sfBuildMarker');
+    if(m)m.textContent='QA 9.7.8';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
+  window.addEventListener('pageshow',mark);
+})();
+</script>
