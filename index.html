@@ -5245,6 +5245,33 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-vegas-user-glow" content="v1">
+
+<style id="sf-gotw-vegas-outline-remove-v1">
+/* QA refinement: no outline/divider around the Dynasty Vegas odds area in GOTW. */
+#overview #gotw .hq-probability{
+  border:0!important;
+  border-left:0!important;
+  border-top:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  padding-left:0!important;
+}
+#overview #gotw .gotw-prob-logo,
+#overview #gotw .gotw-prob-logo img{
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+@media(max-width:900px){
+  #overview #gotw .hq-probability{
+    border:0!important;
+    border-top:0!important;
+    padding-top:13px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
