@@ -5272,7 +5272,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
-<meta name="saturday-foundry-gotw-ranking-source" content="weekly-poll-by-game-week-v1">
+<meta name="saturday-foundry-gotw-ranking-source" content="latest-official-poll-through-game-week-v2">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -6656,12 +6656,11 @@ function gotwSlideReason(g){
 function gotwVerifiedRank(teamId,name,week,fallback){
  const key=teamKey(name);
  const resolvedWeek=Number(week??selectedWeek??currentWeek());
- const row=(state.rankings||[]).find(r=>
-   Number(r.week_number)===resolvedWeek&&
-   ((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key)
- );
+ const row=(state.rankings||[])
+   .filter(r=>Number(r.week_number)<=resolvedWeek&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key))
+   .sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];
  if(row)return Number(row.rank)||fallback||null;
- // Participant rank is retained only as a fallback when that week's official poll is unavailable.
+ // Use the latest official poll available through this game week; participant rank is fallback only.
  return fallback??null;
 }
 function gotwSlideMarkup(pick,index,total){
