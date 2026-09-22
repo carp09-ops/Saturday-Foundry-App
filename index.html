@@ -5135,6 +5135,143 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-global-authority" content="v1">
+
+<style id="sf-gotw-logo-centering-v2">
+/* QA follow-up — hard-center GOTW marks inside the new Foundry plaques.
+   Isolated to GOTW so Schedule, Coach cards, Top 25, etc. remain untouched. */
+#overview #gotw .gotw-logo-plaque{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#overview #gotw .gotw-logo-plaque > img.team-logo{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center center!important;
+  width:calc(100% - 18px)!important;
+  height:calc(100% - 18px)!important;
+  max-width:calc(100% - 18px)!important;
+  max-height:calc(100% - 18px)!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+}
+#overview #gotw .gotw-prob-logo-plaque{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#overview #gotw .gotw-prob-logo-plaque > img{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center center!important;
+  width:calc(100% - 12px)!important;
+  height:calc(100% - 12px)!important;
+  max-width:calc(100% - 12px)!important;
+  max-height:calc(100% - 12px)!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:700px){
+  #overview #gotw .gotw-logo-plaque > img.team-logo{
+    width:calc(100% - 14px)!important;
+    height:calc(100% - 14px)!important;
+    max-width:calc(100% - 14px)!important;
+    max-height:calc(100% - 14px)!important;
+  }
+  #overview #gotw .gotw-prob-logo-plaque > img{
+    width:calc(100% - 10px)!important;
+    height:calc(100% - 10px)!important;
+    max-width:calc(100% - 10px)!important;
+    max-height:calc(100% - 10px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-logo-centering" content="v2">
+
+<style id="sf-gotw-vegas-user-glow-v1">
+/* QA: Dynasty Vegas logos are unboxed; only user-controlled programs get the Foundry gold glow. */
+#overview #gotw .gotw-prob-logo{
+  width:52px!important;
+  height:52px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:7px auto 0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#overview #gotw .gotw-prob-logo img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+#overview #gotw .gotw-prob-logo.user-team img{
+  filter:
+    drop-shadow(0 0 4px rgba(244,197,66,.68))
+    drop-shadow(0 0 10px rgba(244,197,66,.52))
+    drop-shadow(0 0 18px rgba(244,197,66,.34))
+    drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+#overview #gotw .gotw-prob-logo.cpu-team img{
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+@media(max-width:700px){
+  #overview #gotw .gotw-prob-logo{width:46px!important;height:46px!important}
+}
+</style>
+<meta name="saturday-foundry-gotw-vegas-user-glow" content="v1">
+
+<style id="sf-gotw-vegas-outline-remove-v1">
+/* QA refinement: no outline/divider around the Dynasty Vegas odds area in GOTW. */
+#overview #gotw .hq-probability{
+  border:0!important;
+  border-left:0!important;
+  border-top:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  padding-left:0!important;
+}
+#overview #gotw .gotw-prob-logo,
+#overview #gotw .gotw-prob-logo img{
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+@media(max-width:900px){
+  #overview #gotw .hq-probability{
+    border:0!important;
+    border-top:0!important;
+    padding-top:13px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -6540,16 +6677,16 @@ function gotwSlideMarkup(pick,index,total){
  const oppPct=hasMarket?100-teamPct:null;
  const probability=hasMarket?`<aside class="hq-probability hq-probability-mobile" aria-label="Dynasty Vegas win probability">
       <div class="hq-prob-title">DYNASTY VEGAS WIN PROBABILITY</div>
-      <div class="hq-prob-grid"><div><strong class="hq-prob-away">${oppPct}%</strong><span>${ol?`<img src="${esc(ol)}" alt="">`:""}</span></div><div class="hq-prob-ring" style="--away:${oppPct};--home:${teamPct}"><span>DV</span></div><div><strong class="hq-prob-home">${teamPct}%</strong><span>${l?`<img src="${esc(l)}" alt="">`:""}</span></div></div>
+      <div class="hq-prob-grid"><div><strong class="hq-prob-away">${oppPct}%</strong><span class="gotw-prob-logo ${opponentDynasty?"user-team":"cpu-team"}">${ol?`<img src="${esc(ol)}" alt="">`:""}</span></div><div class="hq-prob-ring" style="--away:${oppPct};--home:${teamPct}"><span>DV</span></div><div><strong class="hq-prob-home">${teamPct}%</strong><span class="gotw-prob-logo ${teamDynasty?"user-team":"cpu-team"}">${l?`<img src="${esc(l)}" alt="">`:""}</span></div></div>
       <small>STORED PREGAME LINE • SAME MODEL AS THE MARKET</small>
     </aside>`:`<aside class="hq-probability hq-probability-mobile gotw-no-market" aria-label="Dynasty Vegas market pending"><div class="hq-prob-title">DYNASTY VEGAS</div><div class="gotw-no-market-copy"><strong>MARKET PENDING</strong><span>Dynasty Vegas line is still loading or awaiting backfill</span></div></aside>`;
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
   <div class="gotw-slide-kicker"><span class="gotw-feature-type ${pick.kind}">${esc(pick.label)}</span><span class="gotw-feature-reason">${esc(gotwSlideReason(g))}</span></div>
   <div class="gotw-body gotw-broadcast">
     <div class="gotw-matchup">
-      <div class="team-side">${ol?`<img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo">`:`<div class="team-fallback">${initials(g.opponent_team)}</div>`}<div><div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div></div></div>
+      <div class="team-side">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div><div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div></div></div>
       <div class="vs">VS</div>
-      <div class="team-side right"><div><div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div></div>${l?`<img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo">`:`<div class="team-fallback">${initials(g.team_name)}</div>`}</div>
+      <div class="team-side right"><div><div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div></div>${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}</div>
     </div>
     ${probability}
   </div>
@@ -7134,16 +7271,43 @@ function renderSchedule(){
        <div class="${done?"pos":real.some(g=>g.status==="completed")?"":"v21-muted"}">${done?"COMPLETE":w.n===selectedWeek?"ACTIVE":"VIEW"}</div>
      </summary>
      <div class="v21-week-list">
-       ${real.map(g=>{const displayRank=scheduleDisplayRanks(g);const dynastyGame=isDynastyScheduleGame(g);return `<div class="v21-archive-game" data-game-card="${g.id}">
-          <span class="v21-archive-coach">${dynastyGame?`<em class="dynasty-hq-badge archive">◆ HQ</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
-          <span class="v21-archive-match v23-archive-match">
-             ${logoFor(g.team_id,g.team_name)?`<img class="v23-archive-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.team_name||"")}"></span>`}
-             <span>${displayRank.team?`#${displayRank.team} `:""}${esc(g.team_name)} ${g.home_away==="away"?"@":"vs"} ${displayRank.opponent?`#${displayRank.opponent} `:""}${esc(g.opponent_team||"TBD")} <em class="conf-game-badge ${g.is_conference_game===true?"conf":"nonconf"}">${esc(gameClassification(g))}</em></span>
-             ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="v23-archive-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="">`:`<span class="v23-archive-logo-placeholder" data-team-logo-name="${esc(g.opponent_team||"")}"></span>`}
-           </span>
-          ${(()=>{const p=controlledPerspectiveForGame(g);const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";const label=g.status==="completed"?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";return `<span class="v21-archive-result ${cls}">${label}</span>`})()}
-          <span class="v21-archive-broadcast">${liveStreamLinkMarkup(g,true)}</span>
-        </div>`}).join("")}
+       ${real.map(g=>{
+         const displayRank=scheduleDisplayRanks(g);
+         const dynastyGame=isDynastyScheduleGame(g);
+         const p=controlledPerspectiveForGame(g);
+         const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";
+         const done=g.status==="completed";
+         const resultLabel=done?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
+         const teamLogo=logoFor(g.team_id,g.team_name);
+         const oppLogo=logoFor(g.opponent_team_id,g.opponent_team);
+         return `<article class="sf-archive-matchup-card ${dynastyGame?"dynasty":""}" data-game-card="${g.id}">
+           <div class="sf-archive-card-top">
+             <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
+             <strong>${esc(gameClassification(g))}</strong>
+           </div>
+           <div class="sf-archive-card-main">
+             <div class="sf-archive-team-stack">
+               <div class="sf-archive-team-row">
+                 ${teamLogo?`<img class="sf-archive-team-logo" src="${esc(teamLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.team_name||"")}">🏈</span>`}
+                 <div><small>${g.home_away==="away"?"AWAY":"HOME"}</small><b>${displayRank.team?`<span>#${displayRank.team}</span> `:""}${esc(g.team_name||"TBD")}</b></div>
+               </div>
+               <div class="sf-archive-vs">${g.home_away==="away"?"AT":"VS"}</div>
+               <div class="sf-archive-team-row">
+                 ${oppLogo?`<img class="sf-archive-team-logo" src="${esc(oppLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.opponent_team||"")}">🏈</span>`}
+                 <div><small>${g.home_away==="away"?"HOME":"AWAY"}</small><b>${displayRank.opponent?`<span>#${displayRank.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</b></div>
+               </div>
+             </div>
+             <div class="sf-archive-score ${cls}">
+               ${done?`<b>${g.points_for??""}<i>–</i>${g.points_against??""}</b>`:`<b class="upcoming">—</b>`}
+               <span>${esc(resultLabel)}</span>
+             </div>
+           </div>
+           <div class="sf-archive-card-foot">
+             <span>${esc(g.week_label||`Week ${g.week_number}`)}</span>
+             <span>${liveStreamLinkMarkup(g,true)}</span>
+           </div>
+         </article>`;
+       }).join("")}
        ${b.map(g=>`<div class="v21-archive-game bye"><span class="v21-archive-coach">${esc(g.coach_name||"—")}</span><span class="v21-archive-match">${esc(g.team_name||"Program")} · BYE</span><span class="v21-muted">BYE</span><span></span></div>`).join("")}
      </div>
    </details>`;
@@ -14032,4 +14196,215 @@ img.sf-logo-system-v2{
 }
 </style>
 <meta name="saturday-foundry-logo-sizing-preview" content="v1.3-coach-trading-logo-spacing-final">
+<style id="sf-week-archive-native-v5">
+#schedule .v21-season-archive{
+  margin-top:18px!important;padding:18px!important;border:1px solid rgba(244,197,66,.18)!important;border-radius:18px!important;
+  background:radial-gradient(circle at 100% 0%,rgba(244,197,66,.055),transparent 31%),linear-gradient(180deg,rgba(4,14,19,.94),rgba(2,10,14,.97))!important
+}
+#schedule .v21-week-groups{display:grid!important;gap:12px!important}
+#schedule .v21-week-group{margin:0!important;border:1px solid rgba(148,163,184,.13)!important;border-radius:15px!important;overflow:hidden!important;background:linear-gradient(180deg,rgba(5,17,23,.93),rgba(3,11,15,.95))!important}
+#schedule .v21-week-group summary{min-height:54px!important;padding:12px 14px!important;border:0!important;background:rgba(255,255,255,.018)!important}
+#schedule .v21-week-group summary strong{font-family:'Barlow Condensed',Teko,sans-serif!important;font-size:25px!important;line-height:1!important}
+#schedule .v21-week-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;padding:0 10px 10px!important}
+#schedule .sf-archive-matchup-card{min-width:0!important;overflow:hidden!important;border:1px solid rgba(79,209,255,.16)!important;border-radius:14px!important;background:linear-gradient(145deg,rgba(5,22,29,.96),rgba(2,12,17,.96))!important;box-shadow:inset 4px 0 0 rgba(79,209,255,.28)!important}
+#schedule .sf-archive-matchup-card.dynasty{border-color:rgba(244,197,66,.28)!important;box-shadow:inset 4px 0 0 rgba(244,197,66,.52)!important}
+#schedule .sf-archive-card-top,#schedule .sf-archive-card-foot{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:9px 11px!important;font-size:9px!important;line-height:1.15!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:#7f929e!important}
+#schedule .sf-archive-card-top{border-bottom:1px solid rgba(148,163,184,.10)!important}
+#schedule .sf-archive-card-foot{border-top:1px solid rgba(148,163,184,.10)!important}
+#schedule .sf-archive-card-top strong{color:#d8e2e7!important;font-size:9px!important;text-align:right!important}
+#schedule .sf-archive-card-main{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important;align-items:center!important;padding:13px!important}
+#schedule .sf-archive-team-stack{display:grid!important;gap:5px!important;min-width:0!important}
+#schedule .sf-archive-team-row{display:grid!important;grid-template-columns:54px minmax(0,1fr)!important;gap:10px!important;align-items:center!important;min-width:0!important}
+#schedule .sf-archive-team-logo{width:52px!important;height:52px!important;min-width:52px!important;max-width:52px!important;min-height:52px!important;max-height:52px!important;display:grid!important;place-items:center!important;object-fit:contain!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))!important}
+#schedule .sf-archive-team-fallback{border:1px dashed rgba(148,163,184,.16)!important;border-radius:10px!important;filter:none!important;font-size:18px!important}
+#schedule .sf-archive-team-row>div{min-width:0!important}
+#schedule .sf-archive-team-row small{display:block!important;margin-bottom:2px!important;font-size:8px!important;font-weight:900!important;letter-spacing:.10em!important;color:#6e838f!important}
+#schedule .sf-archive-team-row b{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:14px!important;line-height:1.12!important;color:#f4f7f8!important}
+#schedule .sf-archive-team-row b span{color:#f4c542!important}
+#schedule .sf-archive-vs{margin-left:64px!important;font-size:8px!important;font-weight:900!important;letter-spacing:.16em!important;color:#617681!important}
+#schedule .sf-archive-score{min-width:84px!important;display:grid!important;justify-items:end!important;align-content:center!important;gap:5px!important;text-align:right!important}
+#schedule .sf-archive-score>b{font-family:Teko,'Barlow Condensed',sans-serif!important;font-size:36px!important;line-height:.85!important;color:#fff!important;white-space:nowrap!important}
+#schedule .sf-archive-score>b i{padding:0 4px!important;color:#566771!important;font-style:normal!important}
+#schedule .sf-archive-score>b.upcoming{color:#5f707a!important}
+#schedule .sf-archive-score>span{font-size:10px!important;font-weight:950!important;letter-spacing:.06em!important;text-transform:uppercase!important;white-space:nowrap!important}
+#schedule .sf-archive-score.pos>span{color:#74e4be!important}
+#schedule .sf-archive-score.neg>span{color:#ff8585!important}
+@media(max-width:980px){#schedule .v21-week-list{grid-template-columns:1fr!important}}
+@media(max-width:700px){
+ #schedule .v21-season-archive{padding:13px!important;border-radius:15px!important}
+ #schedule .v21-week-list{grid-template-columns:1fr!important;gap:8px!important;padding:0 8px 8px!important}
+ #schedule .sf-archive-card-main{grid-template-columns:minmax(0,1fr) 74px!important;gap:8px!important;padding:11px 10px!important}
+ #schedule .sf-archive-team-row{grid-template-columns:48px minmax(0,1fr)!important;gap:9px!important}
+ #schedule .sf-archive-team-logo{width:46px!important;height:46px!important;min-width:46px!important;max-width:46px!important;min-height:46px!important;max-height:46px!important}
+ #schedule .sf-archive-vs{margin-left:57px!important}
+ #schedule .sf-archive-team-row b{font-size:13px!important}
+ #schedule .sf-archive-score{min-width:70px!important}
+ #schedule .sf-archive-score>b{font-size:31px!important}
+ #schedule .sf-archive-score>span{font-size:9px!important}
+}
+</style>
+<meta name="saturday-foundry-week-archive-preview" content="native-v5">
 
+<style id="sf-gotw-foundry-logo-plaque-v1">
+/* QA — GOTW gets its own Saturday Foundry logo treatment.
+   This intentionally overrides the older white contrast tiles ONLY inside GOTW. */
+#overview #gotw .gotw-logo-plaque{
+  position:relative!important;
+  flex:0 0 auto!important;
+  width:76px!important;
+  height:76px!important;
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box!important;
+  padding:10px!important;
+  margin:0!important;
+  border:1px solid rgba(230,191,73,.52)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 32% 18%,rgba(255,255,255,.085),transparent 34%),
+    linear-gradient(145deg,rgba(17,26,31,.98),rgba(5,11,15,.99))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(230,191,73,.08),
+    0 7px 18px rgba(0,0,0,.34),
+    0 0 0 1px rgba(230,191,73,.06)!important;
+}
+#overview #gotw .gotw-logo-plaque::after{
+  content:""!important;
+  position:absolute!important;
+  inset:4px!important;
+  border:1px solid rgba(255,255,255,.035)!important;
+  border-radius:10px!important;
+  pointer-events:none!important;
+}
+#overview #gotw .gotw-logo-plaque img.team-logo,
+#overview #gotw .gotw-logo-plaque .sf-team-logo-plate-v5>img,
+#overview #gotw .gotw-logo-plaque [class*="team-logo-plate"]>img{
+  position:relative!important;
+  z-index:1!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.42))
+    drop-shadow(0 2px 5px rgba(0,0,0,.72))!important;
+}
+#overview #gotw .gotw-logo-plaque .team-fallback{
+  width:100%!important;
+  height:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  color:#f3cb61!important;
+  font-family:"Barlow Condensed",sans-serif!important;
+  font-size:24px!important;
+  font-weight:900!important;
+  box-shadow:none!important;
+}
+
+/* Explicit grid positions now belong to the plaque rather than the raw image. */
+#overview #gotw .gotw-matchup .team-side{
+  grid-template-columns:76px minmax(0,1fr)!important;
+}
+#overview #gotw .gotw-matchup .team-side.right{
+  grid-template-columns:minmax(0,1fr) 76px!important;
+}
+#overview #gotw .gotw-matchup .team-side:not(.right)>.gotw-logo-plaque{
+  grid-column:1!important;
+  grid-row:1!important;
+}
+#overview #gotw .gotw-matchup .team-side.right>.gotw-logo-plaque{
+  grid-column:2!important;
+  grid-row:1!important;
+}
+
+/* Probability logos use the same material language at a smaller scale. */
+#overview #gotw .gotw-prob-logo-plaque{
+  width:52px!important;
+  height:52px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:7px auto 0!important;
+  padding:7px!important;
+  border:1px solid rgba(230,191,73,.30)!important;
+  border-radius:11px!important;
+  background:
+    radial-gradient(circle at 30% 18%,rgba(255,255,255,.07),transparent 38%),
+    linear-gradient(145deg,rgba(16,25,30,.94),rgba(5,11,15,.98))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 4px 12px rgba(0,0,0,.28)!important;
+}
+#overview #gotw .gotw-prob-logo-plaque img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.30))
+    drop-shadow(0 2px 4px rgba(0,0,0,.68))!important;
+}
+
+@media (max-width:1180px){
+  #overview #gotw .gotw-matchup .team-side,
+  #overview #gotw .gotw-matchup .team-side.right{
+    grid-template-columns:68px minmax(0,1fr)!important;
+  }
+  #overview #gotw .gotw-logo-plaque{
+    width:68px!important;
+    height:68px!important;
+    border-radius:13px!important;
+    padding:9px!important;
+  }
+  #overview #gotw .gotw-matchup .team-side.right>.gotw-logo-plaque{
+    order:1!important;
+    grid-column:auto!important;
+  }
+  #overview #gotw .gotw-matchup .team-side.right>div:first-child{
+    order:2!important;
+  }
+}
+@media (max-width:700px){
+  #overview #gotw .gotw-matchup .team-side,
+  #overview #gotw .gotw-matchup .team-side.right{
+    display:grid!important;
+    grid-template-columns:64px minmax(0,1fr)!important;
+    gap:12px!important;
+  }
+  #overview #gotw .gotw-logo-plaque{
+    width:64px!important;
+    height:64px!important;
+    padding:8px!important;
+    border-radius:12px!important;
+  }
+  #overview #gotw .gotw-prob-logo-plaque{
+    width:46px!important;
+    height:46px!important;
+    padding:6px!important;
+    border-radius:10px!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-logo-plaque" content="v1-premium-foundry">
