@@ -5272,6 +5272,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
+<meta name="saturday-foundry-gotw-ranking-source" content="weekly-poll-by-game-week-v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -6641,7 +6642,7 @@ function selectGotwCarousel(week){
 }
 function gotwSlideReason(g){
  const rawRanks=scheduleDisplayRanks(g);
- const ranks={team:gotwVerifiedRank(g.team_name,rawRanks.team),opponent:gotwVerifiedRank(g.opponent_team,rawRanks.opponent)};
+ const ranks={team:gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team),opponent:gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)};
  const t=!!dynastyProgramForTeam(g,"team")?.person_id,o=!!dynastyProgramForTeam(g,"opponent")?.person_id;
  const type=String(g.game_type||"").toLowerCase();
  if(type==="national_championship")return "NATIONAL CHAMPIONSHIP";
@@ -6652,18 +6653,21 @@ function gotwSlideReason(g){
  if(ranks.team||ranks.opponent)return "RANKED SPOTLIGHT";
  return "FEATURED MATCHUP";
 }
-function gotwVerifiedRank(name,fallback){
- const key=String(name||"").trim().toLowerCase();
- const week=Number(selectedWeek??currentWeek());
- const row=(state.rankings||[]).find(r=>Number(r.week_number)===week&&teamKey(r.team?.name)===key);
+function gotwVerifiedRank(teamId,name,week,fallback){
+ const key=teamKey(name);
+ const resolvedWeek=Number(week??selectedWeek??currentWeek());
+ const row=(state.rankings||[]).find(r=>
+   Number(r.week_number)===resolvedWeek&&
+   ((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key)
+ );
  if(row)return Number(row.rank)||fallback||null;
- // Participant rank is retained as a historical game-time fallback when a weekly poll snapshot has not been entered.
+ // Participant rank is retained only as a fallback when that week's official poll is unavailable.
  return fallback??null;
 }
 function gotwSlideMarkup(pick,index,total){
  const g=pick.game;
  const rawRanks=scheduleDisplayRanks(g);
- const ranks={team:gotwVerifiedRank(g.team_name,rawRanks.team),opponent:gotwVerifiedRank(g.opponent_team,rawRanks.opponent)};
+ const ranks={team:gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team),opponent:gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)};
  const l=logoFor(g.team_name),ol=logoFor(g.opponent_team);
  const teamRecord=seasonTeamRecord(g.team_id,g.team_name),oppRecord=seasonTeamRecord(g.opponent_team_id,g.opponent_team);
  const vr=vegasForGame(g.id),vp=vr?vegasPerspective(vr,g):null;
