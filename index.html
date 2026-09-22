@@ -5199,6 +5199,52 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-logo-centering" content="v2">
+
+<style id="sf-gotw-vegas-user-glow-v1">
+/* QA: Dynasty Vegas logos are unboxed; only user-controlled programs get the Foundry gold glow. */
+#overview #gotw .gotw-prob-logo{
+  width:52px!important;
+  height:52px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:7px auto 0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#overview #gotw .gotw-prob-logo img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+#overview #gotw .gotw-prob-logo.user-team img{
+  filter:
+    drop-shadow(0 0 4px rgba(244,197,66,.68))
+    drop-shadow(0 0 10px rgba(244,197,66,.52))
+    drop-shadow(0 0 18px rgba(244,197,66,.34))
+    drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+#overview #gotw .gotw-prob-logo.cpu-team img{
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.62))!important;
+}
+@media(max-width:700px){
+  #overview #gotw .gotw-prob-logo{width:46px!important;height:46px!important}
+}
+</style>
+<meta name="saturday-foundry-gotw-vegas-user-glow" content="v1">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -6604,7 +6650,7 @@ function gotwSlideMarkup(pick,index,total){
  const oppPct=hasMarket?100-teamPct:null;
  const probability=hasMarket?`<aside class="hq-probability hq-probability-mobile" aria-label="Dynasty Vegas win probability">
       <div class="hq-prob-title">DYNASTY VEGAS WIN PROBABILITY</div>
-      <div class="hq-prob-grid"><div><strong class="hq-prob-away">${oppPct}%</strong><span class="gotw-prob-logo-plaque">${ol?`<img src="${esc(ol)}" alt="">`:""}</span></div><div class="hq-prob-ring" style="--away:${oppPct};--home:${teamPct}"><span>DV</span></div><div><strong class="hq-prob-home">${teamPct}%</strong><span class="gotw-prob-logo-plaque">${l?`<img src="${esc(l)}" alt="">`:""}</span></div></div>
+      <div class="hq-prob-grid"><div><strong class="hq-prob-away">${oppPct}%</strong><span class="gotw-prob-logo ${opponentDynasty?"user-team":"cpu-team"}">${ol?`<img src="${esc(ol)}" alt="">`:""}</span></div><div class="hq-prob-ring" style="--away:${oppPct};--home:${teamPct}"><span>DV</span></div><div><strong class="hq-prob-home">${teamPct}%</strong><span class="gotw-prob-logo ${teamDynasty?"user-team":"cpu-team"}">${l?`<img src="${esc(l)}" alt="">`:""}</span></div></div>
       <small>STORED PREGAME LINE • SAME MODEL AS THE MARKET</small>
     </aside>`:`<aside class="hq-probability hq-probability-mobile gotw-no-market" aria-label="Dynasty Vegas market pending"><div class="hq-prob-title">DYNASTY VEGAS</div><div class="gotw-no-market-copy"><strong>MARKET PENDING</strong><span>Dynasty Vegas line is still loading or awaiting backfill</span></div></aside>`;
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
