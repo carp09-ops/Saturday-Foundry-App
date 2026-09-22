@@ -5135,6 +5135,70 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 }
 </style>
 <meta name="saturday-foundry-gotw-global-authority" content="v1">
+
+<style id="sf-gotw-logo-centering-v2">
+/* QA follow-up — hard-center GOTW marks inside the new Foundry plaques.
+   Isolated to GOTW so Schedule, Coach cards, Top 25, etc. remain untouched. */
+#overview #gotw .gotw-logo-plaque{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#overview #gotw .gotw-logo-plaque > img.team-logo{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center center!important;
+  width:calc(100% - 18px)!important;
+  height:calc(100% - 18px)!important;
+  max-width:calc(100% - 18px)!important;
+  max-height:calc(100% - 18px)!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+}
+#overview #gotw .gotw-prob-logo-plaque{
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+}
+#overview #gotw .gotw-prob-logo-plaque > img{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:center center!important;
+  width:calc(100% - 12px)!important;
+  height:calc(100% - 12px)!important;
+  max-width:calc(100% - 12px)!important;
+  max-height:calc(100% - 12px)!important;
+  object-fit:contain!important;
+  object-position:50% 50%!important;
+  margin:0!important;
+  padding:0!important;
+}
+@media(max-width:700px){
+  #overview #gotw .gotw-logo-plaque > img.team-logo{
+    width:calc(100% - 14px)!important;
+    height:calc(100% - 14px)!important;
+    max-width:calc(100% - 14px)!important;
+    max-height:calc(100% - 14px)!important;
+  }
+  #overview #gotw .gotw-prob-logo-plaque > img{
+    width:calc(100% - 10px)!important;
+    height:calc(100% - 10px)!important;
+    max-width:calc(100% - 10px)!important;
+    max-height:calc(100% - 10px)!important;
+  }
+}
+</style>
+<meta name="saturday-foundry-gotw-logo-centering" content="v2">
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
