@@ -1,0 +1,44 @@
+name: Inspect GOTW rank source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-gotw-rank.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect ranking/GOTW code
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('index.html').read_text()
+          terms = [
+              'gotw', 'GOTW', 'weekly_rankings', 'weeklyRankings',
+              'rankings', 'teamRank', 'getRank', 'rank:', '.rank'
+          ]
+          seen = set()
+          for term in terms:
+              start = 0
+              count = 0
+              while True:
+                  i = s.find(term, start)
+                  if i < 0 or count >= 40:
+                      break
+                  a = max(0, i-900)
+                  b = min(len(s), i+1800)
+                  chunk = s[a:b]
+                  key = chunk[:120]
+                  if key not in seen:
+                      seen.add(key)
+                      print(f"\n===== TERM {term!r} @ {i} =====")
+                      print(chunk)
+                  start = i + max(1, len(term))
+                  count += 1
+          PY
