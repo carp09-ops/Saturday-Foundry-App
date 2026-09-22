@@ -1,4 +1,4 @@
-name: Fix GOTW weekly ranking source
+name: Fix GOTW latest ranking source
 
 on:
   push:
@@ -25,37 +25,28 @@ jobs:
           import re
           p=Path('index.html')
           s=p.read_text()
-          pattern=r'function gotwVerifiedRank\(name,fallback\)\{.*?\n\}'
-          replacement='function gotwVerifiedRank(teamId,name,week,fallback){\n const key=teamKey(name);\n const resolvedWeek=Number(week??selectedWeek??currentWeek());\n const row=(state.rankings||[]).find(r=>\n   Number(r.week_number)===resolvedWeek&&\n   ((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key)\n );\n if(row)return Number(row.rank)||fallback||null;\n // Participant rank is retained only as a fallback when that week\'s official poll is unavailable.\n return fallback??null;\n}'
-          if 'function gotwVerifiedRank(teamId,name,week,fallback)' not in s:
-              s,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
-              if n!=1:
-                  raise SystemExit(f'Expected one gotwVerifiedRank function; patched {n}')
-          old_team='gotwVerifiedRank(g.team_name,rawRanks.team)'
-          new_team='gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team)'
-          old_opp='gotwVerifiedRank(g.opponent_team,rawRanks.opponent)'
-          new_opp='gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)'
-          tc=s.count(old_team)
-          oc=s.count(old_opp)
-          s=s.replace(old_team,new_team).replace(old_opp,new_opp)
-          if old_team in s or old_opp in s:
-              raise SystemExit('Legacy GOTW rank call remains after patch.')
-          if new_team not in s or new_opp not in s:
-              raise SystemExit('Patched GOTW calls not found.')
-          marker='<meta name="saturday-foundry-gotw-ranking-source" content="weekly-poll-by-game-week-v1">'
-          if marker not in s:
+          pattern=r'function gotwVerifiedRank\(teamId,name,week,fallback\)\{.*?\n\}'
+          replacement='function gotwVerifiedRank(teamId,name,week,fallback){\n const key=teamKey(name);\n const resolvedWeek=Number(week??selectedWeek??currentWeek());\n const row=(state.rankings||[])\n   .filter(r=>Number(r.week_number)<=resolvedWeek&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key))\n   .sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];\n if(row)return Number(row.rank)||fallback||null;\n // Use the latest official poll available through this game week; participant rank is fallback only.\n return fallback??null;\n}'
+          s,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
+          if n!=1:
+              raise SystemExit(f'Expected one patched gotwVerifiedRank function; found {n}')
+          old_marker='<meta name="saturday-foundry-gotw-ranking-source" content="weekly-poll-by-game-week-v1">'
+          new_marker='<meta name="saturday-foundry-gotw-ranking-source" content="latest-official-poll-through-game-week-v2">'
+          if old_marker in s:
+              s=s.replace(old_marker,new_marker,1)
+          elif new_marker not in s:
               if '</head>' not in s:
                   raise SystemExit('No </head> found.')
-              s=s.replace('</head>',marker+'\n</head>',1)
+              s=s.replace('</head>',new_marker+'\n</head>',1)
           p.write_text(s)
-          print(f'Replaced GOTW team calls: {tc}; opponent calls: {oc}')
           PY
 
       - name: Validate patch
         run: |
-          grep -q 'weekly-poll-by-game-week-v1' index.html
+          grep -q 'latest-official-poll-through-game-week-v2' index.html
+          grep -q 'Number(r.week_number)<=resolvedWeek' index.html
+          grep -q 'sort((a,b)=>Number(b.week_number)-Number(a.week_number))' index.html
           grep -q 'gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team)' index.html
-          grep -q 'gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)' index.html
           git diff --check
 
       - name: Commit GOTW ranking fix
@@ -67,5 +58,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Fix GOTW weekly ranking source'
+          git commit -m 'Use latest official Top 25 in GOTW'
           git push origin main
