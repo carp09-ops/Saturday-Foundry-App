@@ -1,4 +1,4 @@
-name: Inspect GOTW rank source
+name: Fix GOTW weekly ranking source
 
 on:
   push:
@@ -7,36 +7,95 @@ on:
       - '.github/workflows/inspect-gotw-rank.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  inspect:
+  patch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Inspect ranking/GOTW code
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch GOTW ranking resolution
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          s = Path('index.html').read_text()
-          terms = [
-              'function gotwVerifiedRank',
-              'function scheduleDisplayRanks',
-              'function rankingForTeamWeek',
-              'function renderGotw',
-              'function renderGOTW',
-              'selectGotwCarousel',
-              'gotwVerifiedRank(',
-              'scheduleDisplayRanks('
-          ]
-          for term in terms:
-              start=0
-              n=0
-              while True:
-                  i=s.find(term,start)
-                  if i<0 or n>=12: break
-                  print(f"\n===== {term} @ {i} =====")
-                  print(s[max(0,i-1800):min(len(s),i+4200)])
-                  start=i+len(term)
-                  n+=1
+
+          p = Path('index.html')
+          s = p.read_text()
+
+          old_fn = """function gotwVerifiedRank(name,fallback){
+ const key=String(name||"").trim().toLowerCase();
+ const week=Number(selectedWeek??currentWeek());
+ const row=(state.rankings||[]).find(r=>Number(r.week_number)===week&&teamKey(r.team?.name)===key);
+ if(row)return Number(row.rank)||fallback||null;
+ // Participant rank is retained as a historical game-time fallback when a weekly poll snapshot has not been entered.
+ return fallback??null;
+}"""
+
+          new_fn = """function gotwVerifiedRank(teamId,name,week,fallback){
+ const key=teamKey(name);
+ const resolvedWeek=Number(week??selectedWeek??currentWeek());
+ const row=(state.rankings||[]).find(r=>
+   Number(r.week_number)===resolvedWeek&&
+   ((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key)
+ );
+ if(row)return Number(row.rank)||fallback||null;
+ // Participant rank is retained only as a fallback when that week's official poll is unavailable.
+ return fallback??null;
+}"""
+
+          old_team = "gotwVerifiedRank(g.team_name,rawRanks.team)"
+          new_team = "gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team)"
+          old_opp = "gotwVerifiedRank(g.opponent_team,rawRanks.opponent)"
+          new_opp = "gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)"
+
+          if new_fn not in s:
+              if old_fn not in s:
+                  raise SystemExit('Expected gotwVerifiedRank function not found; refusing unsafe patch.')
+              s = s.replace(old_fn, new_fn, 1)
+
+          team_count = s.count(old_team)
+          opp_count = s.count(old_opp)
+          if team_count:
+              s = s.replace(old_team, new_team)
+          if opp_count:
+              s = s.replace(old_opp, new_opp)
+
+          if old_team in s or old_opp in s:
+              raise SystemExit('Legacy GOTW rank call remains after patch.')
+          if new_team not in s or new_opp not in s:
+              raise SystemExit('Patched GOTW calls not found.')
+          if 'const resolvedWeek=Number(week??selectedWeek??currentWeek());' not in s:
+              raise SystemExit('GOTW ranking week patch missing.')
+
+          marker = '<meta name="saturday-foundry-gotw-ranking-source" content="weekly-poll-by-game-week-v1">'
+          if marker not in s:
+              if '</head>' not in s:
+                  raise SystemExit('No </head> found.')
+              s = s.replace('</head>', marker + '\n</head>', 1)
+
+          p.write_text(s)
+          print(f'Replaced GOTW team calls: {team_count}; opponent calls: {opp_count}')
           PY
+
+      - name: Validate patch
+        run: |
+          grep -q 'weekly-poll-by-game-week-v1' index.html
+          grep -q 'gotwVerifiedRank(g.team_id,g.team_name,g.week_number,rawRanks.team)' index.html
+          grep -q 'gotwVerifiedRank(g.opponent_team_id,g.opponent_team,g.week_number,rawRanks.opponent)' index.html
+          git diff --check
+
+      - name: Commit GOTW ranking fix
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'No index change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Fix GOTW weekly ranking source'
+          git push origin main
