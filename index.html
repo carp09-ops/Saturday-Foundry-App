@@ -11271,139 +11271,6 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 <meta name="saturday-foundry-reconciled-baseline" content="pre-schedule-backup-plus-v4-schedule-plus-team-control-plates-v5">
 
 
-<style id="sf-mobile-schedule-single-row-v5-2">
-/* QA V5.2 — authoritative phone matchup row. */
-@media(max-width:700px){
-  #schedule.sf-my-mode .sf-matchup,
-  #schedule.sf-v3-my-mode .sf-matchup{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr)!important;
-    gap:4px!important;
-    align-items:center!important;
-    padding:9px 8px!important;
-    min-height:0!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team,
-  #schedule.sf-v3-my-mode .sf-match-team{
-    display:grid!important;
-    grid-template-columns:38px minmax(0,1fr)!important;
-    gap:6px!important;
-    align-items:center!important;
-    min-width:0!important;
-    width:100%!important;
-    text-align:left!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team.home,
-  #schedule.sf-v3-my-mode .sf-match-team.home{
-    grid-template-columns:minmax(0,1fr) 38px!important;
-    text-align:right!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
-  #schedule.sf-my-mode .sf-match-team.home .sf-match-logo,
-  #schedule.sf-my-mode .sf-match-team.home .sf-match-logo-fallback,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo-fallback{
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team.home .sf-match-copy,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-copy{
-    grid-column:1!important;
-    grid-row:1!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
-  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-logo,
-  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback{
-    grid-column:1!important;
-    grid-row:1!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team:not(.home) .sf-match-copy,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-copy{
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-team>.sf-team-logo-plate-v5,
-  #schedule.sf-my-mode .sf-match-logo,
-  #schedule.sf-my-mode .sf-match-logo-fallback,
-  #schedule.sf-v3-my-mode .sf-match-team>.sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-logo-fallback{
-    width:38px!important;
-    height:38px!important;
-    min-width:38px!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-copy,
-  #schedule.sf-v3-my-mode .sf-match-copy{
-    min-width:0!important;
-    overflow:hidden!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-name,
-  #schedule.sf-v3-my-mode .sf-match-name{
-    font-size:14px!important;
-    line-height:1!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-role,
-  #schedule.sf-v3-my-mode .sf-match-role{
-    margin-bottom:2px!important;
-    font-size:6px!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-meta,
-  #schedule.sf-v3-my-mode .sf-match-meta{
-    margin-top:2px!important;
-    font-size:7px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-score,
-  #schedule.sf-v3-my-mode .sf-match-score{
-    margin-top:3px!important;
-    font-size:17px!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-sep,
-  #schedule.sf-v3-my-mode .sf-match-sep,
-  #schedule.sf-my-mode .sf-match-spine,
-  #schedule.sf-v3-my-mode .sf-match-spine{
-    margin:0!important;
-    min-width:0!important;
-    width:18px!important;
-    align-items:center!important;
-    justify-content:center!important;
-    text-align:center!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-spine strong,
-  #schedule.sf-v3-my-mode .sf-match-spine strong{
-    font-size:10px!important;
-    line-height:1!important;
-  }
-
-  #schedule.sf-my-mode .sf-match-spine span,
-  #schedule.sf-v3-my-mode .sf-match-spine span{
-    display:none!important;
-  }
-}
-</style>
 <meta name="saturday-foundry-mobile-schedule" content="v5.2-single-row-authority">
 
 
@@ -13312,6 +13179,21 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     const b=e.target.closest?.('#schedule .sf-score-action[data-result-game]');
     if(b)sfScheduleFocusForced=true;
   },true);
+  function sfFitScheduleNames(host){
+    if(!host)return;
+    host.querySelectorAll('.sf-match-name').forEach(el=>{
+      el.style.removeProperty('font-size');
+      const mobile=window.matchMedia('(max-width:700px)').matches;
+      let size=mobile?14:(parseFloat(getComputedStyle(el).fontSize)||20);
+      const min=mobile?9.5:12;
+      el.style.fontSize=size+'px';
+      let guard=0;
+      while(el.scrollWidth>el.clientWidth+1&&size>min&&guard++<24){
+        size=Math.max(min,size-.5);
+        el.style.fontSize=size+'px';
+      }
+    });
+  }
   function renderMyV3(){
     const schedule=document.getElementById('schedule'),host=document.getElementById('sfMySeasonHost');if(!schedule||!host)return;
     const p=myProgramV3();if(!p)return;
@@ -13335,6 +13217,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
     const meta=document.getElementById('scheduleMeta');if(meta)meta.textContent=`${games.length} schedule entries · full season view`;
+    hydrateScheduleLogosV3(host);
+    requestAnimationFrame(()=>sfFitScheduleNames(host));
     sfFocusRenderedGame(games);
   }
   function isMyModeV3(){const b=document.querySelector('#sfScheduleModebar [data-sf-schedule-mode="my"]');return !!(b?.classList.contains('active')||scheduleTeamPersonId&&String(scheduleTeamPersonId)===String(myProgramV3()?.person_id||''));}
@@ -13388,11 +13272,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   #schedule .sf-vegas-stat b{font-size:18px!important}
   #schedule .sf-no-market{margin:0 14px 10px!important;padding:7px 10px!important;text-align:center!important}
 }
-@media(max-width:700px){
-  #schedule .sf-match-spine{align-items:flex-start!important;text-align:left!important;margin-left:54px!important;min-width:0!important}
-  #schedule .sf-match-spine strong{font-size:15px!important}
-  #schedule .sf-match-spine span{white-space:normal!important}
-}
+
 /* Desktop/tablet nav: only premium rendered art may be visible. */
 @media(min-width:701px){
  #nav.canonical-nav .hq-nav-icon{overflow:hidden!important}
@@ -14725,124 +14605,39 @@ img.sf-logo-system-v2{
 
 
 
-<style id="sf-qa-9-8-0-schedule-final-authority">
-#schedule .sf-match-copy{min-width:0!important}
-#schedule .sf-match-name{
-  display:block!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  white-space:nowrap!important;
-  overflow:visible!important;
-  text-overflow:clip!important;
-  line-height:1!important;
-}
-#schedule .sf-season-game.sf-action-focus{
-  border-color:rgba(244,197,66,.48)!important;
-  box-shadow:0 0 0 1px rgba(244,197,66,.14),0 16px 38px rgba(0,0,0,.28)!important;
-}
-@media(max-width:700px){
-  #schedule .sf-matchup{
-    grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr)!important;
-    gap:4px!important;
-    padding:12px 6px!important;
-    min-height:92px!important;
-    overflow:visible!important;
-  }
-  #schedule .sf-match-team{
-    grid-template-columns:32px minmax(0,1fr)!important;
-    gap:5px!important;
-    min-width:0!important;
-  }
-  #schedule .sf-match-team.home{
-    grid-template-columns:minmax(0,1fr) 32px!important;
-    text-align:right!important;
-  }
-  #schedule .sf-match-team.home .sf-match-logo,
-  #schedule .sf-match-team.home .sf-match-logo-fallback{grid-column:2!important}
-  #schedule .sf-match-team.home .sf-match-copy{grid-column:1!important;grid-row:1!important;text-align:right!important}
-  #schedule .sf-match-logo,
-  #schedule .sf-match-logo-fallback{
-    width:32px!important;
-    height:32px!important;
-    min-width:32px!important;
-    min-height:32px!important;
-  }
-  #schedule .sf-match-spine{
-    position:relative!important;
-    display:flex!important;
-    width:32px!important;
-    min-width:32px!important;
-    margin:0!important;
-    padding:0!important;
-    flex-direction:column!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:1px!important;
-    overflow:visible!important;
-    text-align:center!important;
-  }
-  #schedule .sf-match-spine .sf-event-badge-wrap{
-    display:grid!important;
-    place-items:center!important;
-    position:static!important;
-    transform:none!important;
-    width:26px!important;
-    height:26px!important;
-    min-width:26px!important;
-    margin:0 0 1px!important;
-    visibility:visible!important;
-    opacity:1!important;
-  }
-  #schedule .sf-match-spine .sf-event-badge{
-    display:block!important;
-    width:26px!important;
-    height:26px!important;
-    object-fit:contain!important;
-  }
-  #schedule .sf-match-spine strong{font-size:12px!important;line-height:1!important}
-  #schedule .sf-match-spine>span:not(.sf-event-badge-wrap){display:none!important}
-  #schedule .sf-match-name{
-    font-size:14px!important;
-    letter-spacing:-.02em!important;
-  }
-}
-</style>
-<script id="sf-qa-9-8-0-schedule-name-fit">
-function fitScheduleNamesFinalV3(host){
-  if(!host)return;
-  host.querySelectorAll('.sf-match-name').forEach(el=>{
-    el.style.removeProperty('font-size');
-    const mobile=window.matchMedia('(max-width:700px)').matches;
-    let size=mobile?14:parseFloat(getComputedStyle(el).fontSize)||20;
-    const min=mobile?9.5:12;
-    el.style.fontSize=size+'px';
-    let guard=0;
-    while(el.scrollWidth>el.clientWidth+1&&size>min&&guard++<24){
-      size=Math.max(min,size-.5);
-      el.style.fontSize=size+'px';
-    }
-  });
-}
-</script>
 
-<style id="sf-qa-9-8-0-header-badge-authority">
-#schedule .sf-season-game-week.sf-week-single{
+<style id="sf-schedule-authority-9-8-0">
+/* Saturday Foundry 9.8.0 — single authoritative My Schedule layout */
+#schedule.sf-v3-my-mode .sf-season-game-head{
+  display:grid!important;
+  grid-template-columns:minmax(118px,1fr) auto!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+#schedule.sf-v3-my-mode .sf-season-game-week.sf-week-single{
   display:flex!important;
   align-items:center!important;
   gap:8px!important;
-  min-width:0!important;
+  min-width:118px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  overflow:visible!important;
 }
-#schedule .sf-season-game-week.sf-week-single>span:first-child{
+#schedule.sf-v3-my-mode .sf-season-game-week.sf-week-single>span:first-child{
+  flex:0 0 auto!important;
+  display:block!important;
   font-family:"Barlow Condensed",sans-serif!important;
   font-size:15px!important;
-  font-weight:800!important;
+  font-weight:850!important;
   line-height:1!important;
-  letter-spacing:.08em!important;
-  color:#81909a!important;
+  letter-spacing:.06em!important;
+  color:#8c9aa4!important;
   white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
 }
-#schedule .sf-event-badge-wrap.sf-event-badge-header{
+#schedule.sf-v3-my-mode .sf-event-badge-wrap.sf-event-badge-header{
+  flex:0 0 30px!important;
   display:grid!important;
   place-items:center!important;
   width:30px!important;
@@ -14852,31 +14647,99 @@ function fitScheduleNamesFinalV3(host){
   visibility:visible!important;
   opacity:1!important;
 }
-#schedule .sf-event-badge-wrap.sf-event-badge-header .sf-event-badge{
+#schedule.sf-v3-my-mode .sf-event-badge-header .sf-event-badge{
   display:block!important;
   width:30px!important;
   height:30px!important;
   object-fit:contain!important;
 }
+#schedule.sf-v3-my-mode .sf-match-copy{min-width:0!important;overflow:visible!important}
+#schedule.sf-v3-my-mode .sf-match-name{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  line-height:1!important;
+}
+#schedule.sf-v3-my-mode .sf-match-spine .sf-event-badge-wrap{display:none!important}
+#schedule.sf-v3-my-mode .sf-season-game.sf-action-focus{
+  border-color:rgba(244,197,66,.50)!important;
+  box-shadow:0 0 0 1px rgba(244,197,66,.15),0 16px 38px rgba(0,0,0,.28)!important;
+}
+
 @media(max-width:700px){
-  #schedule .sf-season-game-head{
-    grid-template-columns:minmax(0,1fr) auto!important;
-    gap:10px!important;
+  #schedule.sf-v3-my-mode .sf-season-game-head{
+    grid-template-columns:minmax(108px,1fr) auto!important;
+    gap:8px!important;
+    padding-left:12px!important;
+    padding-right:12px!important;
   }
-  #schedule .sf-season-game-week.sf-week-single{
-    gap:7px!important;
+  #schedule.sf-v3-my-mode .sf-season-game-week.sf-week-single{
+    min-width:108px!important;
+    gap:6px!important;
   }
-  #schedule .sf-season-game-week.sf-week-single>span:first-child{
+  #schedule.sf-v3-my-mode .sf-season-game-week.sf-week-single>span:first-child{
+    font-size:13px!important;
+    letter-spacing:.035em!important;
+  }
+  #schedule.sf-v3-my-mode .sf-event-badge-wrap.sf-event-badge-header,
+  #schedule.sf-v3-my-mode .sf-event-badge-header .sf-event-badge{
+    width:26px!important;
+    height:26px!important;
+    min-width:26px!important;
+  }
+  #schedule.sf-v3-my-mode .sf-event-badge-wrap.sf-event-badge-header{flex-basis:26px!important}
+
+  #schedule.sf-v3-my-mode .sf-matchup{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr)!important;
+    gap:4px!important;
+    align-items:center!important;
+    padding:12px 7px!important;
+    min-height:92px!important;
+    overflow:visible!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team{
+    display:grid!important;
+    grid-template-columns:34px minmax(0,1fr)!important;
+    gap:5px!important;
+    min-width:0!important;
+    width:100%!important;
+    align-items:center!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 34px!important;
+    text-align:right!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo-fallback{grid-column:2!important;grid-row:1!important}
+  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-copy{grid-column:1!important;grid-row:1!important;text-align:right!important}
+  #schedule.sf-v3-my-mode .sf-match-logo,
+  #schedule.sf-v3-my-mode .sf-match-logo-fallback{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-spine{
+    display:flex!important;
+    width:26px!important;
+    min-width:26px!important;
+    margin:0!important;
+    padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    overflow:visible!important;
+  }
+  #schedule.sf-v3-my-mode .sf-match-spine strong{font-size:12px!important;line-height:1!important}
+  #schedule.sf-v3-my-mode .sf-match-spine>span{display:none!important}
+  #schedule.sf-v3-my-mode .sf-match-name{
     font-size:14px!important;
-  }
-  #schedule .sf-event-badge-wrap.sf-event-badge-header,
-  #schedule .sf-event-badge-wrap.sf-event-badge-header .sf-event-badge{
-    width:28px!important;
-    height:28px!important;
-    min-width:28px!important;
-  }
-  #schedule .sf-match-spine .sf-event-badge-wrap{
-    display:none!important;
+    letter-spacing:-.02em!important;
   }
 }
 </style>
