@@ -6859,6 +6859,18 @@ function sfGameConference(g,side){
  const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||"").trim().toLowerCase()===normName));
  return String(p?.conference||p?.team_conference||"");
 }
+const SF_CONFERENCE_LOGOS={
+  "acc":"https://commons.wikimedia.org/wiki/Special:FilePath/Atlantic%20Coast%20Conference%20logo.svg",
+  "american":"https://commons.wikimedia.org/wiki/Special:FilePath/American%20Athletic%20Conference%20logo.svg",
+  "big-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%2012%20Conference%20%28cropped%29%20logo.svg",
+  "big-ten":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%20Ten%20Conference%20logo%20%282012%29.svg",
+  "cusa":"https://commons.wikimedia.org/wiki/Special:FilePath/CUSA%20logo.svg",
+  "mac":"https://commons.wikimedia.org/wiki/Special:FilePath/Mid-American%20Conference%20logo.svg",
+  "mountain-west":"https://commons.wikimedia.org/wiki/Special:FilePath/Mountain%20West%20Conference%20logo.svg",
+  "pac-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Pac-12%202026%20Logo.svg",
+  "sec":"https://commons.wikimedia.org/wiki/Special:FilePath/Southeastern%20Conference%20logo%20%282024%29.svg",
+  "sun-belt":"https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20Belt%20Conference%202020%20logo%20and%20name.svg"
+};
 function sfEventBadgeInfo(g){
  const type=String(g?.game_type||"regular_season").toLowerCase();
  if(type==="national_championship")return {src:"assets/event-badges/national-championship.svg",label:"National Championship"};
@@ -6868,8 +6880,9 @@ function sfEventBadgeInfo(g){
  const a=sfGameConference(g,"team"), b=sfGameConference(g,"opponent");
  const conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
  const key=sfConferenceBadgeKey(conference);
- if(!key)return null;
- return {src:"assets/event-badges/"+key+".svg",label:conference+(type==="conference_championship"?" Championship":"")};
+ const src=SF_CONFERENCE_LOGOS[key];
+ if(!src)return null;
+ return {src,label:conference+(type==="conference_championship"?" Championship":"")};
 }
 function sfEventBadgeMarkup(g,cls=""){
  const info=sfEventBadgeInfo(g);if(!info)return "";
