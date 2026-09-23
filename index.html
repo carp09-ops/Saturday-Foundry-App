@@ -14732,3 +14732,85 @@ img.sf-logo-system-v2{
   }
 }
 </style>
+<style id="sf-qa-9-8-0-mobile-badge-authority-v2">
+/* FINAL QA 9.8.0 mobile authority: keep event badge visible in normal flow. */
+@media(max-width:700px){
+  #schedule .sf-matchup{
+    grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr)!important;
+    gap:6px!important;
+    align-items:center!important;
+    padding:12px 8px!important;
+    min-height:96px!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-team{
+    grid-template-columns:40px minmax(0,1fr)!important;
+    gap:6px!important;
+    min-width:0!important;
+  }
+  #schedule .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 40px!important;
+    text-align:right!important;
+  }
+  #schedule .sf-match-team.home .sf-match-logo,
+  #schedule .sf-match-team.home .sf-match-logo-fallback{grid-column:2!important}
+  #schedule .sf-match-team.home .sf-match-copy{grid-column:1!important;grid-row:1!important}
+  #schedule .sf-match-logo,
+  #schedule .sf-match-logo-fallback{
+    width:40px!important;
+    height:40px!important;
+  }
+  #schedule .sf-match-spine{
+    position:static!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    width:32px!important;
+    min-width:32px!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    text-align:center!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge-wrap{
+    position:static!important;
+    display:grid!important;
+    place-items:center!important;
+    transform:none!important;
+    width:28px!important;
+    height:28px!important;
+    min-width:28px!important;
+    flex:0 0 28px!important;
+    margin:0 0 2px!important;
+    visibility:visible!important;
+    opacity:1!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge{
+    display:block!important;
+    width:28px!important;
+    height:28px!important;
+    object-fit:contain!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  #schedule .sf-match-spine strong{
+    display:block!important;
+    font-size:13px!important;
+    line-height:1!important;
+    margin:0!important;
+  }
+  #schedule .sf-match-spine>span:not(.sf-event-badge-wrap){
+    display:none!important;
+  }
+  #schedule .sf-match-name{
+    font-size:15px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
+</style>
