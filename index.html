@@ -14661,3 +14661,74 @@ img.sf-logo-system-v2{
   }
 }
 </style>
+
+<style id="sf-qa-9-8-0-mobile-badge-fix">
+@media(max-width:700px){
+  #schedule .sf-matchup{
+    grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)!important;
+    gap:6px!important;
+    align-items:center!important;
+    padding:12px 8px!important;
+    min-height:92px!important;
+  }
+  #schedule .sf-match-team,
+  #schedule .sf-match-team.home{
+    gap:6px!important;
+    min-width:0!important;
+  }
+  #schedule .sf-match-team{
+    grid-template-columns:42px minmax(0,1fr)!important;
+  }
+  #schedule .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 42px!important;
+    text-align:right!important;
+  }
+  #schedule .sf-match-team.home .sf-match-logo{grid-column:2!important}
+  #schedule .sf-match-team.home .sf-match-copy{grid-column:1!important;grid-row:1!important}
+  #schedule .sf-match-spine{
+    position:relative!important;
+    min-width:34px!important;
+    width:34px!important;
+    margin:0!important;
+    padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    gap:0!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-spine strong{
+    font-size:14px!important;
+    line-height:1!important;
+  }
+  #schedule .sf-match-spine>span:not(.sf-event-badge-wrap){
+    display:none!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge-wrap{
+    display:grid!important;
+    position:absolute!important;
+    left:50%!important;
+    top:-36px!important;
+    transform:translateX(-50%)!important;
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    flex-basis:30px!important;
+    margin:0!important;
+    z-index:3!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge{
+    display:block!important;
+    width:30px!important;
+    height:30px!important;
+    object-fit:contain!important;
+  }
+  #schedule .sf-match-name{
+    font-size:16px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
+</style>
