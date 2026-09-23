@@ -11172,6 +11172,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${esc2(teamLogo)}" alt="${esc2(p.team_name||'Team')} logo">`:`<div class="sf-team-season-logo"></div>`}<div><div class="sf-team-season-kicker">Season ${esc2(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${esc2(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${esc2(p.conference||'')} · ${finals} final${finals===1?'':'s'} · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${rec}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule has been loaded for this program yet.</div>'}</section>`;
     const line=document.querySelector('#schedule .schedule-season-line');if(line)line.innerHTML=`Season <span id="scheduleSeasonLabel">${esc2(S?.season_number||'')}</span> · ${esc2(p.team_name||'My Schedule')}`;
     const meta=document.getElementById('scheduleMeta');if(meta)meta.textContent=`${games.length} schedule entries · full season view`;
+    sfFocusRenderedGame(games);
   }
   function renderNational(){
     const line=document.querySelector('#schedule .schedule-season-line');if(line)line.innerHTML=`Season <span id="scheduleSeasonLabel">${esc2(S?.season_number||'')}</span> · National Scoreboard`;
@@ -13255,6 +13256,37 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     return `<div class="sf-vegas-bottom"><div class="sf-vegas-head"><strong>Dynasty Vegas</strong><span>${escV3(String(vr.confidence||'—').toUpperCase())} confidence</span></div><div class="sf-vegas-grid">${chip(`${(p.team_name||'Team').split(' ')[0]} spread`,spreadText)}${chip('O/U',vr.total_line??'—')}${chip('Projected',proj)}${chip('Win prob',prob)}</div>${done?`<div class="sf-vegas-grades">${grade('ATS',vr.ats_result)}${grade('Total',vr.total_result)}</div>`:''}</div>`;
   }
   function gameClassV3(g){try{return typeof gameClassification==='function'?gameClassification(g):(g.conference_game?'Conference':'Non-Conference')}catch(_e){return g.conference_game?'Conference':'Non-Conference'}}
+  let sfScheduleFocusSignature="";
+  let sfScheduleFocusForced=false;
+  function sfScheduleFocusGame(games){
+    const active=Number((typeof currentWeek==='function'&&currentWeek())||S?.current_week||0);
+    const live=games.find(g=>!g.is_bye&&g.status==='scheduled'&&Number(g.week_number||0)===active);
+    if(live)return live;
+    const next=games.filter(g=>!g.is_bye&&g.status==='scheduled'&&Number(g.week_number||0)>=active).sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0))[0];
+    if(next)return next;
+    return games.filter(g=>!g.is_bye&&g.status==='completed').sort((a,b)=>Number(b.week_number||0)-Number(a.week_number||0))[0]||null;
+  }
+  function sfScheduleNameClass(name){
+    const n=String(name||'').trim().length;
+    return n>26?' sf-name-xxl':n>20?' sf-name-xl':n>15?' sf-name-lg':'';
+  }
+  function sfFocusRenderedGame(games){
+    const target=sfScheduleFocusGame(games);if(!target)return;
+    const sig=String(target.id||target.week_number||'');
+    if(!sfScheduleFocusForced&&sfScheduleFocusSignature===sig)return;
+    sfScheduleFocusSignature=sig;sfScheduleFocusForced=false;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const card=document.querySelector('[data-sf-v3-game="'+CSS.escape(String(target.id))+'"]');
+      if(!card)return;
+      document.querySelectorAll('#schedule .sf-season-game.sf-action-focus').forEach(x=>x.classList.remove('sf-action-focus'));
+      card.classList.add('sf-action-focus');
+      card.scrollIntoView({behavior:'auto',block:'center',inline:'nearest'});
+    }));
+  }
+  document.addEventListener('click',e=>{
+    const b=e.target.closest?.('#schedule .sf-score-action[data-result-game]');
+    if(b)sfScheduleFocusForced=true;
+  },true);
   function renderMyV3(){
     const schedule=document.getElementById('schedule'),host=document.getElementById('sfMySeasonHost');if(!schedule||!host)return;
     const p=myProgramV3();if(!p)return;
@@ -13269,7 +13301,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       const sides=sideDataV3(g,p),away=sides.away,home=sides.home,neutral=sides.neutral;
       const result=done?(x?`${x.result} ${x.pf}-${x.pa}`:`FINAL ${g.points_for??''}-${g.points_against??''}`):'UPCOMING',resultCls=x?.result==='W'?'win':x?.result==='L'?'loss':'neutral';
       const action=owned?`<button type="button" class="sf-score-action ${done?'edit':''}" data-result-game="${escV3(g.id)}">${done?'Edit Score':'Add Score'}</button>`:'';
-      const side=(s,role,isHome)=>`<div class="sf-match-team ${isHome?'home':'away'}">${logoMarkupV3(s)}<div class="sf-match-copy"><span class="sf-match-role ${isHome?'home':''}">${role}</span><strong class="sf-match-name">${s.rank?`#${s.rank} `:''}${escV3(s.name||'Team')}</strong>${s.score!=null?`<span class="sf-match-score">${escV3(s.score)}</span>`:''}</div></div>`;
+      const side=(s,role,isHome)=>`<div class="sf-match-team ${isHome?'home':'away'}">${logoMarkupV3(s)}<div class="sf-match-copy"><span class="sf-match-role ${isHome?'home':''}">${role}</span><strong class="sf-match-name${sfScheduleNameClass(s.name)}">${s.rank?`#${s.rank} `:''}${escV3(s.name||'Team')}</strong>${s.score!=null?`<span class="sf-match-score">${escV3(s.score)}</span>`:''}</div></div>`;
       const middle=`<div class="sf-match-spine">${typeof sfEventBadgeMarkup==='function'?sfEventBadgeMarkup(g,'sf-event-badge-compact'):''}<strong>${neutral?'VS':'AT'}</strong><span>${escV3(gameClassV3(g))}${neutral?' · Neutral Site':''}</span></div>`;
       return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${escV3(weekLabelV3(g))}</strong><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
     }).join('');
@@ -14879,5 +14911,56 @@ img.sf-logo-system-v2{
   }
   #schedule .sf-match-spine strong{display:block!important}
   #schedule .sf-match-spine>span:not(.sf-event-badge-wrap){display:none!important}
+}
+</style>
+
+<style id="sf-qa-9-8-0-schedule-focus-ia">
+/* QA 9.8.0 — action-first schedule + single-line team-name IA */
+#schedule .sf-season-game.sf-action-focus{
+  border-color:rgba(244,197,66,.42)!important;
+  box-shadow:0 0 0 1px rgba(244,197,66,.12),0 14px 36px rgba(0,0,0,.24)!important;
+}
+#schedule .sf-match-name{
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  max-width:none!important;
+}
+#schedule .sf-match-name.sf-name-lg{font-size:.88em!important}
+#schedule .sf-match-name.sf-name-xl{font-size:.78em!important}
+#schedule .sf-match-name.sf-name-xxl{font-size:.68em!important}
+@media(max-width:700px){
+  #schedule .sf-matchup{
+    grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)!important;
+    gap:4px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
+  }
+  #schedule .sf-match-team{
+    grid-template-columns:34px minmax(0,1fr)!important;
+    gap:5px!important;
+    min-width:0!important;
+  }
+  #schedule .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 34px!important;
+  }
+  #schedule .sf-match-logo,
+  #schedule .sf-match-logo-fallback{
+    width:34px!important;
+    height:34px!important;
+  }
+  #schedule .sf-match-copy{min-width:0!important;overflow:visible!important}
+  #schedule .sf-match-name{
+    font-size:14px!important;
+    letter-spacing:-.015em!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+  }
+  #schedule .sf-match-name.sf-name-lg{font-size:12.6px!important}
+  #schedule .sf-match-name.sf-name-xl{font-size:11.4px!important}
+  #schedule .sf-match-name.sf-name-xxl{font-size:10.4px!important;letter-spacing:-.025em!important}
+  #schedule .sf-match-team.home .sf-match-copy{text-align:right!important}
 }
 </style>
