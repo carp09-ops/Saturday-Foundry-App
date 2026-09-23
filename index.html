@@ -11052,8 +11052,10 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
     const sideData=(g)=>{
       const userIsTeam=String(g.team_id||'')===tid;
       const ranks=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{team:g.team_rank??null,opponent:g.opponent_rank??null})||{};
-      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?ranks.team:ranks.opponent,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
-      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:userIsTeam?ranks.opponent:ranks.team,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
+      const userRank=userIsTeam?(ranks.team??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number):null)):(ranks.opponent??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number):null));
+      const oppRank=userIsTeam?(ranks.opponent??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number):null)):(ranks.team??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number):null));
+      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userRank,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
+      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:oppRank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
       const raw=String(g.home_away||'').toLowerCase();let userHome=null;
       if(raw==='home')userHome=userIsTeam;else if(raw==='away')userHome=!userIsTeam;
       if(userHome===true)return {away:opp,home:user,neutral:false,userHome:true};
@@ -11623,6 +11625,8 @@ window.addEventListener("pageshow",mark);
 .sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
 </style>
 <meta name="saturday-foundry-qa-step-2" content="9.7.9-score-entry-rankings">
+
+<meta name="saturday-foundry-qa-step-2b" content="9.7.9-my-schedule-rank-fallback">
 </body>
 </html>
 
