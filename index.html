@@ -11684,14 +11684,7 @@ window.addEventListener("pageshow",mark);
 .sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
 </style>
 
-<!-- Saturday Foundry QA 9.8.0 · Event identity badges -->
-<meta name="saturday-foundry-qa-release" content="9.8.0-event-identity-badges">
-<script id="sf-qa-9-8-0-marker">(function(){
- function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.0";}
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
- window.addEventListener("pageshow",mark);
- var n=0,t=setInterval(function(){mark();if(++n>12)clearInterval(t)},250);
-})();</script>
+
 </body>
 </html>
 
@@ -13438,7 +13431,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   background:transparent!important;
 }
 </style>
-<meta name="saturday-foundry-production-release" content="9.7.7-global-logo-normalization">
+<meta name="saturday-foundry-production-release" content="9.7.9">
 
 <style id="sf-logo-system-v2-preview">
 /* PREVIEW: single transparent team-logo system.
@@ -14568,12 +14561,8 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-qa-release" content="9.8.0-event-badges">
 <script id="sf-qa-9-8-0-authority">
 (function(){
-  function mark(){
-    var m=document.getElementById('sfBuildMarker');
-    if(m && m.textContent!=='QA 9.8.0') m.textContent='QA 9.8.0';
-  }
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.0';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
-  window.addEventListener('pageshow',mark);
-  setTimeout(mark,250);
+  setTimeout(mark,400);
 })();
 </script>
