@@ -6830,17 +6830,25 @@ function sfConferenceBadgeKey(v){
  if(k==="sun belt")return "sun-belt";
  return "";
 }
+function sfGameConference(g,side){
+ const direct=side==="team"?g?.team_conference:g?.opponent_conference;
+ if(direct)return String(direct);
+ const id=side==="team"?g?.team_id:g?.opponent_team_id;
+ const name=side==="team"?g?.team_name:g?.opponent_team;
+ const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(name&&String(x.team_name||"").toLowerCase()===String(name).toLowerCase()));
+ return String(p?.conference||"");
+}
 function sfEventBadgeInfo(g){
  const type=String(g?.game_type||"regular_season").toLowerCase();
  if(type==="national_championship")return {src:"assets/event-badges/national-championship.svg",label:"National Championship"};
  if(type==="playoff")return {src:"assets/event-badges/cfp.svg",label:"College Football Playoff"};
  if(type==="bowl")return {src:"assets/event-badges/bowl.svg",label:g?.event_name||"Bowl Game"};
+ const a=sfGameConference(g,"team"), b=sfGameConference(g,"opponent");
  let conference="";
  if(type==="conference"||type==="conference_championship"){
-   const a=String(g?.team_conference||""), b=String(g?.opponent_conference||"");
    conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
- }else if(type==="regular_season"&&gameClassification(g)==="CONFERENCE"){
-   conference=g?.team_conference||g?.opponent_conference||"";
+ }else if(type==="regular_season"&&gameClassification({...g,team_conference:a,opponent_conference:b})==="CONFERENCE"){
+   conference=a||b;
  }
  const key=sfConferenceBadgeKey(conference);
  if(!key)return null;
