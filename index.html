@@ -13308,6 +13308,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
     const meta=document.getElementById('scheduleMeta');if(meta)meta.textContent=`${games.length} schedule entries · full season view`;
+    sfFocusRenderedGame(games);
   }
   function isMyModeV3(){const b=document.querySelector('#sfScheduleModebar [data-sf-schedule-mode="my"]');return !!(b?.classList.contains('active')||scheduleTeamPersonId&&String(scheduleTeamPersonId)===String(myProgramV3()?.person_id||''));}
   const currentRender=window.renderSchedule;
