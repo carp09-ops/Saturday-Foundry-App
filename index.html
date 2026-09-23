@@ -5686,7 +5686,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
         <label><span>Week</span><input id="myScheduleWeek" type="number" min="1" placeholder="Week"></label>
         <label><span>Opponent</span><select id="myScheduleOpponent"><option value="">Choose opponent</option></select></label>
         <label><span>Location</span><select id="myScheduleSide"><option value="home">Home</option><option value="away">Away</option></select></label>
-        <label><span>Game Type</span><select id="myScheduleType"><option value="regular_season">Regular Season</option><option value="conference_championship">Conference Championship</option><option value="bowl">Bowl</option><option value="playoff">Playoff / National Championship</option></select></label>
+        <label><span>Game Type</span><select id="myScheduleType"><option value="regular_season">Auto · Regular Season</option><option value="conference">Conference</option><option value="non_conference">Non-Conference</option><option value="conference_championship">Conference Championship</option><option value="bowl">Bowl</option><option value="playoff">CFP Playoff</option><option value="national_championship">National Championship</option></select><small class="sf-game-type-help">Auto classifies regular-season games from both team conferences.</small></label>
         <label><span>Opponent Rank</span><input id="myScheduleOppRank" type="number" min="1" max="25" placeholder="Optional"></label>
         <label><span>Event / Bowl</span><input id="myScheduleEvent" placeholder="Optional"></label>
         <input id="myScheduleNetwork" type="hidden" value="">
@@ -5881,8 +5881,8 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <button id="closeResultBtn" class="close-btn">×</button>
     </div>
     <div class="stack" style="margin-top:13px">
-      <div class="score-entry"><div><div id="myTeamLabel" class="score-entry-name">My Team</div><div class="score-entry-sub">Your final score</div></div><input id="myScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
-      <div class="score-entry"><div><div id="oppTeamLabel" class="score-entry-name">Opponent</div><div class="score-entry-sub">Opponent final score</div></div><input id="oppScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
+      <div class="score-entry"><div><div class="score-entry-name"><span id="myTeamLabel">My Team</span><span id="myTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Your final score</div></div><input id="myScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
+      <div class="score-entry"><div><div class="score-entry-name"><span id="oppTeamLabel">Opponent</span><span id="oppTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Opponent final score</div></div><input id="oppScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
       <div class="result-options">
         <input id="myRank" type="number" min="1" max="25" placeholder="Your rank (optional)">
         <input id="oppRank" type="number" min="1" max="25" placeholder="Opponent rank (optional)">
@@ -6809,9 +6809,46 @@ function gameClassification(g){
  if(type==="regular_season"){
    if(g?.is_conference_game===true)return "CONFERENCE";
    if(g?.is_conference_game===false)return "NON-CONFERENCE";
+   const norm=v=>String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+   const a=norm(g?.team_conference),b=norm(g?.opponent_conference);
+   if(a&&b)return a===b?"CONFERENCE":"NON-CONFERENCE";
    return "REGULAR SEASON";
  }
  return ({conference_championship:"CONFERENCE CHAMPIONSHIP",bowl:"BOWL",playoff:"PLAYOFF",national_championship:"NATIONAL CHAMPIONSHIP"})[type]||type.replaceAll("_"," ").toUpperCase();
+}
+function sfConferenceBadgeKey(v){
+ const k=String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+ if(k==="sec"||k.includes("southeastern"))return "sec";
+ if(k==="acc"||k.includes("atlantic coast"))return "acc";
+ if(k==="big ten"||k==="big 10")return "big-ten";
+ if(k==="big 12"||k==="big twelve")return "big-12";
+ if(k==="pac 12"||k==="pac12"||k.includes("pacific 12"))return "pac-12";
+ if(k==="american"||k.includes("american athletic"))return "american";
+ if(k==="conference usa"||k==="c usa"||k==="cusa")return "cusa";
+ if(k==="mac"||k.includes("mid american"))return "mac";
+ if(k==="mountain west")return "mountain-west";
+ if(k==="sun belt")return "sun-belt";
+ return "";
+}
+function sfEventBadgeInfo(g){
+ const type=String(g?.game_type||"regular_season").toLowerCase();
+ if(type==="national_championship")return {src:"assets/event-badges/national-championship.svg",label:"National Championship"};
+ if(type==="playoff")return {src:"assets/event-badges/cfp.svg",label:"College Football Playoff"};
+ if(type==="bowl")return {src:"assets/event-badges/bowl.svg",label:g?.event_name||"Bowl Game"};
+ let conference="";
+ if(type==="conference"||type==="conference_championship"){
+   const a=String(g?.team_conference||""), b=String(g?.opponent_conference||"");
+   conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
+ }else if(type==="regular_season"&&gameClassification(g)==="CONFERENCE"){
+   conference=g?.team_conference||g?.opponent_conference||"";
+ }
+ const key=sfConferenceBadgeKey(conference);
+ if(!key)return null;
+ return {src:"assets/event-badges/"+key+".svg",label:conference+(type==="conference_championship"?" Championship":"")};
+}
+function sfEventBadgeMarkup(g,cls=""){
+ const info=sfEventBadgeInfo(g);if(!info)return "";
+ return `<span class="sf-event-badge-wrap ${cls}" title="${esc(info.label)}"><img class="sf-event-badge" src="${esc(info.src)}" alt="${esc(info.label)} badge" loading="lazy" onerror="this.closest('.sf-event-badge-wrap')?.remove()"></span>`;
 }
 function formatCoachKickoff(v){
  if(!v)return "";
@@ -6875,9 +6912,10 @@ function renderCoaches(){
 }
 function renderStandings(){
  $("standingsMeta").textContent=`Season ${S.season_number}`;
- const rows=[...state.standings].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0));
+ const controlled=(state.standings||[]).filter(r=>r?.person_id&&r?.coach_name);
+ const rows=[...controlled].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0));
  $("standings").innerHTML=`<div class="grid grid-cols-[30px_1fr_55px_60px_58px] text-[8px] uppercase tracking-wider text-slate-500 pb-2"><span>#</span><span>Coach</span><span>W-L</span><span>PD</span><span>Streak</span></div>`+rows.map((r,i)=>`<div class="grid grid-cols-[30px_1fr_55px_60px_58px] items-center py-2 border-t border-slate-800/70 text-[10px]"><span class="font-teko text-lg ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)}</div></div></div><span class="font-teko text-base text-white">${r.wins}-${r.losses}</span><span class="font-bold ${Number(r.point_differential)>0?"pos":Number(r.point_differential)<0?"neg":""}">${signed(r.point_differential)}</span><span class="font-black ${streak(r.person_id).startsWith('W')?'text-emerald-300':'text-rose-300'}">${streak(r.person_id)}</span></div>`).join('');
- $("power").innerHTML=[...state.standings].sort((a,b)=>Number(power(b))-Number(power(a))).map((r,i)=>`<div class="grid grid-cols-[30px_1fr_auto] items-center gap-2 py-2 ${i?'border-t border-slate-800/70':''}"><span class="font-teko text-xl ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="text-[11px] font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)} · ${r.wins}-${r.losses}</div></div></div><div class="text-right"><span class="font-teko text-2xl text-white">${power(r)}</span><div class="text-[7px] text-amber-300 font-black">${currentFormBand(r).label}${currentFormBand(r).early?" · EARLY SAMPLE":""}</div></div></div>`).join('')
+ $("power").innerHTML=[...controlled].sort((a,b)=>Number(power(b))-Number(power(a))).map((r,i)=>`<div class="grid grid-cols-[30px_1fr_auto] items-center gap-2 py-2 ${i?'border-t border-slate-800/70':''}"><span class="font-teko text-xl ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="text-[11px] font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)} · ${r.wins}-${r.losses}</div></div></div><div class="text-right"><span class="font-teko text-2xl text-white">${power(r)}</span><div class="text-[7px] text-amber-300 font-black">${currentFormBand(r).label}${currentFormBand(r).early?" · EARLY SAMPLE":""}</div></div></div>`).join('')
 }
 function renderWire(){
  const week=currentWeek();
@@ -7011,11 +7049,20 @@ function rankingForTeamWeek(teamId,teamName,week){
  const row=(state.rankings||[]).find(r=>Number(r.week_number)===w&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key));
  return row?Number(row.rank)||null:null;
 }
+function latestRankingAtOrBeforeWeek(teamId,teamName,week){
+ const key=teamKey(teamName),w=Number(week);
+ const row=(state.rankings||[])
+   .filter(r=>Number(r.week_number)<=w&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key))
+   .sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];
+ return row?Number(row.rank)||null:null;
+}
 function scheduleDisplayRanks(g){
- // Completed games preserve the game-time rank snapshot. Future/scheduled games always
- // prefer the authoritative weekly poll so stale manually-entered participant ranks cannot win.
- if(g.status==="completed") return {team:g.team_rank??rankingForTeamWeek(g.team_id,g.team_name,g.week_number),opponent:g.opponent_rank??rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number)};
- return {team:rankingForTeamWeek(g.team_id,g.team_name,g.week_number)??g.team_rank??null,opponent:rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number)??g.opponent_rank??null};
+ const teamExact=rankingForTeamWeek(g.team_id,g.team_name,g.week_number);
+ const oppExact=rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number);
+ const teamPrior=latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number);
+ const oppPrior=latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number);
+ if(g.status==="completed") return {team:g.team_rank??teamExact??teamPrior??null,opponent:g.opponent_rank??oppExact??oppPrior??null};
+ return {team:teamExact??g.team_rank??teamPrior??null,opponent:oppExact??g.opponent_rank??oppPrior??null};
 }
 
 
@@ -7066,7 +7113,8 @@ async function openMyScheduleBuilder(){
  $("myScheduleTeam").innerHTML=`${mine.logo_url?`<img src="${esc(mine.logo_url)}" alt="">`:""}<div><b>${esc(mine.team_name)}</b><span>${esc(mine.conference||"")}</span></div>`;
  try{
    const choices=await Data.scheduleTeams(S.season_id);
-   const opps=choices.filter(t=>String(t.team_id)!==String(mine.team_id));
+   state.scheduleTeamOptions=choices||[];
+   const opps=state.scheduleTeamOptions.filter(t=>String(t.team_id)!==String(mine.team_id));
    $("myScheduleOpponent").innerHTML='<option value="">Choose opponent</option><option value="__BYE__">BYE WEEK</option>'+opps.map(t=>`<option value="${t.team_id}">${esc(t.team_name)}${t.claimed?` · ${esc(t.claimed_by||"Dynasty Coach")}`:""}</option>`).join("");
  }catch(e){msg($("myScheduleMessage"),e.message||String(e),"error")}
 }
@@ -7080,7 +7128,16 @@ async function saveMyScheduleGame(){
  if(editingMatchupId&&isBye){msg($("myScheduleMessage"),"To change an existing matchup into a bye, remove that matchup first and then add the bye.","error");return}
  try{
    btn.disabled=true;msg($("myScheduleMessage"),isBye?"Adding bye week…":"Adding matchup…");
-   const payload={p_week_number:week,p_opponent_team_id:opp,p_my_side:$("myScheduleSide").value,p_event_name:$("myScheduleEvent").value.trim()||null,p_network:null,p_kickoff_time:$("myScheduleKickoff").value?new Date($("myScheduleKickoff").value).toISOString():null,p_game_type:$("myScheduleType").value,p_my_rank:myRank,p_opponent_rank:rank};
+   const eventName=$("myScheduleEvent").value.trim()||null;
+   const requestedType=$("myScheduleType").value;
+   let resolvedType=requestedType;
+   if(!isBye&&requestedType==="regular_season"){
+     const oppTeam=(state.scheduleTeamOptions||[]).find(t=>String(t.team_id)===String(opp));
+     const norm=v=>String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+     const mineConf=norm(mine.conference),oppConf=norm(oppTeam?.conference);
+     if(mineConf&&oppConf)resolvedType=mineConf===oppConf?"conference":"non_conference";
+   }
+   const payload={p_week_number:week,p_opponent_team_id:opp,p_my_side:$("myScheduleSide").value,p_event_name:eventName,p_network:null,p_kickoff_time:$("myScheduleKickoff").value?new Date($("myScheduleKickoff").value).toISOString():null,p_game_type:resolvedType,p_my_rank:myRank,p_opponent_rank:rank};
    const vegasEditTarget=editingMatchupId;
    if(editingMatchupId) await Data.updateMatchup({p_game_id:editingMatchupId,...payload});
    else if(isBye) await Data.createMyBye({p_season_id:S.season_id,p_week_number:week});
@@ -7220,6 +7277,7 @@ function renderSchedule(){
    return `<article class="v21-matchup-card ${g.id===featured?.id?"featured":""} ${done?"final":"upcoming"} " data-game-card="${g.id}">
      <div class="v21-matchup-top">
        <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
+       ${sfEventBadgeMarkup(g,"sf-event-badge-compact")}
        <strong>${done?`FINAL · ${gameClassification(g)}`:gameClassification(g)}</strong>
      </div>
      <div class="v21-matchup-main">
@@ -7327,6 +7385,9 @@ function openResultModal(gameId){
  $("resultSubtitle").textContent=`${g.team_name} ${g.home_away==="away"?"at":"vs"} ${g.opponent_team||"Opponent"}`;
  $("myTeamLabel").textContent=g.team_name||"My Team";$("oppTeamLabel").textContent=g.opponent_team||"Opponent";
  const displayRank=scheduleDisplayRanks(g);
+ const myRankBadge=$("myTeamRankBadge"),oppRankBadge=$("oppTeamRankBadge");
+ if(myRankBadge){myRankBadge.textContent=displayRank.team?"#"+displayRank.team:"UNRANKED";myRankBadge.classList.remove("hidden");myRankBadge.classList.toggle("unranked",!displayRank.team)}
+ if(oppRankBadge){oppRankBadge.textContent=displayRank.opponent?"#"+displayRank.opponent:"UNRANKED";oppRankBadge.classList.remove("hidden");oppRankBadge.classList.toggle("unranked",!displayRank.opponent)}
  $("myScore").value="";$("oppScore").value="";$("myRank").value=displayRank.team||"";$("oppRank").value=displayRank.opponent||"";
  $("resultEvent").value=g.event_name||"";$("resultNetwork").value="";$("resultOT").checked=!!g.overtime;hide($("resultMessage"));
  $("resultModal").classList.remove("hidden");
@@ -8027,7 +8088,26 @@ async function loadSeason(id){
   ]);
   const normalizedWeek=Number(activeWeek);
   const cleanVegas=Array.isArray(vegas)?vegas:[];
-  state={...state,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
+  const rankingRows=Array.isArray(rankings)?rankings:[];
+  const currentRankFor=(teamId,teamName,week)=>{
+    const key=String(teamName||"").trim().toLowerCase(),w=Number(week||0);
+    const row=rankingRows.filter(r=>{
+      const sameId=teamId&&String(r.team_id||"")===String(teamId);
+      const sameName=String(r.team?.name||r.team_name||"").trim().toLowerCase()===key;
+      return Number(r.week_number)<=w&&(sameId||sameName);
+    }).sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];
+    return row?Number(row.rank)||null:null;
+  };
+  const hydrateRanks=row=>{
+    if(!row||row.status==="completed")return row;
+    return {...row,
+      team_rank:currentRankFor(row.team_id,row.team_name,row.week_number)??row.team_rank??null,
+      opponent_rank:currentRankFor(row.opponent_team_id,row.opponent_team,row.week_number)??row.opponent_rank??null
+    };
+  };
+  const rankedGames=(Array.isArray(games)?games:[]).map(hydrateRanks);
+  const rankedScheduleGames=(Array.isArray(scheduleGames)?scheduleGames:[]).map(hydrateRanks);
+  state={...state,programs,standings,games:rankedGames,scheduleGames:rankedScheduleGames,rankings:rankingRows,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
   vegasCache.set(vegasKey(D.dynasty_id,S.season_id),cleanVegas);
   renderAll();
   decorateGameCardsWithVegas(cleanVegas);
@@ -10887,7 +10967,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10920,7 +11000,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -10951,15 +11031,20 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-season-game-week{display:flex;align-items:center;gap:8px;min-width:0}.sf-season-game-week strong{font:800 20px/.9 'Barlow Condensed',sans-serif;color:#f4c542;text-transform:uppercase}.sf-season-game-week span{font-size:8px;color:#71858e;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sf-season-game-status{display:flex;align-items:center;gap:8px;flex:0 0 auto}.sf-season-game-status strong{font:800 20px/.9 'Barlow Condensed',sans-serif;white-space:nowrap}.sf-season-game-status .win{color:#74e4be}.sf-season-game-status .loss{color:#ff8080}.sf-season-game-status .neutral{color:#dbe6eb}.sf-season-game-status small{display:block;font-size:7px;color:#71858e;text-transform:uppercase;letter-spacing:.08em;text-align:right}
 .sf-score-action{min-height:30px!important;padding:6px 9px!important;border-radius:7px!important;border:1px solid rgba(25,211,154,.38)!important;background:rgba(25,211,154,.10)!important;color:#8ff0d0!important;font-size:8px!important;font-weight:900!important;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;white-space:nowrap}.sf-score-action.edit{border-color:rgba(79,209,255,.34)!important;background:rgba(79,209,255,.08)!important;color:#8bdfff!important}
-.sf-matchup{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);gap:8px;align-items:center;padding:14px 12px 13px;min-height:116px}
+.sf-matchup{display:grid;grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);gap:8px;align-items:center;padding:14px 12px 13px;min-height:116px}
 .sf-match-team{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;min-width:0}.sf-match-team.home{grid-template-columns:minmax(0,1fr) 48px;text-align:right}.sf-match-team.home .sf-match-logo{grid-column:2}.sf-match-team.home .sf-match-copy{grid-column:1;grid-row:1}.sf-match-logo{width:48px;height:48px;object-fit:contain;border-radius:10px;background:#fff;padding:4px}.sf-match-logo-fallback{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(148,163,184,.18);border-radius:10px;color:#92a2ad;background:#071820;font:800 16px 'Barlow Condensed',sans-serif}
-.sf-match-copy{min-width:0}.sf-match-role{display:inline-flex;align-items:center;gap:4px;margin-bottom:4px;font-size:7px;color:#71858e;text-transform:uppercase;letter-spacing:.11em;font-weight:900}.sf-match-role.home{color:#f4c542}.sf-match-name{display:block;font:800 18px/.98 'Barlow Condensed',sans-serif;color:#f8fafc;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-match-meta{display:block;margin-top:4px;font-size:8px;color:#71858e}.sf-match-score{display:inline-block;margin-top:5px;font:800 19px/.9 'Barlow Condensed',sans-serif;color:#fff}.sf-match-sep{text-align:center;font:800 14px/1 'Barlow Condensed',sans-serif;color:#607782;text-transform:uppercase}
+.sf-match-copy{min-width:0}.sf-match-role{display:inline-flex;align-items:center;gap:4px;margin-bottom:4px;font-size:7px;color:#71858e;text-transform:uppercase;letter-spacing:.11em;font-weight:900}.sf-match-role.home{color:#f4c542}.sf-match-name{display:block;font:800 18px/.98 'Barlow Condensed',sans-serif;color:#f8fafc;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sf-match-meta{display:block;margin-top:4px;font-size:8px;color:#71858e}.sf-match-score{display:inline-block;margin-top:5px;font:800 19px/.9 'Barlow Condensed',sans-serif;color:#fff}.sf-match-center{display:grid;place-items:center;gap:5px;min-width:0}.sf-match-sep{text-align:center;font:800 14px/1 'Barlow Condensed',sans-serif;color:#607782;text-transform:uppercase}
 .sf-game-classification{padding:0 12px 10px;font-size:8px;color:#71858e;text-transform:uppercase;letter-spacing:.07em;text-align:center}
 .sf-vegas-bottom{margin:0 10px 10px;padding:9px 10px 8px;border:1px solid rgba(244,197,66,.18);border-radius:10px;background:linear-gradient(145deg,rgba(31,24,8,.28),rgba(4,14,18,.74))}.sf-vegas-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.sf-vegas-head strong{font-size:8px;color:#f4c542;letter-spacing:.12em;text-transform:uppercase}.sf-vegas-head span{font-size:7px;color:#8e7d4f;text-transform:uppercase;letter-spacing:.09em;font-weight:900}.sf-vegas-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.sf-vegas-stat{min-width:0;padding:4px 5px;text-align:center;border-left:1px solid rgba(148,163,184,.09)}.sf-vegas-stat:first-child{border-left:0}.sf-vegas-stat span{display:block;font-size:6px;color:#71858e;text-transform:uppercase;letter-spacing:.07em}.sf-vegas-stat b{display:block;margin-top:2px;font:800 16px/.95 'Barlow Condensed',sans-serif;color:#eef5f7;white-space:nowrap}.sf-vegas-grades{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.sf-vegas-grade{display:inline-flex;padding:3px 6px;border-radius:999px;border:1px solid rgba(25,211,154,.25);background:rgba(25,211,154,.07);font-size:6px;color:#74e4be;text-transform:uppercase;letter-spacing:.07em;font-weight:900}.sf-vegas-grade.loss{border-color:rgba(239,83,80,.25);background:rgba(239,83,80,.07);color:#ff8a8a}.sf-no-market{margin:0 10px 10px;padding:7px 9px;border-top:1px solid rgba(148,163,184,.08);font-size:7px;color:#5f737d;text-align:center;text-transform:uppercase;letter-spacing:.08em}
 .sf-national-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid rgba(81,147,171,.18);border-radius:11px;background:rgba(4,15,20,.62)}.sf-national-toolbar-copy strong{display:block;font:800 17px/1 'Barlow Condensed',sans-serif;text-transform:uppercase}.sf-national-toolbar-copy span{display:block;margin-top:3px;font-size:8px;color:#70838e}.sf-national-archive{border:1px solid rgba(81,147,171,.20);border-radius:12px;background:rgba(3,12,16,.55);overflow:hidden}.sf-national-archive>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;list-style:none;font:800 12px Inter,sans-serif;color:#b8c5cc}.sf-national-archive>summary::-webkit-details-marker{display:none}.sf-national-archive>summary span{font-size:8px;color:#6f828d;text-transform:uppercase;letter-spacing:.08em}.sf-national-archive #scheduleRows{padding:0 10px 10px}
 #schedule.sf-my-mode #weekNav,#schedule.sf-my-mode .v21-current-week,#schedule.sf-my-mode .v21-season-archive,#schedule.sf-my-mode .sf-national-archive{display:none!important}#schedule.sf-national-mode #sfMySeasonHost{display:none!important}#schedule.sf-national-mode #myScheduleToggle{display:none!important}#schedule.sf-my-mode #myScheduleToggle{display:inline-flex!important}#schedule.sf-national-mode #scheduleScopeBar .schedule-team-filter-wrap{display:none!important}#schedule.sf-national-mode #scheduleScopeBar .schedule-scope-copy span{font-size:0}#schedule.sf-national-mode #scheduleScopeBar .schedule-scope-copy span:after{content:'National Board';font-size:11px}#schedule .schedule-card-actions [data-edit-game]{display:none!important}#schedule .schedule-card-actions .enter-result{display:inline-flex!important}
 @media(min-width:701px) and (max-width:1100px){.sf-season-board{grid-template-columns:1fr}.sf-matchup{min-height:108px}.sf-match-team{grid-template-columns:54px minmax(0,1fr)}.sf-match-team.home{grid-template-columns:minmax(0,1fr) 54px}.sf-match-logo,.sf-match-logo-fallback{width:54px;height:54px}.sf-match-name{font-size:21px}}
 @media(max-width:700px){.sf-team-season-hero{grid-template-columns:auto minmax(0,1fr);gap:10px;padding:12px}.sf-team-season-logo{width:50px;height:50px}.sf-team-season-name{font-size:26px}.sf-team-season-record{grid-column:1/-1;text-align:left;display:flex;align-items:baseline;gap:8px}.sf-team-season-record strong{font-size:25px}.sf-team-season-record span{margin:0}.sf-season-board{grid-template-columns:1fr;gap:8px}.sf-season-game-head{align-items:flex-start;padding:9px 10px}.sf-season-game-week strong{font-size:18px}.sf-season-game-status{align-items:flex-start}.sf-season-game-status strong{font-size:18px}.sf-score-action{min-height:32px!important}.sf-matchup{grid-template-columns:1fr;gap:7px;padding:10px;min-height:0}.sf-match-team,.sf-match-team.home{grid-template-columns:42px minmax(0,1fr);text-align:left}.sf-match-team.home .sf-match-logo{grid-column:1}.sf-match-team.home .sf-match-copy{grid-column:2;grid-row:1}.sf-match-logo,.sf-match-logo-fallback{width:42px;height:42px}.sf-match-name{font-size:17px}.sf-match-sep{text-align:left;margin-left:15px;font-size:9px}.sf-game-classification{text-align:left;padding:0 10px 8px}.sf-vegas-bottom{margin:0 8px 8px;padding:8px}.sf-vegas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0}.sf-vegas-stat{padding:5px;border-top:1px solid rgba(148,163,184,.08)}.sf-vegas-stat:nth-child(odd){border-left:0}.sf-vegas-stat:nth-child(-n+2){border-top:0}.sf-vegas-stat b{font-size:17px}.sf-schedule-modebar{align-items:flex-start;flex-direction:column}.sf-schedule-modes{width:100%}.sf-schedule-mode{flex:1}}
+.sf-event-badge-wrap{display:inline-grid;place-items:center;width:48px;height:48px;flex:0 0 48px;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.sf-event-badge{display:block;width:48px;height:48px;object-fit:contain;object-position:center;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
+.v21-matchup-top .sf-event-badge-wrap.sf-event-badge-compact{width:38px;height:38px;flex-basis:38px;margin-left:auto}
+.v21-matchup-top .sf-event-badge-wrap.sf-event-badge-compact .sf-event-badge{width:38px;height:38px}
+@media(max-width:700px){.sf-event-badge-wrap,.sf-event-badge{width:42px;height:42px}.sf-event-badge-wrap{flex-basis:42px}.v21-matchup-top .sf-event-badge-wrap.sf-event-badge-compact,.v21-matchup-top .sf-event-badge-wrap.sf-event-badge-compact .sf-event-badge{width:34px;height:34px}.v21-matchup-top .sf-event-badge-wrap.sf-event-badge-compact{flex-basis:34px}}
 </style>
 <script id="sf-schedule-redesign-v2-runtime">
 (function(){
@@ -11026,8 +11111,11 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
     const logoMarkup=(id,name,url,cls='sf-match-logo')=>{const src=url||((id&&typeof logoFor==='function')?logoFor(id,name):'');return src?`<img class="${cls}" src="${esc2(src)}" alt="${esc2(name||'Team')} logo">`:`<div class="sf-match-logo-fallback">${esc2((name||'?').slice(0,2).toUpperCase())}</div>`};
     const sideData=(g)=>{
       const userIsTeam=String(g.team_id||'')===tid;
-      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
-      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
+      const ranks=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{team:g.team_rank??null,opponent:g.opponent_rank??null})||{};
+      const userRank=userIsTeam?(ranks.team??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number):null)):(ranks.opponent??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number):null));
+      const oppRank=userIsTeam?(ranks.opponent??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number):null)):(ranks.team??(typeof latestRankingAtOrBeforeWeek==='function'?latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number):null));
+      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userRank,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
+      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:oppRank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
       const raw=String(g.home_away||'').toLowerCase();let userHome=null;
       if(raw==='home')userHome=userIsTeam;else if(raw==='away')userHome=!userIsTeam;
       if(userHome===true)return {away:opp,home:user,neutral:false,userHome:true};
@@ -11053,7 +11141,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
       if(g.is_bye)return `<article class="sf-season-game bye" data-sf-season-game="${esc2(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${esc2(weekLabel(g))}</strong><span>${esc2(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="neutral">BYE</strong><small>Open Date</small></div></div></div><div class="sf-matchup"><div class="sf-match-team">${logoMarkup(p.team_id,p.team_name,p.logo_url)}<div class="sf-match-copy"><span class="sf-match-role">Rest Week</span><strong class="sf-match-name">${esc2(p.team_name||'My Program')}</strong><span class="sf-match-meta">No game scheduled</span></div></div></div></article>`;
       const sides=sideData(g);const away=sides.away,home=sides.home;const neutral=sides.neutral;
       const score=(side)=>side.score!=null?`<span class="sf-match-score">${esc2(side.score)}</span>`:'';
-      return `<article class="sf-season-game ${cls}" data-sf-season-game="${esc2(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${esc2(weekLabel(g))}</strong><span>${esc2(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="${resultCls}">${esc2(result)}</strong><small>${esc2(status)}</small></div>${action}</div></div><div class="sf-matchup"><div class="sf-match-team away">${logoMarkup(away.id,away.name,away.logo)}<div class="sf-match-copy"><span class="sf-match-role">${neutral?'Team 1':'Away'}</span><strong class="sf-match-name">${away.rank?`#${away.rank} `:''}${esc2(away.name||'Away')}</strong>${score(away)}</div></div><div class="sf-match-sep">${neutral?'VS':'AT'}</div><div class="sf-match-team home">${logoMarkup(home.id,home.name,home.logo)}<div class="sf-match-copy"><span class="sf-match-role ${neutral?'':'home'}">${neutral?'Team 2':'Home'}</span><strong class="sf-match-name">${home.rank?`#${home.rank} `:''}${esc2(home.name||'Home')}</strong>${score(home)}</div></div></div><div class="sf-game-classification">${esc2(gameClassification(g))}${neutral?' · Neutral Site':''}</div>${vegasMarkup(g,sides)}</article>`;
+      return `<article class="sf-season-game ${cls}" data-sf-season-game="${esc2(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${esc2(weekLabel(g))}</strong><span>${esc2(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="${resultCls}">${esc2(result)}</strong><small>${esc2(status)}</small></div>${action}</div></div><div class="sf-matchup"><div class="sf-match-team away">${logoMarkup(away.id,away.name,away.logo)}<div class="sf-match-copy"><span class="sf-match-role">${neutral?'Team 1':'Away'}</span><strong class="sf-match-name">${away.rank?`#${away.rank} `:''}${esc2(away.name||'Away')}</strong>${score(away)}</div></div><div class="sf-match-center">${sfEventBadgeMarkup(g)}<div class="sf-match-sep">${neutral?'VS':'AT'}</div></div><div class="sf-match-team home">${logoMarkup(home.id,home.name,home.logo)}<div class="sf-match-copy"><span class="sf-match-role ${neutral?'':'home'}">${neutral?'Team 2':'Home'}</span><strong class="sf-match-name">${home.rank?`#${home.rank} `:''}${esc2(home.name||'Home')}</strong>${score(home)}</div></div></div><div class="sf-game-classification">${esc2(gameClassification(g))}${neutral?' · Neutral Site':''}</div>${vegasMarkup(g,sides)}</article>`;
     }).join('');
     const teamLogo=p.logo_url||((p.team_id&&typeof logoFor==='function')?logoFor(p.team_id,p.team_name):'');
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${esc2(teamLogo)}" alt="${esc2(p.team_name||'Team')} logo">`:`<div class="sf-team-season-logo"></div>`}<div><div class="sf-team-season-kicker">Season ${esc2(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${esc2(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${esc2(p.conference||'')} · ${finals} final${finals===1?'':'s'} · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${rec}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule has been loaded for this program yet.</div>'}</section>`;
@@ -11530,7 +11618,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 }
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.4-gotw-true-final-authority">
-\n
+
 <style id="sf-gotw-standalone-v1">
 /* GOTW is now a first-class full-width Overview module, independent of the hero. */
 #overview .sf-gotw-standalone-shell{
@@ -11578,6 +11666,32 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 }
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.6-gotw-logo-polish">
+
+<!-- Saturday Foundry PROD 9.7.9 · Step 1 game classification -->
+<style id="sf-qa-9-7-9-game-type">
+.sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
+</style>
+<script id="sf-qa-9-7-9-step1-marker">(function(){
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.7.9";}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
+window.addEventListener("pageshow",mark);
+})();</script>
+
+<!-- Saturday Foundry PROD 9.7.9 · Step 2 score-entry rankings -->
+<style id="sf-qa-9-7-9-score-ranks">
+.score-entry-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sf-score-rank{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 7px;border-radius:999px;border:1px solid rgba(244,197,66,.38);background:rgba(244,197,66,.10);color:#f4c542;font-size:10px;font-weight:950;letter-spacing:.04em}
+.sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
+</style>
+
+<!-- Saturday Foundry QA 9.8.0 · Event identity badges -->
+<meta name="saturday-foundry-qa-release" content="9.8.0-event-identity-badges">
+<script id="sf-qa-9-8-0-marker">(function(){
+ function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.0";}
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
+ window.addEventListener("pageshow",mark);
+ var n=0,t=setInterval(function(){mark();if(++n>12)clearInterval(t)},250);
+})();</script>
 </body>
 </html>
 
@@ -12482,7 +12596,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';
   }
   function boot(){
     build();
@@ -12492,7 +12606,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.7';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.9';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12899,7 +13013,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.7';
+    if(m)m.textContent='PROD 9.7.9';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14412,7 +14526,7 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-gotw-logo-plaque" content="v1-premium-foundry">
 
-<!-- Saturday Foundry QA 9.7.8 — GOTW team-name type scale -->
+<!-- Saturday Foundry PROD 9.7.9 — GOTW team-name type scale -->
 <style id="sf-qa-9-7-8-gotw-team-type">
 #overview #gotw .gotw-matchup .team-name,
 #overview #gotw .gotw-matchup .team-side.right .team-name{
@@ -14431,14 +14545,33 @@ img.sf-logo-system-v2{
   }
 }
 </style>
-<meta name="saturday-foundry-qa-release" content="9.7.8-gotw-team-name-type-scale">
 <script id="sf-qa-9-7-8-marker">
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.7.8';
+    if(m)m.textContent='PROD 9.7.9';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
+})();
+</script>
+
+<meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
+<script id="sf-prod-9-7-9-authority">
+(function(){
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
+  window.addEventListener('pageshow',mark);
+})();
+</script>
+
+<meta name="saturday-foundry-qa-release" content="9.8.0-event-badges">
+<script id="sf-qa-9-8-0-authority">
+(function(){
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.0';}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
+  window.addEventListener('pageshow',mark);
+  setTimeout(mark,250);setTimeout(mark,1000);
+  if(document.body)new MutationObserver(function(){mark();}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
