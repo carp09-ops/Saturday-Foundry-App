@@ -5686,7 +5686,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
         <label><span>Week</span><input id="myScheduleWeek" type="number" min="1" placeholder="Week"></label>
         <label><span>Opponent</span><select id="myScheduleOpponent"><option value="">Choose opponent</option></select></label>
         <label><span>Location</span><select id="myScheduleSide"><option value="home">Home</option><option value="away">Away</option></select></label>
-        <label><span>Game Type</span><select id="myScheduleType"><option value="regular_season">Regular Season</option><option value="conference_championship">Conference Championship</option><option value="bowl">Bowl</option><option value="playoff">Playoff / National Championship</option></select></label>
+        <label><span>Game Type</span><select id="myScheduleType"><option value="regular_season">Auto · Regular Season</option><option value="conference">Conference</option><option value="non_conference">Non-Conference</option><option value="conference_championship">Conference Championship</option><option value="bowl">Bowl</option><option value="playoff">CFP Playoff</option><option value="national_championship">National Championship</option></select><small class="sf-game-type-help">Auto classifies regular-season games from both team conferences.</small></label>
         <label><span>Opponent Rank</span><input id="myScheduleOppRank" type="number" min="1" max="25" placeholder="Optional"></label>
         <label><span>Event / Bowl</span><input id="myScheduleEvent" placeholder="Optional"></label>
         <input id="myScheduleNetwork" type="hidden" value="">
@@ -6809,6 +6809,9 @@ function gameClassification(g){
  if(type==="regular_season"){
    if(g?.is_conference_game===true)return "CONFERENCE";
    if(g?.is_conference_game===false)return "NON-CONFERENCE";
+   const norm=v=>String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+   const a=norm(g?.team_conference),b=norm(g?.opponent_conference);
+   if(a&&b)return a===b?"CONFERENCE":"NON-CONFERENCE";
    return "REGULAR SEASON";
  }
  return ({conference_championship:"CONFERENCE CHAMPIONSHIP",bowl:"BOWL",playoff:"PLAYOFF",national_championship:"NATIONAL CHAMPIONSHIP"})[type]||type.replaceAll("_"," ").toUpperCase();
@@ -7066,7 +7069,8 @@ async function openMyScheduleBuilder(){
  $("myScheduleTeam").innerHTML=`${mine.logo_url?`<img src="${esc(mine.logo_url)}" alt="">`:""}<div><b>${esc(mine.team_name)}</b><span>${esc(mine.conference||"")}</span></div>`;
  try{
    const choices=await Data.scheduleTeams(S.season_id);
-   const opps=choices.filter(t=>String(t.team_id)!==String(mine.team_id));
+   state.scheduleTeamOptions=choices||[];
+   const opps=state.scheduleTeamOptions.filter(t=>String(t.team_id)!==String(mine.team_id));
    $("myScheduleOpponent").innerHTML='<option value="">Choose opponent</option><option value="__BYE__">BYE WEEK</option>'+opps.map(t=>`<option value="${t.team_id}">${esc(t.team_name)}${t.claimed?` · ${esc(t.claimed_by||"Dynasty Coach")}`:""}</option>`).join("");
  }catch(e){msg($("myScheduleMessage"),e.message||String(e),"error")}
 }
@@ -7080,7 +7084,16 @@ async function saveMyScheduleGame(){
  if(editingMatchupId&&isBye){msg($("myScheduleMessage"),"To change an existing matchup into a bye, remove that matchup first and then add the bye.","error");return}
  try{
    btn.disabled=true;msg($("myScheduleMessage"),isBye?"Adding bye week…":"Adding matchup…");
-   const payload={p_week_number:week,p_opponent_team_id:opp,p_my_side:$("myScheduleSide").value,p_event_name:$("myScheduleEvent").value.trim()||null,p_network:null,p_kickoff_time:$("myScheduleKickoff").value?new Date($("myScheduleKickoff").value).toISOString():null,p_game_type:$("myScheduleType").value,p_my_rank:myRank,p_opponent_rank:rank};
+   const eventName=$("myScheduleEvent").value.trim()||null;
+   const requestedType=$("myScheduleType").value;
+   let resolvedType=requestedType;
+   if(!isBye&&requestedType==="regular_season"){
+     const oppTeam=(state.scheduleTeamOptions||[]).find(t=>String(t.team_id)===String(opp));
+     const norm=v=>String(v||"").trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
+     const mineConf=norm(mine.conference),oppConf=norm(oppTeam?.conference);
+     if(mineConf&&oppConf)resolvedType=mineConf===oppConf?"conference":"non_conference";
+   }
+   const payload={p_week_number:week,p_opponent_team_id:opp,p_my_side:$("myScheduleSide").value,p_event_name:eventName,p_network:null,p_kickoff_time:$("myScheduleKickoff").value?new Date($("myScheduleKickoff").value).toISOString():null,p_game_type:resolvedType,p_my_rank:myRank,p_opponent_rank:rank};
    const vegasEditTarget=editingMatchupId;
    if(editingMatchupId) await Data.updateMatchup({p_game_id:editingMatchupId,...payload});
    else if(isBye) await Data.createMyBye({p_season_id:S.season_id,p_week_number:week});
@@ -11578,6 +11591,17 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 }
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.6-gotw-logo-polish">
+
+<!-- Saturday Foundry QA 9.7.9 · Step 1 game classification -->
+<style id="sf-qa-9-7-9-game-type">
+.sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
+</style>
+<meta name="saturday-foundry-qa-step" content="9.7.9-step-1-game-classification">
+<script id="sf-qa-9-7-9-step1-marker">(function(){
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.7.9";}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
+window.addEventListener("pageshow",mark);
+})();</script>
 </body>
 </html>
 
