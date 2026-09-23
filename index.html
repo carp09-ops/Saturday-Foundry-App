@@ -14570,3 +14570,37 @@ img.sf-logo-system-v2{
   setTimeout(mark,400);
 })();
 </script>
+
+<style id="sf-qa-9-8-0-mobile-portrait-event-badge">
+/* QA 9.8.0 — keep conference/postseason identity visible on phone portrait. */
+@media (max-width:700px) and (orientation:portrait){
+  #schedule .v21-matchup-main>div:first-child{
+    position:relative!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    padding-right:46px!important;
+  }
+  #schedule .v21-matchup-main .sf-event-badge-wrap.sf-event-badge-compact{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:absolute!important;
+    top:0!important;
+    right:0!important;
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    flex:0 0 36px!important;
+    margin:0!important;
+    z-index:4!important;
+  }
+  #schedule .v21-matchup-main .sf-event-badge-wrap.sf-event-badge-compact .sf-event-badge{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:36px!important;
+    height:36px!important;
+    object-fit:contain!important;
+  }
+}
+</style>
