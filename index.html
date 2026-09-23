@@ -8052,7 +8052,26 @@ async function loadSeason(id){
   ]);
   const normalizedWeek=Number(activeWeek);
   const cleanVegas=Array.isArray(vegas)?vegas:[];
-  state={...state,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
+  const rankingRows=Array.isArray(rankings)?rankings:[];
+  const currentRankFor=(teamId,teamName,week)=>{
+    const key=String(teamName||"").trim().toLowerCase(),w=Number(week||0);
+    const row=rankingRows.filter(r=>{
+      const sameId=teamId&&String(r.team_id||"")===String(teamId);
+      const sameName=String(r.team?.name||r.team_name||"").trim().toLowerCase()===key;
+      return Number(r.week_number)<=w&&(sameId||sameName);
+    }).sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];
+    return row?Number(row.rank)||null:null;
+  };
+  const hydrateRanks=row=>{
+    if(!row||row.status==="completed")return row;
+    return {...row,
+      team_rank:currentRankFor(row.team_id,row.team_name,row.week_number)??row.team_rank??null,
+      opponent_rank:currentRankFor(row.opponent_team_id,row.opponent_team,row.week_number)??row.opponent_rank??null
+    };
+  };
+  const rankedGames=(Array.isArray(games)?games:[]).map(hydrateRanks);
+  const rankedScheduleGames=(Array.isArray(scheduleGames)?scheduleGames:[]).map(hydrateRanks);
+  state={...state,programs,standings,games:rankedGames,scheduleGames:rankedScheduleGames,rankings:rankingRows,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
   vegasCache.set(vegasKey(D.dynasty_id,S.season_id),cleanVegas);
   renderAll();
   decorateGameCardsWithVegas(cleanVegas);
@@ -11627,6 +11646,8 @@ window.addEventListener("pageshow",mark);
 <meta name="saturday-foundry-qa-step-2" content="9.7.9-score-entry-rankings">
 
 <meta name="saturday-foundry-qa-step-2b" content="9.7.9-my-schedule-rank-fallback">
+
+<meta name="saturday-foundry-qa-step-2c" content="9.7.9-hydrate-upcoming-ranks-at-load">
 </body>
 </html>
 
