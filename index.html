@@ -11689,6 +11689,63 @@ window.addEventListener("pageshow",mark);
 </style>
 
 
+
+<style id="sf-qa-9-8-0-mobile-event-badge-fix">
+@media(max-width:700px){
+  #schedule .sf-season-game .sf-matchup{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:6px!important;
+    padding:10px!important;
+  }
+  #schedule .sf-season-game .sf-match-team{
+    display:grid!important;
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:7px!important;
+    align-items:center!important;
+    min-width:0!important;
+    text-align:left!important;
+  }
+  #schedule .sf-season-game .sf-match-team.home{
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    text-align:right!important;
+  }
+  #schedule .sf-season-game .sf-match-team.home .sf-match-logo{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #schedule .sf-season-game .sf-match-team.home .sf-match-copy{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+  #schedule .sf-season-game .sf-match-logo,
+  #schedule .sf-season-game .sf-match-logo-fallback{
+    width:38px!important;
+    height:38px!important;
+  }
+  #schedule .sf-season-game .sf-match-center{
+    display:grid!important;
+    place-items:center!important;
+    gap:3px!important;
+    min-width:44px!important;
+  }
+  #schedule .sf-season-game .sf-match-center .sf-event-badge-wrap,
+  #schedule .sf-season-game .sf-match-center .sf-event-badge{
+    display:block!important;
+    width:34px!important;
+    height:34px!important;
+    max-width:34px!important;
+    max-height:34px!important;
+  }
+  #schedule .sf-season-game .sf-match-sep{
+    margin:0!important;
+    text-align:center!important;
+    font-size:9px!important;
+    line-height:1!important;
+  }
+}
+</style>
 </body>
 </html>
 
