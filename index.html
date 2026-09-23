@@ -6831,12 +6831,33 @@ function sfConferenceBadgeKey(v){
  return "";
 }
 function sfGameConference(g,side){
- const direct=side==="team"?g?.team_conference:g?.opponent_conference;
+ const field=side==="team"?"team_conference":"opponent_conference";
+ const direct=g?.[field];
  if(direct)return String(direct);
  const id=side==="team"?g?.team_id:g?.opponent_team_id;
  const name=side==="team"?g?.team_name:g?.opponent_team;
- const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(name&&String(x.team_name||"").toLowerCase()===String(name).toLowerCase()));
- return String(p?.conference||"");
+ const normName=String(name||"").trim().toLowerCase();
+
+ // Phone portrait can render from state.games while tablet/desktop uses the richer
+ // schedule view. First hydrate the exact same game by id from every loaded source.
+ const sources=[state.scheduleGames,state.games,state.allGames].filter(Array.isArray);
+ for(const rows of sources){
+   const same=(g?.id!=null)?rows.find(r=>String(r?.id||"")===String(g.id)):null;
+   if(same?.[field])return String(same[field]);
+ }
+
+ // If the exact row still lacks conference metadata, resolve the same team from
+ // any loaded schedule row before falling back to the controlled-program record.
+ for(const rows of sources){
+   for(const r of rows){
+     const teamMatch=(id&&String(r?.team_id||"")===String(id))||(!id&&normName&&String(r?.team_name||"").trim().toLowerCase()===normName);
+     if(teamMatch&&r?.team_conference)return String(r.team_conference);
+     const oppMatch=(id&&String(r?.opponent_team_id||"")===String(id))||(!id&&normName&&String(r?.opponent_team||"").trim().toLowerCase()===normName);
+     if(oppMatch&&r?.opponent_conference)return String(r.opponent_conference);
+   }
+ }
+ const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||"").trim().toLowerCase()===normName));
+ return String(p?.conference||p?.team_conference||"");
 }
 function sfEventBadgeInfo(g){
  const type=String(g?.game_type||"regular_season").toLowerCase();
@@ -14812,5 +14833,51 @@ img.sf-logo-system-v2{
     overflow:hidden!important;
     text-overflow:ellipsis!important;
   }
+}
+</style>
+<style id="sf-qa-9-8-0-portrait-final-authority">
+@media(max-width:700px) and (orientation:portrait){
+  #schedule .sf-matchup{
+    grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr)!important;
+    gap:6px!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-spine{
+    position:relative!important;
+    display:flex!important;
+    width:38px!important;
+    min-width:38px!important;
+    margin:0!important;
+    padding:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+    overflow:visible!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge-wrap,
+  #schedule .sf-match-spine .sf-event-badge-wrap.sf-event-badge-compact{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:absolute!important;
+    left:50%!important;
+    top:-34px!important;
+    transform:translateX(-50%)!important;
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    margin:0!important;
+    z-index:20!important;
+    pointer-events:none!important;
+  }
+  #schedule .sf-match-spine .sf-event-badge{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:30px!important;
+    height:30px!important;
+    object-fit:contain!important;
+  }
+  #schedule .sf-match-spine strong{display:block!important}
+  #schedule .sf-match-spine>span:not(.sf-event-badge-wrap){display:none!important}
 }
 </style>
