@@ -11051,8 +11051,9 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
     const logoMarkup=(id,name,url,cls='sf-match-logo')=>{const src=url||((id&&typeof logoFor==='function')?logoFor(id,name):'');return src?`<img class="${cls}" src="${esc2(src)}" alt="${esc2(name||'Team')} logo">`:`<div class="sf-match-logo-fallback">${esc2((name||'?').slice(0,2).toUpperCase())}</div>`};
     const sideData=(g)=>{
       const userIsTeam=String(g.team_id||'')===tid;
-      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
-      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
+      const ranks=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{team:g.team_rank??null,opponent:g.opponent_rank??null})||{};
+      const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?ranks.team:ranks.opponent,logo:p.logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
+      const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?g.opponent_team:g.team_name,rank:userIsTeam?ranks.opponent:ranks.team,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
       const raw=String(g.home_away||'').toLowerCase();let userHome=null;
       if(raw==='home')userHome=userIsTeam;else if(raw==='away')userHome=!userIsTeam;
       if(userHome===true)return {away:opp,home:user,neutral:false,userHome:true};
