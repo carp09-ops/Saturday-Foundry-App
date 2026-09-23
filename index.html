@@ -14568,10 +14568,12 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-qa-release" content="9.8.0-event-badges">
 <script id="sf-qa-9-8-0-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.0';}
+  function mark(){
+    var m=document.getElementById('sfBuildMarker');
+    if(m && m.textContent!=='QA 9.8.0') m.textContent='QA 9.8.0';
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
-  setTimeout(mark,250);setTimeout(mark,1000);
-  if(document.body)new MutationObserver(function(){mark();}).observe(document.body,{childList:true,subtree:true});
+  setTimeout(mark,250);
 })();
 </script>
