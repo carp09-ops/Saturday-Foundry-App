@@ -10932,7 +10932,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10965,7 +10965,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11627,32 +11627,22 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 </style>
 <meta name="saturday-foundry-production-release" content="9.7.6-gotw-logo-polish">
 
-<!-- Saturday Foundry QA 9.7.9 · Step 1 game classification -->
+<!-- Saturday Foundry PROD 9.7.9 · Step 1 game classification -->
 <style id="sf-qa-9-7-9-game-type">
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
-<meta name="saturday-foundry-qa-step" content="9.7.9-step-1-game-classification">
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.7.9";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.7.9";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
 
-<!-- Saturday Foundry QA 9.7.9 · Step 2 score-entry rankings -->
+<!-- Saturday Foundry PROD 9.7.9 · Step 2 score-entry rankings -->
 <style id="sf-qa-9-7-9-score-ranks">
 .score-entry-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sf-score-rank{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 7px;border-radius:999px;border:1px solid rgba(244,197,66,.38);background:rgba(244,197,66,.10);color:#f4c542;font-size:10px;font-weight:950;letter-spacing:.04em}
 .sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
 </style>
-<meta name="saturday-foundry-qa-step-2" content="9.7.9-score-entry-rankings">
-
-<meta name="saturday-foundry-qa-step-2b" content="9.7.9-my-schedule-rank-fallback">
-
-<meta name="saturday-foundry-qa-step-2c" content="9.7.9-hydrate-upcoming-ranks-at-load">
-
-<meta name="saturday-foundry-qa-step-3" content="9.7.9-remove-stray-literal-newline">
-
-<meta name="saturday-foundry-qa-step-4" content="9.7.9-overview-user-controlled-only">
 </body>
 </html>
 
@@ -12557,7 +12547,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.7';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';
   }
   function boot(){
     build();
@@ -12567,7 +12557,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.7';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.9';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12974,7 +12964,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.7';
+    if(m)m.textContent='PROD 9.7.9';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14487,7 +14477,7 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-gotw-logo-plaque" content="v1-premium-foundry">
 
-<!-- Saturday Foundry QA 9.7.8 — GOTW team-name type scale -->
+<!-- Saturday Foundry PROD 9.7.9 — GOTW team-name type scale -->
 <style id="sf-qa-9-7-8-gotw-team-type">
 #overview #gotw .gotw-matchup .team-name,
 #overview #gotw .gotw-matchup .team-side.right .team-name{
@@ -14506,13 +14496,21 @@ img.sf-logo-system-v2{
   }
 }
 </style>
-<meta name="saturday-foundry-qa-release" content="9.7.8-gotw-team-name-type-scale">
 <script id="sf-qa-9-7-8-marker">
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.7.8';
+    if(m)m.textContent='PROD 9.7.9';
   }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
+  window.addEventListener('pageshow',mark);
+})();
+</script>
+
+<meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
+<script id="sf-prod-9-7-9-authority">
+(function(){
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
