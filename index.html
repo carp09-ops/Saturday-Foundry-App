@@ -5881,8 +5881,8 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <button id="closeResultBtn" class="close-btn">×</button>
     </div>
     <div class="stack" style="margin-top:13px">
-      <div class="score-entry"><div><div id="myTeamLabel" class="score-entry-name">My Team</div><div class="score-entry-sub">Your final score</div></div><input id="myScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
-      <div class="score-entry"><div><div id="oppTeamLabel" class="score-entry-name">Opponent</div><div class="score-entry-sub">Opponent final score</div></div><input id="oppScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
+      <div class="score-entry"><div><div class="score-entry-name"><span id="myTeamLabel">My Team</span><span id="myTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Your final score</div></div><input id="myScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
+      <div class="score-entry"><div><div class="score-entry-name"><span id="oppTeamLabel">Opponent</span><span id="oppTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Opponent final score</div></div><input id="oppScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
       <div class="result-options">
         <input id="myRank" type="number" min="1" max="25" placeholder="Your rank (optional)">
         <input id="oppRank" type="number" min="1" max="25" placeholder="Opponent rank (optional)">
@@ -7014,11 +7014,20 @@ function rankingForTeamWeek(teamId,teamName,week){
  const row=(state.rankings||[]).find(r=>Number(r.week_number)===w&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key));
  return row?Number(row.rank)||null:null;
 }
+function latestRankingAtOrBeforeWeek(teamId,teamName,week){
+ const key=teamKey(teamName),w=Number(week);
+ const row=(state.rankings||[])
+   .filter(r=>Number(r.week_number)<=w&&((teamId&&String(r.team_id)===String(teamId))||teamKey(r.team?.name)===key))
+   .sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];
+ return row?Number(row.rank)||null:null;
+}
 function scheduleDisplayRanks(g){
- // Completed games preserve the game-time rank snapshot. Future/scheduled games always
- // prefer the authoritative weekly poll so stale manually-entered participant ranks cannot win.
- if(g.status==="completed") return {team:g.team_rank??rankingForTeamWeek(g.team_id,g.team_name,g.week_number),opponent:g.opponent_rank??rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number)};
- return {team:rankingForTeamWeek(g.team_id,g.team_name,g.week_number)??g.team_rank??null,opponent:rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number)??g.opponent_rank??null};
+ const teamExact=rankingForTeamWeek(g.team_id,g.team_name,g.week_number);
+ const oppExact=rankingForTeamWeek(g.opponent_team_id,g.opponent_team,g.week_number);
+ const teamPrior=latestRankingAtOrBeforeWeek(g.team_id,g.team_name,g.week_number);
+ const oppPrior=latestRankingAtOrBeforeWeek(g.opponent_team_id,g.opponent_team,g.week_number);
+ if(g.status==="completed") return {team:g.team_rank??teamExact??teamPrior??null,opponent:g.opponent_rank??oppExact??oppPrior??null};
+ return {team:teamExact??g.team_rank??teamPrior??null,opponent:oppExact??g.opponent_rank??oppPrior??null};
 }
 
 
@@ -7340,6 +7349,9 @@ function openResultModal(gameId){
  $("resultSubtitle").textContent=`${g.team_name} ${g.home_away==="away"?"at":"vs"} ${g.opponent_team||"Opponent"}`;
  $("myTeamLabel").textContent=g.team_name||"My Team";$("oppTeamLabel").textContent=g.opponent_team||"Opponent";
  const displayRank=scheduleDisplayRanks(g);
+ const myRankBadge=$("myTeamRankBadge"),oppRankBadge=$("oppTeamRankBadge");
+ if(myRankBadge){myRankBadge.textContent=displayRank.team?"#"+displayRank.team:"UNRANKED";myRankBadge.classList.remove("hidden");myRankBadge.classList.toggle("unranked",!displayRank.team)}
+ if(oppRankBadge){oppRankBadge.textContent=displayRank.opponent?"#"+displayRank.opponent:"UNRANKED";oppRankBadge.classList.remove("hidden");oppRankBadge.classList.toggle("unranked",!displayRank.opponent)}
  $("myScore").value="";$("oppScore").value="";$("myRank").value=displayRank.team||"";$("oppRank").value=displayRank.opponent||"";
  $("resultEvent").value=g.event_name||"";$("resultNetwork").value="";$("resultOT").checked=!!g.overtime;hide($("resultMessage"));
  $("resultModal").classList.remove("hidden");
@@ -11602,6 +11614,14 @@ function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textConten
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
+
+<!-- Saturday Foundry QA 9.7.9 · Step 2 score-entry rankings -->
+<style id="sf-qa-9-7-9-score-ranks">
+.score-entry-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sf-score-rank{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 7px;border-radius:999px;border:1px solid rgba(244,197,66,.38);background:rgba(244,197,66,.10);color:#f4c542;font-size:10px;font-weight:950;letter-spacing:.04em}
+.sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
+</style>
+<meta name="saturday-foundry-qa-step-2" content="9.7.9-score-entry-rankings">
 </body>
 </html>
 
