@@ -6878,9 +6878,10 @@ function renderCoaches(){
 }
 function renderStandings(){
  $("standingsMeta").textContent=`Season ${S.season_number}`;
- const rows=[...state.standings].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0));
+ const controlled=(state.standings||[]).filter(r=>r?.person_id&&r?.coach_name);
+ const rows=[...controlled].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0));
  $("standings").innerHTML=`<div class="grid grid-cols-[30px_1fr_55px_60px_58px] text-[8px] uppercase tracking-wider text-slate-500 pb-2"><span>#</span><span>Coach</span><span>W-L</span><span>PD</span><span>Streak</span></div>`+rows.map((r,i)=>`<div class="grid grid-cols-[30px_1fr_55px_60px_58px] items-center py-2 border-t border-slate-800/70 text-[10px]"><span class="font-teko text-lg ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)}</div></div></div><span class="font-teko text-base text-white">${r.wins}-${r.losses}</span><span class="font-bold ${Number(r.point_differential)>0?"pos":Number(r.point_differential)<0?"neg":""}">${signed(r.point_differential)}</span><span class="font-black ${streak(r.person_id).startsWith('W')?'text-emerald-300':'text-rose-300'}">${streak(r.person_id)}</span></div>`).join('');
- $("power").innerHTML=[...state.standings].sort((a,b)=>Number(power(b))-Number(power(a))).map((r,i)=>`<div class="grid grid-cols-[30px_1fr_auto] items-center gap-2 py-2 ${i?'border-t border-slate-800/70':''}"><span class="font-teko text-xl ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="text-[11px] font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)} · ${r.wins}-${r.losses}</div></div></div><div class="text-right"><span class="font-teko text-2xl text-white">${power(r)}</span><div class="text-[7px] text-amber-300 font-black">${currentFormBand(r).label}${currentFormBand(r).early?" · EARLY SAMPLE":""}</div></div></div>`).join('')
+ $("power").innerHTML=[...controlled].sort((a,b)=>Number(power(b))-Number(power(a))).map((r,i)=>`<div class="grid grid-cols-[30px_1fr_auto] items-center gap-2 py-2 ${i?'border-t border-slate-800/70':''}"><span class="font-teko text-xl ${i===0?'text-amber-300':'text-slate-500'}">${i+1}</span><div class="flex items-center gap-2 min-w-0">${r.logo_url?`<img src="${esc(r.logo_url)}" class="h-5 w-5 object-contain rounded" alt="">`:''}<div class="min-w-0"><div class="text-[11px] font-bold text-white truncate">${esc(r.coach_name)}</div><div class="text-[8px] text-slate-500 truncate">${esc(r.team_name)} · ${r.wins}-${r.losses}</div></div></div><div class="text-right"><span class="font-teko text-2xl text-white">${power(r)}</span><div class="text-[7px] text-amber-300 font-black">${currentFormBand(r).label}${currentFormBand(r).early?" · EARLY SAMPLE":""}</div></div></div>`).join('')
 }
 function renderWire(){
  const week=currentWeek();
@@ -11650,6 +11651,8 @@ window.addEventListener("pageshow",mark);
 <meta name="saturday-foundry-qa-step-2c" content="9.7.9-hydrate-upcoming-ranks-at-load">
 
 <meta name="saturday-foundry-qa-step-3" content="9.7.9-remove-stray-literal-newline">
+
+<meta name="saturday-foundry-qa-step-4" content="9.7.9-overview-user-controlled-only">
 </body>
 </html>
 
