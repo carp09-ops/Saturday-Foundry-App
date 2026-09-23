@@ -7281,11 +7281,11 @@ function renderSchedule(){
    return `<article class="v21-matchup-card ${g.id===featured?.id?"featured":""} ${done?"final":"upcoming"} " data-game-card="${g.id}">
      <div class="v21-matchup-top">
        <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
-       ${sfEventBadgeMarkup(g,"sf-event-badge-compact")}
        <strong>${done?`FINAL · ${gameClassification(g)}`:gameClassification(g)}</strong>
      </div>
      <div class="v21-matchup-main">
        <div>
+         ${sfEventBadgeMarkup(g,"sf-event-badge-compact")}
          <div class="v23-team-row">
            ${logoFor(g.team_id,g.team_name)?`<img class="v23-team-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<div class="v23-team-logo fallback v24-logo-pending" data-team-logo-name="${esc(g.team_name||"")}">🏈</div>`}
            <div class="v21-teamline">${displayRank.team?`<span class="v21-rank">#${displayRank.team}</span>`:""}${esc(g.team_name||"TBD")}</div>
