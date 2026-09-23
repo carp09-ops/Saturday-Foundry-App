@@ -6843,13 +6843,9 @@ function sfEventBadgeInfo(g){
  if(type==="national_championship")return {src:"assets/event-badges/national-championship.svg",label:"National Championship"};
  if(type==="playoff")return {src:"assets/event-badges/cfp.svg",label:"College Football Playoff"};
  if(type==="bowl")return {src:"assets/event-badges/bowl.svg",label:g?.event_name||"Bowl Game"};
+ if(type!=="conference"&&type!=="conference_championship")return null;
  const a=sfGameConference(g,"team"), b=sfGameConference(g,"opponent");
- let conference="";
- if(type==="conference"||type==="conference_championship"){
-   conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
- }else if(type==="regular_season"&&gameClassification({...g,team_conference:a,opponent_conference:b})==="CONFERENCE"){
-   conference=a||b;
- }
+ const conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
  const key=sfConferenceBadgeKey(conference);
  if(!key)return null;
  return {src:"assets/event-badges/"+key+".svg",label:conference+(type==="conference_championship"?" Championship":"")};
