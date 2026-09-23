@@ -6859,6 +6859,18 @@ function sfGameConference(g,side){
  const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||"").trim().toLowerCase()===normName));
  return String(p?.conference||p?.team_conference||"");
 }
+const SF_CONFERENCE_LOGOS={
+  "acc":"https://commons.wikimedia.org/wiki/Special:FilePath/Atlantic%20Coast%20Conference%20logo.svg",
+  "american":"https://commons.wikimedia.org/wiki/Special:FilePath/American%20Athletic%20Conference%20logo.svg",
+  "big-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%2012%20Conference%20%28cropped%29%20logo.svg",
+  "big-ten":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%20Ten%20Conference%20logo%20%282012%29.svg",
+  "cusa":"https://commons.wikimedia.org/wiki/Special:FilePath/CUSA%20logo.svg",
+  "mac":"https://commons.wikimedia.org/wiki/Special:FilePath/Mid-American%20Conference%20logo.svg",
+  "mountain-west":"https://commons.wikimedia.org/wiki/Special:FilePath/Mountain%20West%20Conference%20logo.svg",
+  "pac-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Pac-12%202026%20Logo.svg",
+  "sec":"https://commons.wikimedia.org/wiki/Special:FilePath/Southeastern%20Conference%20logo%20%282024%29.svg",
+  "sun-belt":"https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20Belt%20Conference%202020%20logo%20and%20name.svg"
+};
 function sfEventBadgeInfo(g){
  const type=String(g?.game_type||"regular_season").toLowerCase();
  if(type==="national_championship")return {src:"assets/event-badges/national-championship.svg",label:"National Championship"};
@@ -6868,8 +6880,9 @@ function sfEventBadgeInfo(g){
  const a=sfGameConference(g,"team"), b=sfGameConference(g,"opponent");
  const conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
  const key=sfConferenceBadgeKey(conference);
- if(!key)return null;
- return {src:"assets/event-badges/"+key+".svg",label:conference+(type==="conference_championship"?" Championship":"")};
+ const src=SF_CONFERENCE_LOGOS[key];
+ if(!src)return null;
+ return {src,label:conference+(type==="conference_championship"?" Championship":"")};
 }
 function sfEventBadgeMarkup(g,cls=""){
  const info=sfEventBadgeInfo(g);if(!info)return "";
@@ -13094,9 +13107,10 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   }
   function logoMarkupV3(side){
     const src=resolveLogoV3(side.id,side.name,side.logo);
+    const userCls=side.isUser?' sf-user-team-logo':'';
     return src
-      ? `<img class="sf-match-logo" src="${escV3(src)}" alt="${escV3(side.name)} logo">`
-      : `<div class="sf-match-logo-fallback" data-sf-team-id="${escV3(side.id||'')}" data-sf-team-name="${escV3(side.name||'')}">${escV3((side.name||'?').slice(0,2).toUpperCase())}</div>`;
+      ? `<img class="sf-match-logo${userCls}" src="${escV3(src)}" alt="${escV3(side.name)} logo">`
+      : `<div class="sf-match-logo-fallback${userCls}" data-sf-team-id="${escV3(side.id||'')}" data-sf-team-name="${escV3(side.name||'')}">${escV3((side.name||'?').slice(0,2).toUpperCase())}</div>`;
   }
   function hydrateScheduleLogosV3(host){
     if(!host||!window.CDHQLogoResolver?.resolve)return;
@@ -13125,8 +13139,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   }
   function sideDataV3(g,p){
     const tid=String(p.team_id||''),userIsTeam=String(g.team_id||'')===tid;
-    const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||p.team_logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
-    const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?(g.opponent_team||g.opponent_name):(g.team_name||g.team),rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
+    const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||p.team_logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null,isUser:true};
+    const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?(g.opponent_team||g.opponent_name):(g.team_name||g.team),rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null,isUser:false};
     opp.logo=resolveLogoV3(opp.id,opp.name,''); user.logo=resolveLogoV3(user.id,user.name,user.logo);
     const raw=String(g.home_away||'').toLowerCase();let userHome=null;if(raw==='home')userHome=userIsTeam;else if(raw==='away')userHome=!userIsTeam;
     if(userHome===true)return {away:opp,home:user,neutral:false,userHome:true};
@@ -14741,5 +14755,26 @@ img.sf-logo-system-v2{
     font-size:14px!important;
     letter-spacing:-.02em!important;
   }
+}
+</style>
+
+<style id="sf-qa-9-8-0-schedule-user-logo-glow">
+/* My Schedule: user-controlled team identity is glow-only; no box/plate. */
+#schedule .sf-match-logo.sf-user-team-logo,
+#schedule .sf-match-logo-fallback.sf-user-team-logo{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+  filter:
+    drop-shadow(0 0 2px rgba(244,197,66,.95))
+    drop-shadow(0 0 7px rgba(244,197,66,.58))
+    drop-shadow(0 0 14px rgba(244,197,66,.28))!important;
+  overflow:visible!important;
+}
+#schedule .sf-match-logo-fallback.sf-user-team-logo{
+  color:#f4c542!important;
 }
 </style>
