@@ -1053,7 +1053,7 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 #analytics.active{display:flex;flex-direction:column;gap:1.25rem}#analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.875rem}.showcase-card{position:relative;overflow:hidden;padding:.9rem;border-radius:.75rem;background:linear-gradient(145deg,rgba(6,18,24,.95),rgba(3,11,15,.96));border:1px solid rgba(148,163,184,.16);border-top:3px solid var(--accent,#19d39a)}.showcase-label{font-size:.55rem;color:#94a3b8;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.showcase-value{font-family:Teko,sans-serif;font-size:2rem;color:#fff;line-height:1}.showcase-sub{font-size:.58rem;color:#64748b}
 .analytics-tabs{display:flex;gap:.25rem;overflow-x:auto;background:#041017cc;padding:.25rem;border-radius:.55rem;border:1px solid #1e293b}.analytics-tabs button{padding:.4rem .7rem;border-radius:.4rem;color:#cbd5e1;font-size:.68rem;font-weight:800;white-space:nowrap}.analytics-tabs button.active{background:rgba(25,211,154,.13);color:#74e4be;border:1px solid rgba(25,211,154,.48)}.analytics-pane{display:none}.analytics-pane.active{display:block}.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.metric-card,.projection-card,.chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.75rem;padding:1rem}.projection-card{border-top:3px solid var(--coach,#19d39a)}.projection-name,.metric-title h4{font-family:Teko,sans-serif;font-size:1.45rem;color:#fff;text-transform:uppercase}.projection-team{font-size:.6rem;color:#64748b}.projection-finish{font-family:Teko,sans-serif;font-size:2rem;color:#f4c542}.projection-foot{font-size:.58rem;color:#64748b;margin-top:.5rem}.metric-title{display:flex;align-items:center;gap:.65rem}.metric-boxes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:.8rem;border:1px solid rgba(148,163,184,.12);border-radius:.55rem;overflow:hidden}.metric-box{padding:.7rem;text-align:center}.metric-box+ .metric-box{border-left:1px solid rgba(148,163,184,.12)}.metric-box small{display:block;font-size:.55rem;text-transform:uppercase;color:#64748b;font-weight:900}.metric-box b{font-family:Teko,sans-serif;font-size:1.7rem;color:#fff}.chart-wrap{height:310px}.chart-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:.65rem;margin-bottom:.7rem;border-bottom:1px solid rgba(148,163,184,.12)}.chart-head h3{font-family:Teko,sans-serif;font-size:1.35rem;color:#fff;text-transform:uppercase}.chart-head span{font-size:.58rem;color:#64748b}.form-list{display:flex;flex-direction:column;gap:.5rem}.form-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:.6rem;padding:.7rem;border:1px solid rgba(148,163,184,.11);border-radius:.5rem;background:#030d12}
 /* carry canonical panel look through schedule/trophies/records/admin */
-#schedule>.card,#trophies>.card,#records>.card,#admin>.card,#schedule>.section,#trophies>.section,#records>.section,#admin>.section{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);box-shadow:0 18px 40px -30px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.02);border-radius:.75rem}
+#schedule>.card,#records>.card,#admin>.card,#schedule>.section,#records>.section,#admin>.section{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);box-shadow:0 18px 40px -30px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.02);border-radius:.75rem}
 /* keep auth/onboarding operational and above canonical shell */
 .auth,.team-select-wrap{position:relative;z-index:60}.auth-card,.team-select-card{background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(3,11,15,.99));border:1px solid rgba(81,147,171,.35)}
 @media(max-width:1024px){#coaches,#analyticsShowcase{grid-template-columns:repeat(2,minmax(0,1fr))}#nextGames{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -2989,22 +2989,22 @@ body::after{
 <meta name="cdhq-release" content="1.1.11-photo-hero">
 <meta name="cdhq-release" content="1.2.0-release-candidate-promoted">
 <style id="v1-2-1-rc10-trophy-room">
-#trophies{padding-bottom:8px}
-#trophies .legacy-trophy-hero{align-items:center;padding:26px 28px;margin-bottom:22px;border:1px solid rgba(244,197,66,.40)!important;border-radius:20px!important;background:radial-gradient(circle at 70% 0%,rgba(244,197,66,.16),transparent 38%),linear-gradient(145deg,#0d0e0b 0%,#080b0c 58%,#050809 100%)!important;box-shadow:0 20px 60px rgba(0,0,0,.26)!important}
+#insightsTrophyRoom{padding-bottom:8px}
+#insightsTrophyRoom .legacy-trophy-hero{align-items:center;padding:26px 28px;margin-bottom:22px;border:1px solid rgba(244,197,66,.40)!important;border-radius:20px!important;background:radial-gradient(circle at 70% 0%,rgba(244,197,66,.16),transparent 38%),linear-gradient(145deg,#0d0e0b 0%,#080b0c 58%,#050809 100%)!important;box-shadow:0 20px 60px rgba(0,0,0,.26)!important}
 .legacy-trophy-copy{max-width:660px}.legacy-trophy-copy>span{font-size:10px!important;letter-spacing:.16em!important;color:#f4c542!important}.legacy-trophy-copy h2{font-size:48px!important;line-height:.92!important;margin:8px 0 10px!important}.legacy-trophy-copy p{font-size:12px!important;line-height:1.5!important;color:#a4acb7!important;max-width:650px}
-#trophies .legacy-trophy-summary{display:grid;grid-template-columns:repeat(3,minmax(105px,1fr));gap:12px;min-width:min(430px,42vw)}
-#trophies .legacy-summary-card{min-width:0;padding:14px 12px!important;border:1px solid rgba(244,197,66,.24)!important;border-radius:15px!important;background:linear-gradient(180deg,rgba(9,13,14,.92),rgba(4,8,9,.98))!important;box-shadow:inset 0 1px rgba(255,255,255,.025)}
+#insightsTrophyRoom .legacy-trophy-summary{display:grid;grid-template-columns:repeat(3,minmax(105px,1fr));gap:12px;min-width:min(430px,42vw)}
+#insightsTrophyRoom .legacy-summary-card{min-width:0;padding:14px 12px!important;border:1px solid rgba(244,197,66,.24)!important;border-radius:15px!important;background:linear-gradient(180deg,rgba(9,13,14,.92),rgba(4,8,9,.98))!important;box-shadow:inset 0 1px rgba(255,255,255,.025)}
 .legacy-summary-icon{display:block;font-size:22px;line-height:1;margin-bottom:8px}.legacy-summary-card b{font-size:32px!important}.legacy-summary-card small{font-size:7px!important;line-height:1.45!important;letter-spacing:.12em!important;color:#8b96a6!important}
-#trophies .legacy-trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-#trophies .legacy-program-card{display:flex;flex-direction:column;min-height:430px;border:1px solid rgba(244,197,66,.42)!important;border-radius:18px!important;background:radial-gradient(circle at 45% -5%,rgba(244,197,66,.09),transparent 34%),linear-gradient(160deg,#0b0e0d 0%,#060a0b 70%,#040708 100%)!important;box-shadow:0 18px 48px rgba(0,0,0,.26)!important;padding:20px 20px 18px;overflow:hidden}
+#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+#insightsTrophyRoom .legacy-program-card{display:flex;flex-direction:column;min-height:430px;border:1px solid rgba(244,197,66,.42)!important;border-radius:18px!important;background:radial-gradient(circle at 45% -5%,rgba(244,197,66,.09),transparent 34%),linear-gradient(160deg,#0b0e0d 0%,#060a0b 70%,#040708 100%)!important;box-shadow:0 18px 48px rgba(0,0,0,.26)!important;padding:20px 20px 18px;overflow:hidden}
 .legacy-program-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0!important;border:0!important;background:none!important}.legacy-program-title small{display:block;color:#f4c542!important;font-size:8px!important;font-weight:950;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.legacy-program-title h3{font-family:"Barlow Condensed";font-size:31px!important;line-height:.9!important;color:#fff!important;text-transform:uppercase;margin:0}.legacy-program-title p{font-size:11px!important;font-weight:850;color:#f4c542!important;text-transform:none!important;margin-top:7px!important}.legacy-program-logo{width:58px!important;height:58px!important;border-radius:14px!important;flex:0 0 58px;background:#071012!important}.legacy-program-logo img{width:48px!important;height:48px!important}
 .legacy-gold-rule{height:1px;background:linear-gradient(90deg,rgba(244,197,66,.48),rgba(244,197,66,.14));margin:20px 0 17px}
 .legacy-national-block{text-align:center;padding:4px 0 18px}.legacy-stadium-icon{font-size:41px;line-height:1.1;filter:saturate(.9);margin-bottom:7px}.legacy-national-block strong{display:block;font-family:"Barlow Condensed";font-size:40px;line-height:.9;color:#f4c542}.legacy-national-block span{display:block;margin-top:9px;font-size:8px;font-weight:950;letter-spacing:.10em;color:#919cac}
 .legacy-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}.legacy-stat-row>div{padding:12px 5px;border:1px solid rgba(244,197,66,.20);border-radius:12px;text-align:center;background:rgba(2,7,8,.66)}.legacy-stat-row b{display:block;font-family:"Barlow Condensed";font-size:26px;line-height:1;color:#f4c542}.legacy-stat-row small{display:block;margin-top:7px;font-size:7px;font-weight:900;line-height:1.35;letter-spacing:.09em;color:#9aa4b3}
 .legacy-heisman-list{margin-top:12px;padding-top:10px;border-top:1px solid rgba(244,197,66,.18);display:grid;gap:7px}.legacy-heisman-title{font-size:8px;font-weight:900;letter-spacing:.14em;color:#d9b84a;text-transform:uppercase;text-align:center}.legacy-heisman-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 9px;border:1px solid rgba(244,197,66,.14);background:rgba(244,197,66,.035);border-radius:7px}.legacy-heisman-item strong{display:block;color:#f5f7f8;font-size:10px;line-height:1.2}.legacy-heisman-item span{display:block;color:#7f8d94;font-size:8px;margin-top:2px}.legacy-heisman-year{flex:0 0 auto;color:#f4c542!important;font-size:9px!important;font-weight:900;letter-spacing:.06em}.legacy-bowl-record{text-align:center;color:#97a1af;font-size:10px;margin-top:15px}.legacy-bowl-record b{color:#fff;font-size:11px}.legacy-decorated-note{text-align:center;margin-top:8px;font-size:6px;font-weight:850;text-transform:uppercase;letter-spacing:.1em;color:#665d3b}
 .dynasty-legacy-strip{display:flex;align-items:center;gap:16px;margin-top:18px;padding:15px 18px;border:1px solid rgba(244,197,66,.26);border-radius:16px;background:linear-gradient(145deg,rgba(10,13,12,.95),rgba(5,9,10,.98))}.dynasty-legacy-star{font-size:30px;color:#f4c542}.dynasty-legacy-strip b{display:block;font-size:9px;letter-spacing:.14em;color:#f4c542}.dynasty-legacy-strip span{display:block;font-size:10px;color:#a5adba;margin-top:4px}
-@media(max-width:1120px){#trophies .legacy-trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#trophies .legacy-trophy-hero{align-items:flex-start;flex-direction:column}.legacy-trophy-summary{min-width:100%!important;width:100%}}
-@media(max-width:650px){#trophies .legacy-trophy-grid{grid-template-columns:1fr}.legacy-trophy-copy h2{font-size:39px!important}#trophies .legacy-trophy-hero{padding:20px}.legacy-trophy-summary{grid-template-columns:repeat(3,1fr)!important;gap:7px!important}.legacy-summary-icon{font-size:18px}.legacy-summary-card b{font-size:26px!important}.legacy-program-card{min-height:390px!important}.dynasty-legacy-strip{align-items:flex-start}}
+@media(max-width:1120px){#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#insightsTrophyRoom .legacy-trophy-hero{align-items:flex-start;flex-direction:column}.legacy-trophy-summary{min-width:100%!important;width:100%}}
+@media(max-width:650px){#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:1fr}.legacy-trophy-copy h2{font-size:39px!important}#insightsTrophyRoom .legacy-trophy-hero{padding:20px}.legacy-trophy-summary{grid-template-columns:repeat(3,1fr)!important;gap:7px!important}.legacy-summary-icon{font-size:18px}.legacy-summary-card b{font-size:26px!important}.legacy-program-card{min-height:390px!important}.dynasty-legacy-strip{align-items:flex-start}}
 </style>
 <meta name="cdhq-release" content="1.2.1-rc10-trophy-room-rebuild">
 <meta name="cdhq-release-hotfix" content="1.2.1-rc13-current-form">
@@ -3231,7 +3231,7 @@ button:not(:disabled):active{filter:brightness(.96)}
 .empty,.vegas-empty{min-height:74px;display:grid;place-items:center;border:1px dashed rgba(148,163,184,.14);border-radius:10px;background:rgba(255,255,255,.012);color:#8fa1ab!important}
 
 /* The decorative Trophy Room footer was intentionally retired in Polish Pass V2. */
-#trophies .dynasty-legacy-strip{display:none!important}
+#insightsTrophyRoom .dynasty-legacy-strip{display:none!important}
 
 @media (max-width:768px){
   html{font-size:16px}
@@ -5242,14 +5242,14 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <div class="canonical-controls">
       <div id="navWrap" class="nav-wrap hidden"><nav id="nav" class="canonical-nav">
         <button class="active" data-view="overview"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/home@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Overview</span></button>
-        <button data-view="analytics"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/analytics@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Intelligence</span></button>
+        <button data-view="analytics"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/analytics@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Insights</span></button>
         <button data-view="vegas"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/vegas@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Vegas</span></button>
         <button data-view="storylines"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/coach-chronicles@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coach Chronicles</span></button>
         <button data-view="rivalries"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/rivalries@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Rivalries</span></button>
         <button data-view="conference"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/conferences@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Conference Race</span></button>
         <button data-view="schedule"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/schedule@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Schedule</span></button>
         <button data-view="recap"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/recap@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Season Recap</span></button>
-        <button data-view="trophies"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/trophy-room@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Trophy Room</span></button>
+        
         <button data-view="records"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/records@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coaches Card</span></button>
         <button id="adminNav" class="hidden" data-view="admin"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/settings@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Commissioner</span></button>
       </nav></div>
@@ -5423,89 +5423,49 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 <section id="seasonPulsePanel" class="grid grid-cols-1 xl:grid-cols-2 gap-3.5"><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">🏆</span><h3>SEASON STANDINGS</h3></div><span id="standingsMeta"></span></div><div id="standings" class="mt-3"></div></div><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">✣</span><h3>🔥 WHO’S DANGEROUS NOW?</h3></div><span>Current form · Not win probability</span></div><div class="space-y-2 mt-3" id="power"></div></div></section>
 </div></section>
 <section id="analytics" class="view">
-  <div class="intelligence-hero">
+  <div class="legacy-hero">
     <div>
-      <span class="intelligence-kicker">DYNASTY INTELLIGENCE</span>
-      <h2>War Room</h2>
-      <p>One command center for season trajectory, scoring efficiency, current form, program strength, expectation and clutch performance.</p>
+      <span class="legacy-kicker">DYNASTY INSIGHTS</span>
+      <h2>Legacy</h2>
+      <p>The league's memory. Every banner, every drought, every throne — what kind of dynasty is each coach building?</p>
     </div>
-    <div class="intelligence-live"><span></span> LIVE DYNASTY DATA</div>
+    <div class="legacy-live"><span></span> LIVE DYNASTY DATA</div>
   </div>
 
-  <div id="analyticsShowcase" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"></div>
+  <div id="legacyThrone"></div>
 
-  <section class="ref-panel rounded-xl p-4 shadow-xl space-y-3.5 intelligence-shell">
-    <div class="intelligence-nav-wrap">
-      <div>
-        <span class="war-room-kicker">Program Intelligence</span>
-        <div class="intelligence-nav-label">Choose a lens</div>
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>All-Time Record</span><h3>The Tiers</h3></div><em>Career standings, earned not given</em></div>
+    <div id="legacyTiers" class="legacy-tiers"></div>
+  </div>
+
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>The Waiting Game</span><h3>Droughts</h3></div><em>How long since the last one</em></div>
+    <div id="legacyDroughts" class="legacy-droughts"></div>
+  </div>
+
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>Within Reach</span><h3>Milestone Watch</h3></div><em>History about to happen</em></div>
+    <div id="legacyMilestones" class="legacy-milestones"></div>
+  </div>
+
+    <div class="legacy-section" id="insightsTrophyRoom">
+    <div class="legacy-section-head"><div><span>Hardware</span><h3>Trophy Room</h3></div><em>Every banner, ring and award</em></div>
+    <div class="trophy-room-hero legacy-trophy-hero">
+        <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
+        <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
       </div>
-      <div class="analytics-tabs intelligence-tabs" id="analyticsTabs">
-        <button class="active" data-pane="trajectory">📈 Win Pace</button>
-        <button data-pane="efficiency">🎯 Efficiency</button>
-        <button data-pane="momentum">⚡ <span id="analyticsSeasonLabel">Season</span> Form</button>
-        <button data-pane="powerpane">🔥 Current Form</button>
-        <button data-pane="luck">🍀 Luck</button>
-        <button data-pane="clutch">🔥 Clutch</button>
-        <button data-pane="marketiq">📊 Market IQ</button>
-      </div>
-    </div>
+      <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
+      <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
+  </div>
 
-    <div class="analytics-scope intelligence-scope">
-      <b>WAR ROOM SCOPE:</b>
-      Current Form answers “Who’s dangerous now?” using this season’s record and scoring margin. It is a 0–99.9 performance rating, not a win probability. Efficiency, Luck and Clutch provide separate context.
-    </div>
+<p class="legacy-footnote">Legacy is the first Dynasty Insights pillar. Identity and Trajectory are next.</p>
 
-    <div id="trajectory" class="analytics-pane active">
-      <div class="intelligence-pane-head"><div><span>Season Forecast</span><h3>Win Pace</h3></div><em>Actual wins + projected finish</em></div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3" id="projectionCards"></div>
-      <div class="analytics-chart-meta"><span>Solid = actual · dotted = projected pace</span><strong>MAX SCALE: 16 WINS</strong></div>
-      <div class="chart-card analytics-chart-card">
-        <div class="chart-head"><h3>Season Win Pace</h3><span>Current season trajectory</span></div>
-        <div class="chart-wrap"><canvas id="winsChart"></canvas></div>
-      </div>
-    </div>
-
-    <div id="efficiency" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Scoring Profile</span><h3>Efficiency</h3></div><em>Production + prevention</em></div>
-      <div class="analytics-chart-meta"><span>Career scoring output vs defensive resistance</span><strong>LOWER PA = BETTER DEFENSE</strong></div>
-      <div class="chart-card analytics-chart-card">
-        <div class="chart-head"><h3>Offense vs Defense</h3><span>Career PPG scored vs PPG allowed</span></div>
-        <div class="chart-wrap"><canvas id="efficiencyChart"></canvas></div>
-      </div>
-      <div class="intelligence-subhead">Coach Efficiency Cards</div>
-      <div class="analytics-grid" id="efficiencyGrid"></div>
-    </div>
-
-    <div id="momentum" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Current Form</span><h3>Season Momentum</h3></div><em>Active season only</em></div>
-      <div id="momentumList" class="momentum-grid"></div>
-    </div>
-
-    <div id="powerpane" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Who’s Dangerous Now?</span><h3>Current Form Rating</h3></div><em>Season performance · Not win probability</em></div>
-      <div class="analytics-grid" id="analyticsPower"></div>
-    </div>
-
-    <div id="luck" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Expectation Model</span><h3>Luck Rating</h3></div><em>Actual wins vs expected wins</em></div>
-      <div class="war-description">Pythagorean expectation compares actual career wins to expected wins from points scored and allowed.</div>
-      <div class="analytics-grid" id="luckGrid"></div>
-    </div>
-
-    <div id="clutch" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Pressure Performance</span><h3>Clutch Index</h3></div><em>One-score games + overtime</em></div>
-      <div class="war-description">Career pressure résumé: W/L record, win rate, one-score performance, overtime results and average margin in games decided by ≤7 points or overtime.</div>
-      <div class="analytics-grid" id="clutchGrid"></div>
-    </div>
-
-    <div id="marketiq" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Expectation vs Reality</span><h3>Market IQ</h3></div><em>Dynasty Vegas advanced analytics</em></div>
-      <div class="war-description">How each coach performs relative to the pregame Dynasty Vegas expectation — including favorite/underdog splits, cover rate, average Vegas Differential, upset profile and scoring-market tendencies.</div>
-      <div id="marketIqCards" class="market-iq-grid"></div>
-      <div id="marketIqTable" class="market-iq-table"></div>
-    </div>
-  </section>
+  <button class="intel-vegas-link" id="intelVegasLink">
+    <span>Dynasty Vegas</span>
+    <b>Full betting analytics →</b>
+    <em>ATS kings, cover rates, upsets and every tracked line live in the Vegas studio.</em>
+  </button>
 </section>
 
 <section id="vegas" class="view">
@@ -5656,21 +5616,13 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     </header>
     <div id="recapSummary" class="recap-summary-grid"></div>
     <section class="recap-section" data-recap-fold="coaches"><div class="recap-section-head"><div><span>COACH SCORECARDS</span><h3>The Dynasty Season</h3></div><em>Final results for each controlled program</em></div><div id="recapCoachGrid" class="recap-coach-grid"></div></section>
-    <section class="recap-section" data-recap-fold="honors"><div class="recap-section-head"><div><span>SEASON HARDWARE</span><h3>Championships & Honors</h3></div><div class="recap-head-actions"><em>Awards recorded in the Saturday Foundry ledger</em><button type="button" data-recap-jump="trophies">Trophy Room →</button></div></div><div id="recapHonors" class="recap-honors-grid"></div></section>
+    <section class="recap-section" data-recap-fold="honors"><div class="recap-section-head"><div><span>SEASON HARDWARE</span><h3>Championships & Honors</h3></div><div class="recap-head-actions"><em>Awards recorded in the Saturday Foundry ledger</em><button type="button" data-recap-jump="analytics">Trophy Room →</button></div></div><div id="recapHonors" class="recap-honors-grid"></div></section>
     <section class="recap-section" data-recap-fold="poll"><div class="recap-section-head"><div><span>FINAL POLL SNAPSHOT</span><h3>Top 25</h3></div><em id="recapPollMeta">Latest stored poll for the season</em></div><div id="recapPoll" class="recap-poll-grid"></div></section>
     <section class="recap-section" data-recap-fold="games"><div class="recap-section-head"><div><span>GAMES THAT DEFINED THE YEAR</span><h3>Signature Games</h3></div><div class="recap-head-actions"><em>Postseason, rivalry, ranked and dramatic finishes</em><button type="button" data-recap-jump="rivalries">Rivalries →</button></div></div><div id="recapGames" class="recap-games-grid"></div></section>
     <section class="recap-section recap-chronicle-section" data-recap-fold="story"><div class="recap-section-head"><div><span>SEASON STORY</span><h3>Defining Moments</h3></div><em>Tap a moment for the preview · full stories in Coach Chronicles</em></div><div id="recapChronicle" class="recap-chronicle-grid"></div><div class="recap-chronicle-foot"><button id="recapOpenChronicle" class="recap-crosslink" type="button">View Full Coach Chronicles →</button></div></section>
   </div>
 </section>
-<section id="rivalries" class="view"><div class="rivalry-hq-shell"><header class="rivalry-hq-hero"><div><span>HEAD-TO-HEAD INTELLIGENCE</span><h2>Rivalry Center</h2><p>Every user-vs-user meeting becomes part of the mythology — series control, streaks, ranked meetings, close finishes, Vegas performance and the games that changed the rivalry.</p></div><div id="rivalryHeroSummary" class="rivalry-hero-summary"></div></header><section id="rivalrySpotlight" class="rivalry-spotlight"></section><section><div class="rivalry-section-head"><div><span>ALL-TIME SERIES</span><h3>Rivalry Board</h3></div><em>Completed coach-vs-coach games</em></div><div id="rivalryBoard" class="rivalry-board"></div></section><section><div class="rivalry-section-head"><div><span>SIGNATURE MEETINGS</span><h3>Games That Built the Rivalries</h3></div><em>Closest, biggest and ranked clashes</em></div><div id="rivalryMoments" class="rivalry-moments"></div></section></div></section><section id="trophies" class="view">
-  <div class="trophy-room-hero legacy-trophy-hero">
-    <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
-    <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
-  </div>
-  <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
-  <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
-  
-</section>
+<section id="rivalries" class="view"><div class="rivalry-hq-shell"><header class="rivalry-hq-hero"><div><span>HEAD-TO-HEAD INTELLIGENCE</span><h2>Rivalry Center</h2><p>Every user-vs-user meeting becomes part of the mythology — series control, streaks, ranked meetings, close finishes, Vegas performance and the games that changed the rivalry.</p></div><div id="rivalryHeroSummary" class="rivalry-hero-summary"></div></header><section id="rivalrySpotlight" class="rivalry-spotlight"></section><section><div class="rivalry-section-head"><div><span>ALL-TIME SERIES</span><h3>Rivalry Board</h3></div><em>Completed coach-vs-coach games</em></div><div id="rivalryBoard" class="rivalry-board"></div></section><section><div class="rivalry-section-head"><div><span>SIGNATURE MEETINGS</span><h3>Games That Built the Rivalries</h3></div><em>Closest, biggest and ranked clashes</em></div><div id="rivalryMoments" class="rivalry-moments"></div></section></div></section>
 
     <section id="records" class="view">
   <div class="coaches-card-shell">
@@ -6261,7 +6213,7 @@ function renderVegas(failed=false){
 
 $("vegasStudioNav")?.addEventListener("click",e=>{const b=e.target.closest("button[data-vegas-pane]");if(!b)return;document.querySelectorAll("#vegasStudioNav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#vegas .vegas-studio-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.vegasPane));if(b.dataset.vegasPane==='vegasHistoryPane'){populateVegasHistoryFilters();filterVegasHistory()}});["vegasHistorySeason","vegasHistoryCoach","vegasHistoryResult"].forEach(id=>$(id)?.addEventListener("change",filterVegasHistory));
 $("nav").onclick=e=>{const b=e.target.closest("button[data-view]");if(b){switchView(b.dataset.view);if(b.dataset.view==="analytics")renderAnalyticsSuite();if(["vegas","trophies","records","analytics","storylines","rivalries"].includes(b.dataset.view))ensureVegasLegacy();if(b.dataset.view==="vegas")renderVegas();if(b.dataset.view==="storylines")renderStorylines();if(b.dataset.view==="rivalries")renderRivalries();if(b.dataset.view==="overview")renderHQCommand();if(b.dataset.view==="recap")renderSeasonRecap();const header=$("siteHeader"),toggle=$("mobileMenuToggle");if(header){header.classList.remove("mobile-open");if(toggle){toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}}}};
-$("analyticsTabs").onclick=e=>{const b=e.target.closest("button[data-pane]");if(!b)return;document.querySelectorAll("#analyticsTabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#analytics .analytics-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.pane));if(b.dataset.pane==="trajectory")setTimeout(renderWinsChart,0);if(b.dataset.pane==="efficiency")setTimeout(renderEfficiencyChart,0);if(b.dataset.pane==="marketiq"){renderMarketIq();ensureVegasLegacy()}};
+$("intelVegasLink")?.addEventListener("click",()=>{switchView("vegas");ensureVegasLegacy();renderVegas()});
 
 function logoFor(team){
  const stored=state.programs.find(p=>String(p.team_name).toLowerCase()===String(team||"").toLowerCase())?.logo_url||"";
@@ -7146,10 +7098,10 @@ function renderSchedule(){
      if(gt==='bowl')return{src:'assets/event-badges/bowl.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'Bowl Game')};
      if(gt==='cfp'||gt==='playoff'){
        const champ=/championship/i.test(String(g?.event_label||g?.bowl_name||g?.event_name||''));
-       return champ?{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')}
-                   :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||'College Football Playoff')};
+       return champ?{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'National Championship')}
+                   :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'College Football Playoff')};
      }
-     if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')};
+     if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'National Championship')};
      /* Regular-season and explicit conference games: badge when both sides share one mapped conference. */
      const cs=conferencesForGame(g);
      const shared=(cs.length&&cs.every(c=>String(c).toLowerCase()===String(cs[0]).toLowerCase()))?cs[0]:'';
@@ -7262,26 +7214,33 @@ function renderSchedule(){
  const cfpBracketHtml=()=>{
    if(scheduleTeamPersonId||scheduleConference!=='__all__')return '';
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
-   const post=allSeasonGames.filter(g=>!g?.is_bye&&(cfpType(g)==='playoff'||cfpType(g)==='national_championship'));
+   /* QA 9.8.1: accept 'cfp' as well as 'playoff' so AI-imported postseason games
+      always land in the bracket regardless of which synonym was stored. */
+   const isCfpGame=t=>t==='playoff'||t==='cfp';
+   const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
    if(!post.length)return '';
    const natty=post.filter(g=>cfpType(g)==='national_championship');
-   const rounds=[...new Set(post.filter(g=>cfpType(g)==='playoff').map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
-     .map(w=>post.filter(g=>cfpType(g)==='playoff'&&Number(g.week_number||0)===w));
+   const rounds=[...new Set(post.filter(g=>isCfpGame(cfpType(g))).map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
+     .map(w=>post.filter(g=>isCfpGame(cfpType(g))&&Number(g.week_number||0)===w));
    if(natty.length)rounds.push(natty);
    if(!rounds.length)return '';
    const n=rounds.length;
    const early=n===4?['First Round','Quarterfinals','Semifinals']:n===3?['Quarterfinals','Semifinals']:n===2?['Semifinals']:rounds.slice(0,n-1).map((_,i)=>`Round ${i+1}`);
    const labels=[...early,natty.length?'National Championship':'Final'];
    const cfpTeamRow=(name,rank,logo,score,cls)=>`<div class="sf-cfp-team${cls==='v21-winner'?' sf-cfp-winner':''}">${logo?`<img class="sf-cfp-logo" src="${esc(logo)}" alt="">`:`<span class="sf-cfp-logo sf-cfp-logo-fallback">🏈</span>`}<span class="sf-cfp-name">${rank?`<b class="sf-cfp-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-cfp-score ${cls}">${score}</span></div>`;
-   const cfpGameCard=g=>{
+   const cfpGameCard=(g,roundLabel)=>{
      const done=g.status==='completed';
      const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
      const pf=Number(g.points_for),pa=Number(g.points_against);
      const decided=done&&Number.isFinite(pf)&&Number.isFinite(pa)&&pf!==pa;
-     const label=g.event_label||g.bowl_name||g.event_name||'';
-     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head"><span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
+     /* QA 9.8.1: bracket cards show the playoff/natty badge, and the head falls back
+        to the round label so AI-imported games without an event name still read well. */
+     const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
+     const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
+     const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
+     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
-   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div>${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(cfpGameCard).join('')}</div></div>`).join('')}</section>`;
+   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div>${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[i])).join('')}</div></div>`).join('')}</section>`;
  };
  let currentHtml='';
  if(scheduleConference==="__all__"){
@@ -7714,68 +7673,128 @@ function closeGameStats(person){
  const margin=q.reduce((n,g)=>n+(Number(g.points_for)-Number(g.points_against)),0);
  return {total:q.length,wins,losses,oneScore:oneScore.length,oneScoreWins,ot:ot.length,otWins,avgMargin:q.length?margin/q.length:0}
 }
-function renderProjectionCards(){
- const active=state.standings;
- $("projectionCards").innerHTML=active.map(r=>{const p=seasonProjection(r),c=teamColor(r.team_name);return `<div class="projection-card" style="--coach:${c}"><div style="display:flex;justify-content:space-between;gap:8px"><div><div class="projection-name">${esc(r.coach_name)}</div><div class="projection-team">${esc(r.team_name)}</div></div><div style="text-align:right"><div style="font-size:7px;color:#71858e;text-transform:uppercase;font-weight:900">Projected Finish</div><div class="projection-finish">${p.projectedWins}-${p.projectedLosses}</div></div></div><div class="projection-foot">Now ${r.wins}-${r.losses} · ${p.played}/${p.total||"?"} played · ${esc(p.method)}</div></div>`}).join("")
+/* Restored from the Intelligence rework (QA 9.8.1): the shared logo chain.
+   Dynasty Insights Legacy reuses it; the definitions were dropped when the
+   rework was scrapped, which crashed the pillar render. */
+window.sfLogoFallback=function(img){
+ try{
+  const rest=String(img.dataset.sfLogoFallback||'').split('|').filter(Boolean);
+  if(rest.length){img.dataset.sfLogoFallback=rest.slice(1).join('|');img.src=rest[0];return}
+  const fb=document.createElement('div');
+  fb.className=img.classList.contains('legacy-team-logo')?'legacy-team-logo-fb':'team-fallback';
+  fb.textContent=img.dataset.sfLogoInitials||'?';
+  const plate=img.closest('.sf-team-logo-plate-v5');
+  if(plate)plate.replaceWith(fb);else img.replaceWith(fb);
+ }catch(e){}
+};
+function intelProgramFor(c){
+ return (state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
 }
-function renderWinsChart(){
- if(typeof Chart==="undefined")return; const ctx=$("winsChart"); if(!ctx)return;
- const colors=Object.fromEntries(state.programs.filter(p=>p.coach_name).map(p=>[p.coach_name,teamColor(p.team_name)]));
- const ordered=seasons.slice().sort((a,b)=>a.season_number-b.season_number),activeIdx=ordered.findIndex(s=>s.season_id===S.season_id);
- const labels=ordered.map(s=>`S${s.season_number}`);if(activeIdx>=0)labels.splice(activeIdx+1,0,`S${S.season_number} Pace`);
- const currentIds=new Set(state.programs.map(p=>p.person_id));
- const datasets=[];
- state.career.forEach(c=>{
-  const actual=[];
-  ordered.forEach((season,i)=>{const rec=seasonRecordFor(c.person_id,season.season_number);const value=rec.games?rec.wins:(season.season_id===S.season_id&&currentIds.has(c.person_id)?0:null);actual.push(value);if(i===activeIdx)actual.push(null)});
-  const pace=Array(labels.length).fill(null),st=state.standings.find(x=>x.person_id===c.person_id);
-  if(st&&activeIdx>=0){const actualPos=activeIdx,pacePos=activeIdx+1;pace[actualPos]=Number(st.wins||0);pace[pacePos]=seasonProjection(st).projectedWins}
-  datasets.push({label:`${c.coach_name} actual`,data:actual,borderColor:colors[c.coach_name]||"#94A3B8",backgroundColor:colors[c.coach_name]||"#94A3B8",tension:.25,pointRadius:4,spanGaps:false});
-  if(st)datasets.push({label:`${c.coach_name} pace`,data:pace,borderColor:colors[c.coach_name]||"#94A3B8",borderDash:[6,5],pointRadius:3,tension:.25,spanGaps:true});
- });
- if(winsChartInstance)winsChartInstance.destroy();
- winsChartInstance=new Chart(ctx,{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8",boxWidth:10,font:{size:9}}}},scales:{x:{ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}},y:{beginAtZero:true,suggestedMax:16,ticks:{color:"#94a3b8",stepSize:2},grid:{color:"#064e3b33"}}}}})
+function intelLogoHTML(c,team){
+ const p=intelProgramFor(c);
+ const t=String(team||p?.team_name||c.team_name||'');
+ const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||''].filter(Boolean))];
+ const alt=t?t+' logo':'team logo',fbInitials=initials(t||c.coach_name);
+ return srcs.length
+  ?`<img class="legacy-team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
+  :`<div class="legacy-team-logo-fb">${esc(fbInitials)}</div>`;
 }
-function renderEfficiencyChart(){
- if(typeof Chart==="undefined")return;const ctx=$("efficiencyChart");if(!ctx)return;
- const colors=Object.fromEntries(state.programs.filter(p=>p.coach_name).map(p=>[p.coach_name,teamColor(p.team_name)]));
- const activeIds=new Set(state.programs.map(p=>p.person_id));
- const datasets=state.career.filter(c=>activeIds.has(c.person_id)).map(c=>({label:c.coach_name,data:[{x:Number(c.points_for||0)/Math.max(1,Number(c.games_played||0)),y:Number(c.points_against||0)/Math.max(1,Number(c.games_played||0))}],backgroundColor:colors[c.coach_name]||"#94A3B8",pointRadius:8}));
- if(efficiencyChartInstance)efficiencyChartInstance.destroy();
- efficiencyChartInstance=new Chart(ctx,{type:"scatter",data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8",font:{size:10}}}},scales:{x:{title:{display:true,text:"PPG Scored",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}},y:{reverse:true,title:{display:true,text:"PPG Allowed",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}}}}})
+/* Dynasty Insights — Legacy pillar (QA 9.8.1).
+   Replaces the Intelligence rework. Reads the same per-dynasty state the app
+   already loads (state.career, state.trophies, seasons): no new fetching. */
+function legacyCareer(){return [...(state.career||[])].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0))}
+function legacyTrophies(){return [...(state.trophies||[])]}
+function legacySeasons(){return [...(seasons||[])].sort((a,b)=>Number(a.season_number||0)-Number(b.season_number||0))}
+function legacyActiveSeason(){const s=legacySeasons();return s.find(x=>x.is_active)||s[s.length-1]||null}
+function legacyCoachKey(t){return String(t.person_id||t.coach_name||"")}
+function isNattyTrophy(t){return /national/i.test(String(t.type||""))||/national championship/i.test(String(t.name||""))}
+function isConfTrophy(t){return /conference_championship/i.test(String(t.type||""))}
+function isBowlTrophy(t){return /bowl_championship/i.test(String(t.type||""))}
+function isHeismanTrophy(t){return /heisman/i.test(String(t.type||""))}
+function legacyWinPct(c){const gp=Number(c.games_played||0);return gp?Number(c.wins||0)/gp:0}
+const LEGACY_TIER_LABELS=["The Standard","The Challenger","The Hunter","The Wildcard"];
+
+function renderLegacyThrone(){
+ const el=$("legacyThrone");if(!el)return;
+ const ss=legacySeasons(),done=ss.filter(s=>String(s.status)==="completed");
+ const nattys=legacyTrophies().filter(isNattyTrophy).sort((a,b)=>Number(b.season_number)-Number(a.season_number));
+ const nCoaches=legacyCareer().length;
+ if(nattys.length){
+  const last=nattys[0],total=nattys.length;
+  const years=[...new Set(nattys.map(t=>"S"+t.season_number))].join(" · ");
+  el.innerHTML=`<div class="legacy-throne reign"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">${total}</div><div class="legacy-throne-label">NATIONAL CHAMPIONSHIP${total===1?"":"S"}</div><p><b>${esc(last.coach_name)}</b> sits the throne${total>1?` — ${total} titles (${esc(years)})`:` — ${esc(last.name||"champions")}, season ${last.season_number}`}.</p><span class="legacy-throne-sub">Everybody else is chasing.</span></div>`;
+ }else if(done.length){
+  el.innerHTML=`<div class="legacy-throne empty"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">0</div><div class="legacy-throne-label">NATIONAL TITLES IN ${done.length} COMPLETED SEASON${done.length===1?"":"S"}</div><p>Conference banners hang. Bowl trophies gather dust. But across ${done.length} season${done.length===1?"":"s"} and ${nCoaches} coach${nCoaches===1?"":"es"}, <b>nobody has taken the throne</b>.</p><span class="legacy-throne-sub">Who gets there first?</span></div>`;
+ }else{
+  const act=legacyActiveSeason();
+  el.innerHTML=`<div class="legacy-throne writing"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">1</div><div class="legacy-throne-label">SEASON UNDERWAY — HISTORY BEING WRITTEN</div><p>Every dynasty starts 0–0. The first banner${act?` of season ${act.season_number}`:""} will be the first line of this league's story.</p><span class="legacy-throne-sub">Come back after the confetti.</span></div>`;
+ }
 }
-function renderMomentum(){
- $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div style="font-size:12px;color:#657d86">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")
-}
-function metricCard(c,body){
- const p=state.programs.find(x=>x.person_id===c.person_id),logo=p?.logo_url?`<img class="team-logo" src="${esc(p.logo_url)}">`:`<div class="team-fallback">${initials(p?.team_name||c.coach_name)}</div>`;
- return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div style="font-size:8px;color:#71858e">${esc(p?.team_name||"")}</div></div></div>${body}</article>`
-}
-function renderAnalyticsCards(){
- $("analyticsPower").innerHTML=state.standings.map(r=>metricCard(careerFor(r.person_id),`<div class="metric-boxes"><div class="metric-box"><small>Current Form</small><b>${power(r)}</b></div><div class="metric-box"><small>Season PD</small><b class="${Number(r.point_differential)>=0?"pos":"neg"}">${signed(r.point_differential)}</b></div></div><div style="font-size:8px;color:#71858e;margin-top:8px">Season W% + scoring margin · 0–99.9 rating · Not win probability${currentFormBand(r).early?" · EARLY SAMPLE":""}</div>`)).join("");
- $("efficiencyGrid").innerHTML=state.career.map(c=>{
-   const gp=Math.max(1,Number(c.games_played||0)),pf=Number(c.points_for||0),pa=Number(c.points_against||0);
-   const ppg=(pf/gp).toFixed(1),papg=(pa/gp).toFixed(1),margin=((pf-pa)/gp).toFixed(1);
-   return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>PPG Scored</small><b>${ppg}</b></div><div class="metric-box"><small>PPG Allowed</small><b>${papg}</b></div></div><div style="font-size:9px;color:${Number(margin)>=0?"#74e4be":"#ff8080"};margin-top:8px;font-weight:850">${Number(margin)>=0?"+":""}${margin} average margin</div>`)
+
+function renderLegacyTiers(){
+ const el=$("legacyTiers");if(!el)return;
+ const rows=legacyCareer();
+ if(!rows.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ el.innerHTML=rows.map((c,i)=>{
+  const gp=Number(c.games_played||0),w=Number(c.wins||0),l=Number(c.losses||0);
+  const pct=gp?(w/gp*100):0,pd=Number(c.point_differential||0);
+  const label=LEGACY_TIER_LABELS[Math.min(i,LEGACY_TIER_LABELS.length-1)];
+  const small=gp>0&&gp<20;
+  return `<article class="legacy-tier-card"><div class="legacy-tier-rank">${i+1}</div><div class="legacy-tier-main">${intelLogoHTML(c)}<div class="legacy-tier-id"><b>${esc(c.coach_name)}</b><span class="legacy-tier-label">${label}${small?' · <em>small sample</em>':""}</span></div></div><div class="legacy-tier-stats"><div><small>RECORD</small><b>${w}-${l}</b></div><div><small>WIN %</small><b>${pct.toFixed(1)}</b></div><div><small>POINT DIFF</small><b class="${pd>=0?"pos":"neg"}">${signed(pd)}</b></div><div><small>RANKED WINS</small><b>${Number(c.ranked_wins||0)}</b></div></div></article>`;
  }).join("");
- $("luckGrid").innerHTML=state.career.map(c=>{const pf=Number(c.points_for||0),pa=Number(c.points_against||0),gp=Number(c.games_played||0);const p=(pf*pf+pa*pa)?pf*pf/(pf*pf+pa*pa):.5;const ew=Math.round(p*gp),diff=Number(c.wins||0)-ew;return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>Actual Wins</small><b>${c.wins}</b></div><div class="metric-box"><small>Expected Wins</small><b>${ew}</b></div></div><div style="font-size:9px;color:${diff>=0?"#74e4be":"#ff8080"};margin-top:8px;font-weight:850">${diff>0?`+${diff} over expectation`:diff<0?`${diff} under expectation`:"Right on target"}</div>`)}).join("");
- $("clutchGrid").innerHTML=state.career.map(c=>{
- const q=closeGameStats(c.person_id),pct=q.total?Math.round(q.wins/q.total*100):null;
- const onePct=q.oneScore?Math.round(q.oneScoreWins/q.oneScore*100):null,otPct=q.ot?Math.round(q.otWins/q.ot*100):null;
- const grade=pct===null?"NO DATA":pct>=70?"ICE COLD":pct>=55?"CLUTCH":pct>=45?"EVEN":pct>=30?"UNDER PRESSURE":"COLD";
- return metricCard(c,`<div class="clutch-record"><div><small>Pressure Record</small><strong>${q.wins}-${q.losses}</strong></div><span class="clutch-grade">${grade}</span></div><div class="clutch-stat-grid"><div><small>Clutch Win %</small><b>${pct===null?"N/A":pct+"%"}</b></div><div><small>One-Score</small><b>${q.oneScoreWins}-${q.oneScore-q.oneScoreWins}</b><em>${onePct===null?"—":onePct+"%"}</em></div><div><small>Overtime</small><b>${q.otWins}-${q.ot-q.otWins}</b><em>${otPct===null?"—":otPct+"%"}</em></div></div><div class="clutch-footer"><span>${q.total} pressure game${q.total===1?"":"s"}</span><span class="${q.avgMargin>=0?"pos":"neg"}">${q.total?`${q.avgMargin>=0?"+":""}${q.avgMargin.toFixed(1)} avg margin`:"No close games yet"}</span></div>`)
-}).join("")
 }
-function renderAnalyticsShowcase(){
- const active=[...state.standings]; if(!active.length){$("analyticsShowcase").innerHTML="";return}
- const win=[...active].sort((a,b)=>Number(b.wins)-Number(a.wins)||Number(b.win_pct||0)-Number(a.win_pct||0))[0];
- const diff=[...active].sort((a,b)=>Number(b.point_differential)-Number(a.point_differential))[0];
- const pow=[...active].sort((a,b)=>Number(power(b))-Number(power(a)))[0];
- const hot=[...active].sort((a,b)=>{const sa=streak(a.person_id),sb=streak(b.person_id);const va=sa.startsWith("W")?Number(sa.slice(1)):0,vb=sb.startsWith("W")?Number(sb.slice(1)):0;return vb-va})[0];
- const items=[['👑 Win Leader',win,`${win.wins} Wins`,`${Number(win.win_pct||0)*100||0}% win pct`,'#19d39a'],['🛡️ Point Diff Leader',diff,signed(diff.point_differential),'Net margin','#f4c542'],['🔥 Most Dangerous',pow,power(pow),currentFormBand(pow).label,'#f4c542'],['🔥 Hottest Streak',hot,streak(hot.person_id),'Current season','#ef8b4a']];
- $("analyticsShowcase").innerHTML=items.map(([label,r,val,sub,color])=>`<article class="showcase-card" style="--accent:${color}"><div class="showcase-label">${label}</div><div class="flex items-center justify-between gap-3 mt-2"><div><div class="font-teko text-xl text-white uppercase">${esc(r.coach_name)}</div><div class="text-[9px] text-slate-500">${esc(r.team_name)}</div></div><div class="text-right"><div class="showcase-value">${val}</div><div class="showcase-sub">${sub}</div></div></div></article>`).join('')
+
+function legacyLastSeason(key,pred){
+ let best=null;
+ legacyTrophies().forEach(t=>{if(legacyCoachKey(t)===key&&pred(t)){const n=Number(t.season_number);if(best===null||n>best)best=n}});
+ return best;
 }
-function renderAnalyticsSuite(){const asl=$("analyticsSeasonLabel");if(asl)asl.textContent=`Season ${S?.season_number||""}`;renderAnalyticsShowcase();renderProjectionCards();renderMomentum();renderAnalyticsCards();renderMarketIq();setTimeout(renderWinsChart,0)}
+function renderLegacyDroughts(){
+ const el=$("legacyDroughts");if(!el)return;
+ const coaches=legacyCareer(),act=legacyActiveSeason(),actN=act?Number(act.season_number):0;
+ if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ const nattyDone=legacyTrophies().some(isNattyTrophy);
+ const doneCount=legacySeasons().filter(s=>String(s.status)==="completed").length;
+ const droughtText=last=>last===null?"Never":actN-last===0?"Defending":`${actN-last} season${actN-last===1?"":"s"}`;
+ const rows=coaches.map(c=>{
+  const key=legacyCoachKey(c);
+  const lc=legacyLastSeason(key,isConfTrophy),lb=legacyLastSeason(key,isBowlTrophy);
+  return `<div class="legacy-drought-row"><div class="legacy-drought-coach">${intelLogoHTML(c)}<b>${esc(c.coach_name)}</b></div><div class="legacy-drought-cells"><div><small>CONF TITLE</small><b class="${lc===null?"neg":""}">${droughtText(lc)}</b></div><div><small>BOWL WIN</small><b class="${lb===null?"neg":""}">${droughtText(lb)}</b></div></div></div>`;
+ }).join("");
+ const nattyRow=nattyDone?"":`<div class="legacy-drought-row league"><div class="legacy-drought-coach"><span class="legacy-throne-mini">♛</span><b>The League</b></div><div class="legacy-drought-cells"><div><small>NATIONAL TITLE</small><b class="neg">${doneCount} season${doneCount===1?"":"s"} · still waiting</b></div></div></div>`;
+ el.innerHTML=nattyRow+rows;
+}
+
+function renderLegacyMilestones(){
+ const el=$("legacyMilestones");if(!el)return;
+ const coaches=legacyCareer();
+ if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ const hCount={};
+ legacyTrophies().forEach(t=>{if(isHeismanTrophy(t)){const k=legacyCoachKey(t);hCount[k]=(hCount[k]||0)+1}});
+ /* One card per coach: the next wins milestone they control week to week.
+    Heisman chases ride along in the card foot (season-end awards can't be
+    ranked against weekly wins by "need"). */
+ const cards=coaches.map(c=>{
+  const w=Number(c.wins||0),m=Math.ceil((w+1)/10)*10,key=legacyCoachKey(c);
+  const h=hCount[key]||0;
+  const pct=Math.min(100,Math.round(w/m*100));
+  const chase=h>0?` · ${h}× Heisman — #${h+1} within reach`:"";
+  return `<div class="legacy-ms-card"><div class="legacy-ms-head">${intelLogoHTML(c)}<div><b>${esc(c.coach_name)}</b><span>${m} career wins</span></div><em>${m-w} away</em></div><div class="legacy-ms-bar"><i style="width:${pct}%"></i></div><div class="legacy-ms-foot">${w} / ${m}${esc(chase)}</div></div>`;
+ }).join("");
+ const nattyCard=legacyTrophies().some(isNattyTrophy)?"":`<div class="legacy-ms-card league"><div class="legacy-ms-head"><span class="legacy-throne-mini">♛</span><div><b>First national title</b><span>The whole league is waiting</span></div><em>unclaimed</em></div><div class="legacy-ms-bar"><i style="width:0%"></i></div><div class="legacy-ms-foot">0 / 1 · ${legacySeasons().filter(s=>String(s.status)==="completed").length} seasons gone</div></div>`;
+ el.innerHTML=cards+nattyCard;
+}
+
+function renderLegacyPillar(){
+ /* One bad section must not blank the others. */
+ [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
+  try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
+ });
+}
+
+/* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
+   renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
+function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies()}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
@@ -9041,7 +9060,7 @@ body{background:#020405!important}
  });
 
  // v5.2: legacy monochrome icon overwrite removed.
- const analyticsIcons={trajectory:'↗',efficiency:'◎',momentum:'ϟ',powerpane:'◆',luck:'◇',clutch:'★'};
+ const analyticsIcons={trajectory:'↗',efficiency:'◎',powerpane:'◆',intangibles:'✦'};
  document.querySelectorAll('#analyticsTabs button[data-pane]').forEach(btn=>{
    const pane=btn.dataset.pane, text=btn.textContent.replace(/^[^\w]+/,'').trim();
    btn.textContent=`${analyticsIcons[pane]||'◆'} ${text}`;
@@ -9232,7 +9251,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 #hqMobileNav{display:none}
 @media(max-width:700px){
   body.v19-signed-in{padding-bottom:calc(68px + var(--hq-safe-bottom))!important}
-  #hqMobileNav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:8px;right:8px;bottom:calc(7px + var(--hq-safe-bottom));z-index:2147481000;min-height:56px;border:1px solid rgba(244,197,66,.18);border-radius:14px;background:rgba(2,9,11,.965);backdrop-filter:blur(16px);box-shadow:0 16px 42px rgba(0,0,0,.55);overflow:hidden}
+  /* iOS Safari bug: position:fixed + backdrop-filter positions the nav relative to
+     its container instead of the viewport (renders mid-page on iPhone). The bg is
+     already 96.5% opaque, so the blur was invisible — drop it, keep the solid bg. */
+  #hqMobileNav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:8px;right:8px;bottom:calc(7px + var(--hq-safe-bottom));z-index:2147481000;min-height:56px;border:1px solid rgba(244,197,66,.18);border-radius:14px;background:rgba(2,9,11,.965);box-shadow:0 16px 42px rgba(0,0,0,.55);overflow:hidden}
   body:not(.v19-signed-in) #hqMobileNav{display:none!important}
   #hqMobileNav button{min-width:0;display:grid;place-items:center;align-content:center;gap:3px;padding:7px 3px;background:transparent;border:0;color:#758991;font-size:7px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
   #hqMobileNav button .mn-icon{font-size:16px;line-height:1;color:#8da0a8}
@@ -10921,7 +10943,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
  }
  function reorderDesktop(){
    const nav=document.getElementById('nav');if(!nav)return;
-   ['overview','schedule','vegas','conference','analytics','storylines','rivalries','trophies','records','recap','admin'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
+   ['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
  }
  function setupMobile(){
    const nav=document.getElementById('hqMobileNav');if(!nav)return;
@@ -10934,7 +10956,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
    if(!grid.querySelector('[data-mobile-more-destination="storylines"]')){
      const b=document.createElement('button');b.type='button';b.dataset.mobileMoreDestination='storylines';b.innerHTML='<span class="hq-more-icon"><img src="assets/icons/coach.svg" alt=""></span><span>Coach Chronicles</span>';grid.prepend(b);
    }
-   const order=['analytics','storylines','rivalries','trophies','records','recap'];
+   const order=['analytics','storylines','rivalries','records','recap'];
    order.forEach(v=>{const b=grid.querySelector(`[data-mobile-more-destination="${v}"]`);if(b)grid.appendChild(b)});
    const dyn=grid.querySelector('[data-mobile-more-action="dynasties"]');if(dyn)grid.appendChild(dyn);
  }
@@ -10958,7 +10980,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10991,7 +11013,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11658,7 +11680,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.0";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.1";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -11864,17 +11886,17 @@ window.addEventListener("pageshow",mark);
   #intelligence .intelligence-pane-head em{font-size:11px!important;line-height:1.3!important}
 
   /* TROPHY ROOM */
-  #trophies .trophy-room-hero{padding:18px!important}
-  #trophies .trophy-room-hero h2{font-size:39px!important}
-  #trophies .trophy-room-hero p{font-size:14px!important;line-height:1.45!important}
-  #trophies .trophy-room-summary>div{padding:11px 8px!important}
-  #trophies .trophy-room-summary b{font-size:29px!important}
-  #trophies .trophy-room-summary small{font-size:10px!important;line-height:1.2!important}
-  #trophies .trophy-coach-head small,
-  #trophies .trophy-card small,
-  #trophies .vegas-trophy-card small{font-size:10px!important;line-height:1.25!important}
-  #trophies .trophy-card p,
-  #trophies .vegas-trophy-card p{font-size:13px!important;line-height:1.4!important}
+  #insightsTrophyRoom .trophy-room-hero{padding:18px!important}
+  #insightsTrophyRoom .trophy-room-hero h2{font-size:39px!important}
+  #insightsTrophyRoom .trophy-room-hero p{font-size:14px!important;line-height:1.45!important}
+  #insightsTrophyRoom .trophy-room-summary>div{padding:11px 8px!important}
+  #insightsTrophyRoom .trophy-room-summary b{font-size:29px!important}
+  #insightsTrophyRoom .trophy-room-summary small{font-size:10px!important;line-height:1.2!important}
+  #insightsTrophyRoom .trophy-coach-head small,
+  #insightsTrophyRoom .trophy-card small,
+  #insightsTrophyRoom .vegas-trophy-card small{font-size:10px!important;line-height:1.25!important}
+  #insightsTrophyRoom .trophy-card p,
+  #insightsTrophyRoom .vegas-trophy-card p{font-size:13px!important;line-height:1.4!important}
 
   /* RIVALRIES */
   #rivalries .rivalry-hq-hero{padding:18px!important}
@@ -12483,9 +12505,13 @@ html,body{max-width:100%;overflow-x:hidden}
   function activeProgram(personId){return (state.programs||[]).find(p=>String(p.person_id)===String(personId))||null}
   function logoForProgram(p){return p?.logo_url||p?.team_logo_url||window.CDHQLogoResolver?.knownLogo?.(p?.team_name)||''}
   function installKey(canvasId,people){
-    const canvas=document.getElementById(canvasId),wrap=canvas?.parentElement;if(!wrap)return;
-    let key=wrap.querySelector('.intelligence-team-key');if(!key){key=document.createElement('div');key.className='intelligence-team-key';wrap.insertBefore(key,canvas)}
-    key.innerHTML=people.map((c,i)=>{const p=activeProgram(c.person_id),team=p?.team_name||c.team_name||'Historical program',logo=logoForProgram(p);return `<div class="team-key-item">${logo?`<img src="${esc(logo)}" alt="">`:`<span class="team-key-mark" style="background:${palette[i%palette.length]}"></span>`}<span>${esc(c.coach_name)}<small>${esc(team)}</small></span></div>`}).join('');
+    const canvas=document.getElementById(canvasId),wrap=canvas?.parentElement,host=wrap?.parentElement;if(!canvas||!wrap||!host)return;
+    /* QA 9.8.1: the key used to be inserted INSIDE .chart-wrap (fixed 310px height),
+       ahead of the 300px canvas. Key (~90px) + canvas overflowed the wrap, and with
+       overflow visible the chart bled out below the card. The key is now a sibling
+       above the wrap so the card grows with it in normal flow. */
+    let key=Array.from(host.children).find(el=>el.classList&&el.classList.contains('intelligence-team-key'));if(!key){key=document.createElement('div');key.className='intelligence-team-key';host.insertBefore(key,wrap)}
+    key.innerHTML=people.map((c,i)=>{const p=activeProgram(c.person_id),team=p?.team_name||c.team_name||'Historical program',logo=logoForProgram(p)||(c.team_name&&window.CDHQLogoResolver?.knownLogo?.(c.team_name))||'';return `<div class="team-key-item">${logo?`<img src="${esc(logo)}" alt="">`:`<span class="team-key-mark" style="background:${palette[i%palette.length]}"></span>`}<span>${esc(c.coach_name)}<small>${esc(team)}</small></span></div>`}).join('');
   }
   window.renderWinsChart=renderWinsChart=function(){
     if(typeof Chart==='undefined')return;const ctx=$('winsChart');if(!ctx)return;
@@ -12543,7 +12569,7 @@ html,body{max-width:100%;overflow-x:hidden}
 (function(){
   'use strict';
   const ANVIL='<span class="sf-control-anvil" title="User Controlled" aria-label="User Controlled"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 4h18c4 0 6-1 9-3v5c-2 3-5 5-9 6h-3v3h6v3H9v-3h5v-3H9C5 12 3 9 2 4Zm9 15h10l3 4H7l4-4Z"/></svg></span>';
-  const order=['overview','schedule','vegas','conference','analytics','storylines','rivalries','trophies','records','recap','admin'];
+  const order=['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'];
   function normalizeNav(){
     const nav=document.getElementById('nav');
     if(nav) order.forEach(v=>{const b=nav.querySelector('[data-view="'+v+'"]');if(b)nav.appendChild(b)});
@@ -12573,7 +12599,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';
   }
   function boot(){
     build();
@@ -12583,7 +12609,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.0';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.1';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12990,7 +13016,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.0';
+    if(m)m.textContent='PROD 9.8.1';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -13036,7 +13062,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       updateShellForDynasty();updateSeasonSelector();if(typeof hideDynastyChooser==='function')hideDynastyChooser();byId('authScreen')?.classList.add('hidden');byId('teamScreen')?.classList.add('hidden');byId('claimScreen')?.classList.add('hidden');byId('app')?.classList.remove('hidden');byId('navWrap')?.classList.remove('hidden');
       renderAll();if(typeof renderRecordBook==='function')renderRecordBook();if(typeof decorateGameCardsWithVegas==='function')decorateGameCardsWithVegas(cleanVegas);
       const recap=byId('recapSeasonSelect');if(recapSeason&&recap&&[...recap.options].some(o=>o.value===recapSeason)){recap.value=recapSeason;if(view==='recap'&&typeof renderSeasonRecap==='function')renderSeasonRecap();}const story=byId('storySeasonSelect');if(storySeason&&story&&[...story.options].some(o=>o.value===storySeason)){story.value=storySeason;if(view==='storylines'&&typeof renderStorylines==='function')renderStorylines();}
-      if(view==='vegas'&&typeof renderVegas==='function')renderVegas();if(view==='analytics'&&typeof renderAnalyticsSuite==='function')renderAnalyticsSuite();if(view==='rivalries'&&typeof renderRivalries==='function')renderRivalries();if(view==='trophies'&&typeof renderTrophies==='function')renderTrophies();if(view==='schedule'&&typeof renderSchedule==='function')renderSchedule();if(view==='overview'&&typeof renderHQCommand==='function')renderHQCommand();if(typeof ensureVegasLegacy==='function')Promise.resolve(ensureVegasLegacy()).catch(err=>console.warn('Vegas background refresh skipped:',err));
+      if(view==='vegas'&&typeof renderVegas==='function')renderVegas();if(view==='analytics'&&typeof renderAnalyticsSuite==='function')renderAnalyticsSuite();if(view==='rivalries'&&typeof renderRivalries==='function')renderRivalries();if(view==='schedule'&&typeof renderSchedule==='function')renderSchedule();if(view==='overview'&&typeof renderHQCommand==='function')renderHQCommand();if(typeof ensureVegasLegacy==='function')Promise.resolve(ensureVegasLegacy()).catch(err=>console.warn('Vegas background refresh skipped:',err));
       restoreView(view,scrollX,scrollY);setSyncStatus('● FIELD SYNCED','success');window.CDHQToast?.(`Refreshed ${D?.short_name||D?.name||'dynasty'} · stayed on ${view==='overview'?'Overview':view}.`,'success');
     }catch(err){console.error('In-app refresh failed',err);setSyncStatus('● SYNC ERROR','error');window.CDHQToast?.(err?.message||'Could not refresh dynasty data.','error');restoreView(view,scrollX,scrollY);setTimeout(()=>setSyncStatus('● FIELD SYNCED',''),2200);}
     finally{setRefreshControlsBusy(false);window.CDHQLoader?.hide();refreshing=false;}
@@ -13220,8 +13246,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   }
   function sfEventBadgeInfoV3(g){
     const type=String(g?.game_type||'regular_season').toLowerCase();
-    if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:'National Championship'};
-    if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:'College Football Playoff'};
+    if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:g?.event_name||'National Championship'};
+    if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:g?.event_name||'College Football Playoff'};
     if(type==='bowl')return {src:'assets/event-badges/bowl.svg',label:g?.event_name||'Bowl Game'};
     /* QA 9.8.0: an "Auto" regular-season game flagged as a conference game is a conference
        game even when only one side's conference is known (CPU opponents often carry none).
@@ -13400,8 +13426,10 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-game{border:1px solid rgba(244,197,66,.22);border-radius:14px;background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(2,11,15,.98));padding:10px 14px}
   #schedule .sf-cfp-game-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
   #schedule .sf-cfp-game-head span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8fa0ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap}
+  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap;margin-left:auto}
   #schedule .sf-cfp-game-head strong.sf-cfp-final{color:#f4c542}
+  /* QA 9.8.1: playoff/natty badge on bracket cards — glow-only, matches the badge treatment. */
+  #schedule .sf-cfp-badge{width:22px;height:22px;object-fit:contain;flex:none;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
   #schedule .sf-cfp-team{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:5px 0}
   #schedule .sf-cfp-logo{width:30px;height:30px;object-fit:contain}
   #schedule .sf-cfp-logo-fallback{display:grid;place-items:center;font-size:18px}
@@ -14753,11 +14781,93 @@ img.sf-logo-system-v2{
   }
 }
 </style>
+<style id="sf-dynasty-legacy-v1">
+/* QA 9.8.1 — Dynasty Insights: Legacy pillar. Scrapped the Intelligence rework.
+   Every selector is scoped under #analytics; this block is the single authority
+   for the tab. Reuses the shared logo system (intelLogoHTML). */
+#analytics .legacy-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,#0d1b1e 0%,#0a1417 60%,#0c1a12 100%);border:1px solid #1d3237;margin-bottom:14px}
+#analytics .legacy-kicker{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase;margin-bottom:6px}
+#analytics .legacy-hero h2{font-family:'Teko',sans-serif;font-size:40px;line-height:1;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+#analytics .legacy-hero p{font-size:12.5px;color:#8fa3ad;margin:0;max-width:52ch}
+#analytics .legacy-live{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;letter-spacing:.18em;color:#19d39a;white-space:nowrap;padding-top:6px}
+#analytics .legacy-live span{width:8px;height:8px;border-radius:50%;background:#19d39a;box-shadow:0 0 10px #19d39a;animation:legacyPulse 2s infinite}
+@keyframes legacyPulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+#analytics .legacy-throne{position:relative;overflow:hidden;text-align:center;padding:30px 22px 24px;border-radius:16px;margin-bottom:18px;border:1px solid #3a2f14;background:radial-gradient(ellipse at 50% -20%,#2b2310 0%,#10181b 55%,#0a1417 100%)}
+#analytics .legacy-throne.reign{border-color:#3a2f14}
+#analytics .legacy-throne.writing{border-color:#1d3237;background:radial-gradient(ellipse at 50% -20%,#14232a 0%,#0a1417 60%)}
+#analytics .legacy-throne-crown{font-size:34px;color:#f4c542;text-shadow:0 0 24px #f4c54288;margin-bottom:2px}
+#analytics .legacy-throne-num{font-family:'Teko',sans-serif;font-size:76px;line-height:1;color:#f4c542;text-shadow:0 0 34px #f4c54255}
+#analytics .legacy-throne.writing .legacy-throne-num{color:#19d39a;text-shadow:0 0 34px #19d39a55}
+#analytics .legacy-throne-label{font-size:10px;font-weight:800;letter-spacing:.24em;color:#c8b06a;margin:4px 0 12px}
+#analytics .legacy-throne p{font-size:13.5px;color:#c9d6db;max-width:56ch;margin:0 auto}
+#analytics .legacy-throne p b{color:#fff}
+#analytics .legacy-throne-sub{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
+
+#analytics .legacy-section{margin-bottom:20px}
+#analytics .legacy-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
+#analytics .legacy-section-head span{font-size:9px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase}
+#analytics .legacy-section-head h3{font-family:'Teko',sans-serif;font-size:26px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:2px 0 0}
+#analytics .legacy-section-head em{font-size:10.5px;color:#71858e;font-style:normal;text-align:right}
+
+#analytics .legacy-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+#analytics .legacy-tier-card{position:relative;background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px;overflow:hidden}
+#analytics .legacy-tier-card:first-child{border-color:#3a2f14;background:linear-gradient(160deg,#141b1e 0%,#0e181c 70%,#151207 100%)}
+#analytics .legacy-tier-rank{position:absolute;top:8px;right:12px;font-family:'Teko',sans-serif;font-size:44px;color:#ffffff12;line-height:1}
+#analytics .legacy-tier-main{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+/* Legacy logos: transparent plate + gentle gold glow, matching the rest of the app.
+   No white background anywhere, so a slow image never renders as a white box. */
+#analytics .legacy-team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 40px;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(244,197,66,.55)) drop-shadow(0 0 9px rgba(244,197,66,.28))!important}
+#analytics .legacy-team-logo-fb{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;background:#0b1c24;border:1px solid #29424c;border-radius:10px;font-family:"Barlow Condensed";font-size:17px;font-weight:800;color:#e8f1f4}
+#analytics .legacy-tier-id b{display:block;font-size:15px;color:#fff}
+#analytics .legacy-tier-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f4c542}
+#analytics .legacy-tier-label em{color:#71858e;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600}
+#analytics .legacy-tier-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#analytics .legacy-tier-stats small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+#analytics .legacy-tier-stats b{font-size:14px;color:#e8f1f4}
+#analytics .legacy-tier-stats b.pos{color:#74e4be}#analytics .legacy-tier-stats b.neg{color:#ff8080}
+
+#analytics .legacy-droughts{display:grid;gap:8px}
+#analytics .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
+#analytics .legacy-drought-row.league{border-color:#3a2f14;background:linear-gradient(120deg,#141b1e,#151207)}
+#analytics .legacy-drought-coach{display:flex;align-items:center;gap:9px}
+#analytics .legacy-drought-coach .legacy-team-logo,#analytics .legacy-drought-coach .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+#analytics .legacy-drought-coach .legacy-team-logo-fb{font-size:14px}
+#analytics .legacy-drought-coach b{font-size:13.5px;color:#fff}
+#analytics .legacy-throne-mini{font-size:22px;color:#f4c542;text-shadow:0 0 12px #f4c54266}
+#analytics .legacy-drought-cells{display:flex;gap:18px}
+#analytics .legacy-drought-cells small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+#analytics .legacy-drought-cells b{font-size:13px;color:#e8f1f4}
+#analytics .legacy-drought-cells b.neg{color:#ff9a9a}
+
+#analytics .legacy-milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+#analytics .legacy-ms-card{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px}
+#analytics .legacy-ms-card.league{border-color:#3a2f14}
+#analytics .legacy-ms-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+#analytics .legacy-ms-head .legacy-team-logo,#analytics .legacy-ms-head .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+#analytics .legacy-ms-head .legacy-team-logo-fb{font-size:14px}
+#analytics .legacy-ms-head b{display:block;font-size:13px;color:#fff}
+#analytics .legacy-ms-head span{font-size:10.5px;color:#8fa3ad}
+#analytics .legacy-ms-head em{margin-left:auto;font-size:10px;font-weight:800;color:#f4c542;font-style:normal;white-space:nowrap}
+#analytics .legacy-ms-bar{height:7px;border-radius:4px;background:#16262b;overflow:hidden}
+#analytics .legacy-ms-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#f4c542,#ffe9a8)}
+#analytics .legacy-ms-foot{font-size:10px;color:#71858e;margin-top:7px;letter-spacing:.06em}
+
+#analytics .legacy-empty{padding:22px;text-align:center;font-size:12px;color:#71858e;background:#0e181c;border:1px dashed #1d3237;border-radius:12px}
+#analytics .legacy-footnote{text-align:center;font-size:10.5px;color:#556b74;letter-spacing:.06em;margin:6px 0 14px}
+#analytics .intel-vegas-link{margin-top:2px}
+@media(max-width:640px){
+ #analytics .legacy-hero{flex-direction:column}
+ #analytics .legacy-tier-stats{grid-template-columns:repeat(2,1fr)}
+ #analytics .legacy-drought-row{flex-direction:column;align-items:stretch}
+ #analytics .legacy-drought-cells{justify-content:space-between}
+}
+</style>
 <script id="sf-qa-9-7-8-marker">
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.0';
+    if(m)m.textContent='PROD 9.8.1';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14767,7 +14877,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
