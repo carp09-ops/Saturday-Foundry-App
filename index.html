@@ -13014,7 +13014,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   window.__sfScheduleV3MyAuthority=true;
   const escV3=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const keyV3=v=>String(v||'').trim().toLowerCase();
-  function myProgramV3(){try{return typeof myProgramForSeason==='function'?myProgramForSeason():(state.myPrograms||[]).find(x=>String(x.season_id)===String(S?.season_id))}catch(_e){return null}}
+  function myProgramV3(){try{const via=typeof myProgramForSeason==='function'?myProgramForSeason():null;if(via)return via;return (state.myPrograms||[]).find(x=>String(x.season_id)===String(S?.season_id))||null}catch(_e){return null}}
   function resolveLogoV3(id,name,explicit){
     if(explicit)return explicit;
     try{if(typeof vegasTeamLogo==='function'){const v=vegasTeamLogo(id,name);if(v)return v}}catch(_e){}
@@ -13162,8 +13162,11 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     try{card.scrollIntoView({behavior:'smooth',block:'center'})}catch(_e){}
   }
   function renderMyV3(){
-    const schedule=document.getElementById('schedule'),host=document.getElementById('sfMySeasonHost');if(!schedule||!host)return;
-    const p=myProgramV3();if(!p)return;
+    const schedule=document.getElementById('schedule');if(!schedule)return;
+    /* QA 9.8.0 fix: V3 is the only My renderer now, so it must create its own host — V2's creator never runs. */
+    let host=document.getElementById('sfMySeasonHost');
+    if(!host){host=document.createElement('div');host.id='sfMySeasonHost';host.className='sf-my-season';const nav=document.getElementById('weekNav');if(nav)nav.insertAdjacentElement('beforebegin',host);else schedule.appendChild(host);}
+    const p=myProgramV3();if(!p){host.innerHTML='<div class="empty">No active program is attached to this account for this season.</div>';return;}
     schedule.classList.add('sf-v3-my-mode');
     const tid=String(p.team_id||''),src=(Array.isArray(state.scheduleGames)&&state.scheduleGames.length)?state.scheduleGames:(state.games||[]);
     const games=src.filter(g=>String(g.team_id||'')===tid||String(g.opponent_team_id||'')===tid).sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
@@ -13924,6 +13927,13 @@ img[data-sf-team-control="user"].sf-team-identity-logo-v5{
 }
 </style>
 <meta name="saturday-foundry-logo-system-preview" content="v2.2-mobile-gotw-transparent-authority">
+<style id="sf-qa-980-glow-final">
+/* QA 9.8.0 final: user-controlled team identity is glow-only on every tab.
+   Beats the v2.2 preview block's gold outline box (same selectors, later in cascade). */
+.sf-team-logo-plate-v5.sf-user-controlled{background:transparent!important;border:0!important;border-color:transparent!important;box-shadow:none!important;outline:0!important;overflow:visible!important}
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5,
+img[data-sf-team-control="user"].sf-team-identity-logo-v5{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;outline:0!important;outline-offset:0!important;filter:drop-shadow(0 0 2px rgba(244,197,66,.95)) drop-shadow(0 0 7px rgba(244,197,66,.58)) drop-shadow(0 0 14px rgba(244,197,66,.28))!important}
+</style>
 
 <style id="sf-logo-surface-sizing-v1">
 /* Preview: site-wide team logo sizing authority.
