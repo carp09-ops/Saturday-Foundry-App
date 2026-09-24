@@ -1053,7 +1053,7 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 #analytics.active{display:flex;flex-direction:column;gap:1.25rem}#analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.875rem}.showcase-card{position:relative;overflow:hidden;padding:.9rem;border-radius:.75rem;background:linear-gradient(145deg,rgba(6,18,24,.95),rgba(3,11,15,.96));border:1px solid rgba(148,163,184,.16);border-top:3px solid var(--accent,#19d39a)}.showcase-label{font-size:.55rem;color:#94a3b8;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.showcase-value{font-family:Teko,sans-serif;font-size:2rem;color:#fff;line-height:1}.showcase-sub{font-size:.58rem;color:#64748b}
 .analytics-tabs{display:flex;gap:.25rem;overflow-x:auto;background:#041017cc;padding:.25rem;border-radius:.55rem;border:1px solid #1e293b}.analytics-tabs button{padding:.4rem .7rem;border-radius:.4rem;color:#cbd5e1;font-size:.68rem;font-weight:800;white-space:nowrap}.analytics-tabs button.active{background:rgba(25,211,154,.13);color:#74e4be;border:1px solid rgba(25,211,154,.48)}.analytics-pane{display:none}.analytics-pane.active{display:block}.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.metric-card,.projection-card,.chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.75rem;padding:1rem}.projection-card{border-top:3px solid var(--coach,#19d39a)}.projection-name,.metric-title h4{font-family:Teko,sans-serif;font-size:1.45rem;color:#fff;text-transform:uppercase}.projection-team{font-size:.6rem;color:#64748b}.projection-finish{font-family:Teko,sans-serif;font-size:2rem;color:#f4c542}.projection-foot{font-size:.58rem;color:#64748b;margin-top:.5rem}.metric-title{display:flex;align-items:center;gap:.65rem}.metric-boxes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:.8rem;border:1px solid rgba(148,163,184,.12);border-radius:.55rem;overflow:hidden}.metric-box{padding:.7rem;text-align:center}.metric-box+ .metric-box{border-left:1px solid rgba(148,163,184,.12)}.metric-box small{display:block;font-size:.55rem;text-transform:uppercase;color:#64748b;font-weight:900}.metric-box b{font-family:Teko,sans-serif;font-size:1.7rem;color:#fff}.chart-wrap{height:310px}.chart-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:.65rem;margin-bottom:.7rem;border-bottom:1px solid rgba(148,163,184,.12)}.chart-head h3{font-family:Teko,sans-serif;font-size:1.35rem;color:#fff;text-transform:uppercase}.chart-head span{font-size:.58rem;color:#64748b}.form-list{display:flex;flex-direction:column;gap:.5rem}.form-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:.6rem;padding:.7rem;border:1px solid rgba(148,163,184,.11);border-radius:.5rem;background:#030d12}
 /* carry canonical panel look through schedule/trophies/records/admin */
-#schedule>.card,#trophies>.card,#records>.card,#admin>.card,#schedule>.section,#trophies>.section,#records>.section,#admin>.section{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);box-shadow:0 18px 40px -30px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.02);border-radius:.75rem}
+#schedule>.card,#records>.card,#admin>.card,#schedule>.section,#records>.section,#admin>.section{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);box-shadow:0 18px 40px -30px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.02);border-radius:.75rem}
 /* keep auth/onboarding operational and above canonical shell */
 .auth,.team-select-wrap{position:relative;z-index:60}.auth-card,.team-select-card{background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(3,11,15,.99));border:1px solid rgba(81,147,171,.35)}
 @media(max-width:1024px){#coaches,#analyticsShowcase{grid-template-columns:repeat(2,minmax(0,1fr))}#nextGames{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -2989,22 +2989,22 @@ body::after{
 <meta name="cdhq-release" content="1.1.11-photo-hero">
 <meta name="cdhq-release" content="1.2.0-release-candidate-promoted">
 <style id="v1-2-1-rc10-trophy-room">
-#trophies{padding-bottom:8px}
-#trophies .legacy-trophy-hero{align-items:center;padding:26px 28px;margin-bottom:22px;border:1px solid rgba(244,197,66,.40)!important;border-radius:20px!important;background:radial-gradient(circle at 70% 0%,rgba(244,197,66,.16),transparent 38%),linear-gradient(145deg,#0d0e0b 0%,#080b0c 58%,#050809 100%)!important;box-shadow:0 20px 60px rgba(0,0,0,.26)!important}
+#insightsTrophyRoom{padding-bottom:8px}
+#insightsTrophyRoom .legacy-trophy-hero{align-items:center;padding:26px 28px;margin-bottom:22px;border:1px solid rgba(244,197,66,.40)!important;border-radius:20px!important;background:radial-gradient(circle at 70% 0%,rgba(244,197,66,.16),transparent 38%),linear-gradient(145deg,#0d0e0b 0%,#080b0c 58%,#050809 100%)!important;box-shadow:0 20px 60px rgba(0,0,0,.26)!important}
 .legacy-trophy-copy{max-width:660px}.legacy-trophy-copy>span{font-size:10px!important;letter-spacing:.16em!important;color:#f4c542!important}.legacy-trophy-copy h2{font-size:48px!important;line-height:.92!important;margin:8px 0 10px!important}.legacy-trophy-copy p{font-size:12px!important;line-height:1.5!important;color:#a4acb7!important;max-width:650px}
-#trophies .legacy-trophy-summary{display:grid;grid-template-columns:repeat(3,minmax(105px,1fr));gap:12px;min-width:min(430px,42vw)}
-#trophies .legacy-summary-card{min-width:0;padding:14px 12px!important;border:1px solid rgba(244,197,66,.24)!important;border-radius:15px!important;background:linear-gradient(180deg,rgba(9,13,14,.92),rgba(4,8,9,.98))!important;box-shadow:inset 0 1px rgba(255,255,255,.025)}
+#insightsTrophyRoom .legacy-trophy-summary{display:grid;grid-template-columns:repeat(3,minmax(105px,1fr));gap:12px;min-width:min(430px,42vw)}
+#insightsTrophyRoom .legacy-summary-card{min-width:0;padding:14px 12px!important;border:1px solid rgba(244,197,66,.24)!important;border-radius:15px!important;background:linear-gradient(180deg,rgba(9,13,14,.92),rgba(4,8,9,.98))!important;box-shadow:inset 0 1px rgba(255,255,255,.025)}
 .legacy-summary-icon{display:block;font-size:22px;line-height:1;margin-bottom:8px}.legacy-summary-card b{font-size:32px!important}.legacy-summary-card small{font-size:7px!important;line-height:1.45!important;letter-spacing:.12em!important;color:#8b96a6!important}
-#trophies .legacy-trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-#trophies .legacy-program-card{display:flex;flex-direction:column;min-height:430px;border:1px solid rgba(244,197,66,.42)!important;border-radius:18px!important;background:radial-gradient(circle at 45% -5%,rgba(244,197,66,.09),transparent 34%),linear-gradient(160deg,#0b0e0d 0%,#060a0b 70%,#040708 100%)!important;box-shadow:0 18px 48px rgba(0,0,0,.26)!important;padding:20px 20px 18px;overflow:hidden}
+#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+#insightsTrophyRoom .legacy-program-card{display:flex;flex-direction:column;min-height:430px;border:1px solid rgba(244,197,66,.42)!important;border-radius:18px!important;background:radial-gradient(circle at 45% -5%,rgba(244,197,66,.09),transparent 34%),linear-gradient(160deg,#0b0e0d 0%,#060a0b 70%,#040708 100%)!important;box-shadow:0 18px 48px rgba(0,0,0,.26)!important;padding:20px 20px 18px;overflow:hidden}
 .legacy-program-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0!important;border:0!important;background:none!important}.legacy-program-title small{display:block;color:#f4c542!important;font-size:8px!important;font-weight:950;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.legacy-program-title h3{font-family:"Barlow Condensed";font-size:31px!important;line-height:.9!important;color:#fff!important;text-transform:uppercase;margin:0}.legacy-program-title p{font-size:11px!important;font-weight:850;color:#f4c542!important;text-transform:none!important;margin-top:7px!important}.legacy-program-logo{width:58px!important;height:58px!important;border-radius:14px!important;flex:0 0 58px;background:#071012!important}.legacy-program-logo img{width:48px!important;height:48px!important}
 .legacy-gold-rule{height:1px;background:linear-gradient(90deg,rgba(244,197,66,.48),rgba(244,197,66,.14));margin:20px 0 17px}
 .legacy-national-block{text-align:center;padding:4px 0 18px}.legacy-stadium-icon{font-size:41px;line-height:1.1;filter:saturate(.9);margin-bottom:7px}.legacy-national-block strong{display:block;font-family:"Barlow Condensed";font-size:40px;line-height:.9;color:#f4c542}.legacy-national-block span{display:block;margin-top:9px;font-size:8px;font-weight:950;letter-spacing:.10em;color:#919cac}
 .legacy-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}.legacy-stat-row>div{padding:12px 5px;border:1px solid rgba(244,197,66,.20);border-radius:12px;text-align:center;background:rgba(2,7,8,.66)}.legacy-stat-row b{display:block;font-family:"Barlow Condensed";font-size:26px;line-height:1;color:#f4c542}.legacy-stat-row small{display:block;margin-top:7px;font-size:7px;font-weight:900;line-height:1.35;letter-spacing:.09em;color:#9aa4b3}
 .legacy-heisman-list{margin-top:12px;padding-top:10px;border-top:1px solid rgba(244,197,66,.18);display:grid;gap:7px}.legacy-heisman-title{font-size:8px;font-weight:900;letter-spacing:.14em;color:#d9b84a;text-transform:uppercase;text-align:center}.legacy-heisman-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 9px;border:1px solid rgba(244,197,66,.14);background:rgba(244,197,66,.035);border-radius:7px}.legacy-heisman-item strong{display:block;color:#f5f7f8;font-size:10px;line-height:1.2}.legacy-heisman-item span{display:block;color:#7f8d94;font-size:8px;margin-top:2px}.legacy-heisman-year{flex:0 0 auto;color:#f4c542!important;font-size:9px!important;font-weight:900;letter-spacing:.06em}.legacy-bowl-record{text-align:center;color:#97a1af;font-size:10px;margin-top:15px}.legacy-bowl-record b{color:#fff;font-size:11px}.legacy-decorated-note{text-align:center;margin-top:8px;font-size:6px;font-weight:850;text-transform:uppercase;letter-spacing:.1em;color:#665d3b}
 .dynasty-legacy-strip{display:flex;align-items:center;gap:16px;margin-top:18px;padding:15px 18px;border:1px solid rgba(244,197,66,.26);border-radius:16px;background:linear-gradient(145deg,rgba(10,13,12,.95),rgba(5,9,10,.98))}.dynasty-legacy-star{font-size:30px;color:#f4c542}.dynasty-legacy-strip b{display:block;font-size:9px;letter-spacing:.14em;color:#f4c542}.dynasty-legacy-strip span{display:block;font-size:10px;color:#a5adba;margin-top:4px}
-@media(max-width:1120px){#trophies .legacy-trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#trophies .legacy-trophy-hero{align-items:flex-start;flex-direction:column}.legacy-trophy-summary{min-width:100%!important;width:100%}}
-@media(max-width:650px){#trophies .legacy-trophy-grid{grid-template-columns:1fr}.legacy-trophy-copy h2{font-size:39px!important}#trophies .legacy-trophy-hero{padding:20px}.legacy-trophy-summary{grid-template-columns:repeat(3,1fr)!important;gap:7px!important}.legacy-summary-icon{font-size:18px}.legacy-summary-card b{font-size:26px!important}.legacy-program-card{min-height:390px!important}.dynasty-legacy-strip{align-items:flex-start}}
+@media(max-width:1120px){#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#insightsTrophyRoom .legacy-trophy-hero{align-items:flex-start;flex-direction:column}.legacy-trophy-summary{min-width:100%!important;width:100%}}
+@media(max-width:650px){#insightsTrophyRoom .legacy-trophy-grid{grid-template-columns:1fr}.legacy-trophy-copy h2{font-size:39px!important}#insightsTrophyRoom .legacy-trophy-hero{padding:20px}.legacy-trophy-summary{grid-template-columns:repeat(3,1fr)!important;gap:7px!important}.legacy-summary-icon{font-size:18px}.legacy-summary-card b{font-size:26px!important}.legacy-program-card{min-height:390px!important}.dynasty-legacy-strip{align-items:flex-start}}
 </style>
 <meta name="cdhq-release" content="1.2.1-rc10-trophy-room-rebuild">
 <meta name="cdhq-release-hotfix" content="1.2.1-rc13-current-form">
@@ -3231,7 +3231,7 @@ button:not(:disabled):active{filter:brightness(.96)}
 .empty,.vegas-empty{min-height:74px;display:grid;place-items:center;border:1px dashed rgba(148,163,184,.14);border-radius:10px;background:rgba(255,255,255,.012);color:#8fa1ab!important}
 
 /* The decorative Trophy Room footer was intentionally retired in Polish Pass V2. */
-#trophies .dynasty-legacy-strip{display:none!important}
+#insightsTrophyRoom .dynasty-legacy-strip{display:none!important}
 
 @media (max-width:768px){
   html{font-size:16px}
@@ -5249,7 +5249,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
         <button data-view="conference"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/conferences@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Conference Race</span></button>
         <button data-view="schedule"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/schedule@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Schedule</span></button>
         <button data-view="recap"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/recap@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Season Recap</span></button>
-        <button data-view="trophies"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/trophy-room@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Trophy Room</span></button>
+        
         <button data-view="records"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/records@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coaches Card</span></button>
         <button id="adminNav" class="hidden" data-view="admin"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/settings@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Commissioner</span></button>
       </nav></div>
@@ -5440,11 +5440,6 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
   </div>
 
   <div class="legacy-section">
-    <div class="legacy-section-head"><div><span>Championship Timeline</span><h3>Title Windows</h3></div><em>Every banner by season</em></div>
-    <div id="legacyTimeline" class="legacy-timeline-wrap"></div>
-  </div>
-
-  <div class="legacy-section">
     <div class="legacy-section-head"><div><span>The Waiting Game</span><h3>Droughts</h3></div><em>How long since the last one</em></div>
     <div id="legacyDroughts" class="legacy-droughts"></div>
   </div>
@@ -5454,7 +5449,17 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <div id="legacyMilestones" class="legacy-milestones"></div>
   </div>
 
-  <p class="legacy-footnote">Legacy is the first Dynasty Insights pillar. Identity and Trajectory are next.</p>
+    <div class="legacy-section" id="insightsTrophyRoom">
+    <div class="legacy-section-head"><div><span>Hardware</span><h3>Trophy Room</h3></div><em>Every banner, ring and award</em></div>
+    <div class="trophy-room-hero legacy-trophy-hero">
+        <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
+        <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
+      </div>
+      <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
+      <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
+  </div>
+
+<p class="legacy-footnote">Legacy is the first Dynasty Insights pillar. Identity and Trajectory are next.</p>
 
   <button class="intel-vegas-link" id="intelVegasLink">
     <span>Dynasty Vegas</span>
@@ -5611,21 +5616,13 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     </header>
     <div id="recapSummary" class="recap-summary-grid"></div>
     <section class="recap-section" data-recap-fold="coaches"><div class="recap-section-head"><div><span>COACH SCORECARDS</span><h3>The Dynasty Season</h3></div><em>Final results for each controlled program</em></div><div id="recapCoachGrid" class="recap-coach-grid"></div></section>
-    <section class="recap-section" data-recap-fold="honors"><div class="recap-section-head"><div><span>SEASON HARDWARE</span><h3>Championships & Honors</h3></div><div class="recap-head-actions"><em>Awards recorded in the Saturday Foundry ledger</em><button type="button" data-recap-jump="trophies">Trophy Room →</button></div></div><div id="recapHonors" class="recap-honors-grid"></div></section>
+    <section class="recap-section" data-recap-fold="honors"><div class="recap-section-head"><div><span>SEASON HARDWARE</span><h3>Championships & Honors</h3></div><div class="recap-head-actions"><em>Awards recorded in the Saturday Foundry ledger</em><button type="button" data-recap-jump="analytics">Trophy Room →</button></div></div><div id="recapHonors" class="recap-honors-grid"></div></section>
     <section class="recap-section" data-recap-fold="poll"><div class="recap-section-head"><div><span>FINAL POLL SNAPSHOT</span><h3>Top 25</h3></div><em id="recapPollMeta">Latest stored poll for the season</em></div><div id="recapPoll" class="recap-poll-grid"></div></section>
     <section class="recap-section" data-recap-fold="games"><div class="recap-section-head"><div><span>GAMES THAT DEFINED THE YEAR</span><h3>Signature Games</h3></div><div class="recap-head-actions"><em>Postseason, rivalry, ranked and dramatic finishes</em><button type="button" data-recap-jump="rivalries">Rivalries →</button></div></div><div id="recapGames" class="recap-games-grid"></div></section>
     <section class="recap-section recap-chronicle-section" data-recap-fold="story"><div class="recap-section-head"><div><span>SEASON STORY</span><h3>Defining Moments</h3></div><em>Tap a moment for the preview · full stories in Coach Chronicles</em></div><div id="recapChronicle" class="recap-chronicle-grid"></div><div class="recap-chronicle-foot"><button id="recapOpenChronicle" class="recap-crosslink" type="button">View Full Coach Chronicles →</button></div></section>
   </div>
 </section>
-<section id="rivalries" class="view"><div class="rivalry-hq-shell"><header class="rivalry-hq-hero"><div><span>HEAD-TO-HEAD INTELLIGENCE</span><h2>Rivalry Center</h2><p>Every user-vs-user meeting becomes part of the mythology — series control, streaks, ranked meetings, close finishes, Vegas performance and the games that changed the rivalry.</p></div><div id="rivalryHeroSummary" class="rivalry-hero-summary"></div></header><section id="rivalrySpotlight" class="rivalry-spotlight"></section><section><div class="rivalry-section-head"><div><span>ALL-TIME SERIES</span><h3>Rivalry Board</h3></div><em>Completed coach-vs-coach games</em></div><div id="rivalryBoard" class="rivalry-board"></div></section><section><div class="rivalry-section-head"><div><span>SIGNATURE MEETINGS</span><h3>Games That Built the Rivalries</h3></div><em>Closest, biggest and ranked clashes</em></div><div id="rivalryMoments" class="rivalry-moments"></div></section></div></section><section id="trophies" class="view">
-  <div class="trophy-room-hero legacy-trophy-hero">
-    <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
-    <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
-  </div>
-  <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
-  <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
-  
-</section>
+<section id="rivalries" class="view"><div class="rivalry-hq-shell"><header class="rivalry-hq-hero"><div><span>HEAD-TO-HEAD INTELLIGENCE</span><h2>Rivalry Center</h2><p>Every user-vs-user meeting becomes part of the mythology — series control, streaks, ranked meetings, close finishes, Vegas performance and the games that changed the rivalry.</p></div><div id="rivalryHeroSummary" class="rivalry-hero-summary"></div></header><section id="rivalrySpotlight" class="rivalry-spotlight"></section><section><div class="rivalry-section-head"><div><span>ALL-TIME SERIES</span><h3>Rivalry Board</h3></div><em>Completed coach-vs-coach games</em></div><div id="rivalryBoard" class="rivalry-board"></div></section><section><div class="rivalry-section-head"><div><span>SIGNATURE MEETINGS</span><h3>Games That Built the Rivalries</h3></div><em>Closest, biggest and ranked clashes</em></div><div id="rivalryMoments" class="rivalry-moments"></div></section></div></section>
 
     <section id="records" class="view">
   <div class="coaches-card-shell">
@@ -7745,37 +7742,6 @@ function renderLegacyTiers(){
  }).join("");
 }
 
-function legacyConfStreak(key){
- const won=new Set(legacyTrophies().filter(t=>isConfTrophy(t)&&legacyCoachKey(t)===key).map(t=>Number(t.season_number)));
- const order=legacySeasons().map(s=>Number(s.season_number));
- let best=0,run=0,prev=null;
- order.forEach(n=>{if(won.has(n)&&prev!==null&&n===prev+1){run++}else if(won.has(n)){run=1}else{run=0}best=Math.max(best,run);prev=n});
- return best;
-}
-function legacyStreakLabel(n){return n>=4?`${n}-peat`:n===3?"Three-peat":n===2?"Back-to-back":""}
-
-function renderLegacyTimeline(){
- const el=$("legacyTimeline");if(!el)return;
- const ss=legacySeasons(),coaches=legacyCareer();
- if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
- const head=ss.map(s=>`<th class="${s.is_active?"live":""}">S${s.season_number}${s.is_active?'<i></i>':""}</th>`).join("");
- const body=coaches.map(c=>{
-  const key=legacyCoachKey(c),streak=legacyConfStreak(key),streakLabel=legacyStreakLabel(streak);
-  const cells=ss.map(s=>{
-   const ts=legacyTrophies().filter(t=>legacyCoachKey(t)===key&&Number(t.season_number)===Number(s.season_number));
-   if(!ts.length)return `<td><span class="legacy-cell-none">·</span></td>`;
-   const chips=ts.map(t=>{
-    const cls=isConfTrophy(t)?"conf":isBowlTrophy(t)?"bowl":isHeismanTrophy(t)?"heisman":isNattyTrophy(t)?"natty":"other";
-    const short=isConfTrophy(t)?"CONF":isBowlTrophy(t)?"BOWL":isHeismanTrophy(t)?"HEISMAN":isNattyTrophy(t)?"NATTY":"★";
-    return `<span class="legacy-chip ${cls}" title="${esc(t.name||t.type)}">${short}</span>`;
-   }).join("");
-   return `<td><div class="legacy-chips">${chips}</div></td>`;
-  }).join("");
-  return `<tr><td class="legacy-coach-cell"><div class="legacy-coach-id">${intelLogoHTML(c)}<div><b>${esc(c.coach_name)}</b>${streakLabel?`<span class="legacy-streak">${streakLabel}</span>`:""}</div></div></td>${cells}</tr>`;
- }).join("");
- el.innerHTML=`<div class="legacy-timeline-scroll"><table class="legacy-timeline"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div><div class="legacy-timeline-key"><span><i class="legacy-chip conf"></i>Conference</span><span><i class="legacy-chip bowl"></i>Bowl</span><span><i class="legacy-chip heisman"></i>Heisman</span><span><i class="legacy-chip natty"></i>National</span></div>`;
-}
-
 function legacyLastSeason(key,pred){
  let best=null;
  legacyTrophies().forEach(t=>{if(legacyCoachKey(t)===key&&pred(t)){const n=Number(t.season_number);if(best===null||n>best)best=n}});
@@ -7819,20 +7785,20 @@ function renderLegacyMilestones(){
 
 function renderLegacyPillar(){
  /* One bad section must not blank the others. */
- [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyTimeline",renderLegacyTimeline],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
+ [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
   try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
  });
  /* QA: self-heal logos that never resolve (hung requests, blank responses).
     Anything still pixel-less after a beat walks the fallback chain to the
     initials tile, so a blank white box can never stick around. */
- setTimeout(()=>{try{document.querySelectorAll('#dynastyInsightsView img.team-logo').forEach(img=>{
+ setTimeout(()=>{try{document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
    if(img.isConnected&&(!img.complete||img.naturalWidth===0)&&window.sfLogoFallback)window.sfLogoFallback(img);
  })}catch(e){}},3500);
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
    renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
-function renderAnalyticsSuite(){renderLegacyPillar()}
+function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies()}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
@@ -10981,7 +10947,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
  }
  function reorderDesktop(){
    const nav=document.getElementById('nav');if(!nav)return;
-   ['overview','schedule','vegas','conference','analytics','storylines','rivalries','trophies','records','recap','admin'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
+   ['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
  }
  function setupMobile(){
    const nav=document.getElementById('hqMobileNav');if(!nav)return;
@@ -10994,7 +10960,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
    if(!grid.querySelector('[data-mobile-more-destination="storylines"]')){
      const b=document.createElement('button');b.type='button';b.dataset.mobileMoreDestination='storylines';b.innerHTML='<span class="hq-more-icon"><img src="assets/icons/coach.svg" alt=""></span><span>Coach Chronicles</span>';grid.prepend(b);
    }
-   const order=['analytics','storylines','rivalries','trophies','records','recap'];
+   const order=['analytics','storylines','rivalries','records','recap'];
    order.forEach(v=>{const b=grid.querySelector(`[data-mobile-more-destination="${v}"]`);if(b)grid.appendChild(b)});
    const dyn=grid.querySelector('[data-mobile-more-action="dynasties"]');if(dyn)grid.appendChild(dyn);
  }
@@ -11924,17 +11890,17 @@ window.addEventListener("pageshow",mark);
   #intelligence .intelligence-pane-head em{font-size:11px!important;line-height:1.3!important}
 
   /* TROPHY ROOM */
-  #trophies .trophy-room-hero{padding:18px!important}
-  #trophies .trophy-room-hero h2{font-size:39px!important}
-  #trophies .trophy-room-hero p{font-size:14px!important;line-height:1.45!important}
-  #trophies .trophy-room-summary>div{padding:11px 8px!important}
-  #trophies .trophy-room-summary b{font-size:29px!important}
-  #trophies .trophy-room-summary small{font-size:10px!important;line-height:1.2!important}
-  #trophies .trophy-coach-head small,
-  #trophies .trophy-card small,
-  #trophies .vegas-trophy-card small{font-size:10px!important;line-height:1.25!important}
-  #trophies .trophy-card p,
-  #trophies .vegas-trophy-card p{font-size:13px!important;line-height:1.4!important}
+  #insightsTrophyRoom .trophy-room-hero{padding:18px!important}
+  #insightsTrophyRoom .trophy-room-hero h2{font-size:39px!important}
+  #insightsTrophyRoom .trophy-room-hero p{font-size:14px!important;line-height:1.45!important}
+  #insightsTrophyRoom .trophy-room-summary>div{padding:11px 8px!important}
+  #insightsTrophyRoom .trophy-room-summary b{font-size:29px!important}
+  #insightsTrophyRoom .trophy-room-summary small{font-size:10px!important;line-height:1.2!important}
+  #insightsTrophyRoom .trophy-coach-head small,
+  #insightsTrophyRoom .trophy-card small,
+  #insightsTrophyRoom .vegas-trophy-card small{font-size:10px!important;line-height:1.25!important}
+  #insightsTrophyRoom .trophy-card p,
+  #insightsTrophyRoom .vegas-trophy-card p{font-size:13px!important;line-height:1.4!important}
 
   /* RIVALRIES */
   #rivalries .rivalry-hq-hero{padding:18px!important}
@@ -12607,7 +12573,7 @@ html,body{max-width:100%;overflow-x:hidden}
 (function(){
   'use strict';
   const ANVIL='<span class="sf-control-anvil" title="User Controlled" aria-label="User Controlled"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 4h18c4 0 6-1 9-3v5c-2 3-5 5-9 6h-3v3h6v3H9v-3h5v-3H9C5 12 3 9 2 4Zm9 15h10l3 4H7l4-4Z"/></svg></span>';
-  const order=['overview','schedule','vegas','conference','analytics','storylines','rivalries','trophies','records','recap','admin'];
+  const order=['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'];
   function normalizeNav(){
     const nav=document.getElementById('nav');
     if(nav) order.forEach(v=>{const b=nav.querySelector('[data-view="'+v+'"]');if(b)nav.appendChild(b)});
@@ -13100,7 +13066,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       updateShellForDynasty();updateSeasonSelector();if(typeof hideDynastyChooser==='function')hideDynastyChooser();byId('authScreen')?.classList.add('hidden');byId('teamScreen')?.classList.add('hidden');byId('claimScreen')?.classList.add('hidden');byId('app')?.classList.remove('hidden');byId('navWrap')?.classList.remove('hidden');
       renderAll();if(typeof renderRecordBook==='function')renderRecordBook();if(typeof decorateGameCardsWithVegas==='function')decorateGameCardsWithVegas(cleanVegas);
       const recap=byId('recapSeasonSelect');if(recapSeason&&recap&&[...recap.options].some(o=>o.value===recapSeason)){recap.value=recapSeason;if(view==='recap'&&typeof renderSeasonRecap==='function')renderSeasonRecap();}const story=byId('storySeasonSelect');if(storySeason&&story&&[...story.options].some(o=>o.value===storySeason)){story.value=storySeason;if(view==='storylines'&&typeof renderStorylines==='function')renderStorylines();}
-      if(view==='vegas'&&typeof renderVegas==='function')renderVegas();if(view==='analytics'&&typeof renderAnalyticsSuite==='function')renderAnalyticsSuite();if(view==='rivalries'&&typeof renderRivalries==='function')renderRivalries();if(view==='trophies'&&typeof renderTrophies==='function')renderTrophies();if(view==='schedule'&&typeof renderSchedule==='function')renderSchedule();if(view==='overview'&&typeof renderHQCommand==='function')renderHQCommand();if(typeof ensureVegasLegacy==='function')Promise.resolve(ensureVegasLegacy()).catch(err=>console.warn('Vegas background refresh skipped:',err));
+      if(view==='vegas'&&typeof renderVegas==='function')renderVegas();if(view==='analytics'&&typeof renderAnalyticsSuite==='function')renderAnalyticsSuite();if(view==='rivalries'&&typeof renderRivalries==='function')renderRivalries();if(view==='schedule'&&typeof renderSchedule==='function')renderSchedule();if(view==='overview'&&typeof renderHQCommand==='function')renderHQCommand();if(typeof ensureVegasLegacy==='function')Promise.resolve(ensureVegasLegacy()).catch(err=>console.warn('Vegas background refresh skipped:',err));
       restoreView(view,scrollX,scrollY);setSyncStatus('● FIELD SYNCED','success');window.CDHQToast?.(`Refreshed ${D?.short_name||D?.name||'dynasty'} · stayed on ${view==='overview'?'Overview':view}.`,'success');
     }catch(err){console.error('In-app refresh failed',err);setSyncStatus('● SYNC ERROR','error');window.CDHQToast?.(err?.message||'Could not refresh dynasty data.','error');restoreView(view,scrollX,scrollY);setTimeout(()=>setSyncStatus('● FIELD SYNCED',''),2200);}
     finally{setRefreshControlsBusy(false);window.CDHQLoader?.hide();refreshing=false;}
@@ -14861,31 +14827,6 @@ img.sf-logo-system-v2{
 #analytics .legacy-tier-stats small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
 #analytics .legacy-tier-stats b{font-size:14px;color:#e8f1f4}
 #analytics .legacy-tier-stats b.pos{color:#74e4be}#analytics .legacy-tier-stats b.neg{color:#ff8080}
-
-#analytics .legacy-timeline-wrap{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:6px}
-#analytics .legacy-timeline-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-#analytics .legacy-timeline{border-collapse:collapse;width:100%;min-width:520px}
-#analytics .legacy-timeline th,#analytics .legacy-timeline td{padding:9px 8px;text-align:center;border-bottom:1px solid #16262b;font-size:11px}
-#analytics .legacy-timeline thead th{font-size:10px;font-weight:800;letter-spacing:.14em;color:#71858e}
-#analytics .legacy-timeline thead th.live{color:#19d39a}
-#analytics .legacy-timeline thead th.live i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#19d39a;margin-left:5px;box-shadow:0 0 8px #19d39a}
-#analytics .legacy-timeline tbody tr:last-child td{border-bottom:none}
-#analytics .legacy-coach-cell{text-align:left!important;min-width:150px}
-#analytics .legacy-coach-id{display:flex;align-items:center;gap:8px}
-#analytics .legacy-coach-id .team-logo,#analytics .legacy-coach-id .team-fallback{width:30px;height:30px}
-#analytics .legacy-coach-id b{display:block;font-size:12.5px;color:#fff}
-#analytics .legacy-streak{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#0a1417;background:#f4c542;border-radius:20px;padding:2px 8px;margin-top:3px}
-#analytics .legacy-cell-none{color:#2c3f45}
-#analytics .legacy-chips{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-#analytics .legacy-chip{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.1em;border-radius:5px;padding:3px 7px;color:#0a1417}
-#analytics .legacy-chip.conf{background:linear-gradient(135deg,#f4c542,#d9a92f)}
-#analytics .legacy-chip.bowl{background:linear-gradient(135deg,#c98f4e,#a66f35);color:#fff}
-#analytics .legacy-chip.heisman{background:linear-gradient(135deg,#e8f1f4,#9fb3bd)}
-#analytics .legacy-chip.natty{background:linear-gradient(135deg,#fff2c4,#f4c542);box-shadow:0 0 12px #f4c54266}
-#analytics .legacy-chip.other{background:#3a4d54;color:#fff}
-#analytics .legacy-timeline-key{display:flex;gap:14px;flex-wrap:wrap;padding:10px 10px 6px;font-size:10px;color:#8fa3ad}
-#analytics .legacy-timeline-key span{display:flex;align-items:center;gap:6px}
-#analytics .legacy-timeline-key .legacy-chip{width:14px;height:10px;padding:0}
 
 #analytics .legacy-droughts{display:grid;gap:8px}
 #analytics .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
