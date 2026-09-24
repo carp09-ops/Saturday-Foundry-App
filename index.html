@@ -12497,9 +12497,13 @@ html,body{max-width:100%;overflow-x:hidden}
   function activeProgram(personId){return (state.programs||[]).find(p=>String(p.person_id)===String(personId))||null}
   function logoForProgram(p){return p?.logo_url||p?.team_logo_url||window.CDHQLogoResolver?.knownLogo?.(p?.team_name)||''}
   function installKey(canvasId,people){
-    const canvas=document.getElementById(canvasId),wrap=canvas?.parentElement;if(!wrap)return;
-    let key=wrap.querySelector('.intelligence-team-key');if(!key){key=document.createElement('div');key.className='intelligence-team-key';wrap.insertBefore(key,canvas)}
-    key.innerHTML=people.map((c,i)=>{const p=activeProgram(c.person_id),team=p?.team_name||c.team_name||'Historical program',logo=logoForProgram(p);return `<div class="team-key-item">${logo?`<img src="${esc(logo)}" alt="">`:`<span class="team-key-mark" style="background:${palette[i%palette.length]}"></span>`}<span>${esc(c.coach_name)}<small>${esc(team)}</small></span></div>`}).join('');
+    const canvas=document.getElementById(canvasId),wrap=canvas?.parentElement,host=wrap?.parentElement;if(!canvas||!wrap||!host)return;
+    /* QA 9.8.1: the key used to be inserted INSIDE .chart-wrap (fixed 310px height),
+       ahead of the 300px canvas. Key (~90px) + canvas overflowed the wrap, and with
+       overflow visible the chart bled out below the card. The key is now a sibling
+       above the wrap so the card grows with it in normal flow. */
+    let key=Array.from(host.children).find(el=>el.classList&&el.classList.contains('intelligence-team-key'));if(!key){key=document.createElement('div');key.className='intelligence-team-key';host.insertBefore(key,wrap)}
+    key.innerHTML=people.map((c,i)=>{const p=activeProgram(c.person_id),team=p?.team_name||c.team_name||'Historical program',logo=logoForProgram(p)||(c.team_name&&window.CDHQLogoResolver?.knownLogo?.(c.team_name))||'';return `<div class="team-key-item">${logo?`<img src="${esc(logo)}" alt="">`:`<span class="team-key-mark" style="background:${palette[i%palette.length]}"></span>`}<span>${esc(c.coach_name)}<small>${esc(team)}</small></span></div>`}).join('');
   }
   window.renderWinsChart=renderWinsChart=function(){
     if(typeof Chart==='undefined')return;const ctx=$('winsChart');if(!ctx)return;
