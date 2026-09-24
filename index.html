@@ -165,6 +165,28 @@ input:focus,select:focus{border-color:var(--emerald)}
 .close-btn{cursor:pointer;border:1px solid #25404a;background:#071820;color:#cbd7dc;width:38px;height:38px;border-radius:9px}
 .score-entry{display:grid;grid-template-columns:1fr 90px;gap:9px;align-items:center;padding:11px;border:1px solid #18343e;border-radius:10px;background:#061319}
 .score-entry-name{font-weight:900;font-size:11px}.score-entry-sub{font-size:8px;color:#71858e;margin-top:2px}.score-entry input{text-align:center;font-family:"Barlow Condensed";font-size:24px;font-weight:800;padding:6px}
+.recap-dialog{text-align:center;max-width:420px}
+.recap-result{font-family:'Teko',sans-serif;font-size:52px;font-weight:800;line-height:1;margin:8px 0 2px;letter-spacing:.04em}
+.recap-result.win{color:#4ade80}.recap-result.loss{color:#f87171}
+.recap-subtitle{font-size:11px;color:#71858e;margin-bottom:14px}
+.recap-score{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.recap-team{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0a1e26;border-radius:10px;border:1px solid #18343e}
+.recap-team.winner{border-color:#f4c542;background:#0f1f28}
+.recap-team-name{font-weight:800;font-size:14px}
+.recap-team-score{font-family:'Teko',sans-serif;font-size:32px;font-weight:800}
+.recap-team.winner .recap-team-score{color:#f4c542}
+.recap-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.recap-stats>div{background:#0a1e26;border:1px solid #18343e;border-radius:10px;padding:10px 6px}
+.recap-stats span{display:block;font-size:8px;font-weight:800;letter-spacing:.1em;color:#71858e;margin-bottom:4px}
+.recap-stats b{font-size:15px;font-weight:800}
+.recap-stats b.good{color:#4ade80}.recap-stats b.bad{color:#f87171}
+.recap-storyline{background:linear-gradient(135deg,#1a2b33,#0f1f28);border:1px solid #f4c54255;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.5}
+.myweek-game{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#0a1e26;border:1px solid #18343e;border-radius:10px}
+.myweek-game-info{min-width:0}
+.myweek-game-teams{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.myweek-game-meta{font-size:9px;color:#71858e;margin-top:3px}
+.myweek-enter{flex-shrink:0;background:linear-gradient(135deg,#f4c542,#dca52b);color:#071016;font-weight:900;font-size:10px;letter-spacing:.08em;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;min-height:44px}
+.myweek-done{text-align:center;padding:16px;color:#4ade80;font-weight:700;font-size:13px}
 .result-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check-row{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #18343e;border-radius:9px;background:#061319;font-size:9px}.check-row input{width:auto}
 .enter-result{cursor:pointer;border:1px solid rgba(16,185,129,.34);background:#07372d;color:#76eac8;border-radius:7px;padding:6px 8px;font-size:8px;font-weight:900;text-transform:uppercase}
 @media(max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr)}}
@@ -5419,6 +5441,13 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 <section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div></div></section>
 <section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week"><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></section>
 <div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE LEGACY LINE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
+<section id="myWeekPanel" class="ref-panel rounded-xl p-4" style="margin-bottom:14px">
+  <div class="ref-panel-heading" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px"><span style="color:#f4c542">📋</span><h3 style="margin:0">YOUR WEEK</h3></div>
+    <span id="myWeekMeta" style="font-size:10px;color:#71858e"></span>
+  </div>
+  <div id="myWeekGames" class="space-y-2"></div>
+</section>
 <section id="coaches" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5"></section>
 <section id="hqNewsDesk" class="hq-news-desk"><div class="hq-news-desk-head"><div><span>AROUND THE DYNASTY</span><h3>FOUNDRY NEWS DESK</h3></div><em>LIVE LEAGUE INTELLIGENCE</em></div><div class="hq-command-grid"><article class="hq-command-card hq-command-primary"><div class="hq-command-head"><div><span>LEAGUE INTEL</span><h3>Right Now</h3></div><b id="hqCommandWeek">LIVE</b></div><div id="hqCommandNow" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>CHRONICLE DESK</span><h3>Lead Story</h3></div><button type="button" onclick="switchView('storylines')">Open →</button></div><div id="hqCommandStory" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>RIVALRY WATCH</span><h3>Head-to-Head</h3></div><button type="button" onclick="switchView('rivalries')">Open →</button></div><div id="hqCommandRivalry" class="hq-command-body"></div></article></div></section>
 <section id="legacyLinePanel" class="ref-panel legacy-line-panel rounded-xl p-0 overflow-hidden"><div class="legacy-line-head"><div><span>⚡ THE LEGACY LINE</span><strong>THE BIG STORIES. ALL DYNASTY.</strong></div><em>LIVE DYNASTY FEED • AUTO-UPDATING</em></div><div id="wire"></div></section>
@@ -5773,6 +5802,20 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <button id="submitResultBtn" class="btn primary">Save Final Result</button>
       <div id="resultMessage" class="notice hidden"></div>
     </div>
+  </div>
+</div>
+
+<div id="resultRecapModal" class="result-modal hidden">
+  <div class="result-dialog recap-dialog">
+    <div class="recap-head">
+      <div class="kicker">🏟️ FINAL</div>
+      <div id="recapResult" class="recap-result">WIN</div>
+      <div id="recapSubtitle" class="recap-subtitle"></div>
+    </div>
+    <div id="recapScore" class="recap-score"></div>
+    <div id="recapStats" class="recap-stats"></div>
+    <div id="recapStoryline" class="recap-storyline hidden"></div>
+    <button id="closeRecapBtn" class="btn primary">Done</button>
   </div>
 </div>
 
@@ -7356,32 +7399,57 @@ async function submitSelectedResult(){
    $("submitResultBtn").disabled=true;msg($("resultMessage"),"Saving final result…");
    await Data.submitResult(selectedGame.id,{myScore,oppScore,myRank,oppRank,overtime:$("resultOT").checked,network:null,eventName:$("resultEvent").value.trim()||null});
    const impactGameId=selectedGame.id, impactPersonId=selectedGame.person_id;
+   const savedMyScore=myScore, savedOppScore=oppScore, savedGame={...selectedGame};
    state.career=await Data.career(D.dynasty_id);
-   msg($("resultMessage"),"Final saved. Standings and analytics updated.","success");
    await loadSeason(S.season_id);
    if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
+   // Build the recap
    try{
      const updated=(state.games||[]).find(x=>String(x.id)===String(impactGameId)&&(!impactPersonId||String(x.person_id)===String(impactPersonId)))||
                    (state.games||[]).find(x=>String(x.id)===String(impactGameId));
-     let record=null,streak=null,ats=null;
+     const won=savedMyScore>savedOppScore;
+     const myName=savedGame.team_name||"My Team", oppName=savedGame.opponent_team||"Opponent";
+     // Result
+     const recapResult=$("recapResult");
+     recapResult.textContent=won?"WIN":"LOSS";
+     recapResult.className="recap-result "+(won?"win":"loss");
+     $("recapSubtitle").textContent=`Week ${savedGame.week_number} · ${myName} ${savedGame.home_away==="away"?"at":"vs"} ${oppName}`;
+     // Score
+     $("recapScore").innerHTML=`
+       <div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${savedMyScore}</span></div>
+       <div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${savedOppScore}</span></div>`;
+     // Stats
+     let recordStr="—", streakStr="—", atsStr="—", atsClass="";
      if(updated?.person_id){
-       const rr=recFor(updated.person_id); if(rr) record=`Record ${rr.wins}-${rr.losses}`;
+       const rr=recFor(updated.person_id); if(rr) recordStr=`${rr.wins}-${rr.losses}`;
        const finished=(state.games||[]).filter(x=>String(x.person_id)===String(updated.person_id)&&x.status==="completed"&&!x.is_bye)
          .sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
        if(finished.length){
          const last=finished.at(-1)?.result; let n=0;
          for(let i=finished.length-1;i>=0;i--){if(finished[i].result!==last)break;n++}
-         if(last==="W"||last==="L") streak=`${last}${n} streak`;
+         if(last==="W"||last==="L") streakStr=`${last}${n}`;
        }
        const vr=vegasForGame(impactGameId), vp=vr?vegasPerspective(vr,updated):null;
        if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
          const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
-         ats=graded>0?`ATS cover by ${graded.toFixed(1)}`:graded<0?`ATS miss by ${Math.abs(graded).toFixed(1)}`:"ATS push";
+         if(graded>0){atsStr=`Cover ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="good";}
+         else if(graded<0){atsStr=`Miss ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="bad";}
+         else{atsStr="Push";}
        }
      }
-     window.DynastyExperience?.resultImpact?.({record,streak,ats,marketMoved:true,chronicle:true});
-   }catch(_){}
-   setTimeout(closeResultModal,650)
+     $("recapStats").innerHTML=`
+       <div><span>RECORD</span><b>${recordStr}</b></div>
+       <div><span>STREAK</span><b>${streakStr}</b></div>
+       <div><span>VS SPREAD</span><b class="${atsClass}">${atsStr}</b></div>`;
+     // Hide storyline for now (can be added later)
+     $("recapStoryline").classList.add("hidden");
+     // Show recap, hide entry
+     $("resultModal").classList.add("hidden");
+     $("resultRecapModal").classList.remove("hidden");
+   }catch(_){
+     msg($("resultMessage"),"Final saved.","success");
+     setTimeout(closeResultModal,650);
+   }
  }catch(e){msg($("resultMessage"),e.message,"error")}
  finally{$("submitResultBtn").disabled=false}
 }
@@ -8067,7 +8135,35 @@ function updateOverviewDataVisibility(){
  setVisible("top25Panel",hasRankings);
  setVisible("seasonPulsePanel",completed);
 }
-function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
+function renderMyWeek(){
+  const host=$("myWeekGames"); if(!host) return;
+  const mine=myProgramForSeason();
+  if(!mine){host.innerHTML='<div class="myweek-done">No program linked</div>';return;}
+  const wk=currentWeek();
+  $("myWeekMeta").textContent=`Week ${wk}`;
+  const pid=String(mine.person_id||"");
+  const unplayed=(state.games||[]).filter(g=>
+    String(g.person_id||"")===pid &&
+    String(g.status||"").toLowerCase()!=="completed" &&
+    !g.is_bye &&
+    Number(g.week_number||0)===Number(wk)
+  );
+  if(!unplayed.length){
+    host.innerHTML='<div class="myweek-done">✓ All caught up for Week '+wk+'</div>';
+    return;
+  }
+  host.innerHTML=unplayed.map(g=>{
+    const vs=g.home_away==="away"?`at ${esc(g.opponent_team||"Opponent")}`:`vs ${esc(g.opponent_team||"Opponent")}`;
+    return `<div class="myweek-game">
+      <div class="myweek-game-info">
+        <div class="myweek-game-teams">${esc(g.team_name||"My Team")} ${vs}</div>
+        <div class="myweek-game-meta">Week ${g.week_number} · ${g.home_away==="away"?"AWAY":"HOME"}</div>
+      </div>
+      <button class="myweek-enter" onclick="openResultModal('${esc(g.id)}')">ENTER SCORE</button>
+    </div>`;
+  }).join("");
+}
+function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderMyWeek();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
 
 $("careerMoveBtn")?.addEventListener("click",async()=>{
  const coach=$("careerMoveCoach")?.value,team=$("careerMoveTeam")?.value,reason=$("careerMoveReason")?.value?.trim()||"";const out=$("careerMoveMessage");if(out)hide(out);
@@ -8442,7 +8538,7 @@ $("confirmTeamBtn").onclick=async()=>{
  }
 };
 $("weekCards").onclick=e=>{const vegas=e.target.closest("[data-vegas-game]");if(vegas){window.CDHQVegasFocusGame=vegas.dataset.vegasGame;switchView("vegas");Promise.resolve(ensureVegasLegacy()).finally(()=>{renderVegas();requestAnimationFrame(()=>document.querySelector(`[data-vegas-game-card="${CSS.escape(String(window.CDHQVegasFocusGame||""))}"]`)?.scrollIntoView({behavior:"smooth",block:"center"}))});return}const edit=e.target.closest("[data-edit-game]");if(edit){openMatchupEditor(edit.dataset.editGame);return}const b=e.target.closest("[data-result-game]");if(b)openResultModal(b.dataset.resultGame)};
-$("closeResultBtn").onclick=closeResultModal;$("resultModal").onclick=e=>{if(e.target===$("resultModal"))closeResultModal()};$("submitResultBtn").onclick=submitSelectedResult;
+$("closeResultBtn").onclick=closeResultModal;$("closeRecapBtn").onclick=()=>{$("resultRecapModal").classList.add("hidden");selectedGame=null};$("resultModal").onclick=e=>{if(e.target===$("resultModal"))closeResultModal()};$("submitResultBtn").onclick=submitSelectedResult;
 $("weekNav").onclick=e=>{const b=e.target.closest("button[data-week]");if(!b)return;selectedWeek=Number(b.dataset.week);renderSchedule()};
 window.CDHQ_RUNTIME={Data,session,req,esc,$,getState:()=>state,getSeason:()=>S,getDynasty:()=>D,getSelectedWeek:()=>selectedWeek,setSelectedWeek:v=>{selectedWeek=Number(v)},currentWeek,switchView,renderSchedule:()=>renderSchedule(),loadSeason:id=>loadSeason(id)};
 (async()=>{try{const s=await refreshSession();if(s)await enter(s);else signedOut()}catch(e){signedOut();msg($("authMessage"),e.message,"error")}finally{window.CDHQLoader?.hide(true)}})();
@@ -10982,7 +11078,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -11015,7 +11111,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11682,7 +11778,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.1";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.2";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12601,7 +12697,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';
   }
   function boot(){
     build();
@@ -12611,7 +12707,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.1';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.2';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -13018,7 +13114,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.1';
+    if(m)m.textContent='PROD 9.8.2';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14916,7 +15012,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.1';
+    if(m)m.textContent='PROD 9.8.2';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14926,7 +15022,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
