@@ -6557,18 +6557,17 @@ function gotwSlideMarkup(pick,index,total){
  const hasMarket=!!(vp&&Number.isFinite(Number(vp.teamWinProbability)));
  const teamPct=hasMarket?Math.round(Number(vp.teamWinProbability)*100):null;
  const oppPct=hasMarket?100-teamPct:null;
- const probability=hasMarket?`<aside class="hq-probability hq-probability-mobile" aria-label="Dynasty Vegas win probability">
-      <div class="hq-prob-title">DYNASTY VEGAS WIN PROBABILITY</div>
-      <div class="hq-prob-grid"><div><strong class="hq-prob-away">${oppPct}%</strong><span class="gotw-prob-logo ${opponentDynasty?"user-team":"cpu-team"}">${ol?`<img src="${esc(ol)}" alt="">`:""}</span></div><div class="hq-prob-ring" style="--away:${oppPct};--home:${teamPct}"><span>DV</span></div><div><strong class="hq-prob-home">${teamPct}%</strong><span class="gotw-prob-logo ${teamDynasty?"user-team":"cpu-team"}">${l?`<img src="${esc(l)}" alt="">`:""}</span></div></div>
-      <small>STORED PREGAME LINE • SAME MODEL AS THE MARKET</small>
-    </aside>`:`<aside class="hq-probability hq-probability-mobile gotw-no-market" aria-label="Dynasty Vegas market pending"><div class="hq-prob-title">DYNASTY VEGAS</div><div class="gotw-no-market-copy"><strong>MARKET PENDING</strong><span>Dynasty Vegas line is still loading or awaiting backfill</span></div></aside>`;
+ const probability=hasMarket?`<div class="gotw-prob-wrap" aria-label="Dynasty Vegas win probability">
+      <div class="gotw-prob-bar"><span class="gotw-prob-away" style="width:${oppPct}%"></span><span class="gotw-prob-home" style="width:${teamPct}%"></span></div>
+      <div class="gotw-prob-labels"><b class="away">${oppPct}%</b><span>DYNASTY VEGAS</span><b class="home">${teamPct}%</b></div>
+    </div>`:`<div class="gotw-prob-wrap gotw-no-market" aria-label="Dynasty Vegas market pending"><div class="gotw-no-market-copy"><strong>MARKET PENDING</strong><span>Dynasty Vegas line is still loading</span></div></div>`;
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
   <div class="gotw-slide-kicker"><span class="gotw-feature-type ${pick.kind}">${esc(pick.label)}</span><span class="gotw-feature-reason">${esc(gotwSlideReason(g))}</span></div>
   <div class="gotw-body gotw-broadcast">
     <div class="gotw-matchup">
-      <div class="team-side">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div><div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div></div></div>
+      <div class="team-side">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div><div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div></div>${hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
       <div class="vs">VS</div>
-      <div class="team-side right"><div><div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div></div>${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}</div>
+      <div class="team-side right">${hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}<div><div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div></div>${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}</div>
     </div>
     ${probability}
   </div>
@@ -14671,6 +14670,23 @@ img.sf-logo-system-v2{
 #overview #gotw .gotw-action-row{padding:8px 12px!important;margin-top:0!important}
 #overview #gotw .gotw-carousel-top{padding:8px 12px!important}
 #overview #gotw .gotw-carousel-position{padding:6px 12px!important}
+/* QA 9.8.2: GOTW redesign — integrated win %, compact probability bar */
+#overview #gotw .gotw-winpct{font-family:'Teko',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-left:auto;padding-left:10px}
+#overview #gotw .gotw-winpct.away{color:#ff8080}
+#overview #gotw .gotw-winpct.home{color:#f4c542}
+#overview #gotw .team-side.right .gotw-winpct{margin-left:0;margin-right:auto;padding-left:0;padding-right:10px;order:-1}
+#overview #gotw .gotw-prob-wrap{margin:10px 0 4px}
+#overview #gotw .gotw-prob-bar{display:flex;height:6px;border-radius:99px;overflow:hidden;background:#1a2b33}
+#overview #gotw .gotw-prob-bar .gotw-prob-away{background:#c85852}
+#overview #gotw .gotw-prob-bar .gotw-prob-home{background:linear-gradient(90deg,#f4c542,#dca52b)}
+#overview #gotw .gotw-prob-labels{display:flex;justify-content:space-between;align-items:center;margin-top:5px;font-size:8px;font-weight:800;letter-spacing:.1em;color:#71858e}
+#overview #gotw .gotw-prob-labels b{font-family:'Teko',sans-serif;font-size:15px;letter-spacing:0}
+#overview #gotw .gotw-prob-labels b.away{color:#ff8080}
+#overview #gotw .gotw-prob-labels b.home{color:#f4c542}
+#overview #gotw .gotw-no-market-copy{text-align:center;padding:8px 0}
+#overview #gotw .gotw-no-market-copy strong{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;color:#f4c542}
+#overview #gotw .gotw-no-market-copy span{font-size:9px;color:#71858e}
+
 
 #overview #gotw .gotw-logo-plaque .team-fallback{
   width:100%!important;
