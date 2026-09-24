@@ -5675,21 +5675,9 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
             <div class="kicker">📅 LEAGUE CONTROL</div>
             <h3>Active Week</h3>
             <p>Controls the week surfaced throughout Saturday Foundry. The league auto-advances after every player-controlled game in the active week is complete; CPU-only games never hold the week back.</p>
-            <div style="display:flex;gap:8px"><input id="activeWeekInput" type="number" min="0" placeholder="Week"><button id="setWeekBtn" class="btn primary">Set Week</button></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="activeWeekInput" type="number" min="0" placeholder="Week"><button id="setWeekBtn" class="btn primary">Set Week</button><button id="generateMarketBtn" class="btn">Generate Market</button></div>
             <div id="weekAdminMessage" class="notice hidden"></div>
           </div>
-          <div class="admin-card rankings-admin-card">
-            <div class="kicker">★ NATIONAL POLL</div>
-            <h3>Top 25 Rankings Manager</h3>
-            <p>Save the official poll for a specific week. Paste one team per line as <b>rank | team | record</b>, for example <code>1 | Ohio State | 8-0</code>. Saving also stamps that week's game participants with the official game-time ranking snapshot.</p>
-            <div class="admin-form"><input id="rankingsWeek" type="number" min="0" placeholder="Week"><textarea id="rankingsPaste" rows="9" placeholder="1 | Team Name | 8-0
-2 | Team Name | 7-1
-...
-25 | Team Name | 6-2"></textarea></div>
-            <div class="admin-actions"><button id="loadRankingsBtn" class="btn">Load Saved Poll</button><button id="saveRankingsBtn" class="btn primary">Save Top 25</button></div>
-            <div id="rankingsAdminMessage" class="notice hidden"></div>
-          </div>
-
           <div class="admin-card">
             <div class="kicker">🎟️ MEMBERS</div>
             <h3>Invite Center</h3>
@@ -5730,15 +5718,37 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 
           <div class="admin-card">
             <div class="kicker">🏅 AWARDS &amp; HARDWARE</div>
-            <h3>Heisman Trophy</h3>
-            <p>Record a Heisman winner for a coach/program. Trophy Room totals update from the award ledger.</p>
+            <h3>National Awards</h3>
+            <p>Record a national award winner for a coach/program. Trophy Room totals update from the award ledger.</p>
             <div class="admin-form">
+              <select id="heismanAward" aria-label="National award">
+                <option value="Heisman Trophy">Heisman Trophy — Most Outstanding Player</option>
+                <option value="Maxwell Award">Maxwell Award — Player of the Year</option>
+                <option value="Walter Camp Award">Walter Camp Award — Player of the Year</option>
+                <option value="Davey O'Brien Award">Davey O'Brien Award — Best Quarterback</option>
+                <option value="Doak Walker Award">Doak Walker Award — Best Running Back</option>
+                <option value="Biletnikoff Award">Biletnikoff Award — Best Wide Receiver</option>
+                <option value="John Mackey Award">John Mackey Award — Best Tight End</option>
+                <option value="Outland Trophy">Outland Trophy — Best Interior Lineman</option>
+                <option value="Bronko Nagurski Trophy">Bronko Nagurski Trophy — Best Defensive Player</option>
+                <option value="Chuck Bednarik Award">Chuck Bednarik Award — Best Defensive Player</option>
+                <option value="Dick Butkus Award">Dick Butkus Award — Best Linebacker</option>
+                <option value="Jim Thorpe Award">Jim Thorpe Award — Best Defensive Back</option>
+                <option value="Ted Hendricks Award">Ted Hendricks Award — Best Defensive End</option>
+                <option value="Rotary Lombardi Award">Rotary Lombardi Award — Best Lineman</option>
+                <option value="Rimington Trophy">Rimington Trophy — Best Center</option>
+                <option value="Lou Groza Award">Lou Groza Award — Best Kicker</option>
+                <option value="Ray Guy Award">Ray Guy Award — Best Punter</option>
+                <option value="Paul Hornung Award">Paul Hornung Award — Most Versatile Player</option>
+                <option value="Johnny Unitas Golden Arm Award">Johnny Unitas Golden Arm Award — Best Senior QB</option>
+                <option value="Manning Award">Manning Award — Best Quarterback</option>
+              </select>
               <select id="heismanSeason"></select>
               <select id="heismanCoach"><option value="">Select coach / program</option></select>
               <input id="heismanPlayer" placeholder="Player name (optional)">
               <input id="heismanPosition" placeholder="Position (optional)">
             </div>
-            <div class="admin-actions"><button id="addHeismanBtn" class="btn primary">Add Heisman</button></div>
+            <div class="admin-actions"><button id="addHeismanBtn" class="btn primary">Add Award</button></div>
             <div id="heismanMessage" class="notice hidden"></div>
             <div id="heismanAwards" class="form-list" style="margin-top:10px"></div>
           </div>
@@ -5961,7 +5971,7 @@ const Data={
  async createDynasty(name,shortName,edition){const s=session();return req("/rest/v1/rpc/create_dynasty",{method:"POST",token:s.access_token,body:{p_name:name,p_short_name:shortName||null,p_game_edition:edition||"27",p_year:null}})},
  async nextSeason(dynastyId,year,carry){const s=session();return req("/rest/v1/rpc/create_next_season",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_year:year||null,p_carry_programs:carry}})},
  async releaseTeam(seasonId,teamId){const s=session();return req("/rest/v1/rpc/release_team",{method:"POST",token:s.access_token,body:{p_season_id:seasonId,p_team_id:teamId}})},
- async createHeisman(dynastyId,seasonId,personId,playerName,playerPosition){const s=session();return req("/rest/v1/rpc/create_heisman_award",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_season_id:seasonId,p_person_id:personId,p_player_name:playerName||null,p_position:playerPosition||null}})},
+ async createHeisman(dynastyId,seasonId,personId,playerName,playerPosition,awardName){const s=session();return req("/rest/v1/rpc/create_heisman_award",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_season_id:seasonId,p_person_id:personId,p_player_name:playerName||null,p_position:playerPosition||null,p_award_name:awardName||"Heisman Trophy"}})},
  async deleteHeisman(awardId){const s=session();return req("/rest/v1/rpc/delete_heisman_award",{method:"POST",token:s.access_token,body:{p_award_id:awardId}})},
  async listHeismans(dynastyId){const s=session();return req("/rest/v1/rpc/list_heisman_awards",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId}})||[]},
  async powerContext(dynastyId){const s=session();return req("/rest/v1/rpc/get_dynasty_power_context",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId}})},
@@ -6041,10 +6051,10 @@ function bindCriticalAuth(){
 }
 $("heismanSeason")?.addEventListener("change",populateHeismanCoaches);
 $("addHeismanBtn")?.addEventListener("click",async()=>{
- hide($("heismanMessage"));const seasonId=$("heismanSeason").value,personId=$("heismanCoach").value;if(!seasonId||!personId){msg($("heismanMessage"),"Choose a season and coach/program.","error");return}
- try{$("addHeismanBtn").disabled=true;await Data.createHeisman(D.dynasty_id,seasonId,personId,$("heismanPlayer").value.trim(),$("heismanPosition").value.trim());$("heismanPlayer").value="";$("heismanPosition").value="";state.trophies=await Data.trophies(D.dynasty_id);state.heismans=await Data.listHeismans(D.dynasty_id);renderTrophies();await renderHeismanAdmin();msg($("heismanMessage"),"Heisman added. Trophy Room updated.","success")}catch(e){msg($("heismanMessage"),e.message,"error")}finally{$("addHeismanBtn").disabled=false}
+ hide($("heismanMessage"));const seasonId=$("heismanSeason").value,personId=$("heismanCoach").value,awardName=$("heismanAward")?.value||"Heisman Trophy";if(!seasonId||!personId){msg($("heismanMessage"),"Choose a season and coach/program.","error");return}
+ try{$("addHeismanBtn").disabled=true;await Data.createHeisman(D.dynasty_id,seasonId,personId,$("heismanPlayer").value.trim(),$("heismanPosition").value.trim(),awardName);$("heismanPlayer").value="";$("heismanPosition").value="";state.trophies=await Data.trophies(D.dynasty_id);state.heismans=await Data.listHeismans(D.dynasty_id);renderTrophies();await renderHeismanAdmin();msg($("heismanMessage"),`${awardName} added. Trophy Room updated.`,"success")}catch(e){msg($("heismanMessage"),e.message,"error")}finally{$("addHeismanBtn").disabled=false}
 });
-document.addEventListener("click",async e=>{const b=e.target.closest?.(".delete-heisman");if(!b)return;if(!confirm("Remove this Heisman record?"))return;try{await Data.deleteHeisman(b.dataset.heismanId);state.trophies=await Data.trophies(D.dynasty_id);state.heismans=await Data.listHeismans(D.dynasty_id);renderTrophies();await renderHeismanAdmin();msg($("heismanMessage"),"Heisman removed.","success")}catch(err){msg($("heismanMessage"),err.message,"error")}});
+document.addEventListener("click",async e=>{const b=e.target.closest?.(".delete-heisman");if(!b)return;if(!confirm("Remove this award record?"))return;try{await Data.deleteHeisman(b.dataset.heismanId);state.trophies=await Data.trophies(D.dynasty_id);state.heismans=await Data.listHeismans(D.dynasty_id);renderTrophies();await renderHeismanAdmin();msg($("heismanMessage"),"Award removed.","success")}catch(err){msg($("heismanMessage"),err.message,"error")}});
 
 bindCriticalAuth();
 
@@ -7896,9 +7906,10 @@ async function renderHeismanAdmin(){
  const seasonMeta=(seasons||[]).find(x=>String(x.season_id)===String(a.season_id)||Number(x.season_number)===Number(a.season_number));
  const awardYear=Number(seasonMeta?.year||0)||null;
  const seasonLabel=a.season_number?`Season ${a.season_number}${awardYear?` · ${awardYear}`:""}`:"Historical · Year not recorded";
+ const awardLabel=a.award_name||a.award||"Heisman Trophy";
  const detail=[a.team_name||"",a.player_name?`${a.player_name}${a.player_position?` (${a.player_position})`:""}`:""] .filter(Boolean).map(esc).join(" · ");
- return `<div class="form-row"><div><b>${seasonLabel} · ${esc(a.coach_name||"Coach")}</b><div style="font-size:12px;color:#657d86">${detail}</div></div><button class="danger-btn delete-heisman" data-heisman-id="${a.award_id}">Remove</button></div>`;
-}).join("")||'<div class="empty">No Heismans recorded yet.</div>';
+ return `<div class="form-row"><div><b>${esc(awardLabel)} · ${seasonLabel}</b><div style="font-size:12px;color:#657d86">${esc(a.coach_name||"Coach")}${detail?` · ${detail}`:""}</div></div><button class="danger-btn delete-heisman" data-heisman-id="${a.award_id}">Remove</button></div>`;
+}).join("")||'<div class="empty">No national awards recorded yet.</div>';
 }
 async function renderInviteAdmin(){
  if(!isCommissioner()||!$("activeInvites"))return;
@@ -7928,7 +7939,7 @@ async function renderCommissioner(){
  if(!isCommissioner())return;
  try{
    teamChoices=await Data.teamSelection(S.season_id);
-   $("activeWeekInput").value=currentWeek(); if($("rankingsWeek"))$("rankingsWeek").value=currentWeek();
+   $("activeWeekInput").value=currentWeek();
    $("adminClaims").innerHTML=teamChoices.filter(t=>t.claimed).map(t=>`<div class="form-row retire-row"><div><b>${esc(t.claimed_by||"Coach")}</b><div style="font-size:12px;color:#657d86">${esc(t.team_name)}${t.conference?` · ${esc(t.conference)}`:""}</div></div><div class="claim-actions"><button class="release-team retire-team-btn" data-release-team="${t.team_id}" data-release-name="${esc(t.team_name)}" data-release-coach="${esc(t.claimed_by||"this coach")}">Retire Coach</button></div></div>`).join("")||'<div class="empty">No active coaches to retire.</div>';
    const seasonStarted=(state.games||[]).some(g=>g.status==="completed"&&!g.is_bye);
    const coachSel=$("careerMoveCoach"),teamSel=$("careerMoveTeam"),moveBtn=$("careerMoveBtn");
@@ -8418,7 +8429,28 @@ $("myScheduleOpponent").onchange=()=>{
 $("myScheduleToggle").onclick=()=>openMyScheduleBuilder();
 $("closeMySchedule").onclick=()=>closeMyScheduleBuilder();
 $("saveMySchedule").onclick=()=>saveMyScheduleGame();
-$('generateWeekVegasBtn')?.addEventListener('click',async()=>{const b=$('generateWeekVegasBtn'),week=currentWeek();try{b.disabled=true;msg($('vegasAdminMessage'),`Generating the full Week ${week} national market…`);const raw=await Data.generateVegasWeek(D.dynasty_id,S.season_id,week);const summary=Array.isArray(raw)?raw[0]:raw;const requested=Number(summary?.requested||0),generated=Number(summary?.generated||0),failed=Number(summary?.failed||0),preserved=Number(summary?.preserved_locked_or_manual||0);vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));vegasLegacyLoadedFor=null;await loadVegasInBackground(D.dynasty_id,S.season_id);if(!requested)return msg($('vegasAdminMessage'),`No scheduled games found for Week ${week}.`,'error');const parts=[`${generated}/${requested} national lines generated`];if(preserved)parts.push(`${preserved} locked/manual preserved`);if(failed)parts.push(`${failed} failed`);msg($('vegasAdminMessage'),parts.join(' · '),failed?'error':'success')}catch(e){msg($('vegasAdminMessage'),`National Vegas generation failed: ${e.message}`,'error')}finally{b.disabled=false}});
+async function generateWeeklyMarket(triggerBtn){
+ const b=triggerBtn,week=currentWeek();
+ try{
+  b.disabled=true;
+  const out=$('vegasAdminMessage');
+  msg(out,`Generating the full Week ${week} national market…`);
+  const raw=await Data.generateVegasWeek(D.dynasty_id,S.season_id,week);
+  const summary=Array.isArray(raw)?raw[0]:raw;
+  const requested=Number(summary?.requested||0),generated=Number(summary?.generated||0),failed=Number(summary?.failed||0),preserved=Number(summary?.preserved_locked_or_manual||0);
+  vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));vegasLegacyLoadedFor=null;
+  await loadVegasInBackground(D.dynasty_id,S.season_id);
+  if(!requested)return msg(out,`No scheduled games found for Week ${week}.`,'error');
+  const parts=[`${generated}/${requested} national lines generated`];
+  if(preserved)parts.push(`${preserved} locked/manual preserved`);
+  if(failed)parts.push(`${failed} failed`);
+  msg(out,parts.join(' · '),failed?'error':'success');
+  const wout=$('weekAdminMessage');if(wout&&b.id==='generateMarketBtn')msg(wout,`Week ${week} market generated. See Market Desk for lines.`,'success');
+ }catch(e){msg($('vegasAdminMessage'),`National Vegas generation failed: ${e.message}`,'error')}
+ finally{b.disabled=false}
+}
+$('generateWeekVegasBtn')?.addEventListener('click',e=>generateWeeklyMarket(e.currentTarget));
+$('generateMarketBtn')?.addEventListener('click',e=>generateWeeklyMarket(e.currentTarget));
 $('adminVegasLines')?.addEventListener('click',async e=>{const edit=e.target.closest('[data-vg-edit]');if(edit){openVegasOverride(edit.dataset.vgEdit);return}const ref=e.target.closest('[data-vg-refresh]'),lock=e.target.closest('[data-vg-lock]'),clear=e.target.closest('[data-vg-clear]');const btn=ref||lock||clear;if(!btn)return;const gid=btn.dataset.vgRefresh||btn.dataset.vgLock||btn.dataset.vgClear;try{btn.disabled=true;if(ref){msg($('vegasAdminMessage'),'Regenerating line…');await Data.generateVegas(gid)}else if(lock){const now=lock.dataset.locked==='1'?null:new Date().toISOString();await Data.updateVegasLine(gid,{locked_at:now});msg($('vegasAdminMessage'),now?'Line locked.':'Line unlocked.','success')}else if(clear){if(!confirm('Clear the manual override, unlock this line, and regenerate it from the Dynasty Vegas model?'))return;await Data.updateVegasLine(gid,{is_manual_override:false,locked_at:null});await Data.generateVegas(gid)}vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));vegasLegacyLoadedFor=null;await loadVegasInBackground(D.dynasty_id,S.season_id);msg($('vegasAdminMessage'),'Vegas line updated.','success')}catch(err){msg($('vegasAdminMessage'),`Vegas update failed: ${err.message}`,'error')}finally{btn.disabled=false}});
 $('closeVegasOverride')?.addEventListener('click',closeVegasOverride);$('cancelVegasOverride')?.addEventListener('click',closeVegasOverride);$('vegasOverrideModal')?.addEventListener('click',e=>{if(e.target===$('vegasOverrideModal'))closeVegasOverride()});
 $('saveVegasOverride')?.addEventListener('click',async()=>{if(!vegasOverrideGameId)return;const num=id=>$(id).value===''?null:Number($(id).value),prob=num('voHomeProb');const patch={spread_home:num('voSpread'),total_line:num('voTotal'),home_moneyline:num('voHomeML'),away_moneyline:num('voAwayML'),projected_home_score:num('voProjHome'),projected_away_score:num('voProjAway'),home_win_probability:prob==null?null:Math.max(.01,Math.min(.99,prob/100)),confidence:$('voConfidence').value,is_manual_override:true,locked_at:new Date().toISOString()};if(patch.spread_home==null||patch.total_line==null)return msg($('vegasOverrideMessage'),'Spread and O/U are required.','error');const b=$('saveVegasOverride');try{b.disabled=true;msg($('vegasOverrideMessage'),'Saving commissioner line…');await Data.updateVegasLine(vegasOverrideGameId,patch);vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));vegasLegacyLoadedFor=null;closeVegasOverride();await loadVegasInBackground(D.dynasty_id,S.season_id);msg($('vegasAdminMessage'),'Manual line saved and locked.','success')}catch(err){msg($('vegasOverrideMessage'),`Could not save override: ${err.message}`,'error')}finally{b.disabled=false}});
@@ -8449,9 +8481,8 @@ $("setWeekBtn").onclick=async()=>{
  try{btn.disabled=true;const saved=await Data.setActiveWeek(D.dynasty_id,w);state.activeWeek=(saved==null||saved===''||!Number.isInteger(Number(saved)))?w:Number(saved);selectedWeek=state.activeWeek;msg($("weekAdminMessage"),`Active week set to ${state.activeWeek}.`,"success");renderAll()}catch(e){msg($("weekAdminMessage"),e.message,"error")}finally{btn.disabled=false}
 };
 function rankingTeamLookup(name){const k=teamKey(name);return (teamChoices||[]).find(t=>teamKey(t.team_name)===k)||null}
-function parseRankingsPaste(text){return String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{const parts=line.split(/\s*\|\s*/);if(parts.length<2)throw Error(`Use rank | team | record format: ${line}`);const rank=Number(parts[0]),name=parts[1].trim(),m=String(parts[2]||'').match(/(\d+)\s*-\s*(\d+)/),team=rankingTeamLookup(name);if(!Number.isInteger(rank)||rank<1||rank>25)throw Error(`Invalid rank: ${line}`);if(!team)throw Error(`Team not found: ${name}`);return {rank,team_id:team.team_id,wins:m?Number(m[1]):null,losses:m?Number(m[2]):null,name:team.team_name}})}
-$("loadRankingsBtn")?.addEventListener("click",()=>{const w=Number($("rankingsWeek").value),rows=(state.rankings||[]).filter(r=>Number(r.week_number)===w).sort((a,b)=>Number(a.rank)-Number(b.rank));$("rankingsPaste").value=rows.map(r=>`${r.rank} | ${r.team?.name||''} | ${r.wins??0}-${r.losses??0}`).join('\n');msg($("rankingsAdminMessage"),rows.length?`Loaded ${rows.length} saved rankings for Week ${w}.`:`No saved poll for Week ${w}.`,rows.length?'success':'')});
-$("saveRankingsBtn")?.addEventListener("click",async()=>{const btn=$("saveRankingsBtn"),w=Number($("rankingsWeek").value);try{if(!Number.isInteger(w)||w<0)throw Error('Enter a valid week.');const rows=parseRankingsPaste($("rankingsPaste").value);if(rows.length!==25)throw Error(`Top 25 requires exactly 25 teams; found ${rows.length}.`);if(new Set(rows.map(r=>r.rank)).size!==25)throw Error('Each rank 1–25 must appear exactly once.');if(new Set(rows.map(r=>r.team_id)).size!==25)throw Error('A team can appear only once.');btn.disabled=true;await Data.saveRankings(D.dynasty_id,S.season_id,w,rows);state.rankings=await Data.rankings(D.dynasty_id,S.season_id);msg($("rankingsAdminMessage"),`Week ${w} Top 25 saved. The official poll and game-time ranking snapshot are now live across Dynasty HQ.`,'success');renderAll()}catch(e){msg($("rankingsAdminMessage"),e.message,'error')}finally{btn.disabled=false}});
+
+
 
 $("createInviteBtn").onclick=async()=>{
  const btn=$("createInviteBtn"),uses=Number($("inviteUses").value||1),role=$("inviteRole").value;
@@ -11136,7 +11167,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -11169,7 +11200,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11836,7 +11867,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.2";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.3";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12755,7 +12786,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3';
   }
   function boot(){
     build();
@@ -12765,7 +12796,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.2';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.3';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -13172,7 +13203,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.2';
+    if(m)m.textContent='PROD 9.8.3';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -15072,7 +15103,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.2';
+    if(m)m.textContent='PROD 9.8.3';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -15082,7 +15113,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
