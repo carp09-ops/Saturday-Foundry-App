@@ -4627,83 +4627,6 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 </style>
 
 
-<style id="sf-mobile-schedule-single-row-v5-1">
-/* QA V5.1 — keep phone schedule matchups on one horizontal row. */
-@media(max-width:700px){
-  #schedule.sf-v3-my-mode .sf-matchup{
-    grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr)!important;
-    gap:6px!important;
-    align-items:center!important;
-    padding:10px 9px!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team{
-    grid-template-columns:40px minmax(0,1fr)!important;
-    gap:7px!important;
-    align-items:center!important;
-    min-width:0!important;
-    text-align:left!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team.home{
-    grid-template-columns:minmax(0,1fr) 40px!important;
-    text-align:right!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-logo-fallback{
-    grid-column:2!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team.home .sf-match-copy{
-    grid-column:1!important;
-    grid-row:1!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-logo-fallback{
-    grid-column:1!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team:not(.home) .sf-match-copy{
-    grid-column:2!important;
-    grid-row:1!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-team>.sf-team-logo-plate-v5,
-  #schedule.sf-v3-my-mode .sf-match-logo,
-  #schedule.sf-v3-my-mode .sf-match-logo-fallback{
-    width:40px!important;
-    height:40px!important;
-    min-width:40px!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-copy{min-width:0!important}
-  #schedule.sf-v3-my-mode .sf-match-name{
-    font-size:15px!important;
-    line-height:1!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-role{
-    margin-bottom:3px!important;
-    font-size:6px!important;
-    letter-spacing:.08em!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-meta{
-    margin-top:3px!important;
-    font-size:7px!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-score{
-    margin-top:4px!important;
-    font-size:18px!important;
-  }
-  #schedule.sf-v3-my-mode .sf-match-sep{
-    margin:0!important;
-    text-align:center!important;
-    font-size:10px!important;
-    align-self:center!important;
-  }
-}
-</style>
 
 <style id="sf-qa-ipad-gotw-snap-fix">
 /* QA — iPad GOTW carousel containment. Each card owns exactly one stage width. */
@@ -11134,7 +11057,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
     ensureModeUi();
     const schedule=document.getElementById('schedule');if(schedule){schedule.classList.toggle('sf-my-mode',scheduleMode==='my');schedule.classList.toggle('sf-national-mode',scheduleMode==='national')}
     cleanupActions();
-    if(scheduleMode==='my')renderMySeason();else renderNational();
+    if(scheduleMode==='my'&&!window.__sfScheduleV3MyAuthority)renderMySeason();else if(scheduleMode!=='my')renderNational();
     return out;
   };
   document.addEventListener('click',e=>{
@@ -13087,6 +13010,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
 <script id="sf-schedule-v3-final-runtime">
 (function(){
   'use strict';
+  /* QA 9.8.0: V3 is the single authoritative My Schedule renderer. V2 defers to this flag. */
+  window.__sfScheduleV3MyAuthority=true;
   const escV3=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const keyV3=v=>String(v||'').trim().toLowerCase();
   function myProgramV3(){try{return typeof myProgramForSeason==='function'?myProgramForSeason():(state.myPrograms||[]).find(x=>String(x.season_id)===String(S?.season_id))}catch(_e){return null}}
@@ -13098,7 +13023,11 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     try{if(typeof logoFor==='function'){const v=logoFor(name);if(v)return v}}catch(_e){}
     return '';
   }
-  function logoMarkupV3(side){const src=resolveLogoV3(side.id,side.name,side.logo);return src?`<img class="sf-match-logo" src="${escV3(src)}" alt="${escV3(side.name)} logo">`:`<div class="sf-match-logo-fallback">${escV3((side.name||'?').slice(0,2).toUpperCase())}</div>`}
+  function logoMarkupV3(side){
+    const src=resolveLogoV3(side.id,side.name,side.logo);
+    const userCls=side.isUser?' sf-user-team-logo':'';
+    return src?`<img class="sf-match-logo${userCls}" src="${escV3(src)}" alt="${escV3(side.name)} logo">`:`<div class="sf-match-logo-fallback${userCls}">${escV3((side.name||'?').slice(0,2).toUpperCase())}</div>`;
+  }
   function ownedV3(g){try{return typeof ownsGame==='function'&&ownsGame(g)}catch(_e){return false}}
   function weekLabelV3(g){return String(g.week_label||`Week ${g.week_number||''}`).replace(/^Week\s+/i,'W')}
   function perspectiveV3(g,p){
@@ -13109,8 +13038,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   }
   function sideDataV3(g,p){
     const tid=String(p.team_id||''),userIsTeam=String(g.team_id||'')===tid;
-    const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||p.team_logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null};
-    const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?(g.opponent_team||g.opponent_name):(g.team_name||g.team),rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null};
+    const user={id:p.team_id,name:p.team_name||g.team_name||'My Team',rank:userIsTeam?g.team_rank:g.opponent_rank,logo:p.logo_url||p.team_logo_url||'',score:g.status==='completed'?(userIsTeam?g.points_for:g.points_against):null,isUser:true};
+    const opp={id:userIsTeam?g.opponent_team_id:g.team_id,name:userIsTeam?(g.opponent_team||g.opponent_name):(g.team_name||g.team),rank:userIsTeam?g.opponent_rank:g.team_rank,logo:'',score:g.status==='completed'?(userIsTeam?g.points_against:g.points_for):null,isUser:false};
     opp.logo=resolveLogoV3(opp.id,opp.name,''); user.logo=resolveLogoV3(user.id,user.name,user.logo);
     const raw=String(g.home_away||'').toLowerCase();let userHome=null;if(raw==='home')userHome=userIsTeam;else if(raw==='away')userHome=!userIsTeam;
     if(userHome===true)return {away:opp,home:user,neutral:false,userHome:true};
@@ -13131,6 +13060,107 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     return `<div class="sf-vegas-bottom"><div class="sf-vegas-head"><strong>Dynasty Vegas</strong><span>${escV3(String(vr.confidence||'—').toUpperCase())} confidence</span></div><div class="sf-vegas-grid">${chip(`${(p.team_name||'Team').split(' ')[0]} spread`,spreadText)}${chip('O/U',vr.total_line??'—')}${chip('Projected',proj)}${chip('Win prob',prob)}</div>${done?`<div class="sf-vegas-grades">${grade('ATS',vr.ats_result)}${grade('Total',vr.total_result)}</div>`:''}</div>`;
   }
   function gameClassV3(g){try{return typeof gameClassification==='function'?gameClassification(g):(g.conference_game?'Conference':'Non-Conference')}catch(_e){return g.conference_game?'Conference':'Non-Conference'}}
+  /* QA 9.8.0 — localized conference/event badge system (assets/event-badges/*.svg). */
+  const SF_CONFERENCE_BADGE_SRC={
+    'acc':'assets/event-badges/acc.svg',
+    'american':'assets/event-badges/american.svg',
+    'big-12':'assets/event-badges/big-12.svg',
+    'big-ten':'assets/event-badges/big-ten.svg',
+    'cusa':'assets/event-badges/cusa.svg',
+    'mac':'assets/event-badges/mac.svg',
+    'mountain-west':'assets/event-badges/mountain-west.svg',
+    'pac-12':'assets/event-badges/pac-12.svg',
+    'sec':'assets/event-badges/sec.svg',
+    'sun-belt':'assets/event-badges/sun-belt.svg'
+  };
+  function sfConferenceBadgeKey(v){
+    const k=String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');
+    if(k==='sec'||k.includes('southeastern'))return 'sec';
+    if(k==='acc'||k.includes('atlantic coast'))return 'acc';
+    if(k==='big ten'||k==='big 10')return 'big-ten';
+    if(k==='big 12'||k==='big twelve')return 'big-12';
+    if(k==='pac 12'||k==='pac12'||k.includes('pacific 12'))return 'pac-12';
+    if(k==='american'||k.includes('american athletic'))return 'american';
+    if(k==='conference usa'||k==='c usa'||k==='cusa')return 'cusa';
+    if(k==='mac'||k.includes('mid american'))return 'mac';
+    if(k==='mountain west')return 'mountain-west';
+    if(k==='sun belt')return 'sun-belt';
+    return '';
+  }
+  function sfGameConferenceV3(g,side){
+    try{
+      if(typeof state==='undefined'||!state)return '';
+      const field=side==='team'?'team_conference':'opponent_conference';
+      if(g?.[field])return String(g[field]);
+      const id=side==='team'?g?.team_id:g?.opponent_team_id;
+      const name=side==='team'?g?.team_name:g?.opponent_team;
+      const normName=String(name||'').trim().toLowerCase();
+      /* Portrait/mobile can render from a leaner row: hydrate from the richer schedule sources by id, then by team. */
+      const sources=[state.scheduleGames,state.games].filter(Array.isArray);
+      for(const rows of sources){
+        const same=(g?.id!=null)?rows.find(r=>String(r?.id||'')===String(g.id)):null;
+        if(same?.[field])return String(same[field]);
+      }
+      for(const rows of sources){
+        for(const r of rows){
+          const teamMatch=(id&&String(r?.team_id||'')===String(id))||(!id&&normName&&String(r?.team_name||'').trim().toLowerCase()===normName);
+          if(teamMatch&&r?.team_conference)return String(r.team_conference);
+          const oppMatch=(id&&String(r?.opponent_team_id||'')===String(id))||(!id&&normName&&String(r?.opponent_team||'').trim().toLowerCase()===normName);
+          if(oppMatch&&r?.opponent_conference)return String(r.opponent_conference);
+        }
+      }
+      const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||'').trim().toLowerCase()===normName));
+      return String(p?.conference||p?.team_conference||'');
+    }catch(_e){return '';}
+  }
+  function sfEventBadgeInfoV3(g){
+    const type=String(g?.game_type||'regular_season').toLowerCase();
+    if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:'National Championship'};
+    if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:'College Football Playoff'};
+    if(type==='bowl')return {src:'assets/event-badges/bowl.svg',label:g?.event_name||'Bowl Game'};
+    if(type!=='conference'&&type!=='conference_championship')return null;
+    const a=sfGameConferenceV3(g,'team'),b=sfGameConferenceV3(g,'opponent');
+    const conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
+    const src=SF_CONFERENCE_BADGE_SRC[sfConferenceBadgeKey(conference)];
+    if(!src)return null;
+    return {src,label:conference+(type==='conference_championship'?' Championship':'')};
+  }
+  function sfEventBadgeMarkupV3(g,cls){
+    const info=sfEventBadgeInfoV3(g);if(!info)return '';
+    return `<span class="sf-event-badge-wrap ${cls||''}" title="${escV3(info.label)}"><img class="sf-event-badge" src="${escV3(info.src)}" alt="${escV3(info.label)} badge" loading="lazy"></span>`;
+  }
+  /* QA 9.8.0 — shrink team names to fit instead of wrapping or truncating. */
+  function sfFitScheduleNames(host){
+    if(!host||!host.querySelectorAll)return;
+    let mobile=false;try{mobile=window.matchMedia&&window.matchMedia('(max-width:700px)').matches}catch(_e){}
+    host.querySelectorAll('.sf-match-name').forEach(el=>{
+      el.style.removeProperty('font-size');
+      let size=parseFloat(getComputedStyle(el).fontSize)||(mobile?14:20);
+      const min=mobile?9.5:12;
+      el.style.fontSize=size+'px';
+      let guard=0;
+      while(el.scrollWidth>el.clientWidth+1&&size>min&&guard++<24){
+        size=Math.max(min,size-.5);
+        el.style.fontSize=size+'px';
+      }
+    });
+  }
+  /* QA 9.8.0 — automatically focus the first actionable (scheduled, unscored) game. */
+  let sfScheduleFocusSig='';
+  function sfFocusActionableGame(games,host){
+    if(!host||!host.querySelector||!Array.isArray(games)||!games.length)return;
+    const sig=games.map(g=>`${g?.id||''}:${g?.status||''}`).join('|');
+    if(sig===sfScheduleFocusSig)return;
+    sfScheduleFocusSig=sig;
+    const actionable=games.filter(g=>g&&!g.is_bye&&String(g.status)==='scheduled').sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0))[0]
+      ||games.filter(g=>g&&!g.is_bye&&String(g.status)==='completed').sort((a,b)=>Number(b.week_number||0)-Number(a.week_number||0))[0];
+    if(!actionable)return;
+    let card=null;
+    try{card=host.querySelector(`[data-sf-v3-game="${CSS.escape(String(actionable.id))}"]`)}catch(_e){}
+    if(!card)return;
+    card.classList.add('sf-action-focus');
+    try{card.scrollIntoView({behavior:'smooth',block:'center'})}catch(_e){}
+  }
   function renderMyV3(){
     const schedule=document.getElementById('schedule'),host=document.getElementById('sfMySeasonHost');if(!schedule||!host)return;
     const p=myProgramV3();if(!p)return;
@@ -13147,16 +13177,21 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       const action=owned?`<button type="button" class="sf-score-action ${done?'edit':''}" data-result-game="${escV3(g.id)}">${done?'Edit Score':'Add Score'}</button>`:'';
       const side=(s,role,isHome)=>`<div class="sf-match-team ${isHome?'home':'away'}">${logoMarkupV3(s)}<div class="sf-match-copy"><span class="sf-match-role ${isHome?'home':''}">${role}</span><strong class="sf-match-name">${s.rank?`#${s.rank} `:''}${escV3(s.name||'Team')}</strong>${s.score!=null?`<span class="sf-match-score">${escV3(s.score)}</span>`:''}</div></div>`;
       const middle=`<div class="sf-match-spine"><strong>${neutral?'VS':'AT'}</strong><span>${escV3(gameClassV3(g))}${neutral?' · Neutral Site':''}</span></div>`;
-      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${escV3(weekLabelV3(g))}</strong><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
+      const eventBadge=sfEventBadgeMarkupV3(g,'sf-event-badge-header');
+      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${escV3(weekLabelV3(g))}</strong><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span>${eventBadge}</div><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
     }).join('');
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
     const meta=document.getElementById('scheduleMeta');if(meta)meta.textContent=`${games.length} schedule entries · full season view`;
+    requestAnimationFrame(()=>{try{sfFitScheduleNames(host)}catch(_e){}});
+    try{sfFocusActionableGame(games,host)}catch(_e){}
   }
   function isMyModeV3(){const b=document.querySelector('#sfScheduleModebar [data-sf-schedule-mode="my"]');return !!(b?.classList.contains('active')||scheduleTeamPersonId&&String(scheduleTeamPersonId)===String(myProgramV3()?.person_id||''));}
+  /* QA 9.8.0: V3 also honors V2's sf-my-mode signal so no My render is ever dropped. */
+  function isMyModeV3Resolved(s){return isMyModeV3()||!!s?.classList.contains('sf-my-mode');}
   const currentRender=window.renderSchedule;
-  if(typeof currentRender==='function')window.renderSchedule=function(){const out=currentRender.apply(this,arguments);requestAnimationFrame(()=>{const s=document.getElementById('schedule');if(s){s.classList.toggle('sf-v3-my-mode',isMyModeV3());if(isMyModeV3())renderMyV3();}});return out;};
-  function refreshIfNeeded(){const s=document.getElementById('schedule');if(s?.classList.contains('active')&&isMyModeV3())renderMyV3();}
+  if(typeof currentRender==='function')window.renderSchedule=function(){const out=currentRender.apply(this,arguments);requestAnimationFrame(()=>{const s=document.getElementById('schedule');if(s){const my=isMyModeV3Resolved(s);s.classList.toggle('sf-v3-my-mode',my);if(my)renderMyV3();}});return out;};
+  function refreshIfNeeded(){const s=document.getElementById('schedule');if(s?.classList.contains('active')&&isMyModeV3Resolved(s))renderMyV3();}
   document.addEventListener('click',e=>{if(e.target.closest?.('[data-sf-schedule-mode]'))setTimeout(refreshIfNeeded,0);},true);
   setTimeout(refreshIfNeeded,0);setTimeout(refreshIfNeeded,500);setTimeout(refreshIfNeeded,1400);
 
@@ -13172,6 +13207,56 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   const nav=document.getElementById('nav');if(nav)new MutationObserver(queue).observe(nav,{childList:true,subtree:true,attributes:true,attributeFilter:['src','class']});
 })();
 </script>
+
+<style id="sf-qa-9-8-0-schedule-badges-glow">
+/* QA 9.8.0 — single authority for My Schedule badges, focus, names, and user glow. */
+/* Event badges: base. */
+#schedule .sf-event-badge-wrap{display:inline-grid;place-items:center;flex:0 0 auto;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+#schedule .sf-event-badge{display:block;object-fit:contain;object-position:center;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
+/* Event badges: final placement in the game header. */
+#schedule .sf-season-game-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:10px!important}
+#schedule .sf-season-game-week{display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important}
+#schedule .sf-event-badge-wrap.sf-event-badge-header{width:30px!important;height:30px!important;flex-basis:30px!important}
+#schedule .sf-event-badge-header .sf-event-badge{width:30px!important;height:30px!important}
+/* Actionable-game focus ring. */
+#schedule .sf-season-game.sf-action-focus{border-color:rgba(244,197,66,.5)!important;box-shadow:0 0 0 1px rgba(244,197,66,.15),0 16px 38px rgba(0,0,0,.28)!important}
+/* Team names scale instead of wrapping or truncating. */
+#schedule .sf-match-copy{min-width:0!important}
+#schedule .sf-match-name{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;line-height:1!important}
+/* My Schedule: user-controlled team identity is glow-only; no box/plate. */
+#schedule .sf-match-logo.sf-user-team-logo,
+#schedule .sf-match-logo-fallback.sf-user-team-logo{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;outline:0!important;overflow:visible!important;filter:drop-shadow(0 0 2px rgba(244,197,66,.95)) drop-shadow(0 0 7px rgba(244,197,66,.58)) drop-shadow(0 0 14px rgba(244,197,66,.28))!important}
+#schedule .sf-match-logo-fallback.sf-user-team-logo{color:#f4c542!important}
+/* Global: user-controlled plates become invisible; the logo itself glows. Uses the existing plate runtime markers. */
+.sf-team-logo-plate-v5.sf-user-controlled{background:transparent!important;border:0!important;border-color:transparent!important;box-shadow:none!important;outline:0!important;overflow:visible!important}
+.sf-team-logo-plate-v5.sf-user-controlled>img.sf-team-identity-logo-v5{background:transparent!important;border:0!important;box-shadow:none!important;filter:drop-shadow(0 0 2px rgba(244,197,66,.95)) drop-shadow(0 0 7px rgba(244,197,66,.58)) drop-shadow(0 0 14px rgba(244,197,66,.28))!important}
+img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0 2px rgba(244,197,66,.95)) drop-shadow(0 0 7px rgba(244,197,66,.58)) drop-shadow(0 0 14px rgba(244,197,66,.28))!important}
+/* Overview coach cards: no gold boxes on user-controlled logos. */
+#overview #coaches article .h-11.w-11,
+#overview #coaches article .h-11.w-11 .sf-team-logo-plate-v5{background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+#overview #coaches article .h-11.w-11>img[data-sf-team-control="user"],
+#overview #coaches article .h-11.w-11 .sf-team-logo-plate-v5.sf-user-controlled>img{filter:drop-shadow(0 0 2px rgba(244,197,66,.95)) drop-shadow(0 0 7px rgba(244,197,66,.58)) drop-shadow(0 0 14px rgba(244,197,66,.28))!important}
+/* Correct schedule-logo sizing/alignment on phones; keep badges visible. */
+@media(max-width:700px){
+  #schedule .sf-matchup{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr)!important;gap:6px!important;align-items:center!important;overflow:visible!important}
+  #schedule .sf-match-team{display:grid!important;grid-template-columns:40px minmax(0,1fr)!important;gap:8px!important;align-items:center!important;min-width:0!important}
+  #schedule .sf-match-team.home{grid-template-columns:minmax(0,1fr) 40px!important;text-align:right!important}
+  #schedule .sf-match-team.home .sf-match-logo,
+  #schedule .sf-match-team.home .sf-match-logo-fallback,
+  #schedule .sf-match-team.home>.sf-team-logo-plate-v5{grid-column:2!important;grid-row:1!important}
+  #schedule .sf-match-team.home .sf-match-copy{grid-column:1!important;grid-row:1!important;text-align:right!important}
+  #schedule .sf-match-team:not(.home) .sf-match-logo,
+  #schedule .sf-match-team:not(.home) .sf-match-logo-fallback,
+  #schedule .sf-match-team:not(.home)>.sf-team-logo-plate-v5{grid-column:1!important;grid-row:1!important}
+  #schedule .sf-match-team:not(.home) .sf-match-copy{grid-column:2!important;grid-row:1!important}
+  #schedule .sf-match-logo,
+  #schedule .sf-match-logo-fallback,
+  #schedule .sf-match-team>.sf-team-logo-plate-v5{width:40px!important;height:40px!important;min-width:40px!important}
+  #schedule .sf-event-badge-wrap.sf-event-badge-header,
+  #schedule .sf-event-badge-header .sf-event-badge{width:26px!important;height:26px!important;flex-basis:26px!important}
+  #schedule .sf-match-spine span{display:none!important}
+}
+</style>
 
 <style id="sf-schedule-v4-ipad-density-and-nav">
 /* V4 — denser iPad broadcast card + hard replacement of legacy yellow nav artwork */
