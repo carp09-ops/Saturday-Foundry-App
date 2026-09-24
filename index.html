@@ -7680,7 +7680,9 @@ window.sfLogoFallback=function(img){
  try{
   const rest=String(img.dataset.sfLogoFallback||'').split('|').filter(Boolean);
   if(rest.length){img.dataset.sfLogoFallback=rest.slice(1).join('|');img.src=rest[0];return}
-  const fb=document.createElement('div');fb.className='team-fallback';fb.textContent=img.dataset.sfLogoInitials||'?';
+  const fb=document.createElement('div');
+  fb.className=img.classList.contains('legacy-team-logo')?'legacy-team-logo-fb':'team-fallback';
+  fb.textContent=img.dataset.sfLogoInitials||'?';
   const plate=img.closest('.sf-team-logo-plate-v5');
   if(plate)plate.replaceWith(fb);else img.replaceWith(fb);
  }catch(e){}
@@ -7694,8 +7696,8 @@ function intelLogoHTML(c,team){
  const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||''].filter(Boolean))];
  const alt=t?t+' logo':'team logo',fbInitials=initials(t||c.coach_name);
  return srcs.length
-  ?`<img class="team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
-  :`<div class="team-fallback">${esc(fbInitials)}</div>`;
+  ?`<img class="legacy-team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
+  :`<div class="legacy-team-logo-fb">${esc(fbInitials)}</div>`;
 }
 /* Dynasty Insights — Legacy pillar (QA 9.8.1).
    Replaces the Intelligence rework. Reads the same per-dynasty state the app
@@ -7788,30 +7790,6 @@ function renderLegacyPillar(){
  [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
   try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
  });
- /* QA: self-heal logos that never resolve (hung requests, blank responses).
-    Repeats because a single pass can catch an image mid-load on slow networks
-    and then never revisit it. Anything still pixel-less keeps walking the
-    fallback chain to the initials tile, so a blank white box can never stick. */
- let sfHealN=0;const sfHeal=setInterval(()=>{try{
-  let pending=0;
-  document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
-   if(img.isConnected&&(!img.complete||img.naturalWidth===0)){pending++;if(window.sfLogoFallback)window.sfLogoFallback(img)}
-  });
-  if(!pending||++sfHealN>=6)clearInterval(sfHeal);
- }catch(e){clearInterval(sfHeal)}},2500);
- /* iOS Safari: a logo that finishes loading synchronously (from cache) while the
-    tab is being revealed sometimes decodes but never paints - long-press shows
-    the image, the card shows a white box. Force a reflow so it actually draws. */
- requestAnimationFrame(()=>{try{
-  document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
-   if(img.isConnected&&img.complete&&img.naturalWidth>0&&!img.dataset.sfPaint){
-    img.dataset.sfPaint='1';
-    img.style.display='none';
-    void img.offsetHeight;
-    img.style.display='';
-   }
-  });
- }catch(e){}});
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
@@ -14837,7 +14815,10 @@ img.sf-logo-system-v2{
 #analytics .legacy-tier-card:first-child{border-color:#3a2f14;background:linear-gradient(160deg,#141b1e 0%,#0e181c 70%,#151207 100%)}
 #analytics .legacy-tier-rank{position:absolute;top:8px;right:12px;font-family:'Teko',sans-serif;font-size:44px;color:#ffffff12;line-height:1}
 #analytics .legacy-tier-main{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-#analytics .legacy-tier-main .team-logo,#analytics .legacy-tier-main .team-fallback{width:40px;height:40px}
+/* Legacy logos: transparent plate + gentle gold glow, matching the rest of the app.
+   No white background anywhere, so a slow image never renders as a white box. */
+#analytics .legacy-team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 40px;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(244,197,66,.55)) drop-shadow(0 0 9px rgba(244,197,66,.28))!important}
+#analytics .legacy-team-logo-fb{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;background:#0b1c24;border:1px solid #29424c;border-radius:10px;font-family:"Barlow Condensed";font-size:17px;font-weight:800;color:#e8f1f4}
 #analytics .legacy-tier-id b{display:block;font-size:15px;color:#fff}
 #analytics .legacy-tier-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f4c542}
 #analytics .legacy-tier-label em{color:#71858e;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600}
@@ -14850,7 +14831,8 @@ img.sf-logo-system-v2{
 #analytics .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
 #analytics .legacy-drought-row.league{border-color:#3a2f14;background:linear-gradient(120deg,#141b1e,#151207)}
 #analytics .legacy-drought-coach{display:flex;align-items:center;gap:9px}
-#analytics .legacy-drought-coach .team-logo,#analytics .legacy-drought-coach .team-fallback{width:32px;height:32px}
+#analytics .legacy-drought-coach .legacy-team-logo,#analytics .legacy-drought-coach .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+#analytics .legacy-drought-coach .legacy-team-logo-fb{font-size:14px}
 #analytics .legacy-drought-coach b{font-size:13.5px;color:#fff}
 #analytics .legacy-throne-mini{font-size:22px;color:#f4c542;text-shadow:0 0 12px #f4c54266}
 #analytics .legacy-drought-cells{display:flex;gap:18px}
@@ -14862,7 +14844,8 @@ img.sf-logo-system-v2{
 #analytics .legacy-ms-card{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px}
 #analytics .legacy-ms-card.league{border-color:#3a2f14}
 #analytics .legacy-ms-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
-#analytics .legacy-ms-head .team-logo,#analytics .legacy-ms-head .team-fallback{width:32px;height:32px}
+#analytics .legacy-ms-head .legacy-team-logo,#analytics .legacy-ms-head .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+#analytics .legacy-ms-head .legacy-team-logo-fb{font-size:14px}
 #analytics .legacy-ms-head b{display:block;font-size:13px;color:#fff}
 #analytics .legacy-ms-head span{font-size:10.5px;color:#8fa3ad}
 #analytics .legacy-ms-head em{margin-left:auto;font-size:10px;font-weight:800;color:#f4c542;font-style:normal;white-space:nowrap}
