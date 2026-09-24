@@ -13352,6 +13352,9 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-national-conf-badge .sf-event-badge{width:24px;height:24px}
   #schedule .sf-archive-card-top .sf-event-badge-wrap.sf-national-conf-badge{width:20px;height:20px}
   #schedule .sf-archive-card-top .sf-national-conf-badge .sf-event-badge{width:20px;height:20px}
+  /* QA 9.8.0 — National board: soft white glow lifts dark conference/event marks off
+     the dark card (glow-only, no plate), matching the team-logo glow convention. */
+  #schedule .sf-national-conf-badge .sf-event-badge{filter:drop-shadow(0 0 2px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,255,255,.35))!important}
   /* QA 9.8.0 — National cards: winner emphasis on neutral finals + tighter Vegas panel. */
   #schedule .v21-score .v21-winner{color:var(--tb-gold,#f4c542)!important}
   #schedule .v21-score .v21-dim{color:#5d6a74!important}
