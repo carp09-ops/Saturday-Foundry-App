@@ -13211,7 +13211,9 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
           if(oppMatch&&r?.opponent_conference)return String(r.opponent_conference);
         }
       }
-      const p=(state.programs||[]).find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||'').trim().toLowerCase()===normName));
+      /* QA 9.8.0: My Schedule cards read the program from state.myPrograms — check both program lists. */
+      const allProgs=[...(state.programs||[]),...(state.myPrograms||[])];
+      const p=allProgs.find(x=>(id&&String(x.team_id)===String(id))||(!id&&normName&&String(x.team_name||'').trim().toLowerCase()===normName));
       return String(p?.conference||p?.team_conference||'');
     }catch(_e){return '';}
   }
@@ -13220,7 +13222,11 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:'National Championship'};
     if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:'College Football Playoff'};
     if(type==='bowl')return {src:'assets/event-badges/bowl.svg',label:g?.event_name||'Bowl Game'};
-    if(type!=='conference'&&type!=='conference_championship'){
+    /* QA 9.8.0: an "Auto" regular-season game flagged as a conference game is a conference
+       game even when only one side's conference is known (CPU opponents often carry none).
+       Every My Schedule game involves the user's team, so the known side's conference is correct. */
+    const flagConf=g?.is_conference_game===true&&type!=='non_conference';
+    if(type!=='conference'&&type!=='conference_championship'&&!flagConf){
       /* QA 9.8.0: regular-season games between two teams of the same conference earn that conference's badge. */
       const a2=sfGameConferenceV3(g,'team'),b2=sfGameConferenceV3(g,'opponent');
       const ka=sfConferenceBadgeKey(a2),kb=sfConferenceBadgeKey(b2);
