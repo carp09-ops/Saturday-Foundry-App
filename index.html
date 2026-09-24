@@ -10321,11 +10321,11 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
     for(const g of games){
       const a=ensure(g.team_id,g.team_name,g.team_conference),b=ensure(g.opponent_team_id,g.opponent_team,g.opponent_conference);
       const confGame=!!g.is_conference_game||String(g.game_type||'').toLowerCase()==='conference'||(a.conf&&b.conf&&canon(a.conf)===canon(b.conf));
-      // Imported/sim rows are CPU context. If a dynasty-controlled program appears in one,
-      // do not let that row create a second result on top of the coach's authoritative HQ game.
-      // This keeps Conference Race aligned with the Overview standings ledger.
-      const importedDynastyDuplicate=String(g.result_method||'').toLowerCase()==='sim'&&(a.dynasty||b.dynasty);
-      if(g.status==='completed'&&g.points_for!=null&&g.points_against!=null&&!importedDynastyDuplicate){
+      // uniqueGames() already deduplicates the schedule ledger by physical game id.
+      // Count every unique completed game once, regardless of whether its result_method
+      // is played, manual, or sim. Sim rows can be the only authoritative record when
+      // a Foundry-controlled team appears on the opponent side of a CPU-owned matchup.
+      if(g.status==='completed'&&g.points_for!=null&&g.points_against!=null){
         const pf=Number(g.points_for),pa=Number(g.points_against);
         if(Number.isFinite(pf)&&Number.isFinite(pa)&&pf!==pa){
           a.pf+=pf;a.pa+=pa;b.pf+=pa;b.pa+=pf;
