@@ -7110,6 +7110,8 @@ function renderSchedule(){
    if(cs[0].toLowerCase()===cs[1].toLowerCase())return cs[0];
    return "Non-Conference";
  };
+ const nationalBadgeFor=g=>{try{if(typeof window!=='undefined'&&typeof window.sfNationalBadgeInfo==='function')return window.sfNationalBadgeInfo(g)}catch(_e){}return null};
+ const nationalBadgeMarkup=b=>`<span class="sf-event-badge-wrap sf-national-conf-badge" title="${esc(b.label)}"><img class="sf-event-badge" src="${esc(b.src)}" alt="${esc(b.label)}" loading="lazy"></span>`;
 
  const controlledPerspectiveForGame=g=>{
    const done=g?.status==="completed";
@@ -7163,9 +7165,10 @@ function renderSchedule(){
    const resultLabel=done?(controlledPerspective?`${controlledPerspective.result} ${controlledPerspective.pointsFor}-${controlledPerspective.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
    const hasVegas=!!vegasForGame(g.id);
    const contextLabel=conferenceLabelForGame(g);
+   const contextBadge=nationalBadgeFor(g);
    return `<article class="v21-matchup-card ${g.id===featured?.id?"featured":""} ${done?"final":"upcoming"} " data-game-card="${g.id}">
      <div class="v21-matchup-top">
-       <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
+       <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`${contextBadge?nationalBadgeMarkup(contextBadge):`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
        <strong>${done?`FINAL · ${gameClassification(g)}`:gameClassification(g)}</strong>
      </div>
      <div class="v21-matchup-main">
@@ -7226,12 +7229,13 @@ function renderSchedule(){
          const p=controlledPerspectiveForGame(g);
          const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";
          const done=g.status==="completed";
+         const ab=nationalBadgeFor(g);
          const resultLabel=done?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
          const teamLogo=logoFor(g.team_id,g.team_name);
          const oppLogo=logoFor(g.opponent_team_id,g.opponent_team);
          return `<article class="sf-archive-matchup-card ${dynastyGame?"dynasty":""}" data-game-card="${g.id}">
            <div class="sf-archive-card-top">
-             <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${esc(g.coach_name||(dynastyGame?"—":conferenceLabelForGame(g)))}</span>
+             <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${dynastyGame?esc(g.coach_name||"—"):(ab?nationalBadgeMarkup(ab):esc(g.coach_name||conferenceLabelForGame(g)))}</span>
              <strong>${esc(gameClassification(g))}</strong>
            </div>
            <div class="sf-archive-card-main">
@@ -13118,13 +13122,21 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:'National Championship'};
     if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:'College Football Playoff'};
     if(type==='bowl')return {src:'assets/event-badges/bowl.svg',label:g?.event_name||'Bowl Game'};
-    if(type!=='conference'&&type!=='conference_championship')return null;
+    if(type!=='conference'&&type!=='conference_championship'){
+      /* QA 9.8.0: regular-season games between two teams of the same conference earn that conference's badge. */
+      const a2=sfGameConferenceV3(g,'team'),b2=sfGameConferenceV3(g,'opponent');
+      const ka=sfConferenceBadgeKey(a2),kb=sfConferenceBadgeKey(b2);
+      if(ka&&ka===kb){const s2=SF_CONFERENCE_BADGE_SRC[ka];if(s2)return {src:s2,label:a2};}
+      return null;
+    }
     const a=sfGameConferenceV3(g,'team'),b=sfGameConferenceV3(g,'opponent');
     const conference=(a&&b&&sfConferenceBadgeKey(a)===sfConferenceBadgeKey(b))?a:(a||b);
     const src=SF_CONFERENCE_BADGE_SRC[sfConferenceBadgeKey(conference)];
     if(!src)return null;
     return {src,label:conference+(type==='conference_championship'?' Championship':'')};
   }
+  /* QA 9.8.0: National board reuses the same badge assets — conference logo replaces conference text. */
+  window.sfNationalBadgeInfo=function(g){try{return sfEventBadgeInfoV3(g)}catch(_e){return null}};
   function sfEventBadgeMarkupV3(g,cls){
     const info=sfEventBadgeInfoV3(g);if(!info)return '';
     return `<span class="sf-event-badge-wrap ${cls||''}" title="${escV3(info.label)}"><img class="sf-event-badge" src="${escV3(info.src)}" alt="${escV3(info.label)} badge" loading="lazy"></span>`;
@@ -13174,14 +13186,14 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     const finals=games.filter(g=>g.status==='completed'&&!g.is_bye).length,upcoming=games.filter(g=>g.status==='scheduled'&&!g.is_bye).length;
     const rows=games.map(g=>{
       const x=perspectiveV3(g,p),done=g.status==='completed',owned=ownedV3(g),cls=g.is_bye?'bye':x?.result==='W'?'win':x?.result==='L'?'loss':'upcoming';
-      if(g.is_bye)return `<article class="sf-season-game bye" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${escV3(weekLabelV3(g))}</strong><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-status"><div><strong class="neutral">BYE</strong><small>Open Date</small></div></div></div><div class="sf-matchup"><div class="sf-match-team">${logoMarkupV3({id:p.team_id,name:p.team_name,logo:p.logo_url})}<div class="sf-match-copy"><span class="sf-match-role">Rest Week</span><strong class="sf-match-name">${escV3(p.team_name)}</strong></div></div></div></article>`;
+      if(g.is_bye)return `<article class="sf-season-game bye" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="neutral">BYE</strong><small>Open Date</small></div></div></div><div class="sf-matchup"><div class="sf-match-team">${logoMarkupV3({id:p.team_id,name:p.team_name,logo:p.logo_url})}<div class="sf-match-copy"><span class="sf-match-role">Rest Week</span><strong class="sf-match-name">${escV3(p.team_name)}</strong></div></div></div></article>`;
       const sides=sideDataV3(g,p),away=sides.away,home=sides.home,neutral=sides.neutral;
       const result=done?(x?`${x.result} ${x.pf}-${x.pa}`:`FINAL ${g.points_for??''}-${g.points_against??''}`):'UPCOMING',resultCls=x?.result==='W'?'win':x?.result==='L'?'loss':'neutral';
       const action=owned?`<button type="button" class="sf-score-action ${done?'edit':''}" data-result-game="${escV3(g.id)}">${done?'Edit Score':'Add Score'}</button>`:'';
       const side=(s,role,isHome)=>`<div class="sf-match-team ${isHome?'home':'away'}">${logoMarkupV3(s)}<div class="sf-match-copy"><span class="sf-match-role ${isHome?'home':''}">${role}</span><strong class="sf-match-name">${s.rank?`#${s.rank} `:''}${escV3(s.name||'Team')}</strong>${s.score!=null?`<span class="sf-match-score">${escV3(s.score)}</span>`:''}</div></div>`;
       const middle=`<div class="sf-match-spine"><strong>${neutral?'VS':'AT'}</strong><span>${escV3(gameClassV3(g))}${neutral?' · Neutral Site':''}</span></div>`;
       const eventBadge=sfEventBadgeMarkupV3(g,'sf-event-badge-header');
-      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-head"><div class="sf-season-game-week"><strong>${escV3(weekLabelV3(g))}</strong><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span>${eventBadge}</div><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
+      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span>${eventBadge}</div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
     }).join('');
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
     host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
@@ -13258,6 +13270,19 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-event-badge-wrap.sf-event-badge-header,
   #schedule .sf-event-badge-header .sf-event-badge{width:26px!important;height:26px!important;flex-basis:26px!important}
   #schedule .sf-match-spine span{display:none!important}
+}
+/* QA 9.8.0 — My Schedule: week indicator as its own top row (replaces duplicated "W10"/"Week 10" head). */
+  #schedule .sf-season-game-weekrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px 0}
+  #schedule .sf-season-game-weekrow>span{font-size:9px;font-weight:800;color:#f4c542;text-transform:uppercase;letter-spacing:.14em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #schedule .sf-season-game-head{grid-template-columns:1fr!important}
+  #schedule .sf-season-game-head>.sf-season-game-status{justify-self:end}
+  /* QA 9.8.0 — National board: conference logo replaces conference text in card kickers. */
+  #schedule .sf-event-badge-wrap.sf-national-conf-badge{width:24px;height:24px;flex:0 0 auto}
+  #schedule .sf-national-conf-badge .sf-event-badge{width:24px;height:24px}
+  #schedule .sf-archive-card-top .sf-event-badge-wrap.sf-national-conf-badge{width:20px;height:20px}
+  #schedule .sf-archive-card-top .sf-national-conf-badge .sf-event-badge{width:20px;height:20px}
+@media(max-width:700px){
+  #schedule .sf-season-game-weekrow{padding:8px 10px 0}
 }
 </style>
 
