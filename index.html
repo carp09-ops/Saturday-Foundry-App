@@ -7436,8 +7436,8 @@ function showScoreRecap(gameId,myScore,oppScore,gameSnap){
          `<div><span>VS SPREAD</span><b class="${atsClass}">${atsStr}</b></div>`;
      }catch(_){}
      try{ $("recapStoryline").classList.add("hidden"); }catch(_){}
-   }catch(err){ console.error("[recap] failed:",err); }
-   try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){}
+   }catch(err){ console.error("[recap] failed:",err); alert("DEBUG: showScoreRecap error: "+(err.message||err)); }
+   try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){ alert("DEBUG: Could not unhide recap modal"); }
 }
 async function submitSelectedResult(){
  if(!selectedGame)return;
@@ -7457,6 +7457,13 @@ async function submitSelectedResult(){
    // Build the recap via shared function — must show even if render failed
    try{ $("resultModal").classList.add("hidden"); }catch(_){}
    showScoreRecap(impactGameId,savedMyScore,savedOppScore,savedGame);
+   // TEMP DIAGNOSTIC: verify the modal actually became visible
+   try{
+     const m=$("resultRecapModal");
+     if(m && m.classList.contains("hidden")){
+       alert("DEBUG: Recap modal still hidden after showScoreRecap. Modal exists: "+!!m);
+     }
+   }catch(de){ alert("DEBUG: Diagnostic check failed: "+(de.message||de)); }
  }catch(e){msg($("resultMessage"),e.message,"error")}
  finally{$("submitResultBtn").disabled=false}
 }
