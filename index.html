@@ -7110,7 +7110,53 @@ function renderSchedule(){
    if(cs[0].toLowerCase()===cs[1].toLowerCase())return cs[0];
    return "Non-Conference";
  };
- const nationalBadgeFor=g=>{try{if(typeof window!=='undefined'&&typeof window.sfNationalBadgeInfo==='function')return window.sfNationalBadgeInfo(g)}catch(_e){}return null};
+ /* QA 9.8.0: conference-logo badges for the National board, computed locally in this
+    scope so they render on the very first paint (no dependency on the later V3 script). */
+ const SF_NATIONAL_BADGE_SRC={
+   'acc':'assets/event-badges/acc.svg',
+   'american':'assets/event-badges/american.svg',
+   'big-12':'assets/event-badges/big-12.svg',
+   'big-ten':'assets/event-badges/big-ten.svg',
+   'cusa':'assets/event-badges/cusa.svg',
+   'mac':'assets/event-badges/mac.svg',
+   'mountain-west':'assets/event-badges/mountain-west.svg',
+   'pac-12':'assets/event-badges/pac-12.svg',
+   'sec':'assets/event-badges/sec.svg',
+   'sun-belt':'assets/event-badges/sun-belt.svg'
+ };
+ const sfNationalConfKey=v=>{
+   const k=String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');
+   if(!k||k==='independent'||k==='independents'||k==='fcs'||k==='none'||k==='unknown')return '';
+   if(k==='sec'||k.includes('southeastern'))return 'sec';
+   if(k==='acc'||k.includes('atlantic coast'))return 'acc';
+   if(k==='big ten'||k==='big 10')return 'big-ten';
+   if(k==='big 12'||k==='big twelve')return 'big-12';
+   if(k==='pac 12'||k==='pac12'||k.includes('pacific 12'))return 'pac-12';
+   if(k==='american'||k.includes('american athletic'))return 'american';
+   if(k==='conference usa'||k==='c usa'||k==='cusa')return 'cusa';
+   if(k==='mac'||k.includes('mid american'))return 'mac';
+   if(k==='mountain west')return 'mountain-west';
+   if(k==='sun belt')return 'sun-belt';
+   return '';
+ };
+ const nationalBadgeFor=g=>{
+   try{
+     const gt=String(g?.game_type||'').toLowerCase();
+     if(gt==='bowl')return{src:'assets/event-badges/bowl.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'Bowl Game')};
+     if(gt==='cfp'||gt==='playoff'){
+       const champ=/championship/i.test(String(g?.event_label||g?.bowl_name||g?.event_name||''));
+       return champ?{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')}
+                   :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||'College Football Playoff')};
+     }
+     if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')};
+     /* Regular-season and explicit conference games: badge when both sides share one mapped conference. */
+     const cs=conferencesForGame(g);
+     const shared=(cs.length&&cs.every(c=>String(c).toLowerCase()===String(cs[0]).toLowerCase()))?cs[0]:'';
+     const key=sfNationalConfKey(shared),src=key?SF_NATIONAL_BADGE_SRC[key]:'';
+     if(src)return{src,label:`${shared} conference game`};
+   }catch(_e){}
+   return null;
+ };
  const nationalBadgeMarkup=b=>`<span class="sf-event-badge-wrap sf-national-conf-badge" title="${esc(b.label)}"><img class="sf-event-badge" src="${esc(b.src)}" alt="${esc(b.label)}" loading="lazy"></span>`;
 
  const controlledPerspectiveForGame=g=>{
