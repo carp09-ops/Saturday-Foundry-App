@@ -8177,17 +8177,45 @@ async function loadDynasty(i=0){
    return;
  }
  $("teamScreen").classList.add("hidden");$("app").classList.remove("hidden");$("navWrap").classList.remove("hidden");
- // Boot the playable current season first. Historical seasons enrich Chronicle/Rivalries in the background.
- // This keeps sign-in responsive even when an older-season request is slow.
+ // Load the playable current season first, then deterministically hydrate all completed history
+ // before history-dependent views are considered complete. This prevents Seasons 1–4 from
+ // disappearing when background enrichment is slow or partially fails.
  state={...state,allGames:[]};
  $("seasonSelect").innerHTML=seasons.map(s=>`<option value="${s.season_id}">Season ${s.season_number}${s.year?` · ${s.year}`:""}${s.is_active?" · Active":""}</option>`).join("");
  await loadSeason(S.season_id);
- state.allGames=[...(state.games||[])];
+ const activeRows=[...(state.games||[])];
+ const historicalSeasons=seasons.filter(ss=>String(ss.season_id)!==String(S.season_id));
+
+ async function loadHistorySeasonWithRetry(ss){
+   try{
+     const rows=await Data.games(D.dynasty_id,ss.season_id);
+     return Array.isArray(rows)?rows:[];
+   }catch(firstErr){
+     console.warn('Historical season load retry',ss.season_number,firstErr);
+     const rows=await Data.games(D.dynasty_id,ss.season_id);
+     return Array.isArray(rows)?rows:[];
+   }
+ }
+
+ let historicalSets=[];
+ try{
+   historicalSets=await Promise.all(historicalSeasons.map(loadHistorySeasonWithRetry));
+ }catch(err){
+   console.error('Historical dynasty hydration failed after retry:',err);
+   // Preserve any currently loaded season rather than blanking history-dependent views.
+   historicalSets=[];
+ }
+
+ state.allGames=[...historicalSets.flat(),...activeRows];
+ renderCoaches();
+ renderStorylines();
+ renderRivalries();
+ renderHQCommand();
+ renderSeasonRecap();
+ renderRecordBook();
+ renderCareer();
+ updateOverviewDataVisibility();
  window.CDHQLoader?.hide();
- Promise.allSettled(seasons.map(s=>Data.games(D.dynasty_id,s.season_id))).then(results=>{
-   const sets=results.filter(r=>r.status==='fulfilled').map(r=>Array.isArray(r.value)?r.value:[]);
-   if(sets.length){state.allGames=sets.flat();renderCoaches();renderStorylines();renderRivalries();renderHQCommand();renderSeasonRecap();renderRecordBook();renderCareer();updateOverviewDataVisibility();}
- }).catch(err=>console.warn('Historical dynasty enrichment skipped:',err));
 }
 function hideDynastyChooser(){
  const chooser=$("dynastyChooserScreen");if(chooser)chooser.classList.add("hidden");
