@@ -7712,7 +7712,9 @@ function renderTrophies(){
      const sm=(seasons||[]).find(x=>String(x.season_id)===String(a.season_id)||Number(x.season_number)===Number(a.season_number));
      const year=Number(sm?.year||0)||null;
      const player=a.player_name||'Heisman Trophy Winner';
-     const meta=[a.player_position,a.team_name].filter(Boolean).join(' · ');
+     /* Team AT AWARD TIME: coach's team from games in that season, not current team */
+     const seasonTeam=games.find(g=>Number(g.season_number)===Number(a.season_number)&&g.team_name)?.team_name;
+     const meta=[a.player_position,seasonTeam||a.team_name].filter(Boolean).join(' · ');
      return {year,player,meta};
    }).sort((a,b)=>(b.year||0)-(a.year||0));
    const playoffSeasons=new Set(games.filter(isPlayoffGame).map(g=>Number(g.season_number||0)).filter(Boolean));
@@ -7902,12 +7904,25 @@ async function renderHeismanAdmin(){
  if(current&&seasons.some(x=>x.season_id===current))$("heismanSeason").value=current;else if(S)$("heismanSeason").value=S.season_id;
  await populateHeismanCoaches();
  const awards=await Data.listHeismans(D.dynasty_id);
+ /* Resolve the coach's team AT AWARD TIME from that season's programs — never the current team */
+ const awardSeasonIds=[...new Set(awards.map(a=>a.season_id).filter(Boolean))];
+ const histTeamByKey={};
+ await Promise.all(awardSeasonIds.map(async sid=>{
+   try{
+     const ps=await Data.programs(D.dynasty_id,sid);
+     (ps||[]).forEach(p=>{
+       if(p.person_id)histTeamByKey[`${sid}::${p.person_id}`]=p.team_name;
+       if(p.coach_name)histTeamByKey[`${sid}::coach:${String(p.coach_name).toLowerCase()}`]=p.team_name;
+     });
+   }catch(e){/* fall back to stored team_name */}
+ }));
  $("heismanAwards").innerHTML=awards.map(a=>{
  const seasonMeta=(seasons||[]).find(x=>String(x.season_id)===String(a.season_id)||Number(x.season_number)===Number(a.season_number));
  const awardYear=Number(seasonMeta?.year||0)||null;
  const seasonLabel=a.season_number?`Season ${a.season_number}${awardYear?` · ${awardYear}`:""}`:"Historical · Year not recorded";
  const awardLabel=a.award_name||a.award||"Heisman Trophy";
- const detail=[a.team_name||"",a.player_name?`${a.player_name}${a.player_position?` (${a.player_position})`:""}`:""] .filter(Boolean).map(esc).join(" · ");
+ const histTeam=(a.person_id&&histTeamByKey[`${a.season_id}::${a.person_id}`])||histTeamByKey[`${a.season_id}::coach:${String(a.coach_name||"").toLowerCase()}`]||a.team_name||"";
+ const detail=[histTeam,a.player_name?`${a.player_name}${a.player_position?` (${a.player_position})`:""}`:""] .filter(Boolean).map(esc).join(" · ");
  return `<div class="form-row"><div><b>${esc(awardLabel)} · ${seasonLabel}</b><div style="font-size:12px;color:#657d86">${esc(a.coach_name||"Coach")}${detail?` · ${detail}`:""}</div></div><button class="danger-btn delete-heisman" data-heisman-id="${a.award_id}">Remove</button></div>`;
 }).join("")||'<div class="empty">No national awards recorded yet.</div>';
 }
