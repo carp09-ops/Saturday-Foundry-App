@@ -7755,8 +7755,15 @@ function renderMomentum(){
  $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div style="font-size:12px;color:#657d86">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")
 }
 function metricCard(c,body){
- const p=state.programs.find(x=>x.person_id===c.person_id),logo=p?.logo_url?`<img class="team-logo" src="${esc(p.logo_url)}">`:`<div class="team-fallback">${initials(p?.team_name||c.coach_name)}</div>`;
- return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div style="font-size:8px;color:#71858e">${esc(p?.team_name||"")}</div></div></div>${body}</article>`
+ /* QA 9.8.1: resolve the logo like the rest of the app — check both program lists
+    (String-compared ids), then team_logo_url, then the known-logo resolver.
+    Previously only state.programs (strict ===) with logo_url was checked, so any
+    coach whose program row lacked logo_url showed fallback initials instead. */
+ const p=(state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
+ const team=String(p?.team_name||c.team_name||'');
+ const src=p?.logo_url||p?.team_logo_url||(team&&window.CDHQLogoResolver?.knownLogo?.(team))||'';
+ const logo=src?`<img class="team-logo" src="${esc(src)}" alt="${esc(team?team+' logo':'team logo')}">`:`<div class="team-fallback">${initials(team||c.coach_name)}</div>`;
+ return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div style="font-size:8px;color:#71858e">${esc(team)}</div></div></div>${body}</article>`
 }
 function renderAnalyticsCards(){
  $("analyticsPower").innerHTML=state.standings.map(r=>metricCard(careerFor(r.person_id),`<div class="metric-boxes"><div class="metric-box"><small>Current Form</small><b>${power(r)}</b></div><div class="metric-box"><small>Season PD</small><b class="${Number(r.point_differential)>=0?"pos":"neg"}">${signed(r.point_differential)}</b></div></div><div style="font-size:8px;color:#71858e;margin-top:8px">Season W% + scoring margin · 0–99.9 rating · Not win probability${currentFormBand(r).early?" · EARLY SAMPLE":""}</div>`)).join("");
