@@ -165,6 +165,29 @@ input:focus,select:focus{border-color:var(--emerald)}
 .close-btn{cursor:pointer;border:1px solid #25404a;background:#071820;color:#cbd7dc;width:38px;height:38px;border-radius:9px}
 .score-entry{display:grid;grid-template-columns:1fr 90px;gap:9px;align-items:center;padding:11px;border:1px solid #18343e;border-radius:10px;background:#061319}
 .score-entry-name{font-weight:900;font-size:11px}.score-entry-sub{font-size:8px;color:#71858e;margin-top:2px}.score-entry input{text-align:center;font-family:"Barlow Condensed";font-size:24px;font-weight:800;padding:6px}
+.recap-dialog{text-align:center;max-width:420px}
+#resultRecapModal{z-index:2147482000!important}
+.recap-result{font-family:'Teko',Impact,sans-serif!important;font-size:52px!important;font-weight:800!important;line-height:1!important;margin:8px 0 2px!important;letter-spacing:.04em!important;display:block!important}
+.recap-result.win{color:#4ade80}.recap-result.loss{color:#f87171}
+.recap-subtitle{font-size:11px;color:#71858e;margin-bottom:14px}
+.recap-score{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.recap-team{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0a1e26;border-radius:10px;border:1px solid #18343e}
+.recap-team.winner{border-color:#f4c542;background:#0f1f28}
+.recap-team-name{font-weight:800;font-size:14px}
+.recap-team-score{font-family:'Teko',sans-serif;font-size:32px;font-weight:800}
+.recap-team.winner .recap-team-score{color:#f4c542}
+.recap-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.recap-stats>div{background:#0a1e26;border:1px solid #18343e;border-radius:10px;padding:10px 6px}
+.recap-stats span{display:block;font-size:8px;font-weight:800;letter-spacing:.1em;color:#71858e;margin-bottom:4px}
+.recap-stats b{font-size:15px;font-weight:800}
+.recap-stats b.good{color:#4ade80}.recap-stats b.bad{color:#f87171}
+.recap-storyline{background:linear-gradient(135deg,#1a2b33,#0f1f28);border:1px solid #f4c54255;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.5}
+.myweek-game{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#0a1e26;border:1px solid #18343e;border-radius:10px}
+.myweek-game-info{min-width:0}
+.myweek-game-teams{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.myweek-game-meta{font-size:9px;color:#71858e;margin-top:3px}
+.myweek-enter{flex-shrink:0;background:linear-gradient(135deg,#f4c542,#dca52b);color:#071016;font-weight:900;font-size:10px;letter-spacing:.08em;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;min-height:44px}
+.myweek-done{text-align:center;padding:16px;color:#4ade80;font-weight:700;font-size:13px}
 .result-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check-row{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #18343e;border-radius:9px;background:#061319;font-size:9px}.check-row input{width:auto}
 .enter-result{cursor:pointer;border:1px solid rgba(16,185,129,.34);background:#07372d;color:#76eac8;border-radius:7px;padding:6px 8px;font-size:8px;font-weight:900;text-transform:uppercase}
 @media(max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr)}}
@@ -254,6 +277,7 @@ nav::-webkit-scrollbar,.week-nav::-webkit-scrollbar{display:none}
   .admin-actions .btn{width:100%}
   .new-season-row{grid-template-columns:1fr}
   .result-modal{align-items:flex-end;padding:8px}
+  #resultRecapModal{align-items:center!important;justify-content:center!important;padding:20px 16px!important}
   .result-dialog{width:100%;border-radius:16px 16px 10px 10px;padding:14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
   .result-head h3{font-size:24px}
   .score-entry{grid-template-columns:minmax(0,1fr) 82px;padding:10px}
@@ -5419,6 +5443,13 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 <section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div></div></section>
 <section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week"><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></section>
 <div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE LEGACY LINE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
+<section id="myWeekPanel" class="ref-panel rounded-xl p-4" style="margin-bottom:14px">
+  <div class="ref-panel-heading" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px"><span style="color:#f4c542">📋</span><h3 style="margin:0">YOUR WEEK</h3></div>
+    <span id="myWeekMeta" style="font-size:10px;color:#71858e"></span>
+  </div>
+  <div id="myWeekGames" class="space-y-2"></div>
+</section>
 <section id="coaches" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5"></section>
 <section id="hqNewsDesk" class="hq-news-desk"><div class="hq-news-desk-head"><div><span>AROUND THE DYNASTY</span><h3>FOUNDRY NEWS DESK</h3></div><em>LIVE LEAGUE INTELLIGENCE</em></div><div class="hq-command-grid"><article class="hq-command-card hq-command-primary"><div class="hq-command-head"><div><span>LEAGUE INTEL</span><h3>Right Now</h3></div><b id="hqCommandWeek">LIVE</b></div><div id="hqCommandNow" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>CHRONICLE DESK</span><h3>Lead Story</h3></div><button type="button" onclick="switchView('storylines')">Open →</button></div><div id="hqCommandStory" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>RIVALRY WATCH</span><h3>Head-to-Head</h3></div><button type="button" onclick="switchView('rivalries')">Open →</button></div><div id="hqCommandRivalry" class="hq-command-body"></div></article></div></section>
 <section id="legacyLinePanel" class="ref-panel legacy-line-panel rounded-xl p-0 overflow-hidden"><div class="legacy-line-head"><div><span>⚡ THE LEGACY LINE</span><strong>THE BIG STORIES. ALL DYNASTY.</strong></div><em>LIVE DYNASTY FEED • AUTO-UPDATING</em></div><div id="wire"></div></section>
@@ -5614,7 +5645,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 <section id="recap" class="view">
   <div class="season-recap-shell">
     <header class="season-recap-hero">
-      <div><span>SATURDAY FOUNDRY · SEASON ARCHIVE</span><h2 id="recapTitle">Season Recap</h2><p id="recapSubtitle">The permanent story of a dynasty season — records, rankings, hardware and the games that defined it.</p></div>
+      <div><div class="recap-hero-season" id="recapHeroSeason">SATURDAY FOUNDRY · SEASON ARCHIVE</div><h2 id="recapTitle">Season Recap</h2><p id="recapSubtitle">The permanent story of a dynasty season — records, rankings, hardware and the games that defined it.</p></div>
       <select id="recapSeasonSelect" aria-label="Season recap season"></select>
     </header>
     <div id="recapSummary" class="recap-summary-grid"></div>
@@ -5773,6 +5804,20 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <button id="submitResultBtn" class="btn primary">Save Final Result</button>
       <div id="resultMessage" class="notice hidden"></div>
     </div>
+  </div>
+</div>
+
+<div id="resultRecapModal" class="result-modal hidden">
+  <div class="result-dialog recap-dialog">
+    <div class="recap-head">
+      <div class="kicker">🏟️ FINAL</div>
+      <div id="recapResult" class="recap-result">WIN</div>
+      <div id="recapSubtitle" class="recap-subtitle"></div>
+    </div>
+    <div id="recapScore" class="recap-score"></div>
+    <div id="recapStats" class="recap-stats"></div>
+    <div id="recapStoryline" class="recap-storyline hidden"></div>
+    <button id="closeRecapBtn" class="btn primary">Done</button>
   </div>
 </div>
 
@@ -7104,11 +7149,14 @@ function renderSchedule(){
                    :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'College Football Playoff')};
      }
      if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'National Championship')};
-     /* Regular-season and explicit conference games: badge when both sides share one mapped conference. */
-     const cs=conferencesForGame(g);
-     const shared=(cs.length&&cs.every(c=>String(c).toLowerCase()===String(cs[0]).toLowerCase()))?cs[0]:'';
-     const key=sfNationalConfKey(shared),src=key?SF_NATIONAL_BADGE_SRC[key]:'';
-     if(src)return{src,label:`${shared} conference game`};
+     /* Conference badge ONLY for actual conference games (driven by game_type, not conference inference). */
+     const isConfGame=gt==='conference'||(gt==='regular_season'&&g?.is_conference_game===true);
+     if(isConfGame){
+       const cs=conferencesForGame(g);
+       const shared=(cs.length&&cs.every(c=>String(c).toLowerCase()===String(cs[0]).toLowerCase()))?cs[0]:'';
+       const key=sfNationalConfKey(shared),src=key?SF_NATIONAL_BADGE_SRC[key]:'';
+       if(src)return{src,label:`${shared} conference game`};
+     }
    }catch(_e){}
    return null;
  };
@@ -7345,6 +7393,57 @@ function openResultModal(gameId){
  $("resultModal").classList.remove("hidden");
 }
 function closeResultModal(){selectedGame=null;$("submitResultBtn").textContent="Save Final Result";$("resultModal").classList.add("hidden")}
+function showScoreRecap(gameId,myScore,oppScore,gameSnap){
+   // Shared post-save recap: always shows, stat sections degrade gracefully
+   const gid=gameId, snap=gameSnap||{};
+   try{
+     const won=Number(myScore)>Number(oppScore);
+     const myName=snap.team_name||"My Team", oppName=snap.opponent_team||"Opponent";
+     const wk=snap.week_number, ha=snap.home_away;
+     try{
+       const recapResult=$("recapResult");
+       recapResult.textContent=won?"WIN":"LOSS";
+       recapResult.className="recap-result "+(won?"win":"loss");
+       $("recapSubtitle").textContent=`Week ${wk} · ${myName} ${ha==="away"?"at":"vs"} ${oppName}`;
+     }catch(_){}
+     try{
+       $("recapScore").innerHTML=
+         `<div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${myScore}</span></div>`+
+         `<div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${oppScore}</span></div>`;
+     }catch(_){}
+     try{
+       let recordStr="—", streakStr="—", atsStr="—", atsClass="";
+       const updated=(state.games||[]).find(x=>String(x.id)===String(gid));
+       if(updated?.person_id){
+         try{ const rr=recFor(updated.person_id); if(rr) recordStr=`${rr.wins}-${rr.losses}`; }catch(_){}
+         try{
+           const finished=(state.games||[]).filter(x=>String(x.person_id)===String(updated.person_id)&&x.status==="completed"&&!x.is_bye)
+             .sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
+           if(finished.length){
+             const last=finished.at(-1)?.result; let n=0;
+             for(let i=finished.length-1;i>=0;i--){if(finished[i].result!==last)break;n++}
+             if(last==="W"||last==="L") streakStr=`${last}${n}`;
+           }
+         }catch(_){}
+         try{
+           const vr=vegasForGame(gid), vp=vr?vegasPerspective(vr,updated):null;
+           if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
+             const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
+             if(graded>0){atsStr=`Cover ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="good";}
+             else if(graded<0){atsStr=`Miss ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="bad";}
+             else{atsStr="Push";}
+           }
+         }catch(_){}
+       }
+       $("recapStats").innerHTML=
+         `<div><span>RECORD</span><b>${recordStr}</b></div>`+
+         `<div><span>STREAK</span><b>${streakStr}</b></div>`+
+         `<div><span>VS SPREAD</span><b class="${atsClass}">${atsStr}</b></div>`;
+     }catch(_){}
+     try{ $("recapStoryline").classList.add("hidden"); }catch(_){}
+   }catch(err){ console.error("[recap] failed:",err); }
+   try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){}
+}
 async function submitSelectedResult(){
  if(!selectedGame)return;
  const myScore=Number($("myScore").value),oppScore=Number($("oppScore").value);
@@ -7356,32 +7455,13 @@ async function submitSelectedResult(){
    $("submitResultBtn").disabled=true;msg($("resultMessage"),"Saving final result…");
    await Data.submitResult(selectedGame.id,{myScore,oppScore,myRank,oppRank,overtime:$("resultOT").checked,network:null,eventName:$("resultEvent").value.trim()||null});
    const impactGameId=selectedGame.id, impactPersonId=selectedGame.person_id;
+   const savedMyScore=myScore, savedOppScore=oppScore, savedGame={...selectedGame};
    state.career=await Data.career(D.dynasty_id);
-   msg($("resultMessage"),"Final saved. Standings and analytics updated.","success");
    await loadSeason(S.season_id);
-   if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
-   try{
-     const updated=(state.games||[]).find(x=>String(x.id)===String(impactGameId)&&(!impactPersonId||String(x.person_id)===String(impactPersonId)))||
-                   (state.games||[]).find(x=>String(x.id)===String(impactGameId));
-     let record=null,streak=null,ats=null;
-     if(updated?.person_id){
-       const rr=recFor(updated.person_id); if(rr) record=`Record ${rr.wins}-${rr.losses}`;
-       const finished=(state.games||[]).filter(x=>String(x.person_id)===String(updated.person_id)&&x.status==="completed"&&!x.is_bye)
-         .sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
-       if(finished.length){
-         const last=finished.at(-1)?.result; let n=0;
-         for(let i=finished.length-1;i>=0;i--){if(finished[i].result!==last)break;n++}
-         if(last==="W"||last==="L") streak=`${last}${n} streak`;
-       }
-       const vr=vegasForGame(impactGameId), vp=vr?vegasPerspective(vr,updated):null;
-       if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
-         const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
-         ats=graded>0?`ATS cover by ${graded.toFixed(1)}`:graded<0?`ATS miss by ${Math.abs(graded).toFixed(1)}`:"ATS push";
-       }
-     }
-     window.DynastyExperience?.resultImpact?.({record,streak,ats,marketMoved:true,chronicle:true});
-   }catch(_){}
-   setTimeout(closeResultModal,650)
+   try{ if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()} }catch(re){ console.error("[save] renderAll failed:",re); }
+   // Build the recap via shared function — must show even if render failed
+   try{ $("resultModal").classList.add("hidden"); }catch(_){}
+   showScoreRecap(impactGameId,savedMyScore,savedOppScore,savedGame);
  }catch(e){msg($("resultMessage"),e.message,"error")}
  finally{$("submitResultBtn").disabled=false}
 }
@@ -8036,8 +8116,9 @@ function renderSeasonRecap(){
  const coachRows=completed.filter(g=>g.person_id);const people=[...new Map(coachRows.map(g=>[String(g.person_id),{person_id:g.person_id,coach_name:g.coach_name||'Coach'}])).values()];
  const wins=coachRows.filter(g=>g.result==='W').length,losses=coachRows.filter(g=>g.result==='L').length,rankedWins=coachRows.filter(g=>g.result==='W'&&Number(g.opponent_rank)>0).length;
  const honors=(state.trophies||[]).filter(t=>String(t.season_id||'')===String(ss.season_id)||Number(t.season_number)===Number(ss.season_number));
- const pollRows=(state.recapRankings||{})[ss.season_id]||(String(S?.season_id)===String(ss.season_id)?state.rankings:[])||[];const pollWeeks=[...new Set(pollRows.map(r=>Number(r.week_number)).filter(Number.isFinite))].sort((a,b)=>a-b);const finalWeek=pollWeeks.at(-1);const finalPoll=finalWeek==null?[]:pollRows.filter(r=>Number(r.week_number)===finalWeek).sort((a,b)=>Number(a.rank)-Number(b.rank));
- $('recapTitle').textContent=`${ss.year||`Season ${ss.season_number}`} Season Recap`;$('recapSubtitle').textContent=`Season ${ss.season_number}${ss.year?` · ${ss.year}`:''} · ${ss.is_active?'Season in progress':'Permanent Dynasty HQ archive'}`;
+ const pollRows=(state.recapRankings||{})[ss.season_id]||[];const pollWeeks=[...new Set(pollRows.map(r=>Number(r.week_number)).filter(Number.isFinite))].sort((a,b)=>a-b);const finalWeek=pollWeeks.at(-1);const finalPoll=finalWeek==null?[]:pollRows.filter(r=>Number(r.week_number)===finalWeek).sort((a,b)=>Number(a.rank)-Number(b.rank));
+ $('recapTitle').textContent=`${ss.year||`Season ${ss.season_number}`} Season Recap`;
+ const heroSeason=$('recapHeroSeason');if(heroSeason)heroSeason.textContent=`SATURDAY FOUNDRY · SEASON ${ss.season_number}${ss.year?` · ${ss.year}`:''}${ss.is_active?' · IN PROGRESS':' · ARCHIVE'}`;$('recapSubtitle').textContent=`Season ${ss.season_number}${ss.year?` · ${ss.year}`:''} · ${ss.is_active?'Season in progress':'Permanent Dynasty HQ archive'}`;
  root.innerHTML=`<div><b>${wins}-${losses}</b><small>Combined Coach Record</small></div><div><b>${unique.length}</b><small>Games Archived</small></div><div><b>${rankedWins}</b><small>Ranked Wins</small></div><div><b>${honors.length}</b><small>Recorded Honors</small></div>`;
  $('recapCoachGrid').innerHTML=people.map(p=>{const gs=coachRows.filter(g=>String(g.person_id)===String(p.person_id));const w=gs.filter(g=>g.result==='W').length,l=gs.filter(g=>g.result==='L').length,pf=gs.reduce((n,g)=>n+Number(g.points_for||0),0),pa=gs.reduce((n,g)=>n+Number(g.points_against||0),0);const last=[...gs].sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];const team=last?.team_name||'Program',logo=logoFor(team);const ranked=gs.filter(g=>g.result==='W'&&g.opponent_rank).sort((a,b)=>Number(a.opponent_rank)-Number(b.opponent_rank))[0];const biggest=[...gs].filter(g=>g.result==='W').sort((a,b)=>(Number(b.points_for)-Number(b.points_against))-(Number(a.points_for)-Number(a.points_against)))[0];const best=ranked||biggest;const finalRank=finalPoll.find(r=>teamKey(r.team?.name)===teamKey(team))?.rank;return `<article class="recap-coach-card"><header>${logo?`<img src="${esc(logo)}" alt="">`:''}<div><span>${finalRank?`#${finalRank} · `:''}${esc(team)}</span><h4>${esc(p.coach_name)}</h4></div><b>${w}-${l}</b></header><div class="recap-coach-stats"><div><strong>${signed(pf-pa)}</strong><small>POINT DIFF</small></div><div><strong>${gs.filter(g=>g.opponent_rank&&g.result==='W').length}</strong><small>RANKED WINS</small></div><div><strong>${gs.filter(g=>['playoff','bowl','conference_championship','national_championship'].includes(String(g.game_type))).filter(g=>g.result==='W').length}</strong><small>POSTSEASON W</small></div></div><p>${best?`Signature win: ${best.opponent_rank?`#${best.opponent_rank} `:''}${esc(best.opponent_team||'Opponent')} · ${best.points_for}-${best.points_against}`:'No signature win recorded yet.'}</p></article>`}).join('')||'<div class="empty">No completed Dynasty-controlled games are recorded for this season.</div>';
  $('recapHonors').innerHTML=honors.map(t=>{const type=String(t.type||t.name||'Honor').replaceAll('_',' ');const who=t.recipient_name||t.coach_name||'';return `<article class="recap-honor"><span>🏆</span><div><small>${esc(type.toUpperCase())}</small><b>${esc(t.name||type)}</b><p>${esc(who)}${t.team_name?` · ${esc(t.team_name)}`:''}</p></div></article>`}).join('')||'<div class="empty">No season-specific awards have been recorded yet.</div>';
@@ -8048,7 +8129,10 @@ function renderSeasonRecap(){
  const chosen=[];const addMoment=m=>{if(m&&!chosen.some(x=>String(x.g.id||x.g.game_id)===String(m.g.id||m.g.game_id)&&String(x.c.person_id)===String(m.c.person_id)))chosen.push(m)};addMoment([...chronicleMoments].sort((a,b)=>Number(a.g.week_number)-Number(b.g.week_number))[0]);[...chronicleMoments].sort((a,b)=>b.weight-a.weight).forEach(addMoment);addMoment([...chronicleMoments].sort((a,b)=>Number(b.g.week_number)-Number(a.g.week_number))[0]);const displayMoments=chosen.slice(0,4).sort((a,b)=>Number(a.g.week_number)-Number(b.g.week_number));
  const cr=$('recapChronicle');if(cr){const mobileStory=window.matchMedia?.('(max-width: 700px)')?.matches;cr.innerHTML=displayMoments.map(({c,g,ch},idx)=>{const opp=`${g.opponent_rank?`#${g.opponent_rank} `:''}${g.opponent_team||'Opponent'}`;const team=g.team_name||c.team_name||'Team';const score=`${g.points_for??'—'}–${g.points_against??'—'}`;const takeaway=String(ch.text||'').split(/(?<=[.!?])\s+/)[0]||'';return `<details class="recap-chronicle-card ${g.result==='W'?'win':'loss'}" ${mobileStory?'': 'open'}><summary class="recap-chronicle-summary"><span class="recap-chronicle-week">WEEK ${esc(g.week_number||'—')}</span><span class="recap-chronicle-glance"><b>${esc(c.coach_name)} · ${esc(team)}</b><small>vs ${esc(opp)}</small></span><span class="recap-chronicle-final"><strong>${esc(score)}</strong><span class="recap-result ${g.result==='W'?'win':'loss'}">${esc(g.result||'FINAL')}</span></span><span class="recap-chronicle-chevron" aria-hidden="true"></span></summary><div class="recap-chronicle-body"><h4>${esc(ch.headline)}</h4>${takeaway?`<p>${esc(takeaway)}</p>`:''}<div class="recap-chronicle-tags">${ch.tags.slice(0,2).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></details>`}).join('')||'<div class="empty">Defining moments will appear here as this season writes its story.</div>';cr.querySelectorAll('.recap-chronicle-card').forEach(card=>card.addEventListener('toggle',()=>{if(!card.open)return;cr.querySelectorAll('.recap-chronicle-card[open]').forEach(other=>{if(other!==card&&window.matchMedia?.('(max-width: 700px)')?.matches)other.open=false})}))}
  setRecapSectionCount('coaches',people.length);setRecapSectionCount('honors',honors.length);setRecapSectionCount('poll',finalPoll.length);setRecapSectionCount('games',sig.length);setRecapSectionCount('story',displayMoments.length);setupRecapMobileFolds();
- if(!state.recapRankings?.[ss.season_id]&&String(S?.season_id)!==String(ss.season_id))loadRecapRankings(ss.season_id);
+ /* Top 25 always reflects the SELECTED season's final poll — load it if not cached */
+ if(!state.recapRankings?.[ss.season_id]&&D?.dynasty_id&&ss.season_id){
+   loadRecapRankings(ss.season_id);
+ }
 }
 $('recapSeasonSelect')?.addEventListener('change',()=>renderSeasonRecap());
 $('recapOpenChronicle')?.addEventListener('click',()=>{const ss=recapSeason();switchView('storylines');const sel=$('storySeasonSelect');if(sel&&ss){sel.value=String(ss.season_number);storyCoachFilter='all';renderStorylines()}window.scrollTo({top:0,behavior:'smooth'})});
@@ -8067,7 +8151,37 @@ function updateOverviewDataVisibility(){
  setVisible("top25Panel",hasRankings);
  setVisible("seasonPulsePanel",completed);
 }
-function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
+function renderMyWeek(){
+ try{
+  const host=$("myWeekGames"); if(!host) return;
+  const mine=myProgramForSeason();
+  if(!mine){host.innerHTML='<div class="myweek-done">No program linked</div>';return;}
+  const wk=currentWeek();
+  try{ $("myWeekMeta").textContent=`Week ${wk}`; }catch(_){}
+  const pid=String(mine.person_id||"");
+  const unplayed=(state.games||[]).filter(g=>
+    String(g.person_id||"")===pid &&
+    String(g.status||"").toLowerCase()!=="completed" &&
+    !g.is_bye &&
+    Number(g.week_number||0)===Number(wk)
+  );
+  if(!unplayed.length){
+    host.innerHTML='<div class="myweek-done">✓ All caught up for Week '+wk+'</div>';
+    return;
+  }
+  host.innerHTML=unplayed.map(g=>{
+    const vs=g.home_away==="away"?`at ${esc(g.opponent_team||"Opponent")}`:`vs ${esc(g.opponent_team||"Opponent")}`;
+    return `<div class="myweek-game">
+      <div class="myweek-game-info">
+        <div class="myweek-game-teams">${esc(g.team_name||"My Team")} ${vs}</div>
+        <div class="myweek-game-meta">Week ${g.week_number} · ${g.home_away==="away"?"AWAY":"HOME"}</div>
+      </div>
+      <button class="myweek-enter" onclick="openResultModal('${esc(g.id)}')">ENTER SCORE</button>
+    </div>`;
+  }).join("");
+ }catch(e){ console.error("[myweek] failed:",e); }
+}
+function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderMyWeek();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
 
 $("careerMoveBtn")?.addEventListener("click",async()=>{
  const coach=$("careerMoveCoach")?.value,team=$("careerMoveTeam")?.value,reason=$("careerMoveReason")?.value?.trim()||"";const out=$("careerMoveMessage");if(out)hide(out);
@@ -8442,7 +8556,7 @@ $("confirmTeamBtn").onclick=async()=>{
  }
 };
 $("weekCards").onclick=e=>{const vegas=e.target.closest("[data-vegas-game]");if(vegas){window.CDHQVegasFocusGame=vegas.dataset.vegasGame;switchView("vegas");Promise.resolve(ensureVegasLegacy()).finally(()=>{renderVegas();requestAnimationFrame(()=>document.querySelector(`[data-vegas-game-card="${CSS.escape(String(window.CDHQVegasFocusGame||""))}"]`)?.scrollIntoView({behavior:"smooth",block:"center"}))});return}const edit=e.target.closest("[data-edit-game]");if(edit){openMatchupEditor(edit.dataset.editGame);return}const b=e.target.closest("[data-result-game]");if(b)openResultModal(b.dataset.resultGame)};
-$("closeResultBtn").onclick=closeResultModal;$("resultModal").onclick=e=>{if(e.target===$("resultModal"))closeResultModal()};$("submitResultBtn").onclick=submitSelectedResult;
+$("closeResultBtn").onclick=closeResultModal;$("closeRecapBtn").onclick=()=>{$("resultRecapModal").classList.add("hidden");selectedGame=null};$("resultModal").onclick=e=>{if(e.target===$("resultModal"))closeResultModal()};$("submitResultBtn").onclick=submitSelectedResult;
 $("weekNav").onclick=e=>{const b=e.target.closest("button[data-week]");if(!b)return;selectedWeek=Number(b.dataset.week);renderSchedule()};
 window.CDHQ_RUNTIME={Data,session,req,esc,$,getState:()=>state,getSeason:()=>S,getDynasty:()=>D,getSelectedWeek:()=>selectedWeek,setSelectedWeek:v=>{selectedWeek=Number(v)},currentWeek,switchView,renderSchedule:()=>renderSchedule(),loadSeason:id=>loadSeason(id)};
 (async()=>{try{const s=await refreshSession();if(s)await enter(s);else signedOut()}catch(e){signedOut();msg($("authMessage"),e.message,"error")}finally{window.CDHQLoader?.hide(true)}})();
@@ -8721,7 +8835,8 @@ window.renderSchedule = window.renderSchedule || function(){
    const ed=latestEdit(g.id);$('gameEditTitle').textContent=`Edit Week ${g.week_number} Game`;$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Any dynasty member can correct this record.`;$('gameEditAudit').textContent=ed?`Previously edited by ${ed.edited_by_name||'a dynasty member'} on ${fmtEditTime(ed.edited_at)}. Your save will create a new audit entry.`:'No prior edits logged. Your save will record your identity, timestamp, and before/after values.';$('gameEditMessage').textContent='';$('gameEditMessage').className='game-edit-message';$('gameEditModal').classList.remove('hidden');
  };
  function closeEditor(){$('gameEditModal').classList.add('hidden');editingGameRecord=null}
- async function saveEditor(){if(!editingGameRecord)return;const hS=$('geHomeScore').value,aS=$('geAwayScore').value;const bothBlank=hS===''&&aS==='';if((hS==='')!==(aS==='')){$('gameEditMessage').textContent='Enter both scores or leave both blank.';$('gameEditMessage').className='game-edit-message error';return}const homeScore=bothBlank?null:Number(hS),awayScore=bothBlank?null:Number(aS);if(!bothBlank&&(homeScore<0||awayScore<0||homeScore===awayScore)){$('gameEditMessage').textContent='Enter valid non-tied final scores.';$('gameEditMessage').className='game-edit-message error';return}const payload={p_game_id:editingGameRecord.id,p_week_number:Number($('geWeek').value),p_home_team_id:$('geHomeTeam').value,p_away_team_id:$('geAwayTeam').value,p_home_score:homeScore,p_away_score:awayScore,p_home_rank:$('geHomeRank').value?Number($('geHomeRank').value):null,p_away_rank:$('geAwayRank').value?Number($('geAwayRank').value):null,p_overtime:$('geOT').checked,p_event_name:$('geEvent').value.trim()||null,p_network:null,p_kickoff_time:$('geKickoff').value?new Date($('geKickoff').value).toISOString():null,p_game_type:$('geType').value};const btn=$('gameEditSave');try{btn.disabled=true;$('gameEditMessage').textContent='Saving audited edit…';await Data.editGame(payload);$('gameEditMessage').textContent='Saved. Edit logged.';$('gameEditMessage').className='game-edit-message success';await loadSeason(S.season_id);renderGotw();setTimeout(closeEditor,350)}catch(e){$('gameEditMessage').textContent=e.message||String(e);$('gameEditMessage').className='game-edit-message error'}finally{btn.disabled=false}}
+ async function saveEditor(){if(!editingGameRecord)return;const hS=$('geHomeScore').value,aS=$('geAwayScore').value;const bothBlank=hS===''&&aS==='';if((hS==='')!==(aS==='')){$('gameEditMessage').textContent='Enter both scores or leave both blank.';$('gameEditMessage').className='game-edit-message error';return}const homeScore=bothBlank?null:Number(hS),awayScore=bothBlank?null:Number(aS);if(!bothBlank&&(homeScore<0||awayScore<0||homeScore===awayScore)){$('gameEditMessage').textContent='Enter valid non-tied final scores.';$('gameEditMessage').className='game-edit-message error';return}const payload={p_game_id:editingGameRecord.id,p_week_number:Number($('geWeek').value),p_home_team_id:$('geHomeTeam').value,p_away_team_id:$('geAwayTeam').value,p_home_score:homeScore,p_away_score:awayScore,p_home_rank:$('geHomeRank').value?Number($('geHomeRank').value):null,p_away_rank:$('geAwayRank').value?Number($('geAwayRank').value):null,p_overtime:$('geOT').checked,p_event_name:$('geEvent').value.trim()||null,p_network:null,p_kickoff_time:$('geKickoff').value?new Date($('geKickoff').value).toISOString():null,p_game_type:$('geType').value};const btn=$('gameEditSave');try{btn.disabled=true;$('gameEditMessage').textContent='Saving audited edit…';await Data.editGame(payload);$('gameEditMessage').textContent='Saved. Edit logged.';$('gameEditMessage').className='game-edit-message success';await loadSeason(S.season_id);renderGotw();
+    if(homeScore!==null&&awayScore!==null){try{const gid=editingGameRecord.id;const updated=(state.games||[]).find(x=>String(x.id)===String(gid));if(updated&&typeof ownsGame==='function'&&ownsGame(updated)){const isHome=String(updated.home_away||"").toLowerCase()==="home";const myS=isHome?homeScore:awayScore,oppS=isHome?awayScore:homeScore;closeEditor();showScoreRecap(updated.id,myS,oppS,updated);}else{/* recap skipped */;setTimeout(closeEditor,350)}}catch(_){setTimeout(closeEditor,350)}}else{setTimeout(closeEditor,350)}}catch(e){$('gameEditMessage').textContent=e.message||String(e);$('gameEditMessage').className='game-edit-message error'}finally{btn.disabled=false}}
  $('gameEditClose').onclick=closeEditor;$('gameEditCancel').onclick=closeEditor;$('gameEditSave').onclick=saveEditor;$('gameEditModal').addEventListener('click',e=>{if(e.target.id==='gameEditModal')closeEditor()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('gameEditModal').classList.contains('hidden'))closeEditor()});
  document.addEventListener('click',e=>{if(typeof window.CDHQ_openGame==='function')return;const b=e.target.closest('[data-edit-game]');if(b){e.preventDefault();e.stopPropagation();openMatchupEditor(b.dataset.editGame)}},true);
@@ -8921,7 +9036,8 @@ window.renderSchedule = window.renderSchedule || function(){
     const hr=$('geHomeRank').value?Number($('geHomeRank').value):null,ar=$('geAwayRank').value?Number($('geAwayRank').value):null;
     if(!isBye&&((hr!==null&&(!Number.isInteger(hr)||hr<1||hr>25))||(ar!==null&&(!Number.isInteger(ar)||ar<1||ar>25))))return message('Rankings must be whole numbers from 1–25.','error');
     const payload={p_week_number:week,p_home_team_id:homeTeam,p_away_team_id:awayTeam,p_home_score:homeScore,p_away_score:awayScore,p_home_rank:hr,p_away_rank:ar,p_overtime:$('geOT').checked,p_game_type:$('geType').value,p_result_method:$('geResultMethod').value||'played'};
-    const btn=$('gameEditSave');try{btn.disabled=true;message(simpleGameId?'Saving game…':'Adding game…');if(simpleGameId)await Data.editGameV2({p_game_id:simpleGameId,...payload});else if(isBye)await Data.createScheduleBye({p_season_id:S.season_id,p_week_number:week,p_team_id:homeTeam});else await Data.createGameSimple({p_season_id:S.season_id,...payload});message('Saved.','success');await rt.loadSeason(S.season_id);setTimeout(()=>{$('gameEditModal')?.classList.add('hidden');simpleGameId=null},250)}catch(e){message(e.message||String(e),'error')}finally{btn.disabled=false}
+    const btn=$('gameEditSave');try{btn.disabled=true;message(simpleGameId?'Saving game…':'Adding game…');if(simpleGameId)await Data.editGameV2({p_game_id:simpleGameId,...payload});else if(isBye)await Data.createScheduleBye({p_season_id:S.season_id,p_week_number:week,p_team_id:homeTeam});else await Data.createGameSimple({p_season_id:S.season_id,...payload});message('Saved.','success');await rt.loadSeason(S.season_id);
+    try{if(homeScore!==null&&awayScore!==null&&simpleGameId){const st=rt.getState();const updated=(st.games||[]).find(x=>String(x.id)===String(simpleGameId));if(updated&&typeof ownsGame==='function'&&ownsGame(updated)){const isHome=String(updated.home_away||"").toLowerCase()==="home";const myS=isHome?homeScore:awayScore,oppS=isHome?awayScore:homeScore;const gid=simpleGameId;setTimeout(()=>{$('gameEditModal')?.classList.add('hidden');simpleGameId=null;showScoreRecap(gid,myS,oppS,updated);},250);}else{setTimeout(()=>{$('gameEditModal')?.classList.add('hidden');simpleGameId=null},250);}}else{setTimeout(()=>{$('gameEditModal')?.classList.add('hidden');simpleGameId=null},250);}}catch(_){setTimeout(()=>{$('gameEditModal')?.classList.add('hidden');simpleGameId=null},250);}}catch(e){message(e.message||String(e),'error')}finally{btn.disabled=false}
   }
   function closeGame(){const modal=$('gameEditModal');if(modal)modal.classList.add('hidden');simpleGameId=null;message('')}
   function preview(id){
@@ -10223,6 +10339,44 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 /* Season Recap / historical season archive */
 .season-recap-shell{max-width:1380px;margin:0 auto;padding:18px 16px 48px}.season-recap-hero{display:flex;justify-content:space-between;gap:22px;align-items:flex-end;padding:28px;border:1px solid rgba(244,197,66,.24);border-radius:20px;background:radial-gradient(circle at 88% 15%,rgba(244,197,66,.12),transparent 30%),linear-gradient(145deg,#07151c,#030b10)}.season-recap-hero span,.recap-section-head span,.recap-season-story>span{font-size:12px;font-weight:900;letter-spacing:.16em;color:#f4c542}.season-recap-hero h2{margin:4px 0 6px;font-family:Oswald,sans-serif;font-size:clamp(34px,5vw,58px);text-transform:uppercase}.season-recap-hero p{margin:0;color:#93a7b2;max-width:760px;font-size:14px}.season-recap-hero select{min-width:210px;padding:11px 13px;border-radius:10px;border:1px solid rgba(244,197,66,.32);background:#071116;color:#fff;font-weight:800}.recap-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 26px}.recap-summary-grid>div{padding:17px;border:1px solid rgba(148,163,184,.14);border-radius:14px;background:rgba(5,17,23,.78)}.recap-summary-grid b{display:block;font:800 30px Oswald,sans-serif;color:#fff}.recap-summary-grid small{font-size:12px;color:#8297a2;text-transform:uppercase;letter-spacing:.08em}.recap-section{margin-top:28px}.recap-section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:12px}.recap-section-head h3{margin:3px 0 0;font:800 26px Oswald,sans-serif;text-transform:uppercase}.recap-section-head em{font-size:12px;color:#728791;font-style:normal}.recap-coach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:12px}.recap-coach-card{border:1px solid rgba(148,163,184,.16);border-top:3px solid #f4c542;border-radius:15px;background:linear-gradient(180deg,rgba(10,25,32,.98),rgba(4,13,18,.98));overflow:hidden}.recap-coach-card header{display:flex;align-items:center;gap:11px;padding:15px}.recap-coach-card header img{width:42px;height:42px;object-fit:contain}.recap-coach-card header div{min-width:0;flex:1}.recap-coach-card header span{display:block;font-size:11px;color:#8ba0aa;text-transform:uppercase;font-weight:800}.recap-coach-card h4{margin:2px 0 0;font:800 22px Oswald,sans-serif;text-transform:uppercase}.recap-coach-card header>b{font:900 30px Oswald,sans-serif}.recap-coach-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(148,163,184,.1);border-bottom:1px solid rgba(148,163,184,.1)}.recap-coach-stats div{padding:11px;text-align:center;border-right:1px solid rgba(148,163,184,.1)}.recap-coach-stats div:last-child{border:0}.recap-coach-stats strong{display:block;font-size:17px}.recap-coach-stats small{font-size:10px;color:#78909b}.recap-coach-card p{margin:0;padding:12px 15px;color:#a9bac2;font-size:13px}.recap-honors-grid,.recap-games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.recap-honor{display:flex;gap:12px;align-items:center;padding:14px;border:1px solid rgba(244,197,66,.18);border-radius:13px;background:rgba(244,197,66,.045)}.recap-honor>span{font-size:28px}.recap-honor small,.recap-honor b,.recap-honor p{display:block}.recap-honor small{font-size:10px;color:#f4c542;letter-spacing:.1em}.recap-honor b{font-size:15px;margin:2px 0}.recap-honor p{margin:0;color:#8197a2;font-size:12px}.recap-poll-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.recap-poll-row{display:grid;grid-template-columns:26px 30px 1fr auto;gap:7px;align-items:center;min-width:0;padding:9px;border:1px solid rgba(148,163,184,.12);border-radius:9px;background:rgba(5,17,23,.72)}.recap-poll-row>b{font:800 18px Oswald,sans-serif;color:#f4c542}.recap-poll-row img{width:28px;height:28px;object-fit:contain}.recap-poll-row strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recap-poll-row span{font-size:11px;color:#80949e}.recap-game{display:flex;justify-content:space-between;gap:12px;padding:14px;border:1px solid rgba(148,163,184,.14);border-radius:13px;background:#061219}.recap-game small{display:block;margin-bottom:6px;font-size:10px;color:#7e929c;letter-spacing:.08em}.recap-game b{display:block;font-size:14px;line-height:1.55}.recap-game em{font-style:normal;color:#fff}.recap-game>span{align-self:center;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:900}.recap-game .win{background:rgba(52,211,153,.14);color:#6ee7b7}.recap-game .loss{background:rgba(248,113,113,.12);color:#fca5a5}.recap-season-story{margin-top:30px;padding:24px;border-left:4px solid #f4c542;border-radius:0 15px 15px 0;background:linear-gradient(90deg,rgba(244,197,66,.08),rgba(5,17,23,.75))}.recap-season-story h3{margin:4px 0 8px;font:800 28px Oswald,sans-serif;text-transform:uppercase}.recap-season-story p{margin:0;max-width:1000px;color:#b4c2c8;font-size:15px;line-height:1.65}
 @media(max-width:900px){.recap-poll-grid{grid-template-columns:repeat(2,1fr)}.recap-summary-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.season-recap-shell{padding:10px 10px 36px}.season-recap-hero{display:block;padding:18px}.season-recap-hero select{width:100%;margin-top:15px}.recap-section-head{display:block}.recap-section-head em{display:block;margin-top:5px}.recap-poll-grid{grid-template-columns:1fr}.recap-summary-grid{gap:7px}.recap-summary-grid>div{padding:13px}.recap-summary-grid b{font-size:25px}.recap-summary-grid small{font-size:10px}}
+/* QA 9.8.3 REDESIGN: Season Recap v2 — editorial, hierarchical, mobile-first */
+.season-recap-hero{position:relative;overflow:hidden;padding:36px 32px;background:linear-gradient(135deg,#0a1a22 0%,#030b10 60%),radial-gradient(circle at 85% 20%,rgba(244,197,66,.15),transparent 40%)}
+.season-recap-hero h2{font-size:clamp(42px,7vw,72px);line-height:.95;letter-spacing:-.02em}
+.season-recap-hero .recap-hero-season{font-size:13px;font-weight:900;letter-spacing:.22em;color:#f4c542;margin-bottom:8px}
+.recap-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0 32px}
+.recap-summary-grid>div{position:relative;padding:20px;border-radius:16px;background:linear-gradient(180deg,rgba(12,28,36,.95),rgba(5,15,20,.95));border:1px solid rgba(244,197,66,.12);overflow:hidden}
+.recap-summary-grid>div:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f4c542,transparent)}
+.recap-summary-grid b{font-size:36px}
+.recap-coach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.recap-coach-card{border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#0b1c24,#040d12);border:1px solid rgba(148,163,184,.12)}
+.recap-coach-card header{padding:20px;display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,rgba(244,197,66,.08),transparent)}
+.recap-coach-card header img{width:64px;height:64px}
+.recap-coach-card h4{font-size:26px}
+.recap-coach-card header>b{font-size:38px;color:#f4c542}
+.recap-coach-stats{grid-template-columns:repeat(3,1fr);background:rgba(0,0,0,.25)}
+.recap-coach-stats div{padding:14px}
+.recap-coach-stats strong{font-size:20px;color:#fff}
+.recap-coach-card p{padding:16px 20px;font-size:14px;line-height:1.6;border-top:1px solid rgba(148,163,184,.08)}
+.recap-poll-grid{display:block;max-width:720px}
+.recap-poll-row{display:grid;grid-template-columns:44px 44px 1fr auto;gap:12px;align-items:center;padding:12px 16px;margin-bottom:8px;border-radius:12px;background:rgba(8,20,27,.85);border:1px solid rgba(148,163,184,.1)}
+.recap-poll-row>b{font-size:24px}
+.recap-poll-row img{width:36px;height:36px}
+.recap-poll-row strong{font-size:15px}
+.recap-chronicle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.recap-chronicle-card{border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#0a1a23,#050f14);border:1px solid rgba(148,163,184,.12)}
+.recap-chronicle-card.win{border-top:3px solid #34d399}
+.recap-chronicle-card.loss{border-top:3px solid #f87171}
+.recap-chronicle-summary{padding:18px;cursor:pointer;list-style:none}
+.recap-chronicle-summary::-webkit-details-marker{display:none}
+.recap-chronicle-week{font-size:11px;font-weight:900;letter-spacing:.14em;color:#f4c542}
+.recap-chronicle-glance b{font-size:17px;display:block;margin:6px 0 2px}
+.recap-chronicle-final{display:flex;align-items:center;gap:10px;margin-top:10px}
+.recap-chronicle-final strong{font-size:28px;font-family:Oswald,sans-serif}
+.recap-chronicle-body{padding:0 18px 18px}
+.recap-chronicle-body h4{font-size:18px;margin:0 0 8px;color:#fff}
+.recap-chronicle-body p{color:#a9bac2;font-size:14px;line-height:1.65;margin:0 0 12px}
+.recap-chronicle-tags span{display:inline-block;padding:4px 10px;margin-right:6px;border-radius:20px;background:rgba(244,197,66,.1);color:#f4c542;font-size:11px;font-weight:700}
+@media(max-width:600px){.season-recap-hero{padding:24px 18px}.recap-summary-grid{grid-template-columns:repeat(2,1fr);gap:8px}.recap-coach-grid{grid-template-columns:1fr}.recap-chronicle-grid{grid-template-columns:1fr}}
 </style>
 
 <style id="season-recap-chronicles-integration">
@@ -10982,7 +11136,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -11015,7 +11169,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11089,7 +11243,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
       bar=document.createElement('div');bar.id='sfScheduleModebar';bar.className='sf-schedule-modebar';
       bar.innerHTML=`<div class="sf-schedule-modes"><button type="button" class="sf-schedule-mode" data-sf-schedule-mode="my">My Schedule</button><button type="button" class="sf-schedule-mode" data-sf-schedule-mode="national">National</button></div><div class="sf-schedule-mode-note" id="sfScheduleModeNote"></div>`;
       hero.appendChild(bar);
-      bar.addEventListener('click',e=>{const b=e.target.closest('[data-sf-schedule-mode]');if(!b)return;const next=b.dataset.sfScheduleMode;if(next==='my'&&!mine())return;scheduleMode=next;if(next==='my')scheduleTeamPersonId=mine()?.person_id||null;else scheduleTeamPersonId=null;scheduleConference='__all__';renderSchedule();});
+      bar.addEventListener('click',e=>{const b=e.target.closest('[data-sf-schedule-mode]');if(!b)return;const next=b.dataset.sfScheduleMode;if(next==='my'&&!mine())return;scheduleMode=next;if(next==='my')scheduleTeamPersonId=mine()?.person_id||null;else{scheduleTeamPersonId=null;try{const cw=(typeof currentWeek==='function')?currentWeek():null;if(Number.isInteger(cw)&&cw>=0)selectedWeek=cw;}catch(_){}}scheduleConference='__all__';renderSchedule();});
     }
     bar.querySelectorAll('[data-sf-schedule-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.sfScheduleMode===scheduleMode);if(b.dataset.sfScheduleMode==='my')b.hidden=!mine()});
     const note=document.getElementById('sfScheduleModeNote');if(note)note.textContent=scheduleMode==='my'?'Your full season in one view.':'Week-by-week national scoreboard with the season archive tucked away.';
@@ -11682,7 +11836,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.2";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.3";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12601,7 +12755,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3';
   }
   function boot(){
     build();
@@ -12611,7 +12765,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.2';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.3';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -13018,7 +13172,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.2';
+    if(m)m.textContent='PROD 9.8.3';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -13255,6 +13409,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
        game even when only one side's conference is known (CPU opponents often carry none).
        Every My Schedule game involves the user's team, so the known side's conference is correct. */
     const flagConf=g?.is_conference_game===true&&type!=='non_conference';
+    /* Non-conference games never get a conference badge — driven by game_type, not conference inference. */
+    if(type==='non_conference'||type==='non-conference')return null;
     if(type!=='conference'&&type!=='conference_championship'&&!flagConf){
       /* QA 9.8.0: regular-season games between two teams of the same conference earn that conference's badge. */
       const a2=sfGameConferenceV3(g,'team'),b2=sfGameConferenceV3(g,'opponent');
@@ -14916,7 +15072,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.2';
+    if(m)m.textContent='PROD 9.8.3';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14926,7 +15082,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.2';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.3';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
