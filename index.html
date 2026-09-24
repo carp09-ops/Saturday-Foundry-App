@@ -6308,7 +6308,8 @@ function inferredCurrentWeek(){
  return future[0]??latest;
 }
 function currentWeek(){
- const configured=Number(state.activeWeek);
+ const raw=state.activeWeek;
+ const configured=(raw==null||raw==='')?null:Number(raw);
  const activeSeason=!!(S?.is_active||String(S?.status||"").toLowerCase()==="active");
  if(activeSeason&&Number.isInteger(configured)&&configured>=0)return configured;
  return inferredCurrentWeek();
@@ -8076,7 +8077,7 @@ async function loadSeason(id){
     Data.vegas(D.dynasty_id,S.season_id),
     activeSeason?Data.activeWeek(D.dynasty_id):Promise.resolve(state.activeWeek)
   ]);
-  const normalizedWeek=Number(activeWeek);
+  const normalizedWeek=(activeWeek==null||activeWeek==='')?null:Number(activeWeek);
   const cleanVegas=Array.isArray(vegas)?vegas:[];
   const rankingRows=Array.isArray(rankings)?rankings:[];
   const currentRankFor=(teamId,teamName,week)=>{
@@ -8119,7 +8120,7 @@ async function loadDynasty(i=0){
  if($("dynastyHubList")) renderDynastyHub();
  $("dynastySelect").classList.toggle("hidden",dynasties.length<2);
  const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek]=await Promise.all([Data.seasons(D.dynasty_id),Data.career(D.dynasty_id),Data.trophies(D.dynasty_id),Data.listHeismans(D.dynasty_id),Data.myPrograms(D.dynasty_id),Data.powerContext(D.dynasty_id),Data.careerStops(D.dynasty_id),Data.dynastyCoaches(D.dynasty_id),Data.coachMoves(D.dynasty_id),Data.activeWeek(D.dynasty_id)]);
- seasons=ss;state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek:Number.isInteger(Number(activeWeek))?Number(activeWeek):null};
+ seasons=ss;state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek:(activeWeek==null||activeWeek===''||!Number.isInteger(Number(activeWeek)))?null:Number(activeWeek)};
  S=seasons.find(s=>s.is_active)||seasons.find(s=>s.status==="setup")||seasons[0];
  if(!S)throw Error("This dynasty does not have a season yet.");
  const owns=(myPrograms||[]).some(p=>p.season_id===S.season_id);
@@ -8310,7 +8311,7 @@ $("newSeasonBtn").onclick=async()=>{
 };
 $("setWeekBtn").onclick=async()=>{
  const btn=$("setWeekBtn"),w=Number($("activeWeekInput").value);if(!Number.isInteger(w)||w<0){msg($("weekAdminMessage"),"Enter a valid week.","error");return}
- try{btn.disabled=true;const saved=await Data.setActiveWeek(D.dynasty_id,w);state.activeWeek=Number.isInteger(Number(saved))?Number(saved):w;selectedWeek=state.activeWeek;msg($("weekAdminMessage"),`Active week set to ${state.activeWeek}.`,"success");renderAll()}catch(e){msg($("weekAdminMessage"),e.message,"error")}finally{btn.disabled=false}
+ try{btn.disabled=true;const saved=await Data.setActiveWeek(D.dynasty_id,w);state.activeWeek=(saved==null||saved===''||!Number.isInteger(Number(saved)))?w:Number(saved);selectedWeek=state.activeWeek;msg($("weekAdminMessage"),`Active week set to ${state.activeWeek}.`,"success");renderAll()}catch(e){msg($("weekAdminMessage"),e.message,"error")}finally{btn.disabled=false}
 };
 function rankingTeamLookup(name){const k=teamKey(name);return (teamChoices||[]).find(t=>teamKey(t.team_name)===k)||null}
 function parseRankingsPaste(text){return String(text||'').split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{const parts=line.split(/\s*\|\s*/);if(parts.length<2)throw Error(`Use rank | team | record format: ${line}`);const rank=Number(parts[0]),name=parts[1].trim(),m=String(parts[2]||'').match(/(\d+)\s*-\s*(\d+)/),team=rankingTeamLookup(name);if(!Number.isInteger(rank)||rank<1||rank>25)throw Error(`Invalid rank: ${line}`);if(!team)throw Error(`Team not found: ${name}`);return {rank,team_id:team.team_id,wins:m?Number(m[1]):null,losses:m?Number(m[2]):null,name:team.team_name}})}
@@ -13028,7 +13029,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek]=await Promise.all([Data.seasons(dynastyId),Data.career(dynastyId),Data.trophies(dynastyId),Data.listHeismans(dynastyId),Data.myPrograms(dynastyId),Data.powerContext(dynastyId),Data.careerStops(dynastyId),Data.dynastyCoaches(dynastyId),Data.coachMoves(dynastyId),Data.activeWeek(dynastyId)]);
       seasons=Array.isArray(ss)?ss:[];S=seasons.find(se=>String(se.season_id)===String(requestedSeasonId))||seasons.find(se=>se.is_active||String(se.status||'').toLowerCase()==='active')||seasons[0];if(!S)throw Error('This dynasty does not have a season to refresh.');const activeSeason=!!(S.is_active||String(S.status||'').toLowerCase()==='active');
       const [programs,standings,games,scheduleGames,rankings,vegas,nationalFinalizedWeek]=await Promise.all([Data.programs(dynastyId,S.season_id),Data.standings(dynastyId,S.season_id),Data.games(dynastyId,S.season_id),Data.scheduleGames(dynastyId,S.season_id),Data.rankings(dynastyId,S.season_id),Data.vegas(dynastyId,S.season_id),activeSeason&&typeof Data.nationalFinalizedWeek==='function'?Data.nationalFinalizedWeek(dynastyId,S.season_id):Promise.resolve(null)]);
-      const historyResults=await Promise.allSettled((seasons||[]).map(se=>String(se.season_id)===String(S.season_id)?Promise.resolve(games):Data.games(dynastyId,se.season_id)));const allGames=historyResults.filter(r=>r.status==='fulfilled').flatMap(r=>Array.isArray(r.value)?r.value:[]);const cleanVegas=Array.isArray(vegas)?vegas:[],aw=Number(activeWeek),nf=Number(nationalFinalizedWeek);
+      const historyResults=await Promise.allSettled((seasons||[]).map(se=>String(se.season_id)===String(S.season_id)?Promise.resolve(games):Data.games(dynastyId,se.season_id)));const allGames=historyResults.filter(r=>r.status==='fulfilled').flatMap(r=>Array.isArray(r.value)?r.value:[]);const cleanVegas=Array.isArray(vegas)?vegas:[],aw=(activeWeek==null||activeWeek==='')?null:Number(activeWeek),nf=Number(nationalFinalizedWeek);
       state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,vegasAll:[],gotwGames:[],allGames,recapRankings:{},activeWeek:Number.isInteger(aw)?aw:null,nationalFinalizedWeek:activeSeason&&Number.isInteger(nf)?nf:null};selectedWeek=keepWeek;
       if(typeof vegasLegacyLoadedFor!=='undefined')vegasLegacyLoadedFor=null;if(typeof vegasCache!=='undefined'&&vegasCache?.clear){vegasCache.clear();vegasCache.set(vegasKey(dynastyId,S.season_id),cleanVegas);}
       if(typeof refreshEditLog==='function'){try{await refreshEditLog()}catch(err){console.warn('Edit history refresh skipped:',err)}}
