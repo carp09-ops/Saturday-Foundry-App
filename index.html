@@ -7822,6 +7822,12 @@ function renderLegacyPillar(){
  [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyTimeline",renderLegacyTimeline],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
   try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
  });
+ /* QA: self-heal logos that never resolve (hung requests, blank responses).
+    Anything still pixel-less after a beat walks the fallback chain to the
+    initials tile, so a blank white box can never stick around. */
+ setTimeout(()=>{try{document.querySelectorAll('#dynastyInsightsView img.team-logo').forEach(img=>{
+   if(img.isConnected&&(!img.complete||img.naturalWidth===0)&&window.sfLogoFallback)window.sfLogoFallback(img);
+ })}catch(e){}},3500);
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
