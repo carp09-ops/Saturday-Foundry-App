@@ -7754,15 +7754,29 @@ function renderEfficiencyChart(){
 function renderMomentum(){
  $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div style="font-size:12px;color:#657d86">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")
 }
+/* QA 9.8.1: image fallback chain for dead stored logo URLs. Walks the remaining
+   sources in data-sf-logo-fallback, then swaps in the initials tile. */
+window.sfLogoFallback=function(img){
+ try{
+  const rest=String(img.dataset.sfLogoFallback||'').split('|').filter(Boolean);
+  if(rest.length){img.dataset.sfLogoFallback=rest.slice(1).join('|');img.src=rest[0];return}
+  const fb=document.createElement('div');fb.className='team-fallback';fb.textContent=img.dataset.sfLogoInitials||'?';
+  const plate=img.closest('.sf-team-logo-plate-v5');
+  if(plate)plate.replaceWith(fb);else img.replaceWith(fb);
+ }catch(e){}
+};
 function metricCard(c,body){
  /* QA 9.8.1: resolve the logo like the rest of the app — check both program lists
     (String-compared ids), then team_logo_url, then the known-logo resolver.
-    Previously only state.programs (strict ===) with logo_url was checked, so any
-    coach whose program row lacked logo_url showed fallback initials instead. */
+    Sources are chained with an onerror fallback: a dead stored URL falls through
+    to the next source, then to initials — no more white broken-image boxes. */
  const p=(state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
  const team=String(p?.team_name||c.team_name||'');
- const src=p?.logo_url||p?.team_logo_url||(team&&window.CDHQLogoResolver?.knownLogo?.(team))||'';
- const logo=src?`<img class="team-logo" src="${esc(src)}" alt="${esc(team?team+' logo':'team logo')}">`:`<div class="team-fallback">${initials(team||c.coach_name)}</div>`;
+ const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(team&&window.CDHQLogoResolver?.knownLogo?.(team))||''].filter(Boolean))];
+ const alt=team?team+' logo':'team logo',fbInitials=initials(team||c.coach_name);
+ const logo=srcs.length
+  ?`<img class="team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
+  :`<div class="team-fallback">${esc(fbInitials)}</div>`;
  return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div style="font-size:8px;color:#71858e">${esc(team)}</div></div></div>${body}</article>`
 }
 function renderAnalyticsCards(){
