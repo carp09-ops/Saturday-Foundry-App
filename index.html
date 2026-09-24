@@ -5242,7 +5242,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <div class="canonical-controls">
       <div id="navWrap" class="nav-wrap hidden"><nav id="nav" class="canonical-nav">
         <button class="active" data-view="overview"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/home@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Overview</span></button>
-        <button data-view="analytics"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/analytics@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Intelligence</span></button>
+        <button data-view="analytics"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/analytics@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Insights</span></button>
         <button data-view="vegas"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/vegas@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Vegas</span></button>
         <button data-view="storylines"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/coach-chronicles@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coach Chronicles</span></button>
         <button data-view="rivalries"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/rivalries@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Rivalries</span></button>
@@ -5423,73 +5423,38 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 <section id="seasonPulsePanel" class="grid grid-cols-1 xl:grid-cols-2 gap-3.5"><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">🏆</span><h3>SEASON STANDINGS</h3></div><span id="standingsMeta"></span></div><div id="standings" class="mt-3"></div></div><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">✣</span><h3>🔥 WHO’S DANGEROUS NOW?</h3></div><span>Current form · Not win probability</span></div><div class="space-y-2 mt-3" id="power"></div></div></section>
 </div></section>
 <section id="analytics" class="view">
-  <div class="intelligence-hero">
+  <div class="legacy-hero">
     <div>
-      <span class="intelligence-kicker">DYNASTY INTELLIGENCE</span>
-      <h2>War Room</h2>
-      <p>One command center for season trajectory, scoring efficiency, current form, program strength, expectation and clutch performance.</p>
+      <span class="legacy-kicker">DYNASTY INSIGHTS</span>
+      <h2>Legacy</h2>
+      <p>The league's memory. Every banner, every drought, every throne — what kind of dynasty is each coach building?</p>
     </div>
-    <div class="intelligence-live"><span></span> LIVE DYNASTY DATA</div>
+    <div class="legacy-live"><span></span> LIVE DYNASTY DATA</div>
   </div>
 
-  <div id="analyticsShowcase" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5"></div>
+  <div id="legacyThrone"></div>
 
-  <section class="ref-panel rounded-xl p-4 shadow-xl space-y-3.5 intelligence-shell">
-    <div class="intelligence-nav-wrap">
-      <div>
-        <span class="war-room-kicker">Program Intelligence</span>
-        <div class="intelligence-nav-label">Choose a lens</div>
-      </div>
-      <div class="analytics-tabs intelligence-tabs" id="analyticsTabs">
-        <button class="active" data-pane="trajectory">📈 Win Pace</button>
-        <button data-pane="efficiency">🎯 Efficiency</button>
-        <button data-pane="powerpane">🔥 Current Form</button>
-        <button data-pane="intangibles">🎲 Luck &amp; Clutch</button>
-      </div>
-    </div>
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>All-Time Record</span><h3>The Tiers</h3></div><em>Career standings, earned not given</em></div>
+    <div id="legacyTiers" class="legacy-tiers"></div>
+  </div>
 
-    <div id="trajectory" class="analytics-pane active">
-      <div class="intelligence-pane-head"><div><span>Season Forecast</span><h3>Win Pace</h3></div><em>Actual wins + projected finish</em></div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3" id="projectionCards"></div>
-      <div class="analytics-chart-meta"><span>Solid = actual · dotted = projected pace</span><strong>MAX SCALE: 16 WINS</strong></div>
-      <div class="chart-card analytics-chart-card">
-        <div class="chart-head"><h3>Season Win Pace</h3><span>Current season trajectory</span></div>
-        <div class="chart-wrap"><canvas id="winsChart"></canvas></div>
-      </div>
-    </div>
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>Championship Timeline</span><h3>Title Windows</h3></div><em>Every banner by season</em></div>
+    <div id="legacyTimeline" class="legacy-timeline-wrap"></div>
+  </div>
 
-    <div id="efficiency" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Scoring Profile</span><h3>Efficiency</h3></div><em>Production + prevention</em></div>
-      <div class="analytics-chart-meta"><span>Career scoring output vs defensive resistance</span><strong>LOWER PA = BETTER DEFENSE</strong></div>
-      <div class="chart-card analytics-chart-card">
-        <div class="chart-head"><h3>Offense vs Defense</h3><span>Career PPG scored vs PPG allowed</span></div>
-        <div class="chart-wrap"><canvas id="efficiencyChart"></canvas></div>
-      </div>
-      <div class="intelligence-subhead">Coach Efficiency Cards</div>
-      <div class="analytics-grid" id="efficiencyGrid"></div>
-    </div>
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>The Waiting Game</span><h3>Droughts</h3></div><em>How long since the last one</em></div>
+    <div id="legacyDroughts" class="legacy-droughts"></div>
+  </div>
 
-    <div id="powerpane" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Who’s Dangerous Now?</span><h3>Current Form</h3></div><em>Season performance · Not win probability</em></div>
-      <div class="analytics-scope intelligence-scope intel-scope-inline">
-        <b>WAR ROOM SCOPE:</b>
-        Current Form answers “Who’s dangerous now?” using this season’s record and scoring margin. It is a 0–99.9 performance rating, not a win probability.
-      </div>
-      <div class="analytics-grid" id="analyticsPower"></div>
-      <div class="intelligence-subhead">Season Momentum</div>
-      <div id="momentumList" class="momentum-grid"></div>
-    </div>
+  <div class="legacy-section">
+    <div class="legacy-section-head"><div><span>Within Reach</span><h3>Milestone Watch</h3></div><em>History about to happen</em></div>
+    <div id="legacyMilestones" class="legacy-milestones"></div>
+  </div>
 
-    <div id="intangibles" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Expectation &amp; Pressure</span><h3>Luck &amp; Clutch</h3></div><em>Fortune and nerve, quantified</em></div>
-      <div class="intelligence-subhead">Luck Rating</div>
-      <div class="war-description">Pythagorean expectation compares actual career wins to expected wins from points scored and allowed.</div>
-      <div class="analytics-grid" id="luckGrid"></div>
-      <div class="intelligence-subhead">Clutch Index</div>
-      <div class="war-description">Career pressure résumé: W/L record, win rate, one-score performance, overtime results and average margin in games decided by ≤7 points or overtime.</div>
-      <div class="analytics-grid" id="clutchGrid"></div>
-    </div>
-  </section>
+  <p class="legacy-footnote">Legacy is the first Dynasty Insights pillar. Identity and Trajectory are next.</p>
 
   <button class="intel-vegas-link" id="intelVegasLink">
     <span>Dynasty Vegas</span>
@@ -6251,8 +6216,6 @@ function renderVegas(failed=false){
 
 $("vegasStudioNav")?.addEventListener("click",e=>{const b=e.target.closest("button[data-vegas-pane]");if(!b)return;document.querySelectorAll("#vegasStudioNav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#vegas .vegas-studio-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.vegasPane));if(b.dataset.vegasPane==='vegasHistoryPane'){populateVegasHistoryFilters();filterVegasHistory()}});["vegasHistorySeason","vegasHistoryCoach","vegasHistoryResult"].forEach(id=>$(id)?.addEventListener("change",filterVegasHistory));
 $("nav").onclick=e=>{const b=e.target.closest("button[data-view]");if(b){switchView(b.dataset.view);if(b.dataset.view==="analytics")renderAnalyticsSuite();if(["vegas","trophies","records","analytics","storylines","rivalries"].includes(b.dataset.view))ensureVegasLegacy();if(b.dataset.view==="vegas")renderVegas();if(b.dataset.view==="storylines")renderStorylines();if(b.dataset.view==="rivalries")renderRivalries();if(b.dataset.view==="overview")renderHQCommand();if(b.dataset.view==="recap")renderSeasonRecap();const header=$("siteHeader"),toggle=$("mobileMenuToggle");if(header){header.classList.remove("mobile-open");if(toggle){toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}}}};
-/* Intel rework: each pane re-renders its content on switch (charts need a visible canvas). */
-$("analyticsTabs").onclick=e=>{const b=e.target.closest("button[data-pane]");if(!b)return;document.querySelectorAll("#analyticsTabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#analytics .analytics-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.pane));if(b.dataset.pane==="trajectory"){renderProjectionCards();setTimeout(renderWinsChart,0)}if(b.dataset.pane==="efficiency"){renderEfficiencyGrid();setTimeout(renderEfficiencyChart,0)}if(b.dataset.pane==="powerpane")renderPowerPane();if(b.dataset.pane==="intangibles")renderIntangibles()};
 $("intelVegasLink")?.addEventListener("click",()=>{switchView("vegas");ensureVegasLegacy();renderVegas()});
 
 function logoFor(team){
@@ -7713,110 +7676,130 @@ function closeGameStats(person){
  const margin=q.reduce((n,g)=>n+(Number(g.points_for)-Number(g.points_against)),0);
  return {total:q.length,wins,losses,oneScore:oneScore.length,oneScoreWins,ot:ot.length,otWins,avgMargin:q.length?margin/q.length:0}
 }
-function renderProjectionCards(){
- const active=state.standings;
- $("projectionCards").innerHTML=active.map(r=>{const p=seasonProjection(r),c=teamColor(r.team_name);return `<div class="projection-card" style="--coach:${c}"><div style="display:flex;justify-content:space-between;gap:8px"><div><div class="projection-name">${esc(r.coach_name)}</div><div class="projection-team">${esc(r.team_name)}</div></div><div style="text-align:right"><div style="font-size:7px;color:#71858e;text-transform:uppercase;font-weight:900">Projected Finish</div><div class="projection-finish">${p.projectedWins}-${p.projectedLosses}</div></div></div><div class="projection-foot">Now ${r.wins}-${r.losses} · ${p.played}/${p.total||"?"} played · ${esc(p.method)}</div></div>`}).join("")
+/* Dynasty Insights — Legacy pillar (QA 9.8.1).
+   Replaces the Intelligence rework. Reads the same per-dynasty state the app
+   already loads (state.career, state.trophies, seasons): no new fetching. */
+function legacyCareer(){return [...(state.career||[])].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0))}
+function legacyTrophies(){return [...(state.trophies||[])]}
+function legacySeasons(){return [...(seasons||[])].sort((a,b)=>Number(a.season_number||0)-Number(b.season_number||0))}
+function legacyActiveSeason(){const s=legacySeasons();return s.find(x=>x.is_active)||s[s.length-1]||null}
+function legacyCoachKey(t){return String(t.person_id||t.coach_name||"")}
+function isNattyTrophy(t){return /national/i.test(String(t.type||""))||/national championship/i.test(String(t.name||""))}
+function isConfTrophy(t){return /conference_championship/i.test(String(t.type||""))}
+function isBowlTrophy(t){return /bowl_championship/i.test(String(t.type||""))}
+function isHeismanTrophy(t){return /heisman/i.test(String(t.type||""))}
+function legacyWinPct(c){const gp=Number(c.games_played||0);return gp?Number(c.wins||0)/gp:0}
+const LEGACY_TIER_LABELS=["The Standard","The Challenger","The Hunter","The Wildcard"];
+
+function renderLegacyThrone(){
+ const el=$("legacyThrone");if(!el)return;
+ const ss=legacySeasons(),done=ss.filter(s=>String(s.status)==="completed");
+ const nattys=legacyTrophies().filter(isNattyTrophy).sort((a,b)=>Number(b.season_number)-Number(a.season_number));
+ const nCoaches=legacyCareer().length;
+ if(nattys.length){
+  const last=nattys[0],total=nattys.length;
+  const years=[...new Set(nattys.map(t=>"S"+t.season_number))].join(" · ");
+  el.innerHTML=`<div class="legacy-throne reign"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">${total}</div><div class="legacy-throne-label">NATIONAL CHAMPIONSHIP${total===1?"":"S"}</div><p><b>${esc(last.coach_name)}</b> sits the throne${total>1?` — ${total} titles (${esc(years)})`:` — ${esc(last.name||"champions")}, season ${last.season_number}`}.</p><span class="legacy-throne-sub">Everybody else is chasing.</span></div>`;
+ }else if(done.length){
+  el.innerHTML=`<div class="legacy-throne empty"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">0</div><div class="legacy-throne-label">NATIONAL TITLES IN ${done.length} COMPLETED SEASON${done.length===1?"":"S"}</div><p>Conference banners hang. Bowl trophies gather dust. But across ${done.length} season${done.length===1?"":"s"} and ${nCoaches} coach${nCoaches===1?"":"es"}, <b>nobody has taken the throne</b>.</p><span class="legacy-throne-sub">Who gets there first?</span></div>`;
+ }else{
+  const act=legacyActiveSeason();
+  el.innerHTML=`<div class="legacy-throne writing"><div class="legacy-throne-crown">♛</div><div class="legacy-throne-num">1</div><div class="legacy-throne-label">SEASON UNDERWAY — HISTORY BEING WRITTEN</div><p>Every dynasty starts 0–0. The first banner${act?` of season ${act.season_number}`:""} will be the first line of this league's story.</p><span class="legacy-throne-sub">Come back after the confetti.</span></div>`;
+ }
 }
-function renderWinsChart(){
- if(typeof Chart==="undefined")return; const ctx=$("winsChart"); if(!ctx)return;
- const colors=Object.fromEntries(state.programs.filter(p=>p.coach_name).map(p=>[p.coach_name,teamColor(p.team_name)]));
- const ordered=seasons.slice().sort((a,b)=>a.season_number-b.season_number),activeIdx=ordered.findIndex(s=>s.season_id===S.season_id);
- const labels=ordered.map(s=>`S${s.season_number}`);if(activeIdx>=0)labels.splice(activeIdx+1,0,`S${S.season_number} Pace`);
- const currentIds=new Set(state.programs.map(p=>p.person_id));
- const datasets=[];
- state.career.forEach(c=>{
-  const actual=[];
-  ordered.forEach((season,i)=>{const rec=seasonRecordFor(c.person_id,season.season_number);const value=rec.games?rec.wins:(season.season_id===S.season_id&&currentIds.has(c.person_id)?0:null);actual.push(value);if(i===activeIdx)actual.push(null)});
-  const pace=Array(labels.length).fill(null),st=state.standings.find(x=>x.person_id===c.person_id);
-  if(st&&activeIdx>=0){const actualPos=activeIdx,pacePos=activeIdx+1;pace[actualPos]=Number(st.wins||0);pace[pacePos]=seasonProjection(st).projectedWins}
-  datasets.push({label:`${c.coach_name} actual`,data:actual,borderColor:colors[c.coach_name]||"#94A3B8",backgroundColor:colors[c.coach_name]||"#94A3B8",tension:.25,pointRadius:4,spanGaps:false});
-  if(st)datasets.push({label:`${c.coach_name} pace`,data:pace,borderColor:colors[c.coach_name]||"#94A3B8",borderDash:[6,5],pointRadius:3,tension:.25,spanGaps:true});
- });
- if(winsChartInstance)winsChartInstance.destroy();
- winsChartInstance=new Chart(ctx,{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8",boxWidth:10,font:{size:9}}}},scales:{x:{ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}},y:{beginAtZero:true,suggestedMax:16,ticks:{color:"#94a3b8",stepSize:2},grid:{color:"#064e3b33"}}}}})
-}
-function renderEfficiencyChart(){
- if(typeof Chart==="undefined")return;const ctx=$("efficiencyChart");if(!ctx)return;
- const colors=Object.fromEntries(state.programs.filter(p=>p.coach_name).map(p=>[p.coach_name,teamColor(p.team_name)]));
- const activeIds=new Set(state.programs.map(p=>p.person_id));
- const datasets=state.career.filter(c=>activeIds.has(c.person_id)).map(c=>({label:c.coach_name,data:[{x:Number(c.points_for||0)/Math.max(1,Number(c.games_played||0)),y:Number(c.points_against||0)/Math.max(1,Number(c.games_played||0))}],backgroundColor:colors[c.coach_name]||"#94A3B8",pointRadius:8}));
- if(efficiencyChartInstance)efficiencyChartInstance.destroy();
- efficiencyChartInstance=new Chart(ctx,{type:"scatter",data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8",font:{size:10}}}},scales:{x:{title:{display:true,text:"PPG Scored",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}},y:{reverse:true,title:{display:true,text:"PPG Allowed",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}}}}})
-}
-function renderMomentum(){
- /* Intel rework: momentum rows now live inside the Current Form pane, with logos. */
- $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div class="form-row-coach">${intelLogoHTML(r)}<div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div class="form-row-sub">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")||'<div class="intel-empty">No season data yet.</div>'
-}
-/* QA 9.8.1: image fallback chain for dead stored logo URLs. Walks the remaining
-   sources in data-sf-logo-fallback, then swaps in the initials tile. */
-window.sfLogoFallback=function(img){
- try{
-  const rest=String(img.dataset.sfLogoFallback||'').split('|').filter(Boolean);
-  if(rest.length){img.dataset.sfLogoFallback=rest.slice(1).join('|');img.src=rest[0];return}
-  const fb=document.createElement('div');fb.className='team-fallback';fb.textContent=img.dataset.sfLogoInitials||'?';
-  const plate=img.closest('.sf-team-logo-plate-v5');
-  if(plate)plate.replaceWith(fb);else img.replaceWith(fb);
- }catch(e){}
-};
-function metricCard(c,body){
- /* Intel rework: logo resolution lives in intelLogoHTML (shared with showcase + form rows). */
- const p=intelProgramFor(c);
- const team=String(p?.team_name||c.team_name||'');
- const logo=intelLogoHTML(c,team);
- return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div class="intel-team-sub">${esc(team)}</div></div></div>${body}</article>`
-}
-/* Intel rework: one logo resolver for every intelligence surface (metric cards,
-   showcase strip, form rows). QA 9.8.1 chain kept: both program lists, then
-   team_logo_url, then the known-logo resolver, with onerror fallback to initials. */
-function intelProgramFor(c){
- return (state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
-}
-function intelLogoHTML(c,team){
- const p=intelProgramFor(c);
- const t=String(team||p?.team_name||c.team_name||'');
- const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||''].filter(Boolean))];
- const alt=t?t+' logo':'team logo',fbInitials=initials(t||c.coach_name);
- return srcs.length
-  ?`<img class="team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
-  :`<div class="team-fallback">${esc(fbInitials)}</div>`;
-}
-function renderPowerPane(){
- renderMomentum();
- const rows=state.standings.map(r=>{
-  const band=currentFormBand(r);
-  return metricCard(careerFor(r.person_id),`<div class="metric-boxes"><div class="metric-box"><small>Current Form</small><b>${power(r)}</b></div><div class="metric-box"><small>Season Record</small><b>${r.wins}-${r.losses}</b></div></div><div class="intel-card-note"><span class="intel-band">${esc(band.label)}</span>${band.early?' \u00b7 EARLY SAMPLE':''} \u00b7 0\u201399.9 rating \u00b7 Not win probability</div>`)
+
+function renderLegacyTiers(){
+ const el=$("legacyTiers");if(!el)return;
+ const rows=legacyCareer();
+ if(!rows.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ el.innerHTML=rows.map((c,i)=>{
+  const gp=Number(c.games_played||0),w=Number(c.wins||0),l=Number(c.losses||0);
+  const pct=gp?(w/gp*100):0,pd=Number(c.point_differential||0);
+  const label=LEGACY_TIER_LABELS[Math.min(i,LEGACY_TIER_LABELS.length-1)];
+  const small=gp>0&&gp<20;
+  return `<article class="legacy-tier-card"><div class="legacy-tier-rank">${i+1}</div><div class="legacy-tier-main">${intelLogoHTML(c)}<div class="legacy-tier-id"><b>${esc(c.coach_name)}</b><span class="legacy-tier-label">${label}${small?' · <em>small sample</em>':""}</span></div></div><div class="legacy-tier-stats"><div><small>RECORD</small><b>${w}-${l}</b></div><div><small>WIN %</small><b>${pct.toFixed(1)}</b></div><div><small>POINT DIFF</small><b class="${pd>=0?"pos":"neg"}">${signed(pd)}</b></div><div><small>RANKED WINS</small><b>${Number(c.ranked_wins||0)}</b></div></div></article>`;
  }).join("");
- $("analyticsPower").innerHTML=rows||'<div class="intel-empty">No season data yet.</div>';
 }
-function renderEfficiencyGrid(){
- $("efficiencyGrid").innerHTML=state.career.map(c=>{
-   const gp=Math.max(1,Number(c.games_played||0)),pf=Number(c.points_for||0),pa=Number(c.points_against||0);
-   const ppg=(pf/gp).toFixed(1),papg=(pa/gp).toFixed(1),margin=((pf-pa)/gp).toFixed(1);
-   return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>PPG Scored</small><b>${ppg}</b></div><div class="metric-box"><small>PPG Allowed</small><b>${papg}</b></div></div><div class="intel-card-note" style="color:${Number(margin)>=0?"#74e4be":"#ff8080"}">${Number(margin)>=0?"+":""}${margin} average margin</div>`)
- }).join("")||'<div class="intel-empty">No career data yet.</div>';
+
+function legacyConfStreak(key){
+ const won=new Set(legacyTrophies().filter(t=>isConfTrophy(t)&&legacyCoachKey(t)===key).map(t=>Number(t.season_number)));
+ const order=legacySeasons().map(s=>Number(s.season_number));
+ let best=0,run=0,prev=null;
+ order.forEach(n=>{if(won.has(n)&&prev!==null&&n===prev+1){run++}else if(won.has(n)){run=1}else{run=0}best=Math.max(best,run);prev=n});
+ return best;
 }
-function renderIntangibles(){
- $("luckGrid").innerHTML=state.career.map(c=>{const pf=Number(c.points_for||0),pa=Number(c.points_against||0),gp=Number(c.games_played||0);const p=(pf*pf+pa*pa)?pf*pf/(pf*pf+pa*pa):.5;const ew=Math.round(p*gp),diff=Number(c.wins||0)-ew;return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>Actual Wins</small><b>${c.wins}</b></div><div class="metric-box"><small>Expected Wins</small><b>${ew}</b></div></div><div class="intel-card-note" style="color:${diff>=0?"#74e4be":"#ff8080"}">${diff>0?`+${diff} over expectation`:diff<0?`${diff} under expectation`:"Right on target"}</div>`)}).join("")||'<div class="intel-empty">No career data yet.</div>';
- $("clutchGrid").innerHTML=state.career.map(c=>{
- const q=closeGameStats(c.person_id),pct=q.total?Math.round(q.wins/q.total*100):null;
- const onePct=q.oneScore?Math.round(q.oneScoreWins/q.oneScore*100):null,otPct=q.ot?Math.round(q.otWins/q.ot*100):null;
- const grade=pct===null?"NO DATA":pct>=70?"ICE COLD":pct>=55?"CLUTCH":pct>=45?"EVEN":pct>=30?"UNDER PRESSURE":"COLD";
- return metricCard(c,`<div class="clutch-record"><div><small>Pressure Record</small><strong>${q.wins}-${q.losses}</strong></div><span class="clutch-grade">${grade}</span></div><div class="clutch-stat-grid"><div><small>Clutch Win %</small><b>${pct===null?"N/A":pct+"%"}</b></div><div><small>One-Score</small><b>${q.oneScoreWins}-${q.oneScore-q.oneScoreWins}</b><em>${onePct===null?"\u2014":onePct+"%"}</em></div><div><small>Overtime</small><b>${q.otWins}-${q.ot-q.otWins}</b><em>${otPct===null?"\u2014":otPct+"%"}</em></div></div><div class="clutch-footer"><span>${q.total} pressure game${q.total===1?"":"s"}</span><span class="${q.avgMargin>=0?"pos":"neg"}">${q.total?`${q.avgMargin>=0?"+":""}${q.avgMargin.toFixed(1)} avg margin`:"No close games yet"}</span></div>`)
-}).join("")||'<div class="intel-empty">No career data yet.</div>';
+function legacyStreakLabel(n){return n>=4?`${n}-peat`:n===3?"Three-peat":n===2?"Back-to-back":""}
+
+function renderLegacyTimeline(){
+ const el=$("legacyTimeline");if(!el)return;
+ const ss=legacySeasons(),coaches=legacyCareer();
+ if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ const head=ss.map(s=>`<th class="${s.is_active?"live":""}">S${s.season_number}${s.is_active?'<i></i>':""}</th>`).join("");
+ const body=coaches.map(c=>{
+  const key=legacyCoachKey(c),streak=legacyConfStreak(key),streakLabel=legacyStreakLabel(streak);
+  const cells=ss.map(s=>{
+   const ts=legacyTrophies().filter(t=>legacyCoachKey(t)===key&&Number(t.season_number)===Number(s.season_number));
+   if(!ts.length)return `<td><span class="legacy-cell-none">·</span></td>`;
+   const chips=ts.map(t=>{
+    const cls=isConfTrophy(t)?"conf":isBowlTrophy(t)?"bowl":isHeismanTrophy(t)?"heisman":isNattyTrophy(t)?"natty":"other";
+    const short=isConfTrophy(t)?"CONF":isBowlTrophy(t)?"BOWL":isHeismanTrophy(t)?"HEISMAN":isNattyTrophy(t)?"NATTY":"★";
+    return `<span class="legacy-chip ${cls}" title="${esc(t.name||t.type)}">${short}</span>`;
+   }).join("");
+   return `<td><div class="legacy-chips">${chips}</div></td>`;
+  }).join("");
+  return `<tr><td class="legacy-coach-cell"><div class="legacy-coach-id">${intelLogoHTML(c)}<div><b>${esc(c.coach_name)}</b>${streakLabel?`<span class="legacy-streak">${streakLabel}</span>`:""}</div></div></td>${cells}</tr>`;
+ }).join("");
+ el.innerHTML=`<div class="legacy-timeline-scroll"><table class="legacy-timeline"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table></div><div class="legacy-timeline-key"><span><i class="legacy-chip conf"></i>Conference</span><span><i class="legacy-chip bowl"></i>Bowl</span><span><i class="legacy-chip heisman"></i>Heisman</span><span><i class="legacy-chip natty"></i>National</span></div>`;
 }
-function renderAnalyticsShowcase(){
- const active=[...state.standings]; if(!active.length){$("analyticsShowcase").innerHTML="";return}
- const win=[...active].sort((a,b)=>Number(b.wins)-Number(a.wins)||Number(b.win_pct||0)-Number(a.win_pct||0))[0];
- const diff=[...active].sort((a,b)=>Number(b.point_differential)-Number(a.point_differential))[0];
- const pow=[...active].sort((a,b)=>Number(power(b))-Number(power(a)))[0];
- const hot=[...active].sort((a,b)=>{const sa=streak(a.person_id),sb=streak(b.person_id);const va=sa.startsWith("W")?Number(sa.slice(1)):0,vb=sb.startsWith("W")?Number(sb.slice(1)):0;return vb-va})[0];
- const items=[['👑 Win Leader',win,`${win.wins} Wins`,`${Number(win.win_pct||0)*100||0}% win pct`,'#19d39a'],['🛡️ Point Diff Leader',diff,signed(diff.point_differential),'Net margin','#f4c542'],['🔥 Most Dangerous',pow,power(pow),currentFormBand(pow).label,'#f4c542'],['🔥 Hottest Streak',hot,streak(hot.person_id),'Current season','#ef8b4a']];
- /* Intel rework: showcase cards get the shared logo treatment (were text-only). */
- $("analyticsShowcase").innerHTML=items.map(([label,r,val,sub,color])=>`<article class="showcase-card" style="--accent:${color}"><div class="showcase-label">${label}</div><div class="flex items-center justify-between gap-3 mt-2"><div class="showcase-coach">${intelLogoHTML(r)}<div><div class="font-teko text-xl text-white uppercase">${esc(r.coach_name)}</div><div class="text-[9px] text-slate-500">${esc(r.team_name)}</div></div></div><div class="text-right"><div class="showcase-value">${val}</div><div class="showcase-sub">${sub}</div></div></div></article>`).join('')
+
+function legacyLastSeason(key,pred){
+ let best=null;
+ legacyTrophies().forEach(t=>{if(legacyCoachKey(t)===key&&pred(t)){const n=Number(t.season_number);if(best===null||n>best)best=n}});
+ return best;
 }
-/* Intel rework: 4 panes. Market IQ removed (Vegas tab covers it); momentum folded into
-   Current Form; luck+clutch merged into Intangibles. */
-function renderAnalyticsSuite(){renderAnalyticsShowcase();renderProjectionCards();renderPowerPane();renderEfficiencyGrid();renderIntangibles();setTimeout(renderWinsChart,0)}
+function renderLegacyDroughts(){
+ const el=$("legacyDroughts");if(!el)return;
+ const coaches=legacyCareer(),act=legacyActiveSeason(),actN=act?Number(act.season_number):0;
+ if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ const nattyDone=legacyTrophies().some(isNattyTrophy);
+ const doneCount=legacySeasons().filter(s=>String(s.status)==="completed").length;
+ const droughtText=last=>last===null?"Never":actN-last===0?"Defending":`${actN-last} season${actN-last===1?"":"s"}`;
+ const rows=coaches.map(c=>{
+  const key=legacyCoachKey(c);
+  const lc=legacyLastSeason(key,isConfTrophy),lb=legacyLastSeason(key,isBowlTrophy);
+  return `<div class="legacy-drought-row"><div class="legacy-drought-coach">${intelLogoHTML(c)}<b>${esc(c.coach_name)}</b></div><div class="legacy-drought-cells"><div><small>CONF TITLE</small><b class="${lc===null?"neg":""}">${droughtText(lc)}</b></div><div><small>BOWL WIN</small><b class="${lb===null?"neg":""}">${droughtText(lb)}</b></div></div></div>`;
+ }).join("");
+ const nattyRow=nattyDone?"":`<div class="legacy-drought-row league"><div class="legacy-drought-coach"><span class="legacy-throne-mini">♛</span><b>The League</b></div><div class="legacy-drought-cells"><div><small>NATIONAL TITLE</small><b class="neg">${doneCount} season${doneCount===1?"":"s"} · still waiting</b></div></div></div>`;
+ el.innerHTML=nattyRow+rows;
+}
+
+function renderLegacyMilestones(){
+ const el=$("legacyMilestones");if(!el)return;
+ const coaches=legacyCareer();
+ if(!coaches.length){el.innerHTML='<div class="legacy-empty">No career data yet.</div>';return}
+ const hCount={};
+ legacyTrophies().forEach(t=>{if(isHeismanTrophy(t)){const k=legacyCoachKey(t);hCount[k]=(hCount[k]||0)+1}});
+ /* One card per coach: the next wins milestone they control week to week.
+    Heisman chases ride along in the card foot (season-end awards can't be
+    ranked against weekly wins by "need"). */
+ const cards=coaches.map(c=>{
+  const w=Number(c.wins||0),m=Math.ceil((w+1)/10)*10,key=legacyCoachKey(c);
+  const h=hCount[key]||0;
+  const pct=Math.min(100,Math.round(w/m*100));
+  const chase=h>0?` · ${h}× Heisman — #${h+1} within reach`:"";
+  return `<div class="legacy-ms-card"><div class="legacy-ms-head">${intelLogoHTML(c)}<div><b>${esc(c.coach_name)}</b><span>${m} career wins</span></div><em>${m-w} away</em></div><div class="legacy-ms-bar"><i style="width:${pct}%"></i></div><div class="legacy-ms-foot">${w} / ${m}${esc(chase)}</div></div>`;
+ }).join("");
+ const nattyCard=legacyTrophies().some(isNattyTrophy)?"":`<div class="legacy-ms-card league"><div class="legacy-ms-head"><span class="legacy-throne-mini">♛</span><div><b>First national title</b><span>The whole league is waiting</span></div><em>unclaimed</em></div><div class="legacy-ms-bar"><i style="width:0%"></i></div><div class="legacy-ms-foot">0 / 1 · ${legacySeasons().filter(s=>String(s.status)==="completed").length} seasons gone</div></div>`;
+ el.innerHTML=cards+nattyCard;
+}
+
+function renderLegacyPillar(){
+ renderLegacyThrone();renderLegacyTiers();renderLegacyTimeline();renderLegacyDroughts();renderLegacyMilestones();
+}
+
+/* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
+   renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
+function renderAnalyticsSuite(){renderLegacyPillar()}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
@@ -14803,82 +14786,106 @@ img.sf-logo-system-v2{
   }
 }
 </style>
-<style id="sf-intel-rework-v1">
-/* QA 9.8.1 — Intelligence tab rework: one card system, one chart pattern, one stylesheet.
-   Every selector is scoped under #analytics; later in the cascade than all prior
-   intelligence generations, so this block is the single authority for the tab. */
-#analytics .analytics-pane{display:none}
-#analytics .analytics-pane.active{display:block;animation:sfIntelIn .22s ease}
-@keyframes sfIntelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-#analytics .intelligence-pane-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:2px 0 12px}
-#analytics .intelligence-pane-head span{display:block;font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#19d39a}
-#analytics .intelligence-pane-head h3{font-family:Teko,sans-serif;font-size:30px;line-height:1;color:#fff;text-transform:uppercase;margin:2px 0 0}
-#analytics .intelligence-pane-head em{font-size:10px;color:#71858e;font-style:normal;text-align:right;max-width:42%}
-#analytics .intelligence-subhead{font-family:Teko,sans-serif;font-size:20px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 8px;display:flex;align-items:center;gap:9px}
-#analytics .intelligence-subhead:before{content:"";width:14px;height:3px;border-radius:2px;background:linear-gradient(90deg,#19d39a,#4fd1ff);flex:0 0 auto}
-#analytics .war-description{font-size:11px;color:#83959d;margin:-2px 0 10px;max-width:72ch}
-#analytics .intel-scope-inline{margin:0 0 12px}
-#analytics #analyticsTabs{display:flex;gap:6px;overflow-x:auto;padding:6px}
-#analytics #analyticsTabs button{flex:1 0 auto}
-#analytics .analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-#analytics .momentum-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#analytics .metric-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98));border:1px solid rgba(81,147,171,.28);border-radius:14px;padding:16px}
-#analytics .metric-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#19d39a,#4fd1ff);opacity:.85}
-#analytics .metric-title{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(148,163,184,.14)}
-#analytics .metric-title h4{font-family:Teko,sans-serif;font-size:24px;color:#fff;text-transform:uppercase;margin:0;line-height:1}
-#analytics .metric-title .intel-team-sub{font-size:9px;color:#71858e;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
-#analytics .metric-title .team-logo{width:36px;height:36px;object-fit:contain;flex:0 0 auto}
-#analytics .metric-title .team-fallback{width:36px;height:36px;font-size:13px;flex:0 0 auto}
-#analytics img.team-logo:not(.sf-team-identity-logo-v5){background:transparent}
-#analytics .metric-boxes{display:grid;grid-template-columns:1fr 1fr;margin-top:12px;border:1px solid rgba(148,163,184,.12);border-radius:10px;overflow:hidden}
-#analytics .metric-box{padding:10px 8px;text-align:center;background:rgba(3,12,16,.6)}
-#analytics .metric-box+.metric-box{border-left:1px solid rgba(148,163,184,.12)}
-#analytics .metric-box small{display:block;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#64748b}
-#analytics .metric-box b{display:block;font-family:Teko,sans-serif;font-size:30px;color:#fff;line-height:1.15;margin-top:2px}
-#analytics .intel-card-note{font-size:9px;color:#71858e;margin-top:10px;font-weight:700}
-#analytics .intel-band{color:#f4c542;font-weight:900;letter-spacing:.08em}
-#analytics .intel-empty{grid-column:1/-1;padding:26px;text-align:center;font-size:12px;color:#71858e;border:1px dashed rgba(148,163,184,.25);border-radius:12px}
-#analytics #clutchGrid .metric-card{border-top:2px solid rgba(239,139,74,.48)}
-#analytics .form-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(148,163,184,.11);border-radius:12px;background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97))}
-#analytics .form-row-coach{display:flex;align-items:center;gap:10px;min-width:0}
-#analytics .form-row-coach .team-logo{width:34px;height:34px;object-fit:contain;flex:0 0 auto}
-#analytics .form-row-coach .team-fallback{width:34px;height:34px;font-size:12px;flex:0 0 auto}
-#analytics .form-row-coach b{font-size:13px;color:#e8f1f4}
-#analytics .form-row-sub{font-size:11px;color:#657d86;margin-top:2px}
-#analytics .form-row>span{font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
-#analytics #analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-#analytics .showcase-card{position:relative;overflow:hidden;min-height:118px;padding:14px;border:1px solid rgba(81,147,171,.28);border-radius:14px;background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98))}
-#analytics .showcase-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,#19d39a);opacity:.9}
-#analytics .showcase-label{font-size:8px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#71858e}
-#analytics .showcase-coach{display:flex;align-items:center;gap:10px;min-width:0}
-#analytics .showcase-coach .team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 auto}
-#analytics .showcase-coach .team-fallback{width:40px;height:40px;font-size:14px;flex:0 0 auto}
-#analytics .showcase-value{font-family:Teko,sans-serif;font-size:26px;color:#fff;line-height:1}
-#analytics .showcase-sub{font-size:8px;color:#71858e;margin-top:2px}
-#analytics .chart-card{background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98));border:1px solid rgba(81,147,171,.28);border-radius:14px;padding:16px;margin-top:12px}
-#analytics .chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid rgba(148,163,184,.12)}
-#analytics .chart-head h3{font-family:Teko,sans-serif;font-size:22px;color:#fff;text-transform:uppercase;margin:0}
-#analytics .chart-head span{font-size:9px;color:#64748b;text-align:right}
-#analytics .chart-wrap{position:relative;height:340px;min-height:300px}
-#analytics .analytics-chart-meta{display:flex;justify-content:space-between;gap:8px;font-size:9px;color:#71858e;margin:10px 2px 0}
-#analytics .analytics-chart-meta strong{color:#f4c542;letter-spacing:.08em}
-#analytics .intelligence-team-key{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 0;padding:10px 12px;border:1px solid rgba(244,197,66,.25);border-radius:10px;background:rgba(244,197,66,.04)}
-#analytics .intelligence-team-key img{width:23px;height:23px;object-fit:contain;background:transparent}
-#analytics .intel-vegas-link{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin-top:16px;padding:16px 18px;border:1px solid rgba(244,197,66,.35);border-radius:14px;background:linear-gradient(120deg,rgba(244,197,66,.10),rgba(6,20,27,.96) 60%);cursor:pointer;color:#fff;font-family:inherit}
-#analytics .intel-vegas-link span{font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#f4c542;white-space:nowrap}
-#analytics .intel-vegas-link b{font-family:Teko,sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
-#analytics .intel-vegas-link em{margin-left:auto;font-size:10px;color:#83959d;font-style:normal;max-width:46%;text-align:right}
-#analytics .intel-vegas-link:hover{border-color:rgba(244,197,66,.65)}
-@media(max-width:900px){
- #analytics #analyticsShowcase{grid-template-columns:repeat(2,minmax(0,1fr))}
- #analytics .analytics-grid,#analytics .momentum-grid{grid-template-columns:1fr}
- #analytics .intel-vegas-link{flex-wrap:wrap}
- #analytics .intel-vegas-link em{margin-left:0;max-width:none;text-align:left;flex-basis:100%}
- #analytics .intelligence-pane-head em{display:none}
-}
-@media(max-width:700px){
- #analytics #analyticsShowcase{grid-template-columns:1fr}
- #analytics .chart-wrap{height:300px;min-height:260px}
+<style id="sf-dynasty-legacy-v1">
+/* QA 9.8.1 — Dynasty Insights: Legacy pillar. Scrapped the Intelligence rework.
+   Every selector is scoped under #analytics; this block is the single authority
+   for the tab. Reuses the shared logo system (intelLogoHTML). */
+#analytics .legacy-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,#0d1b1e 0%,#0a1417 60%,#0c1a12 100%);border:1px solid #1d3237;margin-bottom:14px}
+#analytics .legacy-kicker{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase;margin-bottom:6px}
+#analytics .legacy-hero h2{font-family:'Teko',sans-serif;font-size:40px;line-height:1;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+#analytics .legacy-hero p{font-size:12.5px;color:#8fa3ad;margin:0;max-width:52ch}
+#analytics .legacy-live{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;letter-spacing:.18em;color:#19d39a;white-space:nowrap;padding-top:6px}
+#analytics .legacy-live span{width:8px;height:8px;border-radius:50%;background:#19d39a;box-shadow:0 0 10px #19d39a;animation:legacyPulse 2s infinite}
+@keyframes legacyPulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+#analytics .legacy-throne{position:relative;overflow:hidden;text-align:center;padding:30px 22px 24px;border-radius:16px;margin-bottom:18px;border:1px solid #3a2f14;background:radial-gradient(ellipse at 50% -20%,#2b2310 0%,#10181b 55%,#0a1417 100%)}
+#analytics .legacy-throne.reign{border-color:#3a2f14}
+#analytics .legacy-throne.writing{border-color:#1d3237;background:radial-gradient(ellipse at 50% -20%,#14232a 0%,#0a1417 60%)}
+#analytics .legacy-throne-crown{font-size:34px;color:#f4c542;text-shadow:0 0 24px #f4c54288;margin-bottom:2px}
+#analytics .legacy-throne-num{font-family:'Teko',sans-serif;font-size:76px;line-height:1;color:#f4c542;text-shadow:0 0 34px #f4c54255}
+#analytics .legacy-throne.writing .legacy-throne-num{color:#19d39a;text-shadow:0 0 34px #19d39a55}
+#analytics .legacy-throne-label{font-size:10px;font-weight:800;letter-spacing:.24em;color:#c8b06a;margin:4px 0 12px}
+#analytics .legacy-throne p{font-size:13.5px;color:#c9d6db;max-width:56ch;margin:0 auto}
+#analytics .legacy-throne p b{color:#fff}
+#analytics .legacy-throne-sub{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
+
+#analytics .legacy-section{margin-bottom:20px}
+#analytics .legacy-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
+#analytics .legacy-section-head span{font-size:9px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase}
+#analytics .legacy-section-head h3{font-family:'Teko',sans-serif;font-size:26px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:2px 0 0}
+#analytics .legacy-section-head em{font-size:10.5px;color:#71858e;font-style:normal;text-align:right}
+
+#analytics .legacy-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+#analytics .legacy-tier-card{position:relative;background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px;overflow:hidden}
+#analytics .legacy-tier-card:first-child{border-color:#3a2f14;background:linear-gradient(160deg,#141b1e 0%,#0e181c 70%,#151207 100%)}
+#analytics .legacy-tier-rank{position:absolute;top:8px;right:12px;font-family:'Teko',sans-serif;font-size:44px;color:#ffffff12;line-height:1}
+#analytics .legacy-tier-main{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#analytics .legacy-tier-main .team-logo,#analytics .legacy-tier-main .team-fallback{width:40px;height:40px}
+#analytics .legacy-tier-id b{display:block;font-size:15px;color:#fff}
+#analytics .legacy-tier-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f4c542}
+#analytics .legacy-tier-label em{color:#71858e;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600}
+#analytics .legacy-tier-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#analytics .legacy-tier-stats small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+#analytics .legacy-tier-stats b{font-size:14px;color:#e8f1f4}
+#analytics .legacy-tier-stats b.pos{color:#74e4be}#analytics .legacy-tier-stats b.neg{color:#ff8080}
+
+#analytics .legacy-timeline-wrap{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:6px}
+#analytics .legacy-timeline-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#analytics .legacy-timeline{border-collapse:collapse;width:100%;min-width:520px}
+#analytics .legacy-timeline th,#analytics .legacy-timeline td{padding:9px 8px;text-align:center;border-bottom:1px solid #16262b;font-size:11px}
+#analytics .legacy-timeline thead th{font-size:10px;font-weight:800;letter-spacing:.14em;color:#71858e}
+#analytics .legacy-timeline thead th.live{color:#19d39a}
+#analytics .legacy-timeline thead th.live i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#19d39a;margin-left:5px;box-shadow:0 0 8px #19d39a}
+#analytics .legacy-timeline tbody tr:last-child td{border-bottom:none}
+#analytics .legacy-coach-cell{text-align:left!important;min-width:150px}
+#analytics .legacy-coach-id{display:flex;align-items:center;gap:8px}
+#analytics .legacy-coach-id .team-logo,#analytics .legacy-coach-id .team-fallback{width:30px;height:30px}
+#analytics .legacy-coach-id b{display:block;font-size:12.5px;color:#fff}
+#analytics .legacy-streak{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#0a1417;background:#f4c542;border-radius:20px;padding:2px 8px;margin-top:3px}
+#analytics .legacy-cell-none{color:#2c3f45}
+#analytics .legacy-chips{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+#analytics .legacy-chip{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.1em;border-radius:5px;padding:3px 7px;color:#0a1417}
+#analytics .legacy-chip.conf{background:linear-gradient(135deg,#f4c542,#d9a92f)}
+#analytics .legacy-chip.bowl{background:linear-gradient(135deg,#c98f4e,#a66f35);color:#fff}
+#analytics .legacy-chip.heisman{background:linear-gradient(135deg,#e8f1f4,#9fb3bd)}
+#analytics .legacy-chip.natty{background:linear-gradient(135deg,#fff2c4,#f4c542);box-shadow:0 0 12px #f4c54266}
+#analytics .legacy-chip.other{background:#3a4d54;color:#fff}
+#analytics .legacy-timeline-key{display:flex;gap:14px;flex-wrap:wrap;padding:10px 10px 6px;font-size:10px;color:#8fa3ad}
+#analytics .legacy-timeline-key span{display:flex;align-items:center;gap:6px}
+#analytics .legacy-timeline-key .legacy-chip{width:14px;height:10px;padding:0}
+
+#analytics .legacy-droughts{display:grid;gap:8px}
+#analytics .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
+#analytics .legacy-drought-row.league{border-color:#3a2f14;background:linear-gradient(120deg,#141b1e,#151207)}
+#analytics .legacy-drought-coach{display:flex;align-items:center;gap:9px}
+#analytics .legacy-drought-coach .team-logo,#analytics .legacy-drought-coach .team-fallback{width:32px;height:32px}
+#analytics .legacy-drought-coach b{font-size:13.5px;color:#fff}
+#analytics .legacy-throne-mini{font-size:22px;color:#f4c542;text-shadow:0 0 12px #f4c54266}
+#analytics .legacy-drought-cells{display:flex;gap:18px}
+#analytics .legacy-drought-cells small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+#analytics .legacy-drought-cells b{font-size:13px;color:#e8f1f4}
+#analytics .legacy-drought-cells b.neg{color:#ff9a9a}
+
+#analytics .legacy-milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+#analytics .legacy-ms-card{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px}
+#analytics .legacy-ms-card.league{border-color:#3a2f14}
+#analytics .legacy-ms-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+#analytics .legacy-ms-head .team-logo,#analytics .legacy-ms-head .team-fallback{width:32px;height:32px}
+#analytics .legacy-ms-head b{display:block;font-size:13px;color:#fff}
+#analytics .legacy-ms-head span{font-size:10.5px;color:#8fa3ad}
+#analytics .legacy-ms-head em{margin-left:auto;font-size:10px;font-weight:800;color:#f4c542;font-style:normal;white-space:nowrap}
+#analytics .legacy-ms-bar{height:7px;border-radius:4px;background:#16262b;overflow:hidden}
+#analytics .legacy-ms-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#f4c542,#ffe9a8)}
+#analytics .legacy-ms-foot{font-size:10px;color:#71858e;margin-top:7px;letter-spacing:.06em}
+
+#analytics .legacy-empty{padding:22px;text-align:center;font-size:12px;color:#71858e;background:#0e181c;border:1px dashed #1d3237;border-radius:12px}
+#analytics .legacy-footnote{text-align:center;font-size:10.5px;color:#556b74;letter-spacing:.06em;margin:6px 0 14px}
+#analytics .intel-vegas-link{margin-top:2px}
+@media(max-width:640px){
+ #analytics .legacy-hero{flex-direction:column}
+ #analytics .legacy-tier-stats{grid-template-columns:repeat(2,1fr)}
+ #analytics .legacy-drought-row{flex-direction:column;align-items:stretch}
+ #analytics .legacy-drought-cells{justify-content:space-between}
 }
 </style>
 <script id="sf-qa-9-7-8-marker">
