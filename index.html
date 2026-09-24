@@ -7789,11 +7789,16 @@ function renderLegacyPillar(){
   try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
  });
  /* QA: self-heal logos that never resolve (hung requests, blank responses).
-    Anything still pixel-less after a beat walks the fallback chain to the
-    initials tile, so a blank white box can never stick around. */
- setTimeout(()=>{try{document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
-   if(img.isConnected&&(!img.complete||img.naturalWidth===0)&&window.sfLogoFallback)window.sfLogoFallback(img);
- })}catch(e){}},3500);
+    Repeats because a single pass can catch an image mid-load on slow networks
+    and then never revisit it. Anything still pixel-less keeps walking the
+    fallback chain to the initials tile, so a blank white box can never stick. */
+ let sfHealN=0;const sfHeal=setInterval(()=>{try{
+  let pending=0;
+  document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
+   if(img.isConnected&&(!img.complete||img.naturalWidth===0)){pending++;if(window.sfLogoFallback)window.sfLogoFallback(img)}
+  });
+  if(!pending||++sfHealN>=6)clearInterval(sfHeal);
+ }catch(e){clearInterval(sfHeal)}},2500);
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
