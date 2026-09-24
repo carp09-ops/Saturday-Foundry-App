@@ -7212,10 +7212,30 @@ function renderSchedule(){
    const hasVegas=!!vegasForGame(g.id);
    const contextLabel=conferenceLabelForGame(g);
    const contextBadge=nationalBadgeFor(g);
+   // QA 9.8.0: when the kicker already shows the conference logo, "· CONFERENCE"
+   // in the status line is redundant — the logo says it.
+   const classif=gameClassification(g);
+   const classifRedundant=done&&!!contextBadge&&/^CONFERENCE$/.test(String(classif||''));
+   // QA 9.8.0: winner emphasis on the big score (neutral games only — dynasty
+   // games already color the score from the user's perspective via resultClass).
+   const pfN=Number(g.points_for),paN=Number(g.points_against);
+   const neutralScore=done&&Number.isFinite(pfN)&&Number.isFinite(paN)&&pfN!==paN&&(resultClass==='schedule-neutral-final'||!resultClass);
+   const scoreHtml=!done?"":neutralScore
+     ?`<span class="${pfN>paN?'v21-winner':'v21-dim'}">${g.points_for??""}</span><span>–</span><span class="${paN>pfN?'v21-winner':'v21-dim'}">${g.points_against??""}</span>`
+     :`${g.points_for??""}<span>–</span>${g.points_against??""}`;
+   // QA 9.8.0: slim foot — the big score already shows the final, so the
+   // repeated "FINAL x–y" label is dropped on national finals. Dynasty cards
+   // keep their W/L label; scheduled games keep "UPCOMING".
+   const streamCta=liveStreamLinkMarkup(g);
+   let actionHtml=hasVegas?`<button class="schedule-vegas-link" data-vegas-game="${g.id}">Vegas →</button> `:"";
+   if(dynastyGame&&((g.status==="scheduled"&&ownsGame(g))||isCommissioner()))actionHtml+=`<button class="edit-matchup" data-edit-game="${g.id}">Edit</button> `;
+   if(dynastyGame&&g.status==="scheduled"&&ownsGame(g))actionHtml+=`<button class="enter-result" data-result-game="${g.id}">Enter Result</button>`;
+   else if(dynastyGame||!done)actionHtml+=resultLabel;
+   const footHtml=(streamCta||actionHtml.trim())?`<div class="v21-matchup-foot"><span class="schedule-stream-slot">${streamCta}</span><span class="${resultClass} schedule-card-actions">${actionHtml}</span></div>`:"";
    return `<article class="v21-matchup-card ${g.id===featured?.id?"featured":""} ${done?"final":"upcoming"} " data-game-card="${g.id}">
      <div class="v21-matchup-top">
        <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`${contextBadge?nationalBadgeMarkup(contextBadge):`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
-       <strong>${done?`FINAL · ${gameClassification(g)}`:gameClassification(g)}</strong>
+       <strong>${done?(classifRedundant?"FINAL":`FINAL · ${classif}`):classif}</strong>
      </div>
      <div class="v21-matchup-main">
        <div>
@@ -7223,18 +7243,14 @@ function renderSchedule(){
            ${logoFor(g.team_id,g.team_name)?`<img class="v23-team-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<div class="v23-team-logo fallback v24-logo-pending" data-team-logo-name="${esc(g.team_name||"")}">🏈</div>`}
            <div class="v21-teamline">${displayRank.team?`<span class="v21-rank">#${displayRank.team}</span>`:""}${esc(g.team_name||"TBD")}</div>
          </div>
-         <div class="v21-versus">${g.home_away==="away"?"AT":"VS"}</div>
          <div class="v23-team-row opponent">
            ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="v23-team-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="">`:`<div class="v23-team-logo fallback v24-logo-pending" data-team-logo-name="${esc(g.opponent_team||"")}">🏈</div>`}
            <div class="v21-teamline opponent">${displayRank.opponent?`<span class="v21-rank">#${displayRank.opponent}</span>`:""}${esc(g.opponent_team||"TBD")}</div>
          </div>
        </div>
-       <div class="v21-score ${resultClass}">${done?`${g.points_for??""}<span>–</span>${g.points_against??""}`:""}</div>
+       <div class="v21-score ${resultClass}">${scoreHtml}</div>
      </div>
-     <div class="v21-matchup-foot">
-       <span class="schedule-stream-slot">${liveStreamLinkMarkup(g)}</span>
-       <span class="${resultClass} schedule-card-actions">${hasVegas?`<button class="schedule-vegas-link" data-vegas-game="${g.id}">Vegas →</button> `:""}${dynastyGame&&((g.status==="scheduled"&&ownsGame(g))||isCommissioner())?`<button class="edit-matchup" data-edit-game="${g.id}">Edit</button> `:""}${dynastyGame&&g.status==="scheduled"&&ownsGame(g)?`<button class="enter-result" data-result-game="${g.id}">Enter Result</button>`:resultLabel}</span>
-     </div>
+     ${footHtml}
    </article>`;
  };
  const byeCard=g=>`<article class="v21-bye-card"><span>${esc(g.coach_name||"")}</span><strong>${esc(g.team_name||"Program")}</strong><em>BYE WEEK</em></article>`;
@@ -7276,13 +7292,23 @@ function renderSchedule(){
          const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";
          const done=g.status==="completed";
          const ab=nationalBadgeFor(g);
+         const ac=gameClassification(g);
+         // QA 9.8.0: the conference logo in the kicker already says "conference".
+         const acRedundant=done&&!!ab&&/^CONFERENCE$/.test(String(ac||''));
          const resultLabel=done?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
+         // QA 9.8.0: winner emphasis on neutral finals; dynasty cards keep
+         // their user-perspective coloring via cls.
+         const apf=Number(g.points_for),apa=Number(g.points_against);
+         const archNeutral=done&&!cls&&Number.isFinite(apf)&&Number.isFinite(apa)&&apf!==apa;
+         const archScore=done?(archNeutral
+           ?`<b><span class="${apf>apa?'v21-winner':'v21-dim'}">${g.points_for??""}</span><i>–</i><span class="${apa>apf?'v21-winner':'v21-dim'}">${g.points_against??""}</span></b>`
+           :`<b>${g.points_for??""}<i>–</i>${g.points_against??""}</b>`):`<b class="upcoming">—</b>`;
          const teamLogo=logoFor(g.team_id,g.team_name);
          const oppLogo=logoFor(g.opponent_team_id,g.opponent_team);
          return `<article class="sf-archive-matchup-card ${dynastyGame?"dynasty":""}" data-game-card="${g.id}">
            <div class="sf-archive-card-top">
              <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${dynastyGame?esc(g.coach_name||"—"):(ab?nationalBadgeMarkup(ab):esc(g.coach_name||conferenceLabelForGame(g)))}</span>
-             <strong>${esc(gameClassification(g))}</strong>
+             <strong>${acRedundant?"":esc(ac)}</strong>
            </div>
            <div class="sf-archive-card-main">
              <div class="sf-archive-team-stack">
@@ -7290,15 +7316,14 @@ function renderSchedule(){
                  ${teamLogo?`<img class="sf-archive-team-logo" src="${esc(teamLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.team_name||"")}">🏈</span>`}
                  <div><small>${g.home_away==="away"?"AWAY":"HOME"}</small><b>${displayRank.team?`<span>#${displayRank.team}</span> `:""}${esc(g.team_name||"TBD")}</b></div>
                </div>
-               <div class="sf-archive-vs">${g.home_away==="away"?"AT":"VS"}</div>
                <div class="sf-archive-team-row">
                  ${oppLogo?`<img class="sf-archive-team-logo" src="${esc(oppLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.opponent_team||"")}">🏈</span>`}
                  <div><small>${g.home_away==="away"?"HOME":"AWAY"}</small><b>${displayRank.opponent?`<span>#${displayRank.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</b></div>
                </div>
              </div>
              <div class="sf-archive-score ${cls}">
-               ${done?`<b>${g.points_for??""}<i>–</i>${g.points_against??""}</b>`:`<b class="upcoming">—</b>`}
-               <span>${esc(resultLabel)}</span>
+               ${archScore}
+               ${(dynastyGame||!done)?`<span>${esc(resultLabel)}</span>`:""}
              </div>
            </div>
            <div class="sf-archive-card-foot">
@@ -13327,6 +13352,12 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-national-conf-badge .sf-event-badge{width:24px;height:24px}
   #schedule .sf-archive-card-top .sf-event-badge-wrap.sf-national-conf-badge{width:20px;height:20px}
   #schedule .sf-archive-card-top .sf-national-conf-badge .sf-event-badge{width:20px;height:20px}
+  /* QA 9.8.0 — National cards: winner emphasis on neutral finals + tighter Vegas panel. */
+  #schedule .v21-score .v21-winner{color:var(--tb-gold,#f4c542)!important}
+  #schedule .v21-score .v21-dim{color:#5d6a74!important}
+  #schedule .sf-archive-score>b .v21-winner{color:var(--tb-gold,#f4c542)!important}
+  #schedule .sf-archive-score>b .v21-dim{color:#5d6a74!important}
+  #schedule .v21-matchup-card .vegas-strip{margin-top:8px!important}
 @media(max-width:700px){
   #schedule .sf-season-game-weekrow{padding:8px 10px 0}
 }
