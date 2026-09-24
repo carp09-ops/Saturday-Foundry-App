@@ -7403,53 +7403,54 @@ async function submitSelectedResult(){
    state.career=await Data.career(D.dynasty_id);
    await loadSeason(S.season_id);
    if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
-   // Build the recap
+   // Build the recap — always show, even if data lookups fail
+   try{ $("resultModal").classList.add("hidden"); }catch(_){}
    try{
-     const updated=(state.games||[]).find(x=>String(x.id)===String(impactGameId)&&(!impactPersonId||String(x.person_id)===String(impactPersonId)))||
-                   (state.games||[]).find(x=>String(x.id)===String(impactGameId));
      const won=savedMyScore>savedOppScore;
      const myName=savedGame.team_name||"My Team", oppName=savedGame.opponent_team||"Opponent";
-     // Result
-     const recapResult=$("recapResult");
-     recapResult.textContent=won?"WIN":"LOSS";
-     recapResult.className="recap-result "+(won?"win":"loss");
-     $("recapSubtitle").textContent=`Week ${savedGame.week_number} · ${myName} ${savedGame.home_away==="away"?"at":"vs"} ${oppName}`;
-     // Score
-     $("recapScore").innerHTML=`
-       <div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${savedMyScore}</span></div>
-       <div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${savedOppScore}</span></div>`;
-     // Stats
-     let recordStr="—", streakStr="—", atsStr="—", atsClass="";
-     if(updated?.person_id){
-       const rr=recFor(updated.person_id); if(rr) recordStr=`${rr.wins}-${rr.losses}`;
-       const finished=(state.games||[]).filter(x=>String(x.person_id)===String(updated.person_id)&&x.status==="completed"&&!x.is_bye)
-         .sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
-       if(finished.length){
-         const last=finished.at(-1)?.result; let n=0;
-         for(let i=finished.length-1;i>=0;i--){if(finished[i].result!==last)break;n++}
-         if(last==="W"||last==="L") streakStr=`${last}${n}`;
+     try{
+       const recapResult=$("recapResult");
+       recapResult.textContent=won?"WIN":"LOSS";
+       recapResult.className="recap-result "+(won?"win":"loss");
+       $("recapSubtitle").textContent=`Week ${savedGame.week_number} · ${myName} ${savedGame.home_away==="away"?"at":"vs"} ${oppName}`;
+     }catch(_){}
+     try{
+       $("recapScore").innerHTML=
+         `<div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${savedMyScore}</span></div>`+
+         `<div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${savedOppScore}</span></div>`;
+     }catch(_){}
+     try{
+       let recordStr="—", streakStr="—", atsStr="—", atsClass="";
+       const updated=(state.games||[]).find(x=>String(x.id)===String(impactGameId));
+       if(updated?.person_id){
+         try{ const rr=recFor(updated.person_id); if(rr) recordStr=`${rr.wins}-${rr.losses}`; }catch(_){}
+         try{
+           const finished=(state.games||[]).filter(x=>String(x.person_id)===String(updated.person_id)&&x.status==="completed"&&!x.is_bye)
+             .sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
+           if(finished.length){
+             const last=finished.at(-1)?.result; let n=0;
+             for(let i=finished.length-1;i>=0;i--){if(finished[i].result!==last)break;n++}
+             if(last==="W"||last==="L") streakStr=`${last}${n}`;
+           }
+         }catch(_){}
+         try{
+           const vr=vegasForGame(impactGameId), vp=vr?vegasPerspective(vr,updated):null;
+           if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
+             const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
+             if(graded>0){atsStr=`Cover ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="good";}
+             else if(graded<0){atsStr=`Miss ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="bad";}
+             else{atsStr="Push";}
+           }
+         }catch(_){}
        }
-       const vr=vegasForGame(impactGameId), vp=vr?vegasPerspective(vr,updated):null;
-       if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
-         const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
-         if(graded>0){atsStr=`Cover ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="good";}
-         else if(graded<0){atsStr=`Miss ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="bad";}
-         else{atsStr="Push";}
-       }
-     }
-     $("recapStats").innerHTML=`
-       <div><span>RECORD</span><b>${recordStr}</b></div>
-       <div><span>STREAK</span><b>${streakStr}</b></div>
-       <div><span>VS SPREAD</span><b class="${atsClass}">${atsStr}</b></div>`;
-     // Hide storyline for now (can be added later)
-     $("recapStoryline").classList.add("hidden");
-     // Show recap, hide entry
-     $("resultModal").classList.add("hidden");
-     $("resultRecapModal").classList.remove("hidden");
-   }catch(_){
-     msg($("resultMessage"),"Final saved.","success");
-     setTimeout(closeResultModal,650);
-   }
+       $("recapStats").innerHTML=
+         `<div><span>RECORD</span><b>${recordStr}</b></div>`+
+         `<div><span>STREAK</span><b>${streakStr}</b></div>`+
+         `<div><span>VS SPREAD</span><b class="${atsClass}">${atsStr}</b></div>`;
+     }catch(_){}
+     try{ $("recapStoryline").classList.add("hidden"); }catch(_){}
+   }catch(err){ console.error("[recap] failed:",err); }
+   try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){}
  }catch(e){msg($("resultMessage"),e.message,"error")}
  finally{$("submitResultBtn").disabled=false}
 }
