@@ -7676,6 +7676,30 @@ function closeGameStats(person){
  const margin=q.reduce((n,g)=>n+(Number(g.points_for)-Number(g.points_against)),0);
  return {total:q.length,wins,losses,oneScore:oneScore.length,oneScoreWins,ot:ot.length,otWins,avgMargin:q.length?margin/q.length:0}
 }
+/* Restored from the Intelligence rework (QA 9.8.1): the shared logo chain.
+   Dynasty Insights Legacy reuses it; the definitions were dropped when the
+   rework was scrapped, which crashed the pillar render. */
+window.sfLogoFallback=function(img){
+ try{
+  const rest=String(img.dataset.sfLogoFallback||'').split('|').filter(Boolean);
+  if(rest.length){img.dataset.sfLogoFallback=rest.slice(1).join('|');img.src=rest[0];return}
+  const fb=document.createElement('div');fb.className='team-fallback';fb.textContent=img.dataset.sfLogoInitials||'?';
+  const plate=img.closest('.sf-team-logo-plate-v5');
+  if(plate)plate.replaceWith(fb);else img.replaceWith(fb);
+ }catch(e){}
+};
+function intelProgramFor(c){
+ return (state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
+}
+function intelLogoHTML(c,team){
+ const p=intelProgramFor(c);
+ const t=String(team||p?.team_name||c.team_name||'');
+ const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||''].filter(Boolean))];
+ const alt=t?t+' logo':'team logo',fbInitials=initials(t||c.coach_name);
+ return srcs.length
+  ?`<img class="team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
+  :`<div class="team-fallback">${esc(fbInitials)}</div>`;
+}
 /* Dynasty Insights — Legacy pillar (QA 9.8.1).
    Replaces the Intelligence rework. Reads the same per-dynasty state the app
    already loads (state.career, state.trophies, seasons): no new fetching. */
@@ -7794,7 +7818,10 @@ function renderLegacyMilestones(){
 }
 
 function renderLegacyPillar(){
- renderLegacyThrone();renderLegacyTiers();renderLegacyTimeline();renderLegacyDroughts();renderLegacyMilestones();
+ /* One bad section must not blank the others. */
+ [["legacyThrone",renderLegacyThrone],["legacyTiers",renderLegacyTiers],["legacyTimeline",renderLegacyTimeline],["legacyDroughts",renderLegacyDroughts],["legacyMilestones",renderLegacyMilestones]].forEach(([id,fn])=>{
+  try{fn()}catch(e){const el=$(id);if(el)el.innerHTML='<div class="legacy-empty">Could not load this section.</div>';console.warn("Legacy section failed:",id,e)}
+ });
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
