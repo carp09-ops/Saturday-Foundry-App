@@ -13367,6 +13367,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
        game even when only one side's conference is known (CPU opponents often carry none).
        Every My Schedule game involves the user's team, so the known side's conference is correct. */
     const flagConf=g?.is_conference_game===true&&type!=='non_conference';
+    /* Non-conference games never get a conference badge — driven by game_type, not conference inference. */
+    if(type==='non_conference'||type==='non-conference')return null;
     if(type!=='conference'&&type!=='conference_championship'&&!flagConf){
       /* QA 9.8.0: regular-season games between two teams of the same conference earn that conference's badge. */
       const a2=sfGameConferenceV3(g,'team'),b2=sfGameConferenceV3(g,'opponent');
