@@ -1,0 +1,39 @@
+# Codemagic build for the Saturday Foundry iOS app (Capacitor wrapper).
+# Branch: ios-app. One click: Start new build -> ios-testflight.
+# Requires the App Store Connect API key integration in Codemagic
+# (automatic code signing + TestFlight upload).
+workflows:
+  ios-testflight:
+    name: iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      vars:
+        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+        BUNDLE_ID: com.saturdayfoundry.app
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm install
+      - name: Sync Capacitor iOS
+        script: npx cap sync ios
+      - name: Install CocoaPods
+        script: |
+          cd ios/App
+          pod install
+      - name: Fetch signing files
+        script: |
+          xcode-project use-profiles --workspace "$XCODE_WORKSPACE"
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
