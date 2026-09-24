@@ -9246,7 +9246,10 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 #hqMobileNav{display:none}
 @media(max-width:700px){
   body.v19-signed-in{padding-bottom:calc(68px + var(--hq-safe-bottom))!important}
-  #hqMobileNav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:8px;right:8px;bottom:calc(7px + var(--hq-safe-bottom));z-index:2147481000;min-height:56px;border:1px solid rgba(244,197,66,.18);border-radius:14px;background:rgba(2,9,11,.965);backdrop-filter:blur(16px);box-shadow:0 16px 42px rgba(0,0,0,.55);overflow:hidden}
+  /* iOS Safari bug: position:fixed + backdrop-filter positions the nav relative to
+     its container instead of the viewport (renders mid-page on iPhone). The bg is
+     already 96.5% opaque, so the blur was invisible — drop it, keep the solid bg. */
+  #hqMobileNav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:8px;right:8px;bottom:calc(7px + var(--hq-safe-bottom));z-index:2147481000;min-height:56px;border:1px solid rgba(244,197,66,.18);border-radius:14px;background:rgba(2,9,11,.965);box-shadow:0 16px 42px rgba(0,0,0,.55);overflow:hidden}
   body:not(.v19-signed-in) #hqMobileNav{display:none!important}
   #hqMobileNav button{min-width:0;display:grid;place-items:center;align-content:center;gap:3px;padding:7px 3px;background:transparent;border:0;color:#758991;font-size:7px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
   #hqMobileNav button .mn-icon{font-size:16px;line-height:1;color:#8da0a8}
