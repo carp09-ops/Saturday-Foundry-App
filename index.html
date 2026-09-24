@@ -7255,6 +7255,33 @@ function renderSchedule(){
  };
  const byeCard=g=>`<article class="v21-bye-card"><span>${esc(g.coach_name||"")}</span><strong>${esc(g.team_name||"Program")}</strong><em>BYE WEEK</em></article>`;
  const groupTitle=(label,context=false)=>`<div class="schedule-group-title ${context?"context":""}">${esc(label)}</div>`;
+ /* QA 9.8.0 — CFP bracket: auto-detected from playoff weeks (each playoff week =
+    one round; national championship = final round). Rendered only on the
+    unfiltered National board, and only once postseason games exist. */
+ const cfpBracketHtml=()=>{
+   if(scheduleTeamPersonId||scheduleConference!=='__all__')return '';
+   const cfpType=g=>String(g?.game_type||'').toLowerCase();
+   const post=allSeasonGames.filter(g=>!g?.is_bye&&(cfpType(g)==='playoff'||cfpType(g)==='national_championship'));
+   if(!post.length)return '';
+   const natty=post.filter(g=>cfpType(g)==='national_championship');
+   const rounds=[...new Set(post.filter(g=>cfpType(g)==='playoff').map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
+     .map(w=>post.filter(g=>cfpType(g)==='playoff'&&Number(g.week_number||0)===w));
+   if(natty.length)rounds.push(natty);
+   if(!rounds.length)return '';
+   const n=rounds.length;
+   const early=n===4?['First Round','Quarterfinals','Semifinals']:n===3?['Quarterfinals','Semifinals']:n===2?['Semifinals']:rounds.slice(0,n-1).map((_,i)=>`Round ${i+1}`);
+   const labels=[...early,natty.length?'National Championship':'Final'];
+   const cfpTeamRow=(name,rank,logo,score,cls)=>`<div class="sf-cfp-team${cls==='v21-winner'?' sf-cfp-winner':''}">${logo?`<img class="sf-cfp-logo" src="${esc(logo)}" alt="">`:`<span class="sf-cfp-logo sf-cfp-logo-fallback">🏈</span>`}<span class="sf-cfp-name">${rank?`<b class="sf-cfp-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-cfp-score ${cls}">${score}</span></div>`;
+   const cfpGameCard=g=>{
+     const done=g.status==='completed';
+     const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
+     const pf=Number(g.points_for),pa=Number(g.points_against);
+     const decided=done&&Number.isFinite(pf)&&Number.isFinite(pa)&&pf!==pa;
+     const label=g.event_label||g.bowl_name||g.event_name||'';
+     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head"><span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
+   };
+   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div>${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(cfpGameCard).join('')}</div></div>`).join('')}</section>`;
+ };
  let currentHtml='';
  if(scheduleConference==="__all__"){
    const dynastyPlayable=playable.filter(isDynastyScheduleGame);
@@ -7270,7 +7297,7 @@ function renderSchedule(){
    if(contextPlayable.length) currentHtml+=groupTitle(`${scheduleConference} Games`,dynastyPlayable.length>0)+contextPlayable.map(gameCard).join('');
  }
  if(!currentHtml) currentHtml=`<div class="empty schedule-scope-empty">No stored games for ${scheduleConference==="__all__"?"this week":esc(scheduleConference)+" in this week"} yet. As the database fills, they will appear here automatically.</div>`;
- $("weekCards").innerHTML=`<div class="v21-playable-grid">${currentHtml}</div>${byeGames.length?`<div class="v21-bye-row">${byeGames.map(byeCard).join("")}</div>`:""}`;
+ $("weekCards").innerHTML=`${cfpBracketHtml()}<div class="v21-playable-grid">${currentHtml}</div>${byeGames.length?`<div class="v21-bye-row">${byeGames.map(byeCard).join("")}</div>`:""}`;
  decorateGameCardsWithVegas();
 
  const groups=weeks.map(w=>{
@@ -13355,6 +13382,29 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   /* QA 9.8.0 — National board: soft white glow lifts dark conference/event marks off
      the dark card (glow-only, no plate), matching the team-logo glow convention. */
   #schedule .sf-national-conf-badge .sf-event-badge{filter:drop-shadow(0 0 2px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,255,255,.35))!important}
+  /* QA 9.8.0 — CFP bracket: postseason overview atop the National board. */
+  #schedule .sf-cfp-bracket{margin:0 0 18px}
+  #schedule .sf-cfp-bracket-head{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px;flex-wrap:wrap}
+  #schedule .sf-cfp-bracket-kicker{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
+  #schedule .sf-cfp-bracket-head h3{margin:0;font-size:20px;font-weight:800;letter-spacing:.01em;color:#f2f6f7}
+  #schedule .sf-cfp-round{margin-bottom:14px}
+  #schedule .sf-cfp-round>h4{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fa0ab}
+  #schedule .sf-cfp-matchups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #schedule .sf-cfp-game{border:1px solid rgba(244,197,66,.22);border-radius:14px;background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(2,11,15,.98));padding:10px 14px}
+  #schedule .sf-cfp-game-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+  #schedule .sf-cfp-game-head span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8fa0ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap}
+  #schedule .sf-cfp-game-head strong.sf-cfp-final{color:#f4c542}
+  #schedule .sf-cfp-team{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:5px 0}
+  #schedule .sf-cfp-logo{width:30px;height:30px;object-fit:contain}
+  #schedule .sf-cfp-logo-fallback{display:grid;place-items:center;font-size:18px}
+  #schedule .sf-cfp-name{font-size:15px;font-weight:700;color:#dfe7ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #schedule .sf-cfp-team.sf-cfp-winner .sf-cfp-name{color:#fff}
+  #schedule .sf-cfp-rank{color:#f4c542;margin-right:6px;font-size:13px}
+  #schedule .sf-cfp-score{font-size:17px;font-weight:800;color:#c7d2d8;min-width:34px;text-align:right}
+  #schedule .sf-cfp-score.v21-winner{color:#f4c542!important}
+  #schedule .sf-cfp-score.v21-dim{color:#5d6a74!important}
+  @media(max-width:820px){#schedule .sf-cfp-matchups{grid-template-columns:1fr}}
   /* QA 9.8.0 — National cards: winner emphasis on neutral finals + tighter Vegas panel. */
   #schedule .v21-score .v21-winner{color:var(--tb-gold,#f4c542)!important}
   #schedule .v21-score .v21-dim{color:#5d6a74!important}
