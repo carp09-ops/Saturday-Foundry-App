@@ -6860,16 +6860,16 @@ function sfGameConference(g,side){
  return String(p?.conference||p?.team_conference||"");
 }
 const SF_CONFERENCE_LOGOS={
-  "acc":"https://commons.wikimedia.org/wiki/Special:FilePath/Atlantic%20Coast%20Conference%20logo.svg",
-  "american":"https://commons.wikimedia.org/wiki/Special:FilePath/American%20Athletic%20Conference%20logo.svg",
-  "big-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%2012%20Conference%20%28cropped%29%20logo.svg",
-  "big-ten":"https://commons.wikimedia.org/wiki/Special:FilePath/Big%20Ten%20Conference%20logo%20%282012%29.svg",
-  "cusa":"https://commons.wikimedia.org/wiki/Special:FilePath/CUSA%20logo.svg",
-  "mac":"https://commons.wikimedia.org/wiki/Special:FilePath/Mid-American%20Conference%20logo.svg",
-  "mountain-west":"https://commons.wikimedia.org/wiki/Special:FilePath/Mountain%20West%20Conference%20logo.svg",
-  "pac-12":"https://commons.wikimedia.org/wiki/Special:FilePath/Pac-12%202026%20Logo.svg",
-  "sec":"https://commons.wikimedia.org/wiki/Special:FilePath/Southeastern%20Conference%20logo%20%282024%29.svg",
-  "sun-belt":"https://commons.wikimedia.org/wiki/Special:FilePath/Sun%20Belt%20Conference%202020%20logo%20and%20name.svg"
+  "acc":"https://upload.wikimedia.org/wikipedia/commons/c/c7/Atlantic_Coast_Conference_logo.svg",
+  "american":"https://upload.wikimedia.org/wikipedia/commons/7/79/American_Athletic_Conference_logo.svg",
+  "big-12":"https://upload.wikimedia.org/wikipedia/commons/2/29/Big_12_Conference_%28cropped%29_logo.svg",
+  "big-ten":"https://upload.wikimedia.org/wikipedia/commons/3/39/Big_Ten_Conference_logo.svg",
+  "cusa":"https://upload.wikimedia.org/wikipedia/commons/3/38/CUSA_logo.svg",
+  "mac":"https://upload.wikimedia.org/wikipedia/commons/a/a1/Mid-American_Conference_logo.svg",
+  "mountain-west":"assets/event-badges/mountain-west.svg",
+  "pac-12":"assets/event-badges/pac-12.svg",
+  "sec":"https://upload.wikimedia.org/wikipedia/commons/e/e1/Southeastern_Conference_logo_%282024%29.svg",
+  "sun-belt":"https://upload.wikimedia.org/wikipedia/commons/f/f9/Sun_Belt_Conference_2020_logo_and_name.svg"
 };
 function sfEventBadgeInfo(g){
  const type=String(g?.game_type||"regular_season").toLowerCase();
@@ -6886,7 +6886,10 @@ function sfEventBadgeInfo(g){
 }
 function sfEventBadgeMarkup(g,cls=""){
  const info=sfEventBadgeInfo(g);if(!info)return "";
- return `<span class="sf-event-badge-wrap ${cls}" title="${esc(info.label)}"><img class="sf-event-badge" src="${esc(info.src)}" alt="${esc(info.label)} badge" loading="lazy" onerror="this.closest('.sf-event-badge-wrap')?.remove()"></span>`;
+ const fallback=typeof sfConferenceBadgeKey==='function'
+   ? `assets/event-badges/${sfConferenceBadgeKey(info.label.replace(/ Championship$/,''))}.svg`
+   : "";
+ return `<span class="sf-event-badge-wrap ${cls}" title="${esc(info.label)}"><img class="sf-event-badge" src="${esc(info.src)}" data-fallback-src="${esc(fallback)}" alt="${esc(info.label)} badge" loading="eager" referrerpolicy="no-referrer" onerror="if(this.dataset.fallbackSrc&&this.src.indexOf(this.dataset.fallbackSrc)===-1){this.src=this.dataset.fallbackSrc}else{this.style.display='none'}"></span>`;
 }
 function formatCoachKickoff(v){
  if(!v)return "";
@@ -14778,3 +14781,63 @@ img.sf-logo-system-v2{
   color:#f4c542!important;
 }
 </style>
+
+<style id="sf-global-user-team-glow-v1">
+/* Global user-controlled team identity: glow only, never a gold box/plate. */
+.sf-user-team-glow-global,
+.sf-user-team-glow-global img{
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+img.sf-user-team-glow-global,
+.sf-user-team-glow-global>img,
+.sf-user-team-logo{
+  filter:
+    drop-shadow(0 0 2px rgba(244,197,66,.95))
+    drop-shadow(0 0 7px rgba(244,197,66,.58))
+    drop-shadow(0 0 14px rgba(244,197,66,.28))!important;
+}
+.sf-user-team-glow-shell{
+  background:transparent!important;
+  border-color:transparent!important;
+  outline:0!important;
+  box-shadow:none!important;
+}
+</style>
+<script id="sf-global-user-team-glow-decorator-v1">
+(function(){
+  const shellSelectors='.sf-team-logo-plate-v5,.team-logo-wrap,.team-logo-frame,.logo-frame,.team-badge,.user-team-logo-wrap,.dynasty-team-logo';
+  function norm(v){return String(v||'').trim().toLowerCase();}
+  function ownedPrograms(){
+    const rows=(window.state?.programs||[]).filter(p=>p&&p.person_id);
+    return rows.map(p=>({
+      name:norm(p.team_name),
+      logo:String(p.logo_url||p.team_logo_url||'')
+    })).filter(x=>x.name||x.logo);
+  }
+  function decorate(){
+    const owned=ownedPrograms(); if(!owned.length)return;
+    document.querySelectorAll('img').forEach(img=>{
+      const alt=norm(img.alt);
+      const src=String(img.currentSrc||img.src||'');
+      const hit=owned.some(o=>(o.logo&&src===o.logo)||(o.name&&alt.includes(o.name)));
+      if(!hit)return;
+      img.classList.add('sf-user-team-glow-global');
+      const shell=img.closest(shellSelectors);
+      if(shell) shell.classList.add('sf-user-team-glow-shell');
+    });
+    document.querySelectorAll('.sf-user-team-logo,.sf-user-team-logo-fallback').forEach(el=>{
+      el.classList.add('sf-user-team-glow-global');
+      const shell=el.closest(shellSelectors);
+      if(shell) shell.classList.add('sf-user-team-glow-shell');
+    });
+  }
+  let queued=false;
+  function queue(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;decorate();});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',decorate,{once:true});else decorate();
+  window.addEventListener('pageshow',decorate);
+  new MutationObserver(queue).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','class']});
+})();
+</script>
