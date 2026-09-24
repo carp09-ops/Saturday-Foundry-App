@@ -7146,10 +7146,10 @@ function renderSchedule(){
      if(gt==='bowl')return{src:'assets/event-badges/bowl.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'Bowl Game')};
      if(gt==='cfp'||gt==='playoff'){
        const champ=/championship/i.test(String(g?.event_label||g?.bowl_name||g?.event_name||''));
-       return champ?{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')}
-                   :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||'College Football Playoff')};
+       return champ?{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'National Championship')}
+                   :{src:'assets/event-badges/cfp.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'College Football Playoff')};
      }
-     if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||'National Championship')};
+     if(gt==='national_championship')return{src:'assets/event-badges/national-championship.svg',label:String(g?.event_label||g?.bowl_name||g?.event_name||'National Championship')};
      /* Regular-season and explicit conference games: badge when both sides share one mapped conference. */
      const cs=conferencesForGame(g);
      const shared=(cs.length&&cs.every(c=>String(c).toLowerCase()===String(cs[0]).toLowerCase()))?cs[0]:'';
@@ -7262,26 +7262,33 @@ function renderSchedule(){
  const cfpBracketHtml=()=>{
    if(scheduleTeamPersonId||scheduleConference!=='__all__')return '';
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
-   const post=allSeasonGames.filter(g=>!g?.is_bye&&(cfpType(g)==='playoff'||cfpType(g)==='national_championship'));
+   /* QA 9.8.1: accept 'cfp' as well as 'playoff' so AI-imported postseason games
+      always land in the bracket regardless of which synonym was stored. */
+   const isCfpGame=t=>t==='playoff'||t==='cfp';
+   const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
    if(!post.length)return '';
    const natty=post.filter(g=>cfpType(g)==='national_championship');
-   const rounds=[...new Set(post.filter(g=>cfpType(g)==='playoff').map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
-     .map(w=>post.filter(g=>cfpType(g)==='playoff'&&Number(g.week_number||0)===w));
+   const rounds=[...new Set(post.filter(g=>isCfpGame(cfpType(g))).map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
+     .map(w=>post.filter(g=>isCfpGame(cfpType(g))&&Number(g.week_number||0)===w));
    if(natty.length)rounds.push(natty);
    if(!rounds.length)return '';
    const n=rounds.length;
    const early=n===4?['First Round','Quarterfinals','Semifinals']:n===3?['Quarterfinals','Semifinals']:n===2?['Semifinals']:rounds.slice(0,n-1).map((_,i)=>`Round ${i+1}`);
    const labels=[...early,natty.length?'National Championship':'Final'];
    const cfpTeamRow=(name,rank,logo,score,cls)=>`<div class="sf-cfp-team${cls==='v21-winner'?' sf-cfp-winner':''}">${logo?`<img class="sf-cfp-logo" src="${esc(logo)}" alt="">`:`<span class="sf-cfp-logo sf-cfp-logo-fallback">🏈</span>`}<span class="sf-cfp-name">${rank?`<b class="sf-cfp-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-cfp-score ${cls}">${score}</span></div>`;
-   const cfpGameCard=g=>{
+   const cfpGameCard=(g,roundLabel)=>{
      const done=g.status==='completed';
      const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
      const pf=Number(g.points_for),pa=Number(g.points_against);
      const decided=done&&Number.isFinite(pf)&&Number.isFinite(pa)&&pf!==pa;
-     const label=g.event_label||g.bowl_name||g.event_name||'';
-     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head"><span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
+     /* QA 9.8.1: bracket cards show the playoff/natty badge, and the head falls back
+        to the round label so AI-imported games without an event name still read well. */
+     const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
+     const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
+     const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
+     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
-   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div>${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(cfpGameCard).join('')}</div></div>`).join('')}</section>`;
+   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div>${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[i])).join('')}</div></div>`).join('')}</section>`;
  };
  let currentHtml='';
  if(scheduleConference==="__all__"){
@@ -10958,7 +10965,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -10991,7 +10998,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11658,7 +11665,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.7.9";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.0";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12573,7 +12580,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';
   }
   function boot(){
     build();
@@ -12583,7 +12590,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.7.9';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.0';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12990,7 +12997,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.9';
+    if(m)m.textContent='PROD 9.8.0';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -13220,8 +13227,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   }
   function sfEventBadgeInfoV3(g){
     const type=String(g?.game_type||'regular_season').toLowerCase();
-    if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:'National Championship'};
-    if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:'College Football Playoff'};
+    if(type==='national_championship')return {src:'assets/event-badges/national-championship.svg',label:g?.event_name||'National Championship'};
+    if(type==='playoff')return {src:'assets/event-badges/cfp.svg',label:g?.event_name||'College Football Playoff'};
     if(type==='bowl')return {src:'assets/event-badges/bowl.svg',label:g?.event_name||'Bowl Game'};
     /* QA 9.8.0: an "Auto" regular-season game flagged as a conference game is a conference
        game even when only one side's conference is known (CPU opponents often carry none).
@@ -13400,8 +13407,10 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-game{border:1px solid rgba(244,197,66,.22);border-radius:14px;background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(2,11,15,.98));padding:10px 14px}
   #schedule .sf-cfp-game-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
   #schedule .sf-cfp-game-head span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8fa0ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap}
+  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap;margin-left:auto}
   #schedule .sf-cfp-game-head strong.sf-cfp-final{color:#f4c542}
+  /* QA 9.8.1: playoff/natty badge on bracket cards — glow-only, matches the badge treatment. */
+  #schedule .sf-cfp-badge{width:22px;height:22px;object-fit:contain;flex:none;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
   #schedule .sf-cfp-team{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:5px 0}
   #schedule .sf-cfp-logo{width:30px;height:30px;object-fit:contain}
   #schedule .sf-cfp-logo-fallback{display:grid;place-items:center;font-size:18px}
@@ -14757,7 +14766,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.7.9';
+    if(m)m.textContent='PROD 9.8.0';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14767,7 +14776,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.7.9';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
