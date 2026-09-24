@@ -5443,17 +5443,9 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <div class="analytics-tabs intelligence-tabs" id="analyticsTabs">
         <button class="active" data-pane="trajectory">📈 Win Pace</button>
         <button data-pane="efficiency">🎯 Efficiency</button>
-        <button data-pane="momentum">⚡ <span id="analyticsSeasonLabel">Season</span> Form</button>
         <button data-pane="powerpane">🔥 Current Form</button>
-        <button data-pane="luck">🍀 Luck</button>
-        <button data-pane="clutch">🔥 Clutch</button>
-        <button data-pane="marketiq">📊 Market IQ</button>
+        <button data-pane="intangibles">🎲 Luck &amp; Clutch</button>
       </div>
-    </div>
-
-    <div class="analytics-scope intelligence-scope">
-      <b>WAR ROOM SCOPE:</b>
-      Current Form answers “Who’s dangerous now?” using this season’s record and scoring margin. It is a 0–99.9 performance rating, not a win probability. Efficiency, Luck and Clutch provide separate context.
     </div>
 
     <div id="trajectory" class="analytics-pane active">
@@ -5477,35 +5469,33 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <div class="analytics-grid" id="efficiencyGrid"></div>
     </div>
 
-    <div id="momentum" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Current Form</span><h3>Season Momentum</h3></div><em>Active season only</em></div>
+    <div id="powerpane" class="analytics-pane">
+      <div class="intelligence-pane-head"><div><span>Who’s Dangerous Now?</span><h3>Current Form</h3></div><em>Season performance · Not win probability</em></div>
+      <div class="analytics-scope intelligence-scope intel-scope-inline">
+        <b>WAR ROOM SCOPE:</b>
+        Current Form answers “Who’s dangerous now?” using this season’s record and scoring margin. It is a 0–99.9 performance rating, not a win probability.
+      </div>
+      <div class="analytics-grid" id="analyticsPower"></div>
+      <div class="intelligence-subhead">Season Momentum</div>
       <div id="momentumList" class="momentum-grid"></div>
     </div>
 
-    <div id="powerpane" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Who’s Dangerous Now?</span><h3>Current Form Rating</h3></div><em>Season performance · Not win probability</em></div>
-      <div class="analytics-grid" id="analyticsPower"></div>
-    </div>
-
-    <div id="luck" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Expectation Model</span><h3>Luck Rating</h3></div><em>Actual wins vs expected wins</em></div>
+    <div id="intangibles" class="analytics-pane">
+      <div class="intelligence-pane-head"><div><span>Expectation &amp; Pressure</span><h3>Luck &amp; Clutch</h3></div><em>Fortune and nerve, quantified</em></div>
+      <div class="intelligence-subhead">Luck Rating</div>
       <div class="war-description">Pythagorean expectation compares actual career wins to expected wins from points scored and allowed.</div>
       <div class="analytics-grid" id="luckGrid"></div>
-    </div>
-
-    <div id="clutch" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Pressure Performance</span><h3>Clutch Index</h3></div><em>One-score games + overtime</em></div>
+      <div class="intelligence-subhead">Clutch Index</div>
       <div class="war-description">Career pressure résumé: W/L record, win rate, one-score performance, overtime results and average margin in games decided by ≤7 points or overtime.</div>
       <div class="analytics-grid" id="clutchGrid"></div>
     </div>
-
-    <div id="marketiq" class="analytics-pane">
-      <div class="intelligence-pane-head"><div><span>Expectation vs Reality</span><h3>Market IQ</h3></div><em>Dynasty Vegas advanced analytics</em></div>
-      <div class="war-description">How each coach performs relative to the pregame Dynasty Vegas expectation — including favorite/underdog splits, cover rate, average Vegas Differential, upset profile and scoring-market tendencies.</div>
-      <div id="marketIqCards" class="market-iq-grid"></div>
-      <div id="marketIqTable" class="market-iq-table"></div>
-    </div>
   </section>
+
+  <button class="intel-vegas-link" id="intelVegasLink">
+    <span>Dynasty Vegas</span>
+    <b>Full betting analytics →</b>
+    <em>ATS kings, cover rates, upsets and every tracked line live in the Vegas studio.</em>
+  </button>
 </section>
 
 <section id="vegas" class="view">
@@ -6261,7 +6251,9 @@ function renderVegas(failed=false){
 
 $("vegasStudioNav")?.addEventListener("click",e=>{const b=e.target.closest("button[data-vegas-pane]");if(!b)return;document.querySelectorAll("#vegasStudioNav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#vegas .vegas-studio-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.vegasPane));if(b.dataset.vegasPane==='vegasHistoryPane'){populateVegasHistoryFilters();filterVegasHistory()}});["vegasHistorySeason","vegasHistoryCoach","vegasHistoryResult"].forEach(id=>$(id)?.addEventListener("change",filterVegasHistory));
 $("nav").onclick=e=>{const b=e.target.closest("button[data-view]");if(b){switchView(b.dataset.view);if(b.dataset.view==="analytics")renderAnalyticsSuite();if(["vegas","trophies","records","analytics","storylines","rivalries"].includes(b.dataset.view))ensureVegasLegacy();if(b.dataset.view==="vegas")renderVegas();if(b.dataset.view==="storylines")renderStorylines();if(b.dataset.view==="rivalries")renderRivalries();if(b.dataset.view==="overview")renderHQCommand();if(b.dataset.view==="recap")renderSeasonRecap();const header=$("siteHeader"),toggle=$("mobileMenuToggle");if(header){header.classList.remove("mobile-open");if(toggle){toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}}}};
-$("analyticsTabs").onclick=e=>{const b=e.target.closest("button[data-pane]");if(!b)return;document.querySelectorAll("#analyticsTabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#analytics .analytics-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.pane));if(b.dataset.pane==="trajectory")setTimeout(renderWinsChart,0);if(b.dataset.pane==="efficiency")setTimeout(renderEfficiencyChart,0);if(b.dataset.pane==="marketiq"){renderMarketIq();ensureVegasLegacy()}};
+/* Intel rework: each pane re-renders its content on switch (charts need a visible canvas). */
+$("analyticsTabs").onclick=e=>{const b=e.target.closest("button[data-pane]");if(!b)return;document.querySelectorAll("#analyticsTabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#analytics .analytics-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.pane));if(b.dataset.pane==="trajectory"){renderProjectionCards();setTimeout(renderWinsChart,0)}if(b.dataset.pane==="efficiency"){renderEfficiencyGrid();setTimeout(renderEfficiencyChart,0)}if(b.dataset.pane==="powerpane")renderPowerPane();if(b.dataset.pane==="intangibles")renderIntangibles()};
+$("intelVegasLink")?.addEventListener("click",()=>{switchView("vegas");ensureVegasLegacy();renderVegas()});
 
 function logoFor(team){
  const stored=state.programs.find(p=>String(p.team_name).toLowerCase()===String(team||"").toLowerCase())?.logo_url||"";
@@ -7752,7 +7744,8 @@ function renderEfficiencyChart(){
  efficiencyChartInstance=new Chart(ctx,{type:"scatter",data:{datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8",font:{size:10}}}},scales:{x:{title:{display:true,text:"PPG Scored",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}},y:{reverse:true,title:{display:true,text:"PPG Allowed",color:"#94a3b8"},ticks:{color:"#94a3b8"},grid:{color:"#064e3b33"}}}}})
 }
 function renderMomentum(){
- $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div style="font-size:12px;color:#657d86">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")
+ /* Intel rework: momentum rows now live inside the Current Form pane, with logos. */
+ $("momentumList").innerHTML=state.standings.map(r=>`<div class="form-row"><div class="form-row-coach">${intelLogoHTML(r)}<div><b>${esc(r.coach_name)} · ${esc(r.team_name)}</b><div class="form-row-sub">${r.wins}-${r.losses} · ${signed(r.point_differential)} PD</div></div></div><span>Streak</span><b class="${streak(r.person_id).startsWith("W")?"pos":"neg"}">${streak(r.person_id)}</b></div>`).join("")||'<div class="intel-empty">No season data yet.</div>'
 }
 /* QA 9.8.1: image fallback chain for dead stored logo URLs. Walks the remaining
    sources in data-sf-logo-fallback, then swaps in the initials tile. */
@@ -7766,33 +7759,50 @@ window.sfLogoFallback=function(img){
  }catch(e){}
 };
 function metricCard(c,body){
- /* QA 9.8.1: resolve the logo like the rest of the app — check both program lists
-    (String-compared ids), then team_logo_url, then the known-logo resolver.
-    Sources are chained with an onerror fallback: a dead stored URL falls through
-    to the next source, then to initials — no more white broken-image boxes. */
- const p=(state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
+ /* Intel rework: logo resolution lives in intelLogoHTML (shared with showcase + form rows). */
+ const p=intelProgramFor(c);
  const team=String(p?.team_name||c.team_name||'');
- const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(team&&window.CDHQLogoResolver?.knownLogo?.(team))||''].filter(Boolean))];
- const alt=team?team+' logo':'team logo',fbInitials=initials(team||c.coach_name);
- const logo=srcs.length
+ const logo=intelLogoHTML(c,team);
+ return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div class="intel-team-sub">${esc(team)}</div></div></div>${body}</article>`
+}
+/* Intel rework: one logo resolver for every intelligence surface (metric cards,
+   showcase strip, form rows). QA 9.8.1 chain kept: both program lists, then
+   team_logo_url, then the known-logo resolver, with onerror fallback to initials. */
+function intelProgramFor(c){
+ return (state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
+}
+function intelLogoHTML(c,team){
+ const p=intelProgramFor(c);
+ const t=String(team||p?.team_name||c.team_name||'');
+ const srcs=[...new Set([p?.logo_url,p?.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||''].filter(Boolean))];
+ const alt=t?t+' logo':'team logo',fbInitials=initials(t||c.coach_name);
+ return srcs.length
   ?`<img class="team-logo" src="${esc(srcs[0])}" alt="${esc(alt)}" data-sf-logo-initials="${esc(fbInitials)}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join('|'))}"`:''} onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`
   :`<div class="team-fallback">${esc(fbInitials)}</div>`;
- return `<article class="metric-card"><div class="metric-title">${logo}<div><h4>${esc(c.coach_name)}</h4><div style="font-size:8px;color:#71858e">${esc(team)}</div></div></div>${body}</article>`
 }
-function renderAnalyticsCards(){
- $("analyticsPower").innerHTML=state.standings.map(r=>metricCard(careerFor(r.person_id),`<div class="metric-boxes"><div class="metric-box"><small>Current Form</small><b>${power(r)}</b></div><div class="metric-box"><small>Season PD</small><b class="${Number(r.point_differential)>=0?"pos":"neg"}">${signed(r.point_differential)}</b></div></div><div style="font-size:8px;color:#71858e;margin-top:8px">Season W% + scoring margin · 0–99.9 rating · Not win probability${currentFormBand(r).early?" · EARLY SAMPLE":""}</div>`)).join("");
+function renderPowerPane(){
+ renderMomentum();
+ const rows=state.standings.map(r=>{
+  const band=currentFormBand(r);
+  return metricCard(careerFor(r.person_id),`<div class="metric-boxes"><div class="metric-box"><small>Current Form</small><b>${power(r)}</b></div><div class="metric-box"><small>Season Record</small><b>${r.wins}-${r.losses}</b></div></div><div class="intel-card-note"><span class="intel-band">${esc(band.label)}</span>${band.early?' \u00b7 EARLY SAMPLE':''} \u00b7 0\u201399.9 rating \u00b7 Not win probability</div>`)
+ }).join("");
+ $("analyticsPower").innerHTML=rows||'<div class="intel-empty">No season data yet.</div>';
+}
+function renderEfficiencyGrid(){
  $("efficiencyGrid").innerHTML=state.career.map(c=>{
    const gp=Math.max(1,Number(c.games_played||0)),pf=Number(c.points_for||0),pa=Number(c.points_against||0);
    const ppg=(pf/gp).toFixed(1),papg=(pa/gp).toFixed(1),margin=((pf-pa)/gp).toFixed(1);
-   return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>PPG Scored</small><b>${ppg}</b></div><div class="metric-box"><small>PPG Allowed</small><b>${papg}</b></div></div><div style="font-size:9px;color:${Number(margin)>=0?"#74e4be":"#ff8080"};margin-top:8px;font-weight:850">${Number(margin)>=0?"+":""}${margin} average margin</div>`)
- }).join("");
- $("luckGrid").innerHTML=state.career.map(c=>{const pf=Number(c.points_for||0),pa=Number(c.points_against||0),gp=Number(c.games_played||0);const p=(pf*pf+pa*pa)?pf*pf/(pf*pf+pa*pa):.5;const ew=Math.round(p*gp),diff=Number(c.wins||0)-ew;return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>Actual Wins</small><b>${c.wins}</b></div><div class="metric-box"><small>Expected Wins</small><b>${ew}</b></div></div><div style="font-size:9px;color:${diff>=0?"#74e4be":"#ff8080"};margin-top:8px;font-weight:850">${diff>0?`+${diff} over expectation`:diff<0?`${diff} under expectation`:"Right on target"}</div>`)}).join("");
+   return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>PPG Scored</small><b>${ppg}</b></div><div class="metric-box"><small>PPG Allowed</small><b>${papg}</b></div></div><div class="intel-card-note" style="color:${Number(margin)>=0?"#74e4be":"#ff8080"}">${Number(margin)>=0?"+":""}${margin} average margin</div>`)
+ }).join("")||'<div class="intel-empty">No career data yet.</div>';
+}
+function renderIntangibles(){
+ $("luckGrid").innerHTML=state.career.map(c=>{const pf=Number(c.points_for||0),pa=Number(c.points_against||0),gp=Number(c.games_played||0);const p=(pf*pf+pa*pa)?pf*pf/(pf*pf+pa*pa):.5;const ew=Math.round(p*gp),diff=Number(c.wins||0)-ew;return metricCard(c,`<div class="metric-boxes"><div class="metric-box"><small>Actual Wins</small><b>${c.wins}</b></div><div class="metric-box"><small>Expected Wins</small><b>${ew}</b></div></div><div class="intel-card-note" style="color:${diff>=0?"#74e4be":"#ff8080"}">${diff>0?`+${diff} over expectation`:diff<0?`${diff} under expectation`:"Right on target"}</div>`)}).join("")||'<div class="intel-empty">No career data yet.</div>';
  $("clutchGrid").innerHTML=state.career.map(c=>{
  const q=closeGameStats(c.person_id),pct=q.total?Math.round(q.wins/q.total*100):null;
  const onePct=q.oneScore?Math.round(q.oneScoreWins/q.oneScore*100):null,otPct=q.ot?Math.round(q.otWins/q.ot*100):null;
  const grade=pct===null?"NO DATA":pct>=70?"ICE COLD":pct>=55?"CLUTCH":pct>=45?"EVEN":pct>=30?"UNDER PRESSURE":"COLD";
- return metricCard(c,`<div class="clutch-record"><div><small>Pressure Record</small><strong>${q.wins}-${q.losses}</strong></div><span class="clutch-grade">${grade}</span></div><div class="clutch-stat-grid"><div><small>Clutch Win %</small><b>${pct===null?"N/A":pct+"%"}</b></div><div><small>One-Score</small><b>${q.oneScoreWins}-${q.oneScore-q.oneScoreWins}</b><em>${onePct===null?"—":onePct+"%"}</em></div><div><small>Overtime</small><b>${q.otWins}-${q.ot-q.otWins}</b><em>${otPct===null?"—":otPct+"%"}</em></div></div><div class="clutch-footer"><span>${q.total} pressure game${q.total===1?"":"s"}</span><span class="${q.avgMargin>=0?"pos":"neg"}">${q.total?`${q.avgMargin>=0?"+":""}${q.avgMargin.toFixed(1)} avg margin`:"No close games yet"}</span></div>`)
-}).join("")
+ return metricCard(c,`<div class="clutch-record"><div><small>Pressure Record</small><strong>${q.wins}-${q.losses}</strong></div><span class="clutch-grade">${grade}</span></div><div class="clutch-stat-grid"><div><small>Clutch Win %</small><b>${pct===null?"N/A":pct+"%"}</b></div><div><small>One-Score</small><b>${q.oneScoreWins}-${q.oneScore-q.oneScoreWins}</b><em>${onePct===null?"\u2014":onePct+"%"}</em></div><div><small>Overtime</small><b>${q.otWins}-${q.ot-q.otWins}</b><em>${otPct===null?"\u2014":otPct+"%"}</em></div></div><div class="clutch-footer"><span>${q.total} pressure game${q.total===1?"":"s"}</span><span class="${q.avgMargin>=0?"pos":"neg"}">${q.total?`${q.avgMargin>=0?"+":""}${q.avgMargin.toFixed(1)} avg margin`:"No close games yet"}</span></div>`)
+}).join("")||'<div class="intel-empty">No career data yet.</div>';
 }
 function renderAnalyticsShowcase(){
  const active=[...state.standings]; if(!active.length){$("analyticsShowcase").innerHTML="";return}
@@ -7801,9 +7811,12 @@ function renderAnalyticsShowcase(){
  const pow=[...active].sort((a,b)=>Number(power(b))-Number(power(a)))[0];
  const hot=[...active].sort((a,b)=>{const sa=streak(a.person_id),sb=streak(b.person_id);const va=sa.startsWith("W")?Number(sa.slice(1)):0,vb=sb.startsWith("W")?Number(sb.slice(1)):0;return vb-va})[0];
  const items=[['👑 Win Leader',win,`${win.wins} Wins`,`${Number(win.win_pct||0)*100||0}% win pct`,'#19d39a'],['🛡️ Point Diff Leader',diff,signed(diff.point_differential),'Net margin','#f4c542'],['🔥 Most Dangerous',pow,power(pow),currentFormBand(pow).label,'#f4c542'],['🔥 Hottest Streak',hot,streak(hot.person_id),'Current season','#ef8b4a']];
- $("analyticsShowcase").innerHTML=items.map(([label,r,val,sub,color])=>`<article class="showcase-card" style="--accent:${color}"><div class="showcase-label">${label}</div><div class="flex items-center justify-between gap-3 mt-2"><div><div class="font-teko text-xl text-white uppercase">${esc(r.coach_name)}</div><div class="text-[9px] text-slate-500">${esc(r.team_name)}</div></div><div class="text-right"><div class="showcase-value">${val}</div><div class="showcase-sub">${sub}</div></div></div></article>`).join('')
+ /* Intel rework: showcase cards get the shared logo treatment (were text-only). */
+ $("analyticsShowcase").innerHTML=items.map(([label,r,val,sub,color])=>`<article class="showcase-card" style="--accent:${color}"><div class="showcase-label">${label}</div><div class="flex items-center justify-between gap-3 mt-2"><div class="showcase-coach">${intelLogoHTML(r)}<div><div class="font-teko text-xl text-white uppercase">${esc(r.coach_name)}</div><div class="text-[9px] text-slate-500">${esc(r.team_name)}</div></div></div><div class="text-right"><div class="showcase-value">${val}</div><div class="showcase-sub">${sub}</div></div></div></article>`).join('')
 }
-function renderAnalyticsSuite(){const asl=$("analyticsSeasonLabel");if(asl)asl.textContent=`Season ${S?.season_number||""}`;renderAnalyticsShowcase();renderProjectionCards();renderMomentum();renderAnalyticsCards();renderMarketIq();setTimeout(renderWinsChart,0)}
+/* Intel rework: 4 panes. Market IQ removed (Vegas tab covers it); momentum folded into
+   Current Form; luck+clutch merged into Intangibles. */
+function renderAnalyticsSuite(){renderAnalyticsShowcase();renderProjectionCards();renderPowerPane();renderEfficiencyGrid();renderIntangibles();setTimeout(renderWinsChart,0)}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
@@ -9069,7 +9082,7 @@ body{background:#020405!important}
  });
 
  // v5.2: legacy monochrome icon overwrite removed.
- const analyticsIcons={trajectory:'↗',efficiency:'◎',momentum:'ϟ',powerpane:'◆',luck:'◇',clutch:'★'};
+ const analyticsIcons={trajectory:'↗',efficiency:'◎',powerpane:'◆',intangibles:'✦'};
  document.querySelectorAll('#analyticsTabs button[data-pane]').forEach(btn=>{
    const pane=btn.dataset.pane, text=btn.textContent.replace(/^[^\w]+/,'').trim();
    btn.textContent=`${analyticsIcons[pane]||'◆'} ${text}`;
@@ -14788,6 +14801,84 @@ img.sf-logo-system-v2{
   #overview #gotw .gotw-matchup .team-side.right .team-name{
     font-size:clamp(24px,2.2vw,32px)!important;
   }
+}
+</style>
+<style id="sf-intel-rework-v1">
+/* QA 9.8.1 — Intelligence tab rework: one card system, one chart pattern, one stylesheet.
+   Every selector is scoped under #analytics; later in the cascade than all prior
+   intelligence generations, so this block is the single authority for the tab. */
+#analytics .analytics-pane{display:none}
+#analytics .analytics-pane.active{display:block;animation:sfIntelIn .22s ease}
+@keyframes sfIntelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+#analytics .intelligence-pane-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:2px 0 12px}
+#analytics .intelligence-pane-head span{display:block;font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#19d39a}
+#analytics .intelligence-pane-head h3{font-family:Teko,sans-serif;font-size:30px;line-height:1;color:#fff;text-transform:uppercase;margin:2px 0 0}
+#analytics .intelligence-pane-head em{font-size:10px;color:#71858e;font-style:normal;text-align:right;max-width:42%}
+#analytics .intelligence-subhead{font-family:Teko,sans-serif;font-size:20px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:20px 0 8px;display:flex;align-items:center;gap:9px}
+#analytics .intelligence-subhead:before{content:"";width:14px;height:3px;border-radius:2px;background:linear-gradient(90deg,#19d39a,#4fd1ff);flex:0 0 auto}
+#analytics .war-description{font-size:11px;color:#83959d;margin:-2px 0 10px;max-width:72ch}
+#analytics .intel-scope-inline{margin:0 0 12px}
+#analytics #analyticsTabs{display:flex;gap:6px;overflow-x:auto;padding:6px}
+#analytics #analyticsTabs button{flex:1 0 auto}
+#analytics .analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#analytics .momentum-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#analytics .metric-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98));border:1px solid rgba(81,147,171,.28);border-radius:14px;padding:16px}
+#analytics .metric-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#19d39a,#4fd1ff);opacity:.85}
+#analytics .metric-title{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(148,163,184,.14)}
+#analytics .metric-title h4{font-family:Teko,sans-serif;font-size:24px;color:#fff;text-transform:uppercase;margin:0;line-height:1}
+#analytics .metric-title .intel-team-sub{font-size:9px;color:#71858e;letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+#analytics .metric-title .team-logo{width:36px;height:36px;object-fit:contain;flex:0 0 auto}
+#analytics .metric-title .team-fallback{width:36px;height:36px;font-size:13px;flex:0 0 auto}
+#analytics img.team-logo:not(.sf-team-identity-logo-v5){background:transparent}
+#analytics .metric-boxes{display:grid;grid-template-columns:1fr 1fr;margin-top:12px;border:1px solid rgba(148,163,184,.12);border-radius:10px;overflow:hidden}
+#analytics .metric-box{padding:10px 8px;text-align:center;background:rgba(3,12,16,.6)}
+#analytics .metric-box+.metric-box{border-left:1px solid rgba(148,163,184,.12)}
+#analytics .metric-box small{display:block;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#64748b}
+#analytics .metric-box b{display:block;font-family:Teko,sans-serif;font-size:30px;color:#fff;line-height:1.15;margin-top:2px}
+#analytics .intel-card-note{font-size:9px;color:#71858e;margin-top:10px;font-weight:700}
+#analytics .intel-band{color:#f4c542;font-weight:900;letter-spacing:.08em}
+#analytics .intel-empty{grid-column:1/-1;padding:26px;text-align:center;font-size:12px;color:#71858e;border:1px dashed rgba(148,163,184,.25);border-radius:12px}
+#analytics #clutchGrid .metric-card{border-top:2px solid rgba(239,139,74,.48)}
+#analytics .form-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(148,163,184,.11);border-radius:12px;background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97))}
+#analytics .form-row-coach{display:flex;align-items:center;gap:10px;min-width:0}
+#analytics .form-row-coach .team-logo{width:34px;height:34px;object-fit:contain;flex:0 0 auto}
+#analytics .form-row-coach .team-fallback{width:34px;height:34px;font-size:12px;flex:0 0 auto}
+#analytics .form-row-coach b{font-size:13px;color:#e8f1f4}
+#analytics .form-row-sub{font-size:11px;color:#657d86;margin-top:2px}
+#analytics .form-row>span{font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
+#analytics #analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+#analytics .showcase-card{position:relative;overflow:hidden;min-height:118px;padding:14px;border:1px solid rgba(81,147,171,.28);border-radius:14px;background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98))}
+#analytics .showcase-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,#19d39a);opacity:.9}
+#analytics .showcase-label{font-size:8px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#71858e}
+#analytics .showcase-coach{display:flex;align-items:center;gap:10px;min-width:0}
+#analytics .showcase-coach .team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 auto}
+#analytics .showcase-coach .team-fallback{width:40px;height:40px;font-size:14px;flex:0 0 auto}
+#analytics .showcase-value{font-family:Teko,sans-serif;font-size:26px;color:#fff;line-height:1}
+#analytics .showcase-sub{font-size:8px;color:#71858e;margin-top:2px}
+#analytics .chart-card{background:linear-gradient(145deg,rgba(6,20,27,.96),rgba(2,9,13,.98));border:1px solid rgba(81,147,171,.28);border-radius:14px;padding:16px;margin-top:12px}
+#analytics .chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid rgba(148,163,184,.12)}
+#analytics .chart-head h3{font-family:Teko,sans-serif;font-size:22px;color:#fff;text-transform:uppercase;margin:0}
+#analytics .chart-head span{font-size:9px;color:#64748b;text-align:right}
+#analytics .chart-wrap{position:relative;height:340px;min-height:300px}
+#analytics .analytics-chart-meta{display:flex;justify-content:space-between;gap:8px;font-size:9px;color:#71858e;margin:10px 2px 0}
+#analytics .analytics-chart-meta strong{color:#f4c542;letter-spacing:.08em}
+#analytics .intelligence-team-key{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 0;padding:10px 12px;border:1px solid rgba(244,197,66,.25);border-radius:10px;background:rgba(244,197,66,.04)}
+#analytics .intelligence-team-key img{width:23px;height:23px;object-fit:contain;background:transparent}
+#analytics .intel-vegas-link{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin-top:16px;padding:16px 18px;border:1px solid rgba(244,197,66,.35);border-radius:14px;background:linear-gradient(120deg,rgba(244,197,66,.10),rgba(6,20,27,.96) 60%);cursor:pointer;color:#fff;font-family:inherit}
+#analytics .intel-vegas-link span{font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#f4c542;white-space:nowrap}
+#analytics .intel-vegas-link b{font-family:Teko,sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+#analytics .intel-vegas-link em{margin-left:auto;font-size:10px;color:#83959d;font-style:normal;max-width:46%;text-align:right}
+#analytics .intel-vegas-link:hover{border-color:rgba(244,197,66,.65)}
+@media(max-width:900px){
+ #analytics #analyticsShowcase{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #analytics .analytics-grid,#analytics .momentum-grid{grid-template-columns:1fr}
+ #analytics .intel-vegas-link{flex-wrap:wrap}
+ #analytics .intel-vegas-link em{margin-left:0;max-width:none;text-align:left;flex-basis:100%}
+ #analytics .intelligence-pane-head em{display:none}
+}
+@media(max-width:700px){
+ #analytics #analyticsShowcase{grid-template-columns:1fr}
+ #analytics .chart-wrap{height:300px;min-height:260px}
 }
 </style>
 <script id="sf-qa-9-7-8-marker">
