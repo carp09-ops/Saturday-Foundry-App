@@ -14,6 +14,10 @@ workflows:
         BUNDLE_ID: com.saturdayfoundry.app
       xcode: latest
       cocoapods: default
+    # Name this integration exactly "saturday-foundry" when you add it in
+    # Codemagic (Team settings -> Integrations -> App Store Connect).
+    integrations:
+      app_store_connect: saturday-foundry
     scripts:
       - name: Install dependencies
         script: npm install
@@ -34,9 +38,8 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
-      # Uses the App Store Connect API key from environment variables
-      # (set these in Codemagic: APP_STORE_CONNECT_ISSUER_ID,
-      # APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY).
+      # Uploads the IPA to App Store Connect and submits to TestFlight.
+      # Requires the "saturday-foundry" App Store Connect integration above.
       app_store_connect:
-        auth: api_key
+        auth: integration
         submit_to_testflight: true
