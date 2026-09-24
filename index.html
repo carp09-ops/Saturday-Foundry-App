@@ -7388,40 +7388,27 @@ function openResultModal(gameId){
  $("resultModal").classList.remove("hidden");
 }
 function closeResultModal(){selectedGame=null;$("submitResultBtn").textContent="Save Final Result";$("resultModal").classList.add("hidden")}
-async function submitSelectedResult(){
- if(!selectedGame)return;
- const myScore=Number($("myScore").value),oppScore=Number($("oppScore").value);
- if(!Number.isInteger(myScore)||!Number.isInteger(oppScore)||myScore<0||oppScore<0){msg($("resultMessage"),"Enter both final scores.","error");return}
- if(myScore===oppScore){msg($("resultMessage"),"College football games cannot end in a tie.","error");return}
- const myRank=$("myRank").value?Number($("myRank").value):null,oppRank=$("oppRank").value?Number($("oppRank").value):null;
- if((myRank!==null&&(!Number.isInteger(myRank)||myRank<1||myRank>25))||(oppRank!==null&&(!Number.isInteger(oppRank)||oppRank<1||oppRank>25))){msg($("resultMessage"),"Rankings must be whole numbers from 1–25.","error");return}
- try{
-   $("submitResultBtn").disabled=true;msg($("resultMessage"),"Saving final result…");
-   await Data.submitResult(selectedGame.id,{myScore,oppScore,myRank,oppRank,overtime:$("resultOT").checked,network:null,eventName:$("resultEvent").value.trim()||null});
-   const impactGameId=selectedGame.id, impactPersonId=selectedGame.person_id;
-   const savedMyScore=myScore, savedOppScore=oppScore, savedGame={...selectedGame};
-   state.career=await Data.career(D.dynasty_id);
-   await loadSeason(S.season_id);
-   if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
-   // Build the recap — always show, even if data lookups fail
-   try{ $("resultModal").classList.add("hidden"); }catch(_){}
+function showScoreRecap(gameId,myScore,oppScore,gameSnap){
+   // Shared post-save recap: always shows, stat sections degrade gracefully
+   const gid=gameId, snap=gameSnap||{};
    try{
-     const won=savedMyScore>savedOppScore;
-     const myName=savedGame.team_name||"My Team", oppName=savedGame.opponent_team||"Opponent";
+     const won=Number(myScore)>Number(oppScore);
+     const myName=snap.team_name||"My Team", oppName=snap.opponent_team||"Opponent";
+     const wk=snap.week_number, ha=snap.home_away;
      try{
        const recapResult=$("recapResult");
        recapResult.textContent=won?"WIN":"LOSS";
        recapResult.className="recap-result "+(won?"win":"loss");
-       $("recapSubtitle").textContent=`Week ${savedGame.week_number} · ${myName} ${savedGame.home_away==="away"?"at":"vs"} ${oppName}`;
+       $("recapSubtitle").textContent=`Week ${wk} · ${myName} ${ha==="away"?"at":"vs"} ${oppName}`;
      }catch(_){}
      try{
        $("recapScore").innerHTML=
-         `<div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${savedMyScore}</span></div>`+
-         `<div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${savedOppScore}</span></div>`;
+         `<div class="recap-team ${won?"winner":""}"><span class="recap-team-name">${esc(myName)}</span><span class="recap-team-score">${myScore}</span></div>`+
+         `<div class="recap-team ${!won?"winner":""}"><span class="recap-team-name">${esc(oppName)}</span><span class="recap-team-score">${oppScore}</span></div>`;
      }catch(_){}
      try{
        let recordStr="—", streakStr="—", atsStr="—", atsClass="";
-       const updated=(state.games||[]).find(x=>String(x.id)===String(impactGameId));
+       const updated=(state.games||[]).find(x=>String(x.id)===String(gid));
        if(updated?.person_id){
          try{ const rr=recFor(updated.person_id); if(rr) recordStr=`${rr.wins}-${rr.losses}`; }catch(_){}
          try{
@@ -7434,7 +7421,7 @@ async function submitSelectedResult(){
            }
          }catch(_){}
          try{
-           const vr=vegasForGame(impactGameId), vp=vr?vegasPerspective(vr,updated):null;
+           const vr=vegasForGame(gid), vp=vr?vegasPerspective(vr,updated):null;
            if(vp?.teamSpread!=null&&updated.points_for!=null&&updated.points_against!=null){
              const graded=Number(updated.points_for)-Number(updated.points_against)+Number(vp.teamSpread);
              if(graded>0){atsStr=`Cover ${vp.teamSpread>0?"+":""}${vp.teamSpread}`;atsClass="good";}
@@ -7451,6 +7438,25 @@ async function submitSelectedResult(){
      try{ $("recapStoryline").classList.add("hidden"); }catch(_){}
    }catch(err){ console.error("[recap] failed:",err); }
    try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){}
+}
+async function submitSelectedResult(){
+ if(!selectedGame)return;
+ const myScore=Number($("myScore").value),oppScore=Number($("oppScore").value);
+ if(!Number.isInteger(myScore)||!Number.isInteger(oppScore)||myScore<0||oppScore<0){msg($("resultMessage"),"Enter both final scores.","error");return}
+ if(myScore===oppScore){msg($("resultMessage"),"College football games cannot end in a tie.","error");return}
+ const myRank=$("myRank").value?Number($("myRank").value):null,oppRank=$("oppRank").value?Number($("oppRank").value):null;
+ if((myRank!==null&&(!Number.isInteger(myRank)||myRank<1||myRank>25))||(oppRank!==null&&(!Number.isInteger(oppRank)||oppRank<1||oppRank>25))){msg($("resultMessage"),"Rankings must be whole numbers from 1–25.","error");return}
+ try{
+   $("submitResultBtn").disabled=true;msg($("resultMessage"),"Saving final result…");
+   await Data.submitResult(selectedGame.id,{myScore,oppScore,myRank,oppRank,overtime:$("resultOT").checked,network:null,eventName:$("resultEvent").value.trim()||null});
+   const impactGameId=selectedGame.id, impactPersonId=selectedGame.person_id;
+   const savedMyScore=myScore, savedOppScore=oppScore, savedGame={...selectedGame};
+   state.career=await Data.career(D.dynasty_id);
+   await loadSeason(S.season_id);
+   if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
+   // Build the recap via shared function
+   try{ $("resultModal").classList.add("hidden"); }catch(_){}
+   showScoreRecap(impactGameId,savedMyScore,savedOppScore,savedGame);
  }catch(e){msg($("resultMessage"),e.message,"error")}
  finally{$("submitResultBtn").disabled=false}
 }
@@ -8818,7 +8824,8 @@ window.renderSchedule = window.renderSchedule || function(){
    const ed=latestEdit(g.id);$('gameEditTitle').textContent=`Edit Week ${g.week_number} Game`;$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Any dynasty member can correct this record.`;$('gameEditAudit').textContent=ed?`Previously edited by ${ed.edited_by_name||'a dynasty member'} on ${fmtEditTime(ed.edited_at)}. Your save will create a new audit entry.`:'No prior edits logged. Your save will record your identity, timestamp, and before/after values.';$('gameEditMessage').textContent='';$('gameEditMessage').className='game-edit-message';$('gameEditModal').classList.remove('hidden');
  };
  function closeEditor(){$('gameEditModal').classList.add('hidden');editingGameRecord=null}
- async function saveEditor(){if(!editingGameRecord)return;const hS=$('geHomeScore').value,aS=$('geAwayScore').value;const bothBlank=hS===''&&aS==='';if((hS==='')!==(aS==='')){$('gameEditMessage').textContent='Enter both scores or leave both blank.';$('gameEditMessage').className='game-edit-message error';return}const homeScore=bothBlank?null:Number(hS),awayScore=bothBlank?null:Number(aS);if(!bothBlank&&(homeScore<0||awayScore<0||homeScore===awayScore)){$('gameEditMessage').textContent='Enter valid non-tied final scores.';$('gameEditMessage').className='game-edit-message error';return}const payload={p_game_id:editingGameRecord.id,p_week_number:Number($('geWeek').value),p_home_team_id:$('geHomeTeam').value,p_away_team_id:$('geAwayTeam').value,p_home_score:homeScore,p_away_score:awayScore,p_home_rank:$('geHomeRank').value?Number($('geHomeRank').value):null,p_away_rank:$('geAwayRank').value?Number($('geAwayRank').value):null,p_overtime:$('geOT').checked,p_event_name:$('geEvent').value.trim()||null,p_network:null,p_kickoff_time:$('geKickoff').value?new Date($('geKickoff').value).toISOString():null,p_game_type:$('geType').value};const btn=$('gameEditSave');try{btn.disabled=true;$('gameEditMessage').textContent='Saving audited edit…';await Data.editGame(payload);$('gameEditMessage').textContent='Saved. Edit logged.';$('gameEditMessage').className='game-edit-message success';await loadSeason(S.season_id);renderGotw();setTimeout(closeEditor,350)}catch(e){$('gameEditMessage').textContent=e.message||String(e);$('gameEditMessage').className='game-edit-message error'}finally{btn.disabled=false}}
+ async function saveEditor(){if(!editingGameRecord)return;const hS=$('geHomeScore').value,aS=$('geAwayScore').value;const bothBlank=hS===''&&aS==='';if((hS==='')!==(aS==='')){$('gameEditMessage').textContent='Enter both scores or leave both blank.';$('gameEditMessage').className='game-edit-message error';return}const homeScore=bothBlank?null:Number(hS),awayScore=bothBlank?null:Number(aS);if(!bothBlank&&(homeScore<0||awayScore<0||homeScore===awayScore)){$('gameEditMessage').textContent='Enter valid non-tied final scores.';$('gameEditMessage').className='game-edit-message error';return}const payload={p_game_id:editingGameRecord.id,p_week_number:Number($('geWeek').value),p_home_team_id:$('geHomeTeam').value,p_away_team_id:$('geAwayTeam').value,p_home_score:homeScore,p_away_score:awayScore,p_home_rank:$('geHomeRank').value?Number($('geHomeRank').value):null,p_away_rank:$('geAwayRank').value?Number($('geAwayRank').value):null,p_overtime:$('geOT').checked,p_event_name:$('geEvent').value.trim()||null,p_network:null,p_kickoff_time:$('geKickoff').value?new Date($('geKickoff').value).toISOString():null,p_game_type:$('geType').value};const btn=$('gameEditSave');try{btn.disabled=true;$('gameEditMessage').textContent='Saving audited edit…';await Data.editGame(payload);$('gameEditMessage').textContent='Saved. Edit logged.';$('gameEditMessage').className='game-edit-message success';await loadSeason(S.season_id);renderGotw();
+    if(homeScore!==null&&awayScore!==null){try{const gid=editingGameRecord.id;const updated=(state.games||[]).find(x=>String(x.id)===String(gid));if(updated&&typeof ownsGame==='function'&&ownsGame(updated)){const isHome=String(updated.home_away||"").toLowerCase()==="home";const myS=isHome?homeScore:awayScore,oppS=isHome?awayScore:homeScore;closeEditor();showScoreRecap(updated.id,myS,oppS,updated);}else{setTimeout(closeEditor,350)}}catch(_){setTimeout(closeEditor,350)}}else{setTimeout(closeEditor,350)}}catch(e){$('gameEditMessage').textContent=e.message||String(e);$('gameEditMessage').className='game-edit-message error'}finally{btn.disabled=false}}
  $('gameEditClose').onclick=closeEditor;$('gameEditCancel').onclick=closeEditor;$('gameEditSave').onclick=saveEditor;$('gameEditModal').addEventListener('click',e=>{if(e.target.id==='gameEditModal')closeEditor()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('gameEditModal').classList.contains('hidden'))closeEditor()});
  document.addEventListener('click',e=>{if(typeof window.CDHQ_openGame==='function')return;const b=e.target.closest('[data-edit-game]');if(b){e.preventDefault();e.stopPropagation();openMatchupEditor(b.dataset.editGame)}},true);
