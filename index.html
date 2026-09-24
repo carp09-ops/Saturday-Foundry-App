@@ -6564,10 +6564,11 @@ function gotwSlideMarkup(pick,index,total){
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
   <div class="gotw-slide-kicker"><span class="gotw-feature-type ${pick.kind}">${esc(pick.label)}</span><span class="gotw-feature-reason">${esc(gotwSlideReason(g))}</span></div>
   <div class="gotw-body gotw-broadcast">
-    <div class="gotw-matchup">
-      <div class="team-side">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div><div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div></div>${hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
-      <div class="vs">VS</div>
-      <div class="team-side right">${hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}<div><div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div></div>${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}</div>
+    <div class="gotw-matchup gotw-single-row">
+      <div class="gotw-team-col">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div>${hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
+      ${(()=>{const b=(typeof nationalBadgeFor==='function')?nationalBadgeFor(g):null;return b&&b.src?`<div class="gotw-center-badge"><img src="${esc(b.src)}" alt="${esc(b.label||'Game badge')}"><span>${esc(b.label||'')}</span></div>`:`<div class="gotw-center-vs">VS</div>`;})()}
+      <div class="gotw-team-col">${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}<div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div>${hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}</div>
+    </div>${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}</div>
     </div>
     ${probability}
   </div>
@@ -14689,6 +14690,20 @@ img.sf-logo-system-v2{
 #overview #gotw .gotw-no-market-copy{text-align:center;padding:8px 0}
 #overview #gotw .gotw-no-market-copy strong{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;color:#f4c542}
 #overview #gotw .gotw-no-market-copy span{font-size:9px;color:#71858e}
+/* QA 9.8.2: GOTW single-row layout with center badge */
+#overview #gotw .gotw-matchup.gotw-single-row{display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:start!important;gap:8px!important}
+#overview #gotw .gotw-team-col{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;min-width:0!important}
+#overview #gotw .gotw-team-col .team-name{font-size:clamp(15px,1.9vw,21px)!important;line-height:1!important;margin-top:6px!important}
+#overview #gotw .gotw-team-col .team-meta{font-size:8px!important;margin-top:3px!important}
+#overview #gotw .gotw-team-col .gotw-winpct{margin:4px 0 0!important;padding:0!important;font-size:22px!important}
+#overview #gotw .gotw-center-badge{display:flex!important;flex-direction:column!important;align-items:center!important;gap:4px!important;padding-top:8px!important;min-width:54px!important}
+#overview #gotw .gotw-center-badge img{width:44px!important;height:44px!important;object-fit:contain!important;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))!important}
+#overview #gotw .gotw-center-badge span{font-size:7px!important;font-weight:800!important;letter-spacing:.08em!important;color:#aeb9be!important;text-align:center!important;max-width:64px!important;line-height:1.2!important}
+#overview #gotw .gotw-center-vs{display:flex!important;align-items:center!important;justify-content:center!important;padding-top:20px!important;font-family:'Teko',sans-serif!important;font-size:20px!important;font-weight:700!important;color:#5a6b73!important;letter-spacing:.1em!important;min-width:54px!important}
+@media(max-width:820px){
+  #overview #gotw .gotw-matchup.gotw-single-row{grid-template-columns:1fr auto 1fr!important}
+  #overview #gotw .gotw-vegas{grid-template-columns:repeat(3,1fr)!important}
+}
 
 
 #overview #gotw .gotw-logo-plaque .team-fallback{
