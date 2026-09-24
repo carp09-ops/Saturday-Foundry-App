@@ -1,0 +1,1 @@
+{"dependencies":{"@capacitor/core":"^7.4.0","@capacitor/ios":"^7.4.0"},"devDependencies":{"@capacitor/assets":"^3.0.5","@capacitor/cli":"^7.4.0"},"name":"saturday-foundry-app","private":true,"scripts":{"cap:open":"npx cap open ios","cap:sync":"npx cap sync ios"},"version":"9.8.4"}
