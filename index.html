@@ -7453,8 +7453,8 @@ async function submitSelectedResult(){
    const savedMyScore=myScore, savedOppScore=oppScore, savedGame={...selectedGame};
    state.career=await Data.career(D.dynasty_id);
    await loadSeason(S.season_id);
-   if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()}
-   // Build the recap via shared function
+   try{ if(S?.is_active||String(S?.status||"").toLowerCase()==="active"){selectedWeek=currentWeek();renderAll()} }catch(re){ console.error("[save] renderAll failed:",re); }
+   // Build the recap via shared function — must show even if render failed
    try{ $("resultModal").classList.add("hidden"); }catch(_){}
    showScoreRecap(impactGameId,savedMyScore,savedOppScore,savedGame);
  }catch(e){msg($("resultMessage"),e.message,"error")}
@@ -8143,11 +8143,12 @@ function updateOverviewDataVisibility(){
  setVisible("seasonPulsePanel",completed);
 }
 function renderMyWeek(){
+ try{
   const host=$("myWeekGames"); if(!host) return;
   const mine=myProgramForSeason();
   if(!mine){host.innerHTML='<div class="myweek-done">No program linked</div>';return;}
   const wk=currentWeek();
-  $("myWeekMeta").textContent=`Week ${wk}`;
+  try{ $("myWeekMeta").textContent=`Week ${wk}`; }catch(_){}
   const pid=String(mine.person_id||"");
   const unplayed=(state.games||[]).filter(g=>
     String(g.person_id||"")===pid &&
@@ -8169,6 +8170,7 @@ function renderMyWeek(){
       <button class="myweek-enter" onclick="openResultModal('${esc(g.id)}')">ENTER SCORE</button>
     </div>`;
   }).join("");
+ }catch(e){ console.error("[myweek] failed:",e); }
 }
 function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderMyWeek();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
 
