@@ -1043,6 +1043,9 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 #navWrap.hidden{display:none!important}
 #overview{display:none}#overview.active{display:block}.v13-overview{display:flex;flex-direction:column;gap:1rem}
 #coaches{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.875rem}.premium-card{background:linear-gradient(145deg,rgba(6,18,24,.95),rgba(3,11,15,.96));border:1px solid rgba(148,163,184,.16);border-radius:.75rem}
+/* QA 9.8.2: Coaches card logo — larger with gold glow */
+#coaches .coach-logo{width:72px;height:72px;flex:0 0 72px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(244,197,66,.55)) drop-shadow(0 0 12px rgba(244,197,66,.28))}
+#coaches .coach-logo-fb{width:72px;height:72px;flex:0 0 72px}
 #wire{display:flex;flex-direction:column;gap:.55rem}.wire{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:.55rem;padding:.62rem 0;border-bottom:1px solid rgba(148,163,184,.1);font-size:.7rem}.wire:last-child{border-bottom:0}.badge{font-size:.55rem;font-weight:900;text-transform:uppercase;padding:.2rem .4rem;border-radius:.3rem;background:rgba(25,211,154,.14);color:#74e4be}.badge.blue{background:rgba(79,209,255,.12);color:#4fd1ff}.badge.gold{background:rgba(244,197,66,.12);color:#f4c542}
 #standings{width:100%}#standings tr{border-bottom:1px solid rgba(148,163,184,.1)}#standings td{padding:.55rem .35rem;font-size:.68rem}#standings .record{font-family:Teko,sans-serif;font-size:1.05rem;font-weight:800}.pos{color:#74e4be}.neg{color:#ff8080}.neutral{color:#98a7b8}
 #power .power-row{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:1px solid rgba(148,163,184,.1)}.power-rank{font-family:Teko,sans-serif;font-size:1.35rem;color:#64748b}.power-rank.top{color:#f4c542}.power-name{font-weight:850;color:#f8fafc;font-size:.72rem}.power-sub{color:#64748b;font-size:.55rem}.power-score{font-family:Teko,sans-serif;font-size:1.55rem;color:#f8fafc}
@@ -2268,7 +2271,7 @@ header .topbar{
     grid-template-columns:auto minmax(610px,1fr)!important;
   }
   #nav{
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
   }
 }
 @media (min-width:769px) and (max-width:980px){
@@ -2390,7 +2393,7 @@ body::after{
    padding-top:6px!important;padding-bottom:6px!important;
  }
  #siteHeader .canonical-controls{grid-template-columns:minmax(0,1fr) auto!important;height:100%}
- #nav{height:100%!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:0!important;padding:0!important;border:0!important;background:transparent!important}
+ #nav{height:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;padding:0!important;border:0!important;background:transparent!important}
  #nav button{
    min-height:70px!important;border-left:1px solid rgba(148,163,184,.18)!important;border-radius:0!important;
    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
@@ -3407,7 +3410,7 @@ button,.btn,[role="button"]{min-height:34px}
   }
   #gotw .gotw-vegas{
     display:grid!important;
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     gap:8px!important;
   }
   #gotw .gotw-vegas>div{min-width:0}
@@ -4853,7 +4856,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     width:100%!important;
     max-width:100%!important;
     min-width:0!important;
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     box-sizing:border-box!important;
   }
 
@@ -5014,7 +5017,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
   width:100%!important;
   max-width:100%!important;
   min-width:0!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
   box-sizing:border-box!important;
 }
 
@@ -6569,7 +6572,7 @@ function gotwSlideMarkup(pick,index,total){
     </div>
     ${probability}
   </div>
-  ${hasMarket?`<div class="gotw-vegas"><div><span>Spread</span><b>${fmtSpread(vp.teamSpread)}</b></div><div><span>O/U</span><b>${vr.total_line??"—"}</b></div><div><span>Projected</span><b>${vp.projectedFor??"—"}–${vp.projectedAgainst??"—"}</b></div><div class="gotw-vegas-winprob"><span>Win Probability</span><b>${oppPct}% / ${teamPct}%</b><small>${esc(g.opponent_team||"Away")} / ${esc(g.team_name||"Home")}</small></div><div><span>Moneyline</span><b>${fmtML(vp.teamMoneyline)}</b></div><div><span>Confidence</span><b>${esc(String(vr.confidence||"—").toUpperCase())}</b></div></div>`:""}
+  ${hasMarket?`<div class="gotw-vegas"><div><span>Spread</span><b>${fmtSpread(vp.teamSpread)}</b></div><div><span>O/U</span><b>${vr.total_line??"—"}</b></div><div><span>Moneyline</span><b>${fmtML(vp.teamMoneyline)}</b></div></div>`:""}
   <div class="gotw-action-row"><button type="button" class="gotw-schedule-link ${dynastyGame?"dynasty":""}" data-gotw-game="${esc(g.id)}">${dynastyGame&&g.status==="scheduled"?"OPEN DYNASTY GAME · ENTER SCORE →":"VIEW GAME IN SCHEDULE →"}</button></div>
  </section>`;
 }
@@ -6718,13 +6721,13 @@ function renderCoaches(){
  const logo=p.logo_url||window.CDHQLogoResolver?.knownLogo?.(p.team_name)||"";
  if(ret){
     const legacy=retiredLegacyProfile(p);
-    const lg=logo?`<img src="${esc(logo)}" class="h-11 w-11 object-contain rounded-lg">`:`<div class="team-fallback">${initials(p.team_name||p.coach_name)}</div>`;
+    const lg=logo?`<img src="${esc(logo)}" class="coach-logo" alt="">`:`<div class="team-fallback coach-logo-fb">${initials(p.team_name||p.coach_name)}</div>`;
     const honor=legacy.honors[0]?.name||"History Preserved";
     return `<article class="premium-card retired-coach-card relative overflow-hidden p-4" style="border-top:3px solid #f4c542;">
       <div class="retired-ribbon">RETIRED</div>
       <div class="flex justify-between items-start">
         <div class="flex items-center gap-3">
-          <div class="h-11 w-11">${lg}</div>
+          ${lg}
           <div>
             <div class="font-teko text-2xl font-extrabold text-white leading-none">${esc(p.coach_name).toUpperCase()}</div>
             <div class="text-[10px] font-bold text-amber-300 mt-1">${esc(p.team_name||"LEGACY PROGRAM").toUpperCase()}</div>
@@ -6743,11 +6746,11 @@ function renderCoaches(){
       </div>
     </article>`;
   }
-  const lg=logo?`<img src="${esc(logo)}" class="h-11 w-11 object-contain rounded-lg">`:`<div class="team-fallback">${initials(p.team_name||p.coach_name)}</div>`;
+  const lg=logo?`<img src="${esc(logo)}" class="coach-logo" alt="">`:`<div class="team-fallback coach-logo-fb">${initials(p.team_name||p.coach_name)}</div>`;
  const nextGame=(state.games||[]).filter(g=>String(g.person_id)===String(p.person_id)&&g.status==="scheduled"&&!g.is_bye).sort((a,b)=>Number(a.week_number)-Number(b.week_number))[0]||null;
  const kickoffLabel=nextGame?formatCoachKickoff(nextGame.kickoff_time):"";
  const nextGameHtml=nextGame?`<button type="button" class="coach-next-game" data-team-schedule-person="${esc(p.person_id)}"><span>NEXT · ${esc(nextGame.week_label||`WEEK ${nextGame.week_number}`)}</span><strong>${nextGame.home_away==="away"?"AT":"VS"} ${esc(nextGame.opponent_team||"TBD")}</strong><em>${kickoffLabel?`${esc(kickoffLabel)} · `:""}→</em></button>`:`<div class="coach-next-game is-empty"><span>NEXT GAME</span><strong>NO GAME SCHEDULED</strong></div>`;
- return `<article class="premium-card relative overflow-hidden p-4" style="border-top:3px solid ${accents[i%accents.length]};"><div class="flex justify-between items-start"><div class="flex items-center gap-3"><div class="h-11 w-11">${lg}</div><div><div class="flex items-center gap-1.5">${rank?`<span class="text-amber-300 font-teko text-lg">#${rank}</span>`:""}<span class="font-teko text-2xl font-extrabold text-white">${esc(p.coach_name).toUpperCase()}</span></div><div class="text-[10px] font-bold text-emerald-300">${esc(p.team_name||"Program").toUpperCase()}</div><div class="text-[8px] text-slate-500">${esc(p.conference||"")}</div>${stream?.stream_url?`<a class="coach-stream-link" href="${esc(stream.stream_url)}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"><span class="live-stream-dot" aria-hidden="true"></span>LIVE STREAM</a>`:""}<button class="coach-schedule-link" type="button" data-team-schedule-person="${esc(p.person_id)}">VIEW TEAM SCHEDULE →</button></div></div><div class="text-right pr-1"><div class="font-teko text-4xl font-extrabold text-white leading-none">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><span class="inline-flex mt-2 px-2 py-0.5 rounded ${streak(p.person_id).startsWith("W")?"bg-emerald-500 text-slate-950":"bg-slate-700 text-white"} text-[9px] font-black">${streak(p.person_id)}</span></div></div>${nextGameHtml}<div class="grid grid-cols-3 mt-3 ref-stat-box divide-x divide-slate-800/70"><div class="p-3 text-center"><div class="ref-small-label">Career</div><div class="font-teko text-2xl font-bold text-white">${c.wins||0}-${c.losses||0}</div><div class="text-[10px] ${Number(c.point_differential||0)>0?"pos":Number(c.point_differential||0)<0?"neg":""} font-bold">${signed(c.point_differential)}</div><div class="conf-record-line">CONF ${careerConf.games?`${careerConf.wins}-${careerConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Season ${S.season_number}</div><div class="font-teko text-2xl font-bold text-white">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><div class="text-[10px] ${seasonHasGames?(Number(st.point_differential||0)>0?"pos":Number(st.point_differential||0)<0?"neg":""):""} font-bold">${seasonHasGames?signed(st.point_differential):"-"}</div><div class="conf-record-line">CONF ${seasonConf.games?`${seasonConf.wins}-${seasonConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Current Form</div><div class="font-teko text-2xl font-bold text-white">${power(st)}</div><div class="text-[10px] text-amber-300 font-black">${currentFormBand(st).label}${currentFormBand(st).early?" · EARLY SAMPLE":""}</div></div></div></article>`;
+ return `<article class="premium-card relative overflow-hidden p-4" style="border-top:3px solid ${accents[i%accents.length]};"><div class="flex justify-between items-start"><div class="flex items-center gap-3">${lg}<div><div class="flex items-center gap-1.5">${rank?`<span class="text-amber-300 font-teko text-lg">#${rank}</span>`:""}<span class="font-teko text-2xl font-extrabold text-white">${esc(p.coach_name).toUpperCase()}</span></div><div class="text-[10px] font-bold text-emerald-300">${esc(p.team_name||"Program").toUpperCase()}</div><div class="text-[8px] text-slate-500">${esc(p.conference||"")}</div>${stream?.stream_url?`<a class="coach-stream-link" href="${esc(stream.stream_url)}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"><span class="live-stream-dot" aria-hidden="true"></span>LIVE STREAM</a>`:""}<button class="coach-schedule-link" type="button" data-team-schedule-person="${esc(p.person_id)}">VIEW TEAM SCHEDULE →</button></div></div><div class="text-right pr-1"><div class="font-teko text-4xl font-extrabold text-white leading-none">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><span class="inline-flex mt-2 px-2 py-0.5 rounded ${streak(p.person_id).startsWith("W")?"bg-emerald-500 text-slate-950":"bg-slate-700 text-white"} text-[9px] font-black">${streak(p.person_id)}</span></div></div>${nextGameHtml}<div class="grid grid-cols-3 mt-3 ref-stat-box divide-x divide-slate-800/70"><div class="p-3 text-center"><div class="ref-small-label">Career</div><div class="font-teko text-2xl font-bold text-white">${c.wins||0}-${c.losses||0}</div><div class="text-[10px] ${Number(c.point_differential||0)>0?"pos":Number(c.point_differential||0)<0?"neg":""} font-bold">${signed(c.point_differential)}</div><div class="conf-record-line">CONF ${careerConf.games?`${careerConf.wins}-${careerConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Season ${S.season_number}</div><div class="font-teko text-2xl font-bold text-white">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><div class="text-[10px] ${seasonHasGames?(Number(st.point_differential||0)>0?"pos":Number(st.point_differential||0)<0?"neg":""):""} font-bold">${seasonHasGames?signed(st.point_differential):"-"}</div><div class="conf-record-line">CONF ${seasonConf.games?`${seasonConf.wins}-${seasonConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Current Form</div><div class="font-teko text-2xl font-bold text-white">${power(st)}</div><div class="text-[10px] text-amber-300 font-black">${currentFormBand(st).label}${currentFormBand(st).early?" · EARLY SAMPLE":""}</div></div></div></article>`;
 }).join('')||'<div class="text-slate-500">No programs have been claimed yet.</div>' 
  const coachGrid=$("coaches");
  if(coachGrid)coachGrid.onclick=e=>{const b=e.target.closest('[data-team-schedule-person]');if(!b)return;scheduleTeamPersonId=b.dataset.teamSchedulePerson;scheduleConference='__all__';const games=(state.games||[]).filter(g=>String(g.person_id)===String(scheduleTeamPersonId));const next=games.find(g=>g.status==='scheduled'&&!g.is_bye)||games.filter(g=>!g.is_bye).sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];if(next)selectedWeek=Number(next.week_number);switchView('schedule');renderSchedule();setTimeout(()=>document.getElementById('scheduleScopeBar')?.scrollIntoView({behavior:'smooth',block:'start'}),0);};
@@ -10980,7 +10983,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -11013,7 +11016,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -11560,7 +11563,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
   width:100%!important;
   max-width:100%!important;
   min-width:0!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
   box-sizing:border-box!important;
 }
 
@@ -11680,7 +11683,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.0";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.1";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12599,7 +12602,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';
   }
   function boot(){
     build();
@@ -12609,7 +12612,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.0';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.1';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -12763,7 +12766,7 @@ html,body{max-width:100%;overflow-x:hidden}
     gap:12px!important;
   }
   #overview #gotw .gotw-vegas{
-    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
     gap:0!important;
     width:100%!important;
     min-width:0!important;
@@ -13016,7 +13019,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.0';
+    if(m)m.textContent='PROD 9.8.1';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14606,10 +14609,11 @@ img.sf-logo-system-v2{
   flex:0 0 auto!important;
   width:76px!important;
   height:76px!important;
-  display:grid!important;
-  place-items:center!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
   box-sizing:border-box!important;
-  padding:10px!important;
+  padding:0!important;
   margin:0!important;
   border:1px solid rgba(230,191,73,.52)!important;
   border-radius:14px!important;
@@ -14637,15 +14641,16 @@ img.sf-logo-system-v2{
   position:relative!important;
   z-index:1!important;
   display:block!important;
-  width:100%!important;
-  height:100%!important;
+  width:56px!important;
+  height:56px!important;
   min-width:0!important;
   min-height:0!important;
-  max-width:100%!important;
-  max-height:100%!important;
+  max-width:56px!important;
+  max-height:56px!important;
   object-fit:contain!important;
   object-position:center!important;
   margin:0!important;
+  flex:0 0 auto!important;
   padding:0!important;
   background:transparent!important;
   border:0!important;
@@ -14656,6 +14661,17 @@ img.sf-logo-system-v2{
     drop-shadow(0 1px 0 rgba(255,255,255,.42))
     drop-shadow(0 2px 5px rgba(0,0,0,.72))!important;
 }
+/* QA 9.8.2: GOTW compact redesign — less vertical space */
+#overview #gotw .gotw-slide-kicker{padding:7px 12px 0!important}
+#overview #gotw .gotw-body{padding:10px 12px!important}
+#overview #gotw .gotw-matchup{margin-bottom:8px!important}
+#overview #gotw .hq-probability{padding:10px 0 0!important;margin-top:8px!important}
+#overview #gotw .hq-probability small{margin-top:4px!important}
+#overview #gotw .gotw-vegas{padding:8px 12px!important;margin-top:8px!important}
+#overview #gotw .gotw-action-row{padding:8px 12px!important;margin-top:0!important}
+#overview #gotw .gotw-carousel-top{padding:8px 12px!important}
+#overview #gotw .gotw-carousel-position{padding:6px 12px!important}
+
 #overview #gotw .gotw-logo-plaque .team-fallback{
   width:100%!important;
   height:100%!important;
@@ -14867,7 +14883,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.0';
+    if(m)m.textContent='PROD 9.8.1';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14877,7 +14893,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.0';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.1';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
