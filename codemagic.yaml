@@ -34,6 +34,9 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
+      # Uses the App Store Connect API key from environment variables
+      # (set these in Codemagic: APP_STORE_CONNECT_ISSUER_ID,
+      # APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_PRIVATE_KEY).
       app_store_connect:
-        auth: integration
+        auth: api_key
         submit_to_testflight: true
