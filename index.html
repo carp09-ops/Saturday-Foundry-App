@@ -7799,6 +7799,19 @@ function renderLegacyPillar(){
   });
   if(!pending||++sfHealN>=6)clearInterval(sfHeal);
  }catch(e){clearInterval(sfHeal)}},2500);
+ /* iOS Safari: a logo that finishes loading synchronously (from cache) while the
+    tab is being revealed sometimes decodes but never paints - long-press shows
+    the image, the card shows a white box. Force a reflow so it actually draws. */
+ requestAnimationFrame(()=>{try{
+  document.querySelectorAll('#analytics img.team-logo').forEach(img=>{
+   if(img.isConnected&&img.complete&&img.naturalWidth>0&&!img.dataset.sfPaint){
+    img.dataset.sfPaint='1';
+    img.style.display='none';
+    void img.offsetHeight;
+    img.style.display='';
+   }
+  });
+ }catch(e){}});
 }
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
