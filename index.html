@@ -7710,7 +7710,12 @@ function renderWire(){
    gameMap.get(key).push(g);
  });
  const pool=[...gameMap.values()].map(rows=>rows.find(r=>r.person_id)||rows.find(r=>r.result==="W")||rows[0]);
- const storyWeek=pool.length?Math.max(...pool.map(g=>Number(g.week_number)||0)):null;
+ // News cycle: latest week with a real slate. A 2-game week shouldn't strand the wire
+ // when an earlier full week exists; it flips forward automatically once games are logged.
+ const gamesByWeek=new Map();
+ pool.forEach(g=>{const w=Number(g.week_number)||0;if(!gamesByWeek.has(w))gamesByWeek.set(w,[]);gamesByWeek.get(w).push(g);});
+ const rankedWeeks=[...gamesByWeek.keys()].sort((a,b)=>b-a);
+ const storyWeek=rankedWeeks.find(w=>gamesByWeek.get(w).length>=5)??rankedWeeks[0]??null;
  // Rank the week's games by newsworthiness; the wire covers the whole league, not just user teams.
  const newsScore=g=>{
    const pf=Number(g.points_for),pa=Number(g.points_against);
