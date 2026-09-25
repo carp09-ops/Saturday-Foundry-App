@@ -202,6 +202,33 @@ input:focus,select:focus{border-color:var(--emerald)}
 .myweek-logo{width:44px;height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:center}
 .myweek-logo-img{width:44px;height:44px;object-fit:contain}
 .myweek-logo-fb{width:44px;height:44px;flex:0 0 44px}
+/* GameDay matchup card (QA gameday-cards): two-tone team-color split, big logos,
+   gold rank badges, AT pill / final score, spread under the favorite, O/U pill. */
+.gd-card{position:relative;overflow:hidden;border-radius:12px;border:1px solid rgba(212,175,55,.55);box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 0 0 1px rgba(0,0,0,.35);background:#0b151a}
+.gd-bg{position:absolute;inset:0;background:linear-gradient(112deg,var(--gd-away,#22343d) 0%,var(--gd-away,#22343d) 47%,var(--gd-home,#101c22) 53%,var(--gd-home,#101c22) 100%)}
+.gd-bg::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,8,12,.40),rgba(3,8,12,.58))}
+.gd-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(112deg,transparent 42%,rgba(255,255,255,.10) 50%,transparent 58%)}
+.gd-main{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:26px 12px 34px}
+.gd-side{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+.gd-logo{width:66px;height:66px;object-fit:contain;background:transparent;filter:drop-shadow(0 3px 6px rgba(0,0,0,.55))}
+.gd-logo-fb{width:66px;height:66px;border-radius:14px;background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:22px;font-family:"Barlow Condensed",sans-serif}
+.gd-name{margin-top:7px;font-size:10px;letter-spacing:.14em;font-weight:800;color:#fff;text-transform:uppercase;text-shadow:0 1px 3px rgba(0,0,0,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.gd-spread{margin-top:5px;font-size:15px;font-weight:800;color:#fff;background:rgba(0,0,0,.48);border:1px solid rgba(212,175,55,.65);border-radius:6px;padding:2px 9px;text-shadow:none}
+.gd-center{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-width:56px}
+.gd-at{width:36px;height:36px;border-radius:50%;background:#f5f2ea;color:#101418;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.55);letter-spacing:.05em}
+.gd-final{text-align:center;color:#fff}
+.gd-final b{font-size:27px;font-weight:800;letter-spacing:.02em;text-shadow:0 2px 5px rgba(0,0,0,.75);white-space:nowrap}
+.gd-final span{display:block;margin-top:2px;font-size:9px;letter-spacing:.28em;font-weight:800;color:#f0c94e;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.gd-rank{position:absolute;top:8px;z-index:2;min-width:27px;height:27px;padding:0 7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:rgba(0,0,0,.55);border:1px solid #d4af37;border-radius:5px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.gd-rank-away{left:8px}
+.gd-rank-home{right:8px}
+.gd-badge{position:absolute;top:7px;left:50%;transform:translateX(-50%);z-index:2;width:34px;height:34px;border-radius:50%;background:#ffffff;border:1px solid #d4af37;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.gd-badge img{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.gd-total{position:absolute;left:50%;transform:translateX(-50%);bottom:30px;z-index:2;font-size:12px;font-weight:800;color:#fff;background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.35);padding:3px 11px;border-radius:20px;letter-spacing:.1em;white-space:nowrap}
+.gd-strip{position:relative;z-index:2;text-align:center;font-size:9px;letter-spacing:.2em;font-weight:800;color:#e9e4d8;background:rgba(0,0,0,.58);border-top:1px solid rgba(212,175,55,.35);padding:7px 8px;text-transform:uppercase}
+@media(max-width:520px){.gd-logo,.gd-logo-fb{width:54px;height:54px}.gd-final b{font-size:23px}.gd-main{padding:24px 8px 32px}}
+.v21-matchup-card>.gd-card{margin:12px 12px 4px}
+.v21-matchup-card>.gd-card:last-child{margin-bottom:12px}
 .result-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check-row{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #18343e;border-radius:9px;background:#061319;font-size:9px}.check-row input{width:auto}
 .enter-result{cursor:pointer;border:1px solid rgba(16,185,129,.34);background:#07372d;color:#76eac8;border-radius:7px;padding:6px 8px;font-size:8px;font-weight:900;text-transform:uppercase}
 @media(max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr)}}
@@ -7077,6 +7104,7 @@ function decorateGameCardsWithVegas(rows=state.vegas||[]){
  const byId=new Map(rows.map(r=>[String(r.id||r.game_id),r]));
  document.querySelectorAll('[data-game-card]').forEach(card=>{
    card.querySelector('.vegas-strip')?.remove();
+   if(card.querySelector('.gd-card'))return; /* QA gameday-cards: spread/total live on the card itself */
    const row=byId.get(String(card.dataset.gameCard)); if(!row||row.spread_home==null)return;
    const g=gameEntryForVegasRow(row); const p=vegasPerspective(row,g);
    const done=(g?.status||row.status)==='completed'; const div=document.createElement('div'); div.className='vegas-strip';
@@ -7522,14 +7550,10 @@ function gotwSlideMarkup(pick,index,total){
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
   <div class="gotw-slide-kicker"><span class="gotw-feature-type ${pick.kind}">${esc(pick.label)}</span><span class="gotw-feature-reason">${esc(gotwSlideReason(g))}</span></div>
   <div class="gotw-body gotw-broadcast">
-    <div class="gotw-matchup gotw-single-row">
-      <div class="gotw-team-col">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div>${hasFinalScore?`<span class="gotw-final-score${oppFinalScore>teamFinalScore?" winner":""}">${oppFinalScore}</span>`:hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
-      ${(()=>{const b=(typeof nationalBadgeFor==='function')?nationalBadgeFor(g):null;return b&&b.src?`<div class="gotw-center-badge"><img src="${esc(b.src)}" alt="${esc(b.label||'Game badge')}"><span>${esc(b.label||'')}</span></div>`:`<div class="gotw-center-vs">VS</div>`;})()}
-      <div class="gotw-team-col">${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}<div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div>${hasFinalScore?`<span class="gotw-final-score${teamFinalScore>oppFinalScore?" winner":""}">${teamFinalScore}</span>`:hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}</div>
-    </div>
+    ${/* QA gameday-cards: GameDay matchup card (spread/total on the card replace the Vegas row). */
+      gameDayCard(g)}
     ${probability}
   </div>
-  ${hasMarket?`<div class="gotw-vegas"><div><span>Home spread</span><b>${fmtSpread(vp.teamSpread)}</b></div><div><span>O/U</span><b>${vr.total_line??"—"}</b></div><div><span>Home ML</span><b>${fmtML(vp.teamMoneyline)}</b></div></div>`:""}
   <div class="gotw-action-row"><button type="button" class="gotw-schedule-link ${dynastyGame?"dynasty":""}" data-gotw-game="${esc(g.id)}">${dynastyGame&&g.status==="scheduled"?"OPEN DYNASTY GAME · ENTER SCORE →":"VIEW GAME IN SCHEDULE →"}</button></div>
  </section>`;
 }
@@ -8214,22 +8238,11 @@ function renderSchedule(){
    const footHtml=(streamCta||actionHtml.trim())?`<div class="v21-matchup-foot"><span class="schedule-stream-slot">${streamCta}</span><span class="${resultClass} schedule-card-actions">${actionHtml}</span></div>`:"";
    return `<article class="v21-matchup-card ${g.id===featured?.id?"featured":""} ${done?"final":"upcoming"} " data-game-card="${g.id}">
      <div class="v21-matchup-top">
-       <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`${contextBadge?nationalBadgeMarkup(contextBadge):`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
+       <div class="schedule-card-kicker">${dynastyGame?`<em class="dynasty-hq-badge">◆ FOUNDRY</em><span class="schedule-card-coach">${esc(g.coach_name||g.opponent_coach_name||"Dynasty")}</span>`:`${contextBadge?'':`<span class="schedule-card-coach">${esc(contextLabel)}</span>`}`}<span class="schedule-card-week">${esc(g.week_label||`Week ${g.week_number}`)}</span></div>
        <strong>${done?(classifRedundant?"FINAL":`FINAL · ${classif}`):classif}</strong>
      </div>
-     <div class="v21-matchup-main">
-       <div>
-         <div class="v23-team-row">
-           ${logoFor(g.team_id,g.team_name)?`<img class="v23-team-logo" src="${esc(logoFor(g.team_id,g.team_name))}" alt="">`:`<div class="v23-team-logo fallback v24-logo-pending" data-team-logo-name="${esc(g.team_name||"")}">🏈</div>`}
-           <div class="v21-teamline">${displayRank.team?`<span class="v21-rank">#${displayRank.team}</span>`:""}${esc(g.team_name||"TBD")}</div>
-         </div>
-         <div class="v23-team-row opponent">
-           ${logoFor(g.opponent_team_id,g.opponent_team)?`<img class="v23-team-logo" src="${esc(logoFor(g.opponent_team_id,g.opponent_team))}" alt="">`:`<div class="v23-team-logo fallback v24-logo-pending" data-team-logo-name="${esc(g.opponent_team||"")}">🏈</div>`}
-           <div class="v21-teamline opponent">${displayRank.opponent?`<span class="v21-rank">#${displayRank.opponent}</span>`:""}${esc(g.opponent_team||"TBD")}</div>
-         </div>
-       </div>
-       <div class="v21-score ${resultClass}">${scoreHtml}</div>
-     </div>
+     ${/* QA gameday-cards: GameDay matchup card replaces the legacy team rows + score. */
+       gameDayCard(g,nm=>logoFor(null,nm))}
      ${footHtml}
    </article>`;
  };
@@ -12249,7 +12262,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.9'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12282,7 +12295,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.9'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12959,7 +12972,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.8";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.9";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -12970,6 +12983,108 @@ window.addEventListener("pageshow",mark);
 .sf-score-rank{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 7px;border-radius:999px;border:1px solid rgba(244,197,66,.38);background:rgba(244,197,66,.10);color:#f4c542;font-size:10px;font-weight:950;letter-spacing:.04em}
 .sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
 </style>
+<script id="sf-gameday-cards">
+/* QA gameday-cards: GameDay-style matchup cards for Schedule + GOTW.
+   Primary team colors keyed by normalized name (lowercase, & -> and, alnum only). */
+(function(){
+"use strict";
+var COLORS={
+alabama:"#A60C31",arkansas:"#9D2235",auburn:"#0C2340",florida:"#0021A5",georgia:"#BA0C2F",
+kentucky:"#0033A0",lsu:"#461D7C",mississippistate:"#5D1725",missouri:"#8A6D00",
+oklahoma:"#841617",olemiss:"#14213D",southcarolina:"#73000A",tennessee:"#FF8200",
+texas:"#BF5700",texasam:"#500000",vanderbilt:"#866D4B",
+illinois:"#FF552E",indiana:"#990000",iowa:"#1A1A1A",maryland:"#E03A3E",michigan:"#00274C",
+michiganstate:"#18453B",minnesota:"#7A0019",nebraska:"#D00000",northwestern:"#4E2A84",
+ohiostate:"#BB0000",oregon:"#154733",pennstate:"#041E42",purdue:"#8A6D1B",rutgers:"#CC0033",
+ucla:"#2774AE",usc:"#990000",washington:"#4B2E83",wisconsin:"#C5050C",
+arizona:"#0C234B",arizonastate:"#8C1D40",baylor:"#154734",byu:"#002E5D",cincinnati:"#E00122",
+colorado:"#8A6D1B",houston:"#C8102E",iowastate:"#C8102E",kansas:"#0051BA",kansasstate:"#512888",
+oklahomastate:"#E86900",tcu:"#4D1979",texastech:"#CC0000",ucf:"#8A6D1B",utah:"#CC0000",
+westvirginia:"#002855",
+bostoncollege:"#98002E",california:"#003262",cal:"#003262",clemson:"#F56600",duke:"#003087",
+floridastate:"#782F40",georgiatech:"#8A6D1B",louisville:"#AD0000",miami:"#005030",
+northcarolina:"#2E7FC2",ncstate:"#CC0000",notredame:"#0C2340",pittsburgh:"#003594",pitt:"#003594",
+smu:"#0033A0",stanford:"#8C1515",syracuse:"#D44500",virginia:"#232D4B",virginiatech:"#861F41",
+wakeforest:"#8A6D1B",miamioh:"#B61E42",
+army:"#1A1A1A",charlotte:"#046A38",eastcarolina:"#412D87",floridaatlantic:"#003366",fau:"#003366",
+memphis:"#004991",navy:"#00205B",northtexas:"#00853F",rice:"#00205B",southflorida:"#006747",usf:"#006747",
+temple:"#9E1B32",tulane:"#00694E",uab:"#1E6B52",utsa:"#0C2340",tulsa:"#002D62",
+delaware:"#00539F",fiu:"#081E3D",jacksonvillestate:"#CC0000",kennesawstate:"#1A1A1A",
+liberty:"#A32035",louisianatech:"#002D62",middletennessee:"#0066CC",mtsu:"#0066CC",
+missouristate:"#5D0F1F",newmexicostate:"#7A1E2B",samhouston:"#C86400",samhoustonstate:"#C86400",
+utep:"#CC5500",westernkentucky:"#C60C30",wku:"#C60C30",
+akron:"#00285E",ballstate:"#BA0C2F",bowlinggreen:"#E65C00",bgsu:"#E65C00",buffalo:"#005BBB",
+centralmichigan:"#6A0032",easternmichigan:"#006633",kentstate:"#002664",massachusetts:"#7A1E2B",umass:"#7A1E2B",
+northernillinois:"#C8102E",niu:"#C8102E",ohio:"#00694E",toledo:"#003E7E",westernmichigan:"#6C4023",
+airforce:"#003087",boisestate:"#0033A0",coloradostate:"#1E4D2B",fresnostate:"#C8102E",
+hawaii:"#024731",nevada:"#003366",newmexico:"#7A1E2B",sandiegostate:"#A6192E",sanjosestate:"#0055A2",
+unlv:"#CF0A2C",utahstate:"#0F2439",wyoming:"#6B4A2B",
+appalachianstate:"#1A1A1A",appstate:"#1A1A1A",arkansasstate:"#CC092F",coastalcarolina:"#006F71",
+georgiasouthern:"#011E41",georgiastate:"#0039A6",jamesmadison:"#450084",jmu:"#450084",
+louisiana:"#CE181E",louisianalafayette:"#CE181E",ulmonroe:"#7A003C",louisianamonroe:"#7A003C",
+marshall:"#006747",olddominion:"#003057",odu:"#003057",southernmiss:"#1A1A1A",southernmississippi:"#1A1A1A",
+texasstate:"#501214",troy:"#790000",
+uconn:"#000E2F",oregonstate:"#D73F09",washingtonstate:"#981E32",wsu:"#981E32"
+};
+window.SF_TEAM_COLORS=COLORS;
+function key(name){return String(name||"").toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]/g,"");}
+window.sfTeamColor=function(name){return COLORS[key(name)]||null;};
+window.gdKickoffLabel=function(g){
+  var v=g&&g.kickoff_time;
+  if(v){var d=new Date(v);if(!Number.isNaN(d.valueOf())){
+    var days=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
+    var h=d.getHours(),ap=h>=12?"PM":"AM";h=h%12||12;
+    var m=d.getMinutes(),mm=m?":"+String(m).padStart(2,"0"):"";
+    return days[d.getDay()]+" "+h+mm+" "+ap;
+  }}
+  return (g&&(g.week_label||(g.week_number!=null?"WEEK "+g.week_number:"")))||"";
+};
+/* GameDay matchup card. g = one game entry (mirrored rows OK). logoFn(name)->url optional. */
+window.gameDayCard=function(g,logoFn){
+  if(!g)return "";
+  var esc=window.esc||function(s){return String(s==null?"":s);};
+  var isAwayEntry=String(g.home_away||"")==="away";
+  var ranks=(typeof scheduleDisplayRanks==="function"?scheduleDisplayRanks(g):{})||{};
+  var away={name:isAwayEntry?g.team_name:g.opponent_team,rank:isAwayEntry?ranks.team:ranks.opponent};
+  var home={name:isAwayEntry?g.opponent_team:g.team_name,rank:isAwayEntry?ranks.opponent:ranks.team};
+  var lf=logoFn||(typeof logoFor==="function"?logoFor:null);
+  var awayLogo=lf?lf(away.name):null, homeLogo=lf?lf(home.name):null;
+  var awayColor=window.sfTeamColor(away.name)||"#22343d", homeColor=window.sfTeamColor(home.name)||"#101c22";
+  var done=String(g.status||"")==="completed";
+  var pf=Number(g.points_for!=null?g.points_for:g.team_score), pa=Number(g.points_against!=null?g.points_against:g.opponent_score);
+  var hasScore=done&&Number.isFinite(pf)&&Number.isFinite(pa);
+  /* Final reads away–home to match the sides, not the raw row perspective. */
+  var awayScore=isAwayEntry?pf:pa, homeScore=isAwayEntry?pa:pf;
+  var vr=(typeof vegasForGame==="function"?vegasForGame(g.id):null);
+  var spreadHome=vr?Number(vr.spread_home):NaN, total=vr?(vr.total_line!=null?vr.total_line:null):null;
+  var hasSpread=Number.isFinite(spreadHome);
+  var initials=function(n){return String(n||"?").split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase();}).join("")||"?";};
+  var side=function(t,logo,rank,isHome){
+    var showSpread=!hasScore&&hasSpread&&((spreadHome<0)===isHome||spreadHome===0);
+    var spreadTxt=spreadHome===0?"PK":(window.fmtSpread?window.fmtSpread(-Math.abs(spreadHome)):"-"+Math.abs(spreadHome).toFixed(1));
+    return '<div class="gd-side">'
+      +(logo?'<img class="gd-logo" src="'+esc(logo)+'" alt="'+esc(t.name||"Team")+' logo" loading="lazy">':'<div class="gd-logo-fb">'+esc(initials(t.name))+'</div>')
+      +'<div class="gd-name">'+esc(t.name||"TBD")+'</div>'
+      +(showSpread?'<div class="gd-spread">'+esc(spreadTxt)+'</div>':"")
+      +'</div>';
+  };
+  var rankBadge=function(r,pos){return r?'<span class="gd-rank gd-rank-'+pos+'">'+esc(r)+'</span>':"";};
+  var center=hasScore
+    ?'<div class="gd-center"><div class="gd-final"><b>'+esc(awayScore)+'&ndash;'+esc(homeScore)+'</b><span>FINAL</span></div></div>'
+    :'<div class="gd-center"><span class="gd-at">AT</span></div>';
+  var strip=hasScore?"FINAL":window.gdKickoffLabel(g);
+  var badge=null;try{badge=(typeof window.sfNationalBadgeInfo==="function")?window.sfNationalBadgeInfo(g):null;}catch(_e){badge=null;}
+  return '<div class="gd-card" style="--gd-away:'+awayColor+';--gd-home:'+homeColor+'">'
+    +'<div class="gd-bg"></div>'
+    +rankBadge(away.rank,"away")+rankBadge(home.rank,"home")
+    +((badge&&badge.src)?'<span class="gd-badge" title="'+esc(badge.label||"")+'"><img src="'+esc(badge.src)+'" alt="'+esc(badge.label||"Event")+'" loading="lazy"></span>':"")
+    +'<div class="gd-main">'+side(away,awayLogo,away.rank,false)+center+side(home,homeLogo,home.rank,true)+'</div>'
+    +(!hasScore&&total!=null?'<div class="gd-total">O '+esc(total)+'</div>':"")
+    +(strip?'<div class="gd-strip">'+esc(strip)+'</div>':"")
+    +'</div>';
+};
+})();
+</script>
 <script id="sf-dark-logo-classifier">
 (function(){
 "use strict";
@@ -13914,7 +14029,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.9';
   }
   function boot(){
     build();
@@ -13924,7 +14039,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.8';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.9';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14331,7 +14446,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.8';
+    if(m)m.textContent='PROD 9.8.9';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14638,12 +14753,13 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       const x=perspectiveV3(g,p),done=g.status==='completed',owned=ownedV3(g),cls=g.is_bye?'bye':x?.result==='W'?'win':x?.result==='L'?'loss':'upcoming';
       if(g.is_bye)return `<article class="sf-season-game bye" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="neutral">BYE</strong><small>Open Date</small></div></div></div><div class="sf-matchup"><div class="sf-match-team">${logoMarkupV3({id:p.team_id,name:p.team_name,logo:p.logo_url})}<div class="sf-match-copy"><span class="sf-match-role">Rest Week</span><strong class="sf-match-name">${escV3(p.team_name)}</strong></div></div></div></article>`;
       const sides=sideDataV3(g,p),away=sides.away,home=sides.home,neutral=sides.neutral;
-      const result=done?(x?`${x.result} ${x.pf}-${x.pa}`:`FINAL ${g.points_for??''}-${g.points_against??''}`):'UPCOMING',resultCls=x?.result==='W'?'win':x?.result==='L'?'loss':'neutral';
+      const logoMapV3={};if(away&&away.name)logoMapV3[away.name]=away.logo||'';if(home&&home.name)logoMapV3[home.name]=home.logo||'';
+      const result=done?(x?x.result:'FINAL'):'UPCOMING',resultCls=x?.result==='W'?'win':x?.result==='L'?'loss':'neutral';
       const action=owned?`<button type="button" class="sf-score-action ${done?'edit':''}" data-result-game="${escV3(g.id)}">${done?'Edit Score':'Add Score'}</button>`:'';
       const side=(s,role,isHome)=>`<div class="sf-match-team ${isHome?'home':'away'}">${logoMarkupV3(s)}<div class="sf-match-copy"><span class="sf-match-role ${isHome?'home':''}">${role}</span><strong class="sf-match-name">${s.rank?`#${s.rank} `:''}${escV3(s.name||'Team')}</strong>${s.score!=null?`<span class="sf-match-score">${escV3(s.score)}</span>`:''}</div></div>`;
       const middle=`<div class="sf-match-spine"><strong>${neutral?'VS':'AT'}</strong><span>${escV3(gameClassV3(g))}${neutral?' · Neutral Site':''}</span></div>`;
       const eventBadge=sfEventBadgeMarkupV3(g,'sf-event-badge-header');
-      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span>${eventBadge}</div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
+      return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span></div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div>${gameDayCard(g,nm=>(logoMapV3[nm]||(typeof resolveLogoV3==='function'?resolveLogoV3(null,nm,''):'')))}<div class="sf-game-classification">${escV3(gameClassV3(g))}${neutral?' · Neutral Site':''}</div></article>`;
     }).join('');
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
     const isMineV3=(()=>{try{const m=myProgramV3();return !!(m&&String(m.person_id)===String(p.person_id))}catch(_e){return true}})();
@@ -16251,7 +16367,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.8';
+    if(m)m.textContent='PROD 9.8.9';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16261,7 +16377,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.9';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
