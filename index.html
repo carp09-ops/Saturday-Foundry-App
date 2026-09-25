@@ -5466,6 +5466,9 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <div class="legacy-live"><span></span> LIVE DYNASTY DATA</div>
   </div>
 
+  <nav class="analytics-tabs" id="insightsTabs"><button type="button" class="active" data-pane="paneLegacy">Legacy</button><button type="button" data-pane="paneCharts">Charts</button></nav>
+
+  <div class="analytics-pane active" id="paneLegacy">
   <div id="legacyThrone"></div>
 
   <div class="legacy-section">
@@ -5500,7 +5503,375 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <b>Full betting analytics →</b>
     <em>ATS kings, cover rates, upsets and every tracked line live in the Vegas studio.</em>
   </button>
+  </div><!-- /paneLegacy -->
+
+  <div class="analytics-pane" id="paneCharts">
+    <div class="legacy-section-head"><div><span>By The Numbers</span><h3>Charts</h3></div><em>Season visualizations, drawn from live league data</em></div>
+
+    <section class="sf-chart-card">
+      <div class="chart-head"><h3>Ranking Trajectory</h3><span>Top 25 poll · by week</span></div>
+      <p class="sf-chart-sub">Where each coach's team has sat in the poll all season. Gaps are weeks outside the Top 25.</p>
+      <div class="sf-legend" id="lgRank"></div>
+      <canvas id="chRank"></canvas>
+    </section>
+
+    <section class="sf-chart-card">
+      <div class="chart-head"><h3>Margin of Victory Trend</h3><span>3-week rolling average</span></div>
+      <p class="sf-chart-sub">Average scoring margin, smoothed over three weeks. Above the gold line means winning comfortably.</p>
+      <div class="sf-legend" id="lgMov"></div>
+      <canvas id="chMov"></canvas>
+    </section>
+
+    <div class="sf-charts-grid">
+      <section class="sf-chart-card">
+        <div class="chart-head"><h3>Against The Spread</h3><span>Cover rate</span></div>
+        <p class="sf-chart-sub">How often each coach beats the Vegas number. Record shown as wins-losses-pushes.</p>
+        <canvas id="chAts"></canvas>
+      </section>
+      <section class="sf-chart-card">
+        <div class="chart-head"><h3>Scoring Identity</h3><span>Points per game</span></div>
+        <p class="sf-chart-sub">Average points scored vs. allowed per game this season.</p>
+        <div class="sf-legend"><span><i style="background:#f4c542"></i>Scored</span><span><i style="background:#f87171"></i>Allowed</span></div>
+        <canvas id="chScore"></canvas>
+      </section>
+    </div>
+
+    <section class="sf-chart-card">
+      <div class="chart-head"><h3>Head-to-Head Matrix</h3><span>Coach vs. coach</span></div>
+      <p class="sf-chart-sub">Each coach's record against every other coach this season. Read across a row for one coach's story.</p>
+      <canvas id="chH2h"></canvas>
+    </section>
+  </div><!-- /paneCharts -->
 </section>
+
+<style id="sf-charts-css">
+#insightsTabs{margin:14px 0 6px}
+.sf-chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.9rem;padding:1rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.sf-chart-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,rgba(244,197,66,.7),transparent);pointer-events:none}
+.sf-chart-card .chart-head h3{font-family:Teko,sans-serif;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:.03em}
+.sf-chart-sub{font-size:10px;color:#7d8f98;margin:2px 0 10px;line-height:1.5;max-width:640px}
+.sf-chart-card canvas{width:100%;display:block}
+.sf-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 10px}
+.sf-legend span{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:#aebcc3;letter-spacing:.02em}
+.sf-legend i{width:10px;height:10px;border-radius:3px;display:inline-block;box-shadow:0 0 8px rgba(0,0,0,.4)}
+.chart-empty{padding:30px 12px;text-align:center;color:#64748b;font-size:11px;font-weight:600}
+.sf-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.sf-charts-grid .sf-chart-card{margin-bottom:0}
+.sf-charts-grid{margin-bottom:1rem}
+@media(max-width:900px){.sf-charts-grid{grid-template-columns:1fr}.sf-charts-grid .sf-chart-card{margin-bottom:1rem}.sf-charts-grid{margin-bottom:0}}
+</style>
+<script id="sf-charts">
+/* Saturday Foundry charts — hand-rolled canvas, no dependencies. */
+var SF_COACH_PALETTE=['#f4c542','#2dd4bf','#60a5fa','#fb7185','#a78bfa','#34d399'];
+function sfChartCoaches(){
+  var map=new Map();
+  (state.games||[]).forEach(function(g){
+    var pid=String(g.person_id||''); if(!pid||map.has(pid))return;
+    var prog=(state.programs||[]).find(function(p){return String(p.person_id)===pid;});
+    var name='';
+    try{ name=coachNameFor(pid); }catch(_){}
+    map.set(pid,{person_id:pid,name:name||(prog&&prog.coach_name)||'Coach',team:(prog&&prog.team_name)||g.team_name||''});
+  });
+  return [...map.values()].map(function(c,i){
+    c.short=String(c.name).split(' ')[0]||c.name;
+    c.color=SF_COACH_PALETTE[i%SF_COACH_PALETTE.length];
+    return c;
+  });
+}
+function sfCtx(id,h){
+  var cv=document.getElementById(id); if(!cv)return null;
+  var wrapW=(cv.parentElement&&cv.parentElement.clientWidth)||320;
+  if(wrapW<10)return null;
+  var dpr=Math.min(2,window.devicePixelRatio||1),H=h||260;
+  cv.width=Math.round(wrapW*dpr); cv.height=Math.round(H*dpr);
+  cv.style.width='100%'; cv.style.height=H+'px';
+  var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,wrapW,H);
+  return {ctx:ctx,w:wrapW,h:H};
+}
+function sfRR(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h);
+}
+function sfLabel(ctx,text,x,y,size,color,align,weight){
+  ctx.fillStyle=color||'#7d8f98';
+  ctx.font=(weight||700)+' '+(size||10)+'px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  ctx.textAlign=align||'left'; ctx.textBaseline='middle';
+  ctx.fillText(text,x,y);
+}
+function sfEmpty(id,msg){
+  var cv=document.getElementById(id); if(!cv)return;
+  var e=cv.parentElement.querySelector('.chart-empty');
+  if(!e){e=document.createElement('div');e.className='chart-empty';cv.parentElement.appendChild(e);}
+  e.textContent=msg; e.style.display='block'; cv.style.display='none';
+}
+function sfUnempty(id){
+  var cv=document.getElementById(id); if(!cv)return;
+  cv.style.display='block';
+  var e=cv.parentElement.querySelector('.chart-empty'); if(e)e.style.display='none';
+}
+function sfLegend(id,items){
+  var lg=document.getElementById(id); if(!lg)return;
+  lg.innerHTML=items.map(function(x){
+    return '<span><i style="background:'+x.color+'"></i>'+esc(x.name)+'</span>';
+  }).join('');
+}
+function sfRankAtOrBefore(teamId,teamName,week){
+  var rows=state.rankings||[];
+  var key=String(teamName||'').trim().toLowerCase();
+  var row=rows.filter(function(r){
+    var sameId=teamId&&String(r.team_id||'')===String(teamId);
+    var sameName=String((r.team&&r.team.name)||r.team_name||'').trim().toLowerCase()===key;
+    return Number(r.week_number)<=week&&(sameId||sameName);
+  }).sort(function(a,b){return Number(b.week_number)-Number(a.week_number);})[0];
+  return row?(Number(row.rank)||null):null;
+}
+/* 1 — Ranking trajectory */
+function sfPaintRank(){
+  var s=sfCtx('chRank',300); if(!s)return;
+  var coaches=sfChartCoaches().filter(function(c){return c.team;});
+  var weeks=[...new Set((state.rankings||[]).map(function(r){return Number(r.week_number);}))]
+    .filter(function(w){return w>0;}).sort(function(a,b){return a-b;});
+  if(!coaches.length||!weeks.length){sfEmpty('chRank','No poll data yet this season.');return;}
+  sfUnempty('chRank');
+  var ctx=s.ctx,w=s.w,h=s.h,padL=28,padR=66,padT=12,padB=24;
+  var iw=w-padL-padR,ih=h-padT-padB,MAXR=25,UNR=27;
+  var y=function(r){return padT+((r-1)/(UNR-1))*ih;};
+  var x=function(i){return padL+(weeks.length===1?iw/2:(i/(weeks.length-1))*iw);};
+  ctx.fillStyle='rgba(148,163,184,.05)';
+  ctx.fillRect(padL,y(25.5),iw,y(UNR)-y(25.5));
+  sfLabel(ctx,'UNRANKED',padL+5,y(26.3),8,'#5b6b73','left',800);
+  [1,5,10,15,20,25].forEach(function(r){
+    ctx.strokeStyle='rgba(148,163,184,.12)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(padL,y(r));ctx.lineTo(w-padR,y(r));ctx.stroke();
+    sfLabel(ctx,'#'+r,2,y(r),10,'#7d8f98','left',800);
+  });
+  weeks.forEach(function(wk,i){
+    if(i%2===0||weeks.length<8)sfLabel(ctx,'W'+wk,x(i),h-10,9,'#5b6b73','center',700);
+  });
+  coaches.forEach(function(c){
+    var prog=(state.programs||[]).find(function(p){return String(p.person_id)===c.person_id;});
+    var pts=weeks.map(function(wk){return sfRankAtOrBefore(prog&&prog.team_id,c.team,wk);});
+    ctx.strokeStyle=c.color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.shadowColor=c.color;ctx.shadowBlur=8;
+    ctx.beginPath();var started=false,last=null;
+    pts.forEach(function(r,i){
+      if(r==null){started=false;return;}
+      var px=x(i),py=y(r);
+      if(!started){ctx.moveTo(px,py);started=true;}else{ctx.lineTo(px,py);}
+      last={x:px,y:py,r:r};
+    });
+    ctx.stroke();ctx.shadowBlur=0;
+    pts.forEach(function(r,i){
+      if(r==null)return;
+      ctx.fillStyle='#041016';ctx.strokeStyle=c.color;ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(x(i),y(r),3.5,0,7);ctx.fill();ctx.stroke();
+    });
+    if(last)sfLabel(ctx,c.short+' #'+last.r,Math.min(last.x+8,w-padR-58),last.y,11,c.color,'left',800);
+  });
+  sfLegend('lgRank',coaches);
+}
+/* 2 — Margin of victory trend (3-week rolling) */
+function sfPaintMov(){
+  var s=sfCtx('chMov',280); if(!s)return;
+  var coaches=sfChartCoaches();
+  var done=(state.games||[]).filter(function(g){
+    return g.person_id&&g.status==='completed'&&!g.is_bye&&
+      Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against));
+  });
+  if(!coaches.length||!done.length){sfEmpty('chMov','No completed games yet.');return;}
+  var weeks=[...new Set(done.map(function(g){return Number(g.week_number);}))].filter(function(w){return w>0;}).sort(function(a,b){return a-b;});
+  var series=coaches.map(function(c){
+    var byW=new Map();
+    done.filter(function(g){return String(g.person_id)===c.person_id;}).forEach(function(g){
+      var wk=Number(g.week_number),m=Number(g.points_for)-Number(g.points_against);
+      if(!byW.has(wk))byW.set(wk,[]);
+      byW.get(wk).push(m);
+    });
+    var pts=weeks.map(function(wk,i){
+      var vals=[];
+      for(var k=Math.max(0,i-2);k<=i;k++){var v=byW.get(weeks[k]);if(v)vals.push.apply(vals,v);}
+      if(!vals.length)return null;
+      return vals.reduce(function(a,b){return a+b;},0)/vals.length;
+    });
+    return {c:c,pts:pts};
+  }).filter(function(x){return x.pts.some(function(v){return v!=null;});});
+  if(!series.length){sfEmpty('chMov','No completed games yet.');return;}
+  sfUnempty('chMov');
+  var ctx=s.ctx,w=s.w,h=s.h,padL=36,padR=70,padT=12,padB=24;
+  var iw=w-padL-padR,ih=h-padT-padB;
+  var mx=5;
+  series.forEach(function(x){x.pts.forEach(function(v){if(v!=null)mx=Math.max(mx,Math.abs(v));});});
+  mx=Math.ceil(mx/5)*5;
+  var y=function(v){return padT+(1-(v+mx)/(2*mx))*ih;};
+  var x=function(i){return padL+(weeks.length===1?iw/2:(i/(weeks.length-1))*iw);};
+  ctx.strokeStyle='rgba(244,197,66,.55)';ctx.setLineDash([5,4]);ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(padL,y(0));ctx.lineTo(w-padR,y(0));ctx.stroke();ctx.setLineDash([]);
+  [-mx,-mx/2,mx/2,mx].forEach(function(v){
+    ctx.strokeStyle='rgba(148,163,184,.10)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(padL,y(v));ctx.lineTo(w-padR,y(v));ctx.stroke();
+    sfLabel(ctx,(v>0?'+':'')+Math.round(v),4,y(v),10,'#7d8f98','left',800);
+  });
+  sfLabel(ctx,'0',4,y(0),10,'#f4c542','left',800);
+  weeks.forEach(function(wk,i){
+    if(i%2===0||weeks.length<8)sfLabel(ctx,'W'+wk,x(i),h-10,9,'#5b6b73','center',700);
+  });
+  series.forEach(function(it){
+    var c=it.c;
+    ctx.strokeStyle=c.color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.shadowColor=c.color;ctx.shadowBlur=8;
+    ctx.beginPath();var started=false,last=null;
+    it.pts.forEach(function(v,i){
+      if(v==null){started=false;return;}
+      var px=x(i),py=y(v);
+      if(!started){ctx.moveTo(px,py);started=true;}else{ctx.lineTo(px,py);}
+      last={x:px,y:py,v:v};
+    });
+    ctx.stroke();ctx.shadowBlur=0;
+    if(last){
+      var ly=Math.min(Math.max(last.y,padT+9),padT+ih-9);
+      sfLabel(ctx,c.short+' '+(last.v>0?'+':'')+last.v.toFixed(1),Math.min(last.x+8,w-padR-64),ly,11,c.color,'left',800);
+    }
+  });
+  sfLegend('lgMov',series.map(function(x){return x.c;}));
+}
+/* 3 — Against the spread */
+function sfPaintAts(){
+  var coaches=sfChartCoaches();
+  var byGame=new Map((state.vegas||[]).map(function(r){return [String(r.game_id||r.id||''),r];}));
+  var rows=coaches.map(function(c){
+    var w=0,l=0,p=0;
+    (state.games||[]).filter(function(g){return String(g.person_id)===c.person_id&&g.status==='completed'&&!g.is_bye;}).forEach(function(g){
+      var v=byGame.get(String(g.id)); if(!v||v.spread_home==null)return;
+      var r=String(v.ats_result||'').toUpperCase();
+      if(r==='COVER')w++;else if(r==='PUSH')p++;else l++;
+    });
+    var n=w+l+p;
+    return {c:c,w:w,l:l,p:p,n:n,pct:n?(w+p*0.5)/n:0};
+  }).filter(function(r){return r.n>0;}).sort(function(a,b){return b.pct-a.pct;});
+  var s=sfCtx('chAts',Math.max(200,36+rows.length*48)); if(!s)return;
+  if(!rows.length){sfEmpty('chAts','No graded lines yet this season.');return;}
+  sfUnempty('chAts');
+  var ctx=s.ctx,w=s.w,h=s.h,padL=96,padR=76,padT=14;
+  var slot=(h-padT-8)/rows.length,bh=Math.min(28,slot-16),bw=w-padL-padR;
+  ctx.strokeStyle='rgba(148,163,184,.25)';ctx.setLineDash([4,4]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL+bw/2,padT-4);ctx.lineTo(padL+bw/2,h-8);ctx.stroke();ctx.setLineDash([]);
+  sfLabel(ctx,'50%',padL+bw/2,h-2,8,'#5b6b73','center',700);
+  rows.forEach(function(r,i){
+    var y0=padT+i*slot,yc=y0+slot/2,by=y0+(slot-bh)/2;
+    sfLabel(ctx,r.c.short,8,yc,11,'#dce8ec','left',800);
+    ctx.fillStyle='rgba(148,163,184,.12)';
+    sfRR(ctx,padL,by,bw,bh,7);ctx.fill();
+    var fw=Math.max(bh,bw*r.pct);
+    var grad=ctx.createLinearGradient(padL,0,padL+bw,0);
+    grad.addColorStop(0,'#f4c542');grad.addColorStop(1,'#2dd4bf');
+    ctx.fillStyle=grad;
+    sfRR(ctx,padL,by,fw,bh,7);ctx.fill();
+    sfLabel(ctx,Math.round(r.pct*100)+'%',padL+fw+8,yc,13,'#ffffff','left',900);
+    sfLabel(ctx,r.w+'-'+r.l+(r.p?'-'+r.p:''),w-8,yc,10,'#7d8f98','right',700);
+  });
+}
+/* 4 — Scoring identity (PF vs PA per game) */
+function sfPaintScore(){
+  var coaches=sfChartCoaches();
+  var rows=coaches.map(function(c){
+    var gs=(state.games||[]).filter(function(g){
+      return String(g.person_id)===c.person_id&&g.status==='completed'&&!g.is_bye&&Number.isFinite(Number(g.points_for));
+    });
+    if(!gs.length)return null;
+    return {c:c,
+      pf:gs.reduce(function(a,g){return a+Number(g.points_for);},0)/gs.length,
+      pa:gs.reduce(function(a,g){return a+Number(g.points_against||0);},0)/gs.length};
+  }).filter(Boolean);
+  var s=sfCtx('chScore',250); if(!s)return;
+  if(!rows.length){sfEmpty('chScore','No completed games yet.');return;}
+  sfUnempty('chScore');
+  var ctx=s.ctx,w=s.w,h=s.h,padL=28,padB=32,padT=16;
+  var iw=w-padL-8,ih=h-padT-padB;
+  var mx=Math.max.apply(null,rows.map(function(r){return Math.max(r.pf,r.pa);}).concat([1]))*1.18;
+  var y=function(v){return padT+(1-v/mx)*ih;};
+  var slot=iw/rows.length,bw=Math.min(30,slot*0.26);
+  rows.forEach(function(r,i){
+    var cx=padL+slot*i+slot/2,base=padT+ih;
+    ctx.fillStyle='#f4c542';
+    sfRR(ctx,cx-bw-3,y(r.pf),bw,Math.max(2,base-y(r.pf)),4);ctx.fill();
+    ctx.fillStyle='rgba(248,113,113,.85)';
+    sfRR(ctx,cx+3,y(r.pa),bw,Math.max(2,base-y(r.pa)),4);ctx.fill();
+    sfLabel(ctx,r.pf.toFixed(1),cx-bw/2-3,y(r.pf)-11,10,'#f4c542','center',800);
+    sfLabel(ctx,r.pa.toFixed(1),cx+bw/2+3,y(r.pa)-11,10,'#f87171','center',800);
+    sfLabel(ctx,r.c.short,cx,base+13,10,'#aebcc3','center',800);
+  });
+  ctx.strokeStyle='rgba(148,163,184,.25)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT+ih);ctx.lineTo(w-8,padT+ih);ctx.stroke();
+}
+/* 5 — Head-to-head matrix */
+function sfPaintH2h(){
+  var coaches=sfChartCoaches();
+  if(coaches.length<2){var s0=sfCtx('chH2h',120);if(s0)sfEmpty('chH2h','Need at least two coaches.');return;}
+  var teams={};
+  coaches.forEach(function(c){teams[c.person_id]=String(c.team||'').toLowerCase();});
+  function cell(a,b){
+    var opp=teams[b.person_id];
+    var gs=(state.games||[]).filter(function(g){
+      return String(g.person_id)===a.person_id&&g.status==='completed'&&!g.is_bye&&opp&&
+        String(g.opponent_team||'').toLowerCase()===opp;
+    });
+    var w=gs.filter(function(g){return g.result==='W';}).length;
+    var l=gs.filter(function(g){return g.result==='L';}).length;
+    return {w:w,l:l,n:w+l};
+  }
+  var s=sfCtx('chH2h',52+coaches.length*58); if(!s)return;
+  sfUnempty('chH2h');
+  var ctx=s.ctx,w=s.w,h=s.h,n=coaches.length;
+  var padL=78,padT=36,padB=8,padR=8;
+  var cw=(w-padL-padR)/n,ch=(h-padT-padB)/n;
+  coaches.forEach(function(c,j){
+    sfLabel(ctx,c.short,padL+cw*j+cw/2,padT-13,10,c.color,'center',800);
+  });
+  coaches.forEach(function(c,i){
+    sfLabel(ctx,c.short,padL-10,padT+ch*i+ch/2,10,c.color,'right',800);
+    coaches.forEach(function(d,j){
+      var x0=padL+cw*j,y0=padT+ch*i;
+      if(i===j){
+        ctx.fillStyle='rgba(148,163,184,.06)';
+        sfRR(ctx,x0+2,y0+2,cw-4,ch-4,6);ctx.fill();
+        sfLabel(ctx,'—',x0+cw/2,y0+ch/2,12,'#3d5a64','center',800);
+        return;
+      }
+      var r=cell(c,d);
+      var col='rgba(148,163,184,.06)';
+      if(r.n){
+        var pct=r.w/r.n;
+        col=pct>0.5?'rgba(45,212,191,'+(0.18+pct*0.6).toFixed(2)+')':
+            pct<0.5?'rgba(248,113,113,'+(0.18+(1-pct)*0.6).toFixed(2)+')':
+            'rgba(244,197,66,.30)';
+      }
+      ctx.fillStyle=col;
+      sfRR(ctx,x0+2,y0+2,cw-4,ch-4,6);ctx.fill();
+      if(r.n)sfLabel(ctx,r.w+'-'+r.l,x0+cw/2,y0+ch/2,13,'#ffffff','center',900);
+      else sfLabel(ctx,'·',x0+cw/2,y0+ch/2,12,'#3d5a64','center',700);
+    });
+  });
+}
+function renderChartsPane(){
+  var pane=document.getElementById('paneCharts');
+  if(!pane||!pane.classList.contains('active'))return;
+  try{
+    sfPaintRank();sfPaintMov();sfPaintAts();sfPaintScore();sfPaintH2h();
+  }catch(e){console.error('[charts] failed:',e);}
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('#insightsTabs button'); if(!b)return;
+  document.querySelectorAll('#insightsTabs button').forEach(function(x){x.classList.toggle('active',x===b);});
+  document.querySelectorAll('#analytics .analytics-pane').forEach(function(p){p.classList.toggle('active',p.id===b.dataset.pane);});
+  if(b.dataset.pane==='paneCharts')renderChartsPane();
+},true);
+var sfChartsResizeT=null;
+window.addEventListener('resize',function(){
+  clearTimeout(sfChartsResizeT);
+  sfChartsResizeT=setTimeout(function(){renderChartsPane();},250);
+});
+</script>
 
 <section id="vegas" class="view">
   <div class="vegas-shell">
@@ -7888,7 +8259,7 @@ function renderLegacyPillar(){
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
    renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
-function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies()}
+function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies();try{renderChartsPane()}catch(_){}}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
