@@ -7727,8 +7727,7 @@ function renderWire(){
    else if(won&&margin<=7){type="SURVIVES";icon="⏱";accent="gold";title=`${rankStr(g.team_rank)}${g.team_name} escapes ${g.opponent_team}`;}
    else if(won&&margin>=24){type="ROLLS";icon="💪";accent="ice";title=`${rankStr(g.team_rank)}${g.team_name} rolls past ${g.opponent_team}`;}
    else{type="FINAL";icon="🏟️";accent="cyan";title=won?`${rankStr(g.team_rank)}${g.team_name} tops ${g.opponent_team}`:`${g.opponent_team} tops ${rankStr(g.team_rank)}${g.team_name}`;}
-   const stakes=gameStakes(g);
-   add(type,icon,title,`${wName} ${wScore}, ${lName} ${lScore}.${stakes?` ${stakes}.`:""}`,accent,logoFor(wName),`${wName} vs ${lName}`,score,"","",{logo2:logoFor(lName)},"card");
+   add(type,icon,title,"",accent,logoFor(wName),`${wName} vs ${lName}`,score,"","",{logo2:logoFor(lName)},"headline");
    const st=stories[stories.length-1];st._margin=margin;st._upset=upsetDiff;st._total=pf+pa;
  });
  if(weekGames.length){
@@ -7742,6 +7741,8 @@ function renderWire(){
      if(lead._margin<=7){lead.icon="⏱";lead.title=`${lead.title.replace(/^([\s\S]*?) escapes /,"$1 survives ")} in a thriller`;}
      else lead.icon="🔥";
    }
+   const lstakes=gameStakes(weekGames[cands.indexOf(lead)]);
+   lead.body=lstakes?lstakes+".":"";
    stories.forEach(s=>{delete s._margin;delete s._upset;delete s._total;});
  }
 
@@ -7771,7 +7772,7 @@ function renderWire(){
  const gotw=selectGameOfWeek(week);
  if(gotw&&gotw.status==="scheduled"){
    const gr=scheduleDisplayRanks(gotw);
-   add("WHAT'S NEXT","★","Game of the Week",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}.`,"violet",logoFor(gotw.team_name),`${gotw.team_name} vs ${gotw.opponent_team}`,"","","",{logo2:logoFor(gotw.opponent_team)},"card");
+   add("WHAT'S NEXT","\u2605",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}`,"","violet",logoFor(gotw.team_name),`${gotw.team_name} vs ${gotw.opponent_team}`,"","","",{logo2:logoFor(gotw.opponent_team)},"headline");
  }
 
  if(!stories.length)add("SATURDAY FOUNDRY","🏟️","The Story Starts Here",`Week ${week} is ready. Results will automatically build the Legacy Line.`,"cyan","");
@@ -7785,10 +7786,10 @@ function renderWire(){
    const foot=vs
      ?`<b>${esc(st.leader)}</b>`
      :`${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<b>${esc(st.leader||st.title)}</b>`;
-   return `<article class="legacy-story-card${vs?" matchup":""}" data-accent="${esc(st.accent)}"><span class="legacy-story-kicker">${esc(st.type)}</span>${head}<div class="legacy-story-title">${esc(st.title)}</div><p class="legacy-story-body">${esc(st.body)}</p><div class="legacy-story-team">${foot}</div></article>`;
+   return `<article class="legacy-story-card${vs?" matchup":""}" data-accent="${esc(st.accent)}"><span class="legacy-story-kicker">${esc(st.type)}</span>${head}<div class="legacy-story-title">${esc(st.title)}</div>${st.body?`<p class="legacy-story-body">${esc(st.body)}</p>`:""}<div class="legacy-story-team">${foot}</div></article>`;
  };
  // Teams that own 2+ categories get one takeover feature card instead of repeats.
- const leadCard=st=>`<article class="legacy-lead" data-accent="${esc(st.accent)}"><div class="legacy-lead-top"><span class="legacy-story-kicker">${esc(st.type)}</span><span class="legacy-lead-art">${st.icon}</span></div><div class="legacy-lead-hed">${esc(st.title)}</div><div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em>${st.extra&&st.extra.logo2?`<img src="${esc(st.extra.logo2)}" alt="">`:""}</div><div class="legacy-lead-score">${esc(st.stat)}</div><p class="legacy-story-body">${esc(st.body)}</p></article>`;
+ const leadCard=st=>`<article class="legacy-lead" data-accent="${esc(st.accent)}"><div class="legacy-lead-top"><span class="legacy-story-kicker">${esc(st.type)}</span><span class="legacy-lead-art">${st.icon}</span></div><div class="legacy-lead-hed">${esc(st.title)}</div><div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em>${st.extra&&st.extra.logo2?`<img src="${esc(st.extra.logo2)}" alt="">`:""}</div><div class="legacy-lead-score">${esc(st.stat)}</div>${st.body?`<p class="legacy-story-body">${esc(st.body)}</p>`:""}</article>`;
  const lead=stories.find(s=>s.kind==="lead");
  const rest=stories.filter(s=>s.kind!=="lead");
  const byGroup={};
@@ -7806,7 +7807,7 @@ function renderWire(){
  rest.forEach(st=>{if(!claimed.has(st))cardsHtml+=storyCard(st);});
  $("wire").innerHTML=`${lead?leadCard(lead):""}<div class="legacy-stories">${cardsHtml}</div>`;
 
- const tickerText=stories.slice(0,8).map(st=>`${st.type}: ${st.body}`).join("   •   ");
+ const tickerText=stories.slice(0,8).map(st=>`${st.type}: ${st.title}${st.stat?` — ${st.stat}`:""}`).join("   •   ");
  $("tickerCopy").innerHTML=`<div class="ticker-rail"><span>${esc(tickerText)}</span><span aria-hidden="true">${esc(tickerText)}</span></div>`;
 }
 function renderNext(){
