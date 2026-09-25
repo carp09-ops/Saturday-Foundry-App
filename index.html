@@ -6810,7 +6810,7 @@ function renderCoaches(){
  return `<article class="premium-card relative overflow-hidden p-4" style="border-top:3px solid ${accents[i%accents.length]};"><div class="flex justify-between items-start"><div class="flex items-center gap-3">${lg}<div><div class="flex items-center gap-1.5">${rank?`<span class="text-amber-300 font-teko text-lg">#${rank}</span>`:""}<span class="font-teko text-2xl font-extrabold text-white">${esc(p.coach_name).toUpperCase()}</span></div><div class="text-[10px] font-bold text-emerald-300">${esc(p.team_name||"Program").toUpperCase()}</div><div class="text-[8px] text-slate-500">${esc(p.conference||"")}</div>${stream?.stream_url?`<a class="coach-stream-link" href="${esc(stream.stream_url)}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer"><span class="live-stream-dot" aria-hidden="true"></span>LIVE STREAM</a>`:""}<button class="coach-schedule-link" type="button" data-team-schedule-person="${esc(p.person_id)}">VIEW TEAM SCHEDULE →</button></div></div><div class="text-right pr-1"><div class="font-teko text-4xl font-extrabold text-white leading-none">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><span class="inline-flex mt-2 px-2 py-0.5 rounded ${streak(p.person_id).startsWith("W")?"bg-emerald-500 text-slate-950":"bg-slate-700 text-white"} text-[9px] font-black">${streak(p.person_id)}</span></div></div>${nextGameHtml}<div class="grid grid-cols-3 mt-3 ref-stat-box divide-x divide-slate-800/70"><div class="p-3 text-center"><div class="ref-small-label">Career</div><div class="font-teko text-2xl font-bold text-white">${c.wins||0}-${c.losses||0}</div><div class="text-[10px] ${Number(c.point_differential||0)>0?"pos":Number(c.point_differential||0)<0?"neg":""} font-bold">${signed(c.point_differential)}</div><div class="conf-record-line">CONF ${careerConf.games?`${careerConf.wins}-${careerConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Season ${S.season_number}</div><div class="font-teko text-2xl font-bold text-white">${seasonHasGames?`${st.wins||0}-${st.losses||0}`:"-"}</div><div class="text-[10px] ${seasonHasGames?(Number(st.point_differential||0)>0?"pos":Number(st.point_differential||0)<0?"neg":""):""} font-bold">${seasonHasGames?signed(st.point_differential):"-"}</div><div class="conf-record-line">CONF ${seasonConf.games?`${seasonConf.wins}-${seasonConf.losses}`:"-"}</div></div><div class="p-3 text-center"><div class="ref-small-label">Current Form</div><div class="font-teko text-2xl font-bold text-white">${power(st)}</div><div class="text-[10px] text-amber-300 font-black">${currentFormBand(st).label}${currentFormBand(st).early?" · EARLY SAMPLE":""}</div></div></div></article>`;
 }).join('')||'<div class="text-slate-500">No programs have been claimed yet.</div>' 
  const coachGrid=$("coaches");
- if(coachGrid)coachGrid.onclick=e=>{const b=e.target.closest('[data-team-schedule-person]');if(!b)return;scheduleTeamPersonId=b.dataset.teamSchedulePerson;scheduleConference='__all__';const games=(state.games||[]).filter(g=>String(g.person_id)===String(scheduleTeamPersonId));const next=games.find(g=>g.status==='scheduled'&&!g.is_bye)||games.filter(g=>!g.is_bye).sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];if(next)selectedWeek=Number(next.week_number);switchView('schedule');renderSchedule();setTimeout(()=>document.getElementById('scheduleScopeBar')?.scrollIntoView({behavior:'smooth',block:'start'}),0);};
+ if(coachGrid)coachGrid.onclick=e=>{const b=e.target.closest('[data-team-schedule-person]');if(!b)return;const pid=b.dataset.teamSchedulePerson;if(typeof window.CDHQ_showTeamSchedule==='function')window.CDHQ_showTeamSchedule(pid);else{scheduleTeamPersonId=pid;window.__sfScheduleTeamExplicit=true;}scheduleConference='__all__';const games=(state.games||[]).filter(g=>String(g.person_id)===String(pid));const next=games.find(g=>g.status==='scheduled'&&!g.is_bye)||games.filter(g=>!g.is_bye).sort((a,b)=>Number(b.week_number)-Number(a.week_number))[0];if(next)selectedWeek=Number(next.week_number);switchView('schedule');renderSchedule();setTimeout(()=>document.getElementById('scheduleScopeBar')?.scrollIntoView({behavior:'smooth',block:'start'}),0);};
 }
 function renderStandings(){
  $("standingsMeta").textContent=`Season ${S.season_number}`;
@@ -7091,9 +7091,9 @@ function renderSchedule(){
  const scheduleTeams=(state.programs||[]).filter(p=>p?.person_id&&p?.team_name).sort((a,b)=>String(a.team_name).localeCompare(String(b.team_name)));
  const selectedTeamLabel=scheduleTeamProgram?.team_name||"All Teams";
  scopeBar.innerHTML=`<div class="schedule-scope-copy"><span>${scheduleTeamPersonId?`${esc(selectedTeamLabel)} Schedule`:"Schedule Filters"}</span><small>${scheduleTeamPersonId?"Full season below · use × to return to the national scoreboard.":"Choose a week, then narrow the national board by conference or Dynasty team."}</small></div><div class="schedule-scope-controls"><select id="scheduleConferenceSelect" class="schedule-conf-select" aria-label="Conference filter"><option value="__all__" ${scheduleConference==="__all__"?"selected":""}>All Conferences</option>${conferenceNames.map(c=>`<option value="${esc(c)}" ${c===scheduleConference?"selected":""}>${esc(c)}</option>`).join("")}</select><div class="schedule-team-filter-wrap"><select id="scheduleTeamSelect" class="schedule-conf-select" aria-label="Team filter"><option value="" ${!scheduleTeamPersonId?"selected":""}>All Teams</option>${scheduleTeams.map(p=>`<option value="${esc(p.person_id)}" ${String(p.person_id)===String(scheduleTeamPersonId)?"selected":""}>${esc(p.team_name)}</option>`).join("")}</select>${scheduleTeamPersonId?`<button id="clearScheduleTeam" class="schedule-team-filter-clear" type="button" aria-label="Clear team filter" title="Clear team filter">×</button>`:""}</div></div>`;
- const confSelect=$("scheduleConferenceSelect");if(confSelect)confSelect.onchange=e=>{scheduleConference=e.target.value||"__all__";if(scheduleConference!=="__all__")scheduleTeamPersonId=null;renderSchedule()};
- const teamSelect=$("scheduleTeamSelect");if(teamSelect)teamSelect.onchange=e=>{scheduleTeamPersonId=e.target.value||null;if(scheduleTeamPersonId)scheduleConference="__all__";renderSchedule()};
- const clearTeam=$("clearScheduleTeam");if(clearTeam)clearTeam.onclick=()=>{scheduleTeamPersonId=null;scheduleConference='__all__';renderSchedule();requestAnimationFrame(()=>$("weekNav")?.scrollIntoView({behavior:'smooth',block:'start'}));};
+ const confSelect=$("scheduleConferenceSelect");if(confSelect)confSelect.onchange=e=>{scheduleConference=e.target.value||"__all__";if(scheduleConference!=="__all__"){scheduleTeamPersonId=null;window.__sfScheduleTeamExplicit=false;}renderSchedule()};
+ const teamSelect=$("scheduleTeamSelect");if(teamSelect)teamSelect.onchange=e=>{const v=e.target.value||null;if(typeof window.CDHQ_showTeamSchedule==='function')window.CDHQ_showTeamSchedule(v);else{scheduleTeamPersonId=v;window.__sfScheduleTeamExplicit=!!v;}if(v)scheduleConference="__all__";renderSchedule()};
+ const clearTeam=$("clearScheduleTeam");if(clearTeam)clearTeam.onclick=()=>{scheduleTeamPersonId=null;window.__sfScheduleTeamExplicit=false;scheduleConference='__all__';renderSchedule();requestAnimationFrame(()=>$("weekNav")?.scrollIntoView({behavior:'smooth',block:'start'}));};
 
  const weekGames=visibleGames.filter(g=>Number(g.week_number||0)===selectedWeek);
  const dynastyWeek=weekGames.filter(isDynastyScheduleGame);
@@ -11279,12 +11279,22 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
   }
   function ensureMode(){
     const key=seasonKey();
-    if(key!==modeSeasonKey){modeSeasonKey=key;scheduleMode=mine()?'my':'national'}
+    if(key!==modeSeasonKey){modeSeasonKey=key;scheduleMode=mine()?'my':'national';window.__sfScheduleTeamExplicit=false;}
     if(!scheduleMode)scheduleMode=mine()?'my':'national';
     if(scheduleMode==='my'&&!mine())scheduleMode='national';
-    if(scheduleMode==='my'&&mine())scheduleTeamPersonId=mine().person_id;
-    if(scheduleMode==='national')scheduleTeamPersonId=null;
+    // An explicitly chosen team (coach card / team filter) survives the mode defaults.
+    if(!window.__sfScheduleTeamExplicit){
+      if(scheduleMode==='my'&&mine())scheduleTeamPersonId=mine().person_id;
+      if(scheduleMode==='national')scheduleTeamPersonId=null;
+    }
   }
+  // Deep-link a specific user-controlled team's full-season schedule (coach cards, team filter).
+  window.CDHQ_showTeamSchedule=function(personId){
+    scheduleTeamPersonId=personId||null;
+    window.__sfScheduleTeamExplicit=!!personId;
+    if(personId&&scheduleMode!=='my')scheduleMode='my';
+    scheduleConference='__all__';
+  };
   function ensureModeUi(){
     const hero=document.querySelector('#schedule .v21-schedule-hero');if(!hero)return;
     let bar=document.getElementById('sfScheduleModebar');
@@ -11292,10 +11302,10 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
       bar=document.createElement('div');bar.id='sfScheduleModebar';bar.className='sf-schedule-modebar';
       bar.innerHTML=`<div class="sf-schedule-modes"><button type="button" class="sf-schedule-mode" data-sf-schedule-mode="my">My Schedule</button><button type="button" class="sf-schedule-mode" data-sf-schedule-mode="national">National</button></div><div class="sf-schedule-mode-note" id="sfScheduleModeNote"></div>`;
       hero.appendChild(bar);
-      bar.addEventListener('click',e=>{const b=e.target.closest('[data-sf-schedule-mode]');if(!b)return;const next=b.dataset.sfScheduleMode;if(next==='my'&&!mine())return;scheduleMode=next;if(next==='my')scheduleTeamPersonId=mine()?.person_id||null;else{scheduleTeamPersonId=null;try{const cw=(typeof currentWeek==='function')?currentWeek():null;if(Number.isInteger(cw)&&cw>=0)selectedWeek=cw;}catch(_){}}scheduleConference='__all__';renderSchedule();});
+      bar.addEventListener('click',e=>{const b=e.target.closest('[data-sf-schedule-mode]');if(!b)return;const next=b.dataset.sfScheduleMode;if(next==='my'&&!mine())return;window.__sfScheduleTeamExplicit=false;scheduleMode=next;if(next==='my')scheduleTeamPersonId=mine()?.person_id||null;else{scheduleTeamPersonId=null;try{const cw=(typeof currentWeek==='function')?currentWeek():null;if(Number.isInteger(cw)&&cw>=0)selectedWeek=cw;}catch(_){}}scheduleConference='__all__';renderSchedule();});
     }
     bar.querySelectorAll('[data-sf-schedule-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.sfScheduleMode===scheduleMode);if(b.dataset.sfScheduleMode==='my')b.hidden=!mine()});
-    const note=document.getElementById('sfScheduleModeNote');if(note)note.textContent=scheduleMode==='my'?'Your full season in one view.':'Week-by-week national scoreboard with the season archive tucked away.';
+    const note=document.getElementById('sfScheduleModeNote');if(note){const expProg=(scheduleMode==='my'&&window.__sfScheduleTeamExplicit)?(state.programs||[]).find(p=>String(p.person_id)===String(scheduleTeamPersonId)):null;let expMine=false;try{expMine=!!(expProg&&mine()&&String(expProg.person_id)===String(mine().person_id))}catch(_){}note.textContent=scheduleMode==='my'?(expProg&&!expMine?`${expProg.team_name||'Team'} full season in one view.`:'Your full season in one view.'):'Week-by-week national scoreboard with the season archive tucked away.';}
   }
   function perspective(g,p){
     if(!g||g.status!=='completed'||g.points_for==null||g.points_against==null)return null;
@@ -13349,6 +13359,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   const escV3=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const keyV3=v=>String(v||'').trim().toLowerCase();
   function myProgramV3(){try{const via=typeof myProgramForSeason==='function'?myProgramForSeason():null;if(via)return via;return (state.myPrograms||[]).find(x=>String(x.season_id)===String(S?.season_id))||null}catch(_e){return null}}
+  /* QA: an explicitly chosen team (coach card / team filter) overrides the logged-in program. */
+  function selectedProgramV3(){try{if(window.__sfScheduleTeamExplicit&&typeof scheduleTeamPersonId!=='undefined'&&scheduleTeamPersonId){const p=(state.programs||[]).find(x=>String(x.person_id)===String(scheduleTeamPersonId));if(p)return p}}catch(_e){}return myProgramV3();}
   function resolveLogoV3(id,name,explicit){
     if(explicit)return explicit;
     try{if(typeof vegasTeamLogo==='function'){const v=vegasTeamLogo(id,name);if(v)return v}}catch(_e){}
@@ -13516,7 +13528,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     /* QA 9.8.0 fix: V3 is the only My renderer now, so it must create its own host — V2's creator never runs. */
     let host=document.getElementById('sfMySeasonHost');
     if(!host){host=document.createElement('div');host.id='sfMySeasonHost';host.className='sf-my-season';const nav=document.getElementById('weekNav');if(nav)nav.insertAdjacentElement('beforebegin',host);else schedule.appendChild(host);}
-    const p=myProgramV3();if(!p){host.innerHTML='<div class="empty">No active program is attached to this account for this season.</div>';return;}
+    const p=selectedProgramV3();if(!p){host.innerHTML='<div class="empty">No active program is attached to this account for this season.</div>';return;}
     schedule.classList.add('sf-v3-my-mode');
     const tid=String(p.team_id||''),src=(Array.isArray(state.scheduleGames)&&state.scheduleGames.length)?state.scheduleGames:(state.games||[]);
     const games=src.filter(g=>String(g.team_id||'')===tid||String(g.opponent_team_id||'')===tid).sort((a,b)=>Number(a.week_number||0)-Number(b.week_number||0));
@@ -13534,7 +13546,8 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       return `<article class="sf-season-game ${cls}" data-sf-v3-game="${escV3(g.id)}"><div class="sf-season-game-weekrow"><span>${escV3(g.week_label||`Week ${g.week_number}`)}</span>${eventBadge}</div><div class="sf-season-game-head"><div class="sf-season-game-status"><div><strong class="${resultCls}">${escV3(result)}</strong><small>${done?'Final':'Scheduled'}</small></div>${action}</div></div><div class="sf-matchup">${side(away,neutral?'Team 1':'Away',false)}${middle}${side(home,neutral?'Team 2':'Home',true)}</div>${marketV3(g,sides,p)}</article>`;
     }).join('');
     const teamLogo=resolveLogoV3(p.team_id,p.team_name,p.logo_url||p.team_logo_url||'');
-    host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · My Schedule</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
+    const isMineV3=(()=>{try{const m=myProgramV3();return !!(m&&String(m.person_id)===String(p.person_id))}catch(_e){return true}})();
+    host.innerHTML=`<section class="sf-team-season-hero">${teamLogo?`<img class="sf-team-season-logo" src="${escV3(teamLogo)}" alt="${escV3(p.team_name)} logo">`:'<div class="sf-team-season-logo"></div>'}<div><div class="sf-team-season-kicker">Season ${escV3(S?.season_number||'')} · ${isMineV3?'My Schedule':'Team Schedule'}</div><div class="sf-team-season-name">${escV3(p.team_name||'My Program')}</div><div class="sf-team-season-sub">${escV3(p.conference||'')} · ${finals} finals · ${upcoming} remaining</div></div><div class="sf-team-season-record"><strong>${wins}-${losses}</strong><span>Season Record</span></div></section><section class="sf-season-board">${rows||'<div class="empty">No schedule loaded.</div>'}</section>`;
     const meta=document.getElementById('scheduleMeta');if(meta)meta.textContent=`${games.length} schedule entries · full season view`;
     requestAnimationFrame(()=>{try{sfFitScheduleNames(host)}catch(_e){}});
     try{sfFocusActionableGame(games,host)}catch(_e){}
