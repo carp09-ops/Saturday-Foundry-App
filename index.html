@@ -4708,13 +4708,21 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
    halo so they separate from dark tiles. No plates, no backgrounds — the transparent
    look is preserved. Applied globally: GOTW, Top 25, schedule, standings, coaches. */
 img.sf-dark-logo{
-  filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 0 9px rgba(255,255,255,.22))!important;
+  filter:drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 0 12px rgba(255,255,255,.28))!important;
 }
 /* The legacy QA 9.6.17 contrast rule still sets filter:none!important on
    #overview #gotw .gotw-matchup .team-logo (2,2,0); this (2,2,1) override
    re-enables the halo there without touching the old rule. */
 #overview #gotw .gotw-matchup img.sf-dark-logo{
-  filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 0 9px rgba(255,255,255,.22))!important;
+  filter:drop-shadow(0 0 2px rgba(255,255,255,.7)) drop-shadow(0 0 12px rgba(255,255,255,.28))!important;
+}
+/* Soft spotlight behind dark marks on the GOTW plaque: a fading radial lift,
+   not a box. (2,3,1) beats the plaque background rule without touching it. */
+#overview #gotw .gotw-matchup .gotw-logo-plaque:has(> img.sf-dark-logo){
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.17), rgba(255,255,255,0) 64%),
+    radial-gradient(circle at 32% 18%,rgba(255,255,255,.085),transparent 34%),
+    linear-gradient(145deg,rgba(17,26,31,.98),rgba(5,11,15,.99))!important;
 }
 </style>
 
@@ -7471,7 +7479,7 @@ function renderGotw(){
  if(!picks.length){shell.classList.remove("gotw-carousel-shell");shell.innerHTML=`<div class="gotw-head"><span>Games of the Week</span><span>${esc(D?.short_name||D?.name||"Dynasty")} Network</span></div><div class="gotw-body empty">No game on this slate.</div>`;return}
  if(activeGotwSlide>=picks.length)activeGotwSlide=0;
  shell.classList.add("gotw-carousel-shell");
- shell.innerHTML=`<button type="button" class="gotw-mobile-accordion" aria-expanded="true"><span><small>GAME OF THE WEEK</small><b>WEEK ${week} · ${esc(picks[0]?.game?.team_name||'FEATURED MATCHUP')}</b></span><i>⌃</i></button><div class="gotw-collapsible"><div class="gotw-carousel-top"><div class="gotw-broadcast-brand"><span class="gotw-network-label">SATURDAY FOUNDRY NETWORK</span><strong>GAMES OF THE WEEK</strong></div><div class="gotw-week-badge">WEEK ${week}</div></div><div class="gotw-carousel-stage">${picks.map((p,i)=>gotwSlideMarkup(p,i,picks.length)).join("")}</div><div class="gotw-carousel-position"><b class="gotw-carousel-count">${activeGotwSlide+1} OF ${picks.length}</b><span class="gotw-swipe-hint">SWIPE FOR MORE</span></div><div class="gotw-carousel-controls"><div class="gotw-micro-rail" aria-label="Featured games">${picks.map((_,i)=>`<button type="button" class="gotw-micro-step ${i===activeGotwSlide?"active":""}" data-gotw-dot="${i}" aria-label="Show featured game ${i+1}"><span>${String(i+1).padStart(2,"0")}</span></button>`).join("")}</div></div></div>`;
+ shell.innerHTML=`<button type="button" class="gotw-mobile-accordion" aria-expanded="true"><span><small>GAME OF THE WEEK</small><b>WEEK ${week}</b></span><i>⌃</i></button><div class="gotw-collapsible"><div class="gotw-carousel-top"><div class="gotw-broadcast-brand"><span class="gotw-network-label">SATURDAY FOUNDRY NETWORK</span><strong>GAMES OF THE WEEK</strong></div><div class="gotw-week-badge">WEEK ${week}</div></div><div class="gotw-carousel-stage">${picks.map((p,i)=>gotwSlideMarkup(p,i,picks.length)).join("")}</div><div class="gotw-carousel-position"><b class="gotw-carousel-count">${activeGotwSlide+1} OF ${picks.length}</b><span class="gotw-swipe-hint">SWIPE FOR MORE</span></div><div class="gotw-carousel-controls"><div class="gotw-micro-rail" aria-label="Featured games">${picks.map((_,i)=>`<button type="button" class="gotw-micro-step ${i===activeGotwSlide?"active":""}" data-gotw-dot="${i}" aria-label="Show featured game ${i+1}"><span>${String(i+1).padStart(2,"0")}</span></button>`).join("")}</div></div></div>`;
  initGotwAccordion(shell);
  shell.onclick=e=>{
    const acc=e.target.closest?.('.gotw-mobile-accordion');if(acc){e.preventDefault();toggleGotwAccordion(shell);return;}
@@ -11648,7 +11656,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
     }
     if(activeGotwSlide>=picks.length)activeGotwSlide=0;
     shell.classList.add('gotw-carousel-shell');
-    shell.innerHTML=`<button type="button" class="gotw-mobile-accordion" aria-expanded="true"><span><small>GAME OF THE WEEK</small><b>WEEK ${week} · ${esc(picks[0]?.game?.team_name||'FEATURED MATCHUP')}</b></span><i>⌃</i></button><div class="gotw-collapsible"><div class="gotw-carousel-top"><div class="gotw-broadcast-brand"><span class="gotw-network-label">SATURDAY FOUNDRY NETWORK</span><strong>GAMES OF THE WEEK</strong></div><div class="gotw-week-badge">WEEK ${week}</div></div><div class="gotw-carousel-stage">${picks.map((p,i)=>gotwSlideMarkup(p,i,picks.length)).join('')}</div><div class="gotw-carousel-position"><b class="gotw-carousel-count">${activeGotwSlide+1} OF ${picks.length}</b><span class="gotw-swipe-hint">SWIPE FOR MORE</span></div><div class="gotw-carousel-controls"><div class="gotw-micro-rail" aria-label="Featured games">${picks.map((_,i)=>`<button type="button" class="gotw-micro-step ${i===activeGotwSlide?'active':''}" data-gotw-dot="${i}" aria-label="Show featured game ${i+1}"><span>${String(i+1).padStart(2,'0')}</span></button>`).join('')}</div></div></div>`;
+    shell.innerHTML=`<button type="button" class="gotw-mobile-accordion" aria-expanded="true"><span><small>GAME OF THE WEEK</small><b>WEEK ${week}</b></span><i>⌃</i></button><div class="gotw-collapsible"><div class="gotw-carousel-top"><div class="gotw-broadcast-brand"><span class="gotw-network-label">SATURDAY FOUNDRY NETWORK</span><strong>GAMES OF THE WEEK</strong></div><div class="gotw-week-badge">WEEK ${week}</div></div><div class="gotw-carousel-stage">${picks.map((p,i)=>gotwSlideMarkup(p,i,picks.length)).join('')}</div><div class="gotw-carousel-position"><b class="gotw-carousel-count">${activeGotwSlide+1} OF ${picks.length}</b><span class="gotw-swipe-hint">SWIPE FOR MORE</span></div><div class="gotw-carousel-controls"><div class="gotw-micro-rail" aria-label="Featured games">${picks.map((_,i)=>`<button type="button" class="gotw-micro-step ${i===activeGotwSlide?'active':''}" data-gotw-dot="${i}" aria-label="Show featured game ${i+1}"><span>${String(i+1).padStart(2,'0')}</span></button>`).join('')}</div></div></div>`;
     initGotwAccordion(shell);
     shell.onclick=e=>{
       const acc=e.target.closest?.('.gotw-mobile-accordion');
