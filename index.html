@@ -7702,14 +7702,38 @@ function renderWire(){
  const add=(type,icon,title,body,accent="cyan",logo="",leader="",stat="",group="",unit="",extra=null,kind="card")=>stories.push({type,icon,title,body,accent,logo,leader,stat,group,unit,extra,kind});
 
  // ---- The wire: narrative layer. Latest completed week becomes headlines, one lead story. ----
- const leagueGames=currentSeason.filter(g=>g.person_id);
- const storyWeek=leagueGames.length?Math.max(...leagueGames.map(g=>Number(g.week_number)||0)):null;
- const weekGames=(storyWeek==null?[]:leagueGames.filter(g=>Number(g.week_number)===storyWeek)).slice(0,6);
+ // League-wide pool: one row per game. Prefer the user-coached perspective, else the winner's.
+ const gameMap=new Map();
+ currentSeason.forEach(g=>{
+   const key=g.legacy_game_id||([g.team_name,g.opponent_team].sort().join("~")+"~"+(g.week_number||0));
+   if(!gameMap.has(key))gameMap.set(key,[]);
+   gameMap.get(key).push(g);
+ });
+ const pool=[...gameMap.values()].map(rows=>rows.find(r=>r.person_id)||rows.find(r=>r.result==="W")||rows[0]);
+ const storyWeek=pool.length?Math.max(...pool.map(g=>Number(g.week_number)||0)):null;
+ // Rank the week's games by newsworthiness; the wire covers the whole league, not just user teams.
+ const newsScore=g=>{
+   const pf=Number(g.points_for),pa=Number(g.points_against);
+   const margin=Math.abs(pf-pa),total=pf+pa,won=g.result==="W";
+   const upset=won&&g.opponent_rank?((Number(g.team_rank)||26)-Number(g.opponent_rank)):0;
+   let s=0;
+   if(g.person_id)s+=100;
+   if(upset>0)s+=80+Math.min(upset,20);
+   if(g.team_rank&&g.opponent_rank)s+=40;else if(g.team_rank||g.opponent_rank)s+=15;
+   if(margin<=3)s+=50;else if(margin<=7)s+=30;
+   if(margin>=28)s+=25;
+   if(total>=80)s+=20;else if(total>=60)s+=10;
+   return s;
+ };
+ const weekGames=storyWeek==null?[]:pool.filter(g=>Number(g.week_number)===storyWeek)
+   .map(g=>({g,s:newsScore(g)})).sort((a,b)=>b.s-a.s).slice(0,6).map(x=>x.g);
  const rankStr=r=>r?`#${r} `:"";
  const gameStakes=g=>{
    const bits=[];
-   const m=/^W(\d+)$/.exec(streak(g.person_id)||"");
-   if(g.result==="W"&&m&&Number(m[1])>=2)bits.push(`${m[1]} straight wins`);
+   if(g.person_id){
+     const m=/^W(\d+)$/.exec(streak(g.person_id)||"");
+     if(g.result==="W"&&m&&Number(m[1])>=2)bits.push(`${m[1]} straight wins`);
+   }
    if(g.result==="W"&&g.opponent_rank)bits.push(`takes down #${g.opponent_rank}`);
    if(g.result==="L"&&g.team_rank)bits.push(`#${g.team_rank} goes down`);
    return bits.join(" · ");
