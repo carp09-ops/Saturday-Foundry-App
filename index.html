@@ -4702,6 +4702,16 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 </style>
 <meta name="saturday-foundry-qa-logo" content="9.6.17-gotw-logo-contrast">
 
+<style id="sf-dark-logo-halo">
+/* QA — dark team marks (measured offline 2026-09-25: mean opaque brightness of the
+   transparent ESPN 500px PNG falls below the legibility threshold) get a soft light
+   halo so they separate from dark tiles. No plates, no backgrounds — the transparent
+   look is preserved. Applied globally: GOTW, Top 25, schedule, standings, coaches. */
+img.sf-dark-logo{
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 0 9px rgba(255,255,255,.22))!important;
+}
+</style>
+
 
 <style id="sf-logo-centering-v1">
 /* Phone Schedule + GOTW logo centering normalization */
@@ -12801,6 +12811,42 @@ window.addEventListener("pageshow",mark);
 .sf-score-rank{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 7px;border-radius:999px;border:1px solid rgba(244,197,66,.38);background:rgba(244,197,66,.10);color:#f4c542;font-size:10px;font-weight:950;letter-spacing:.04em}
 .sf-score-rank.unranked{border-color:rgba(148,163,184,.20);background:rgba(148,163,184,.06);color:#7f929d}
 </style>
+<script id="sf-dark-logo-classifier">
+(function(){
+"use strict";
+/* ESPN team IDs with intrinsically dark marks (see style note above). */
+var DARK_IDS={"2":1,"5":1,"8":1,"21":1,"25":1,"38":1,"55":1,"61":1,"84":1,"87":1,"103":1,"127":1,"135":1,"152":1,"154":1,"166":1,"194":1,"201":1,"202":1,"204":1,"213":1,"221":1,"239":1,"242":1,"245":1,"249":1,"254":1,"258":1,"264":1,"275":1,"277":1,"324":1,"326":1,"328":1,"344":1,"2005":1,"2006":1,"2026":1,"2032":1,"2117":1,"2132":1,"2199":1,"2226":1,"2294":1,"2306":1,"2309":1,"2348":1,"2429":1,"2433":1,"2439":1,"2440":1,"2449":1,"2567":1,"2572":1,"2579":1,"2623":1,"2636":1,"2638":1,"2641":1,"2655":1,"2751":1};
+/* Normalized team names — fallback for custom/stored logo_url sources. */
+var DARK_NAMES={"air force":1,"akron":1,"appalachian state":1,"arkansas":1,"arkansas state":1,"auburn":1,"baylor":1,"boston college":1,"california":1,"central michigan":1,"charlotte":1,"cincinnati":1,"coastal carolina":1,"colorado":1,"eastern michigan":1,"florida atlantic":1,"georgia":1,"indiana":1,"iowa":1,"jacksonville state":1,"kansas state":1,"kent state":1,"louisiana monroe":1,"louisiana tech":1,"michigan state":1,"minnesota":1,"mississippi state":1,"missouri state":1,"nc state":1,"nevada":1,"new mexico state":1,"north dakota state":1,"north texas":1,"notre dame":1,"ohio state":1,"oklahoma":1,"oregon state":1,"penn state":1,"pittsburgh":1,"rice":1,"san diego state":1,"smu":1,"south carolina":1,"southern miss":1,"southern mississippi":1,"texas aandm":1,"texas state":1,"texas tech":1,"tulane":1,"tulsa":1,"uab":1,"ul monroe":1,"unlv":1,"utah":1,"utah state":1,"utep":1,"utsa":1,"virginia":1,"wake forest":1,"washington":1,"west virginia":1,"wisconsin":1,"wyoming":1};
+function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/&/g,"and").replace(/[^a-z0-9]+/g," ").trim();}
+function candName(img){
+  var c=[img.getAttribute("alt"),img.getAttribute("title"),img.dataset?img.dataset.teamLogoName:""];
+  for(var i=0;i<c.length;i++){var v=norm(String(c[i]||"").replace(/\s*logo\s*$/i,""));if(v)return v;}
+  return "";
+}
+function isDark(img){
+  if(!img||img.tagName!=="IMG")return false;
+  if(img.dataset&&img.dataset.sfTeamControl==="user")return false; /* keep the gold user glow */
+  var src=img.currentSrc||img.src||"";
+  var m=/teamlogos\/ncaa\/\d+\/(\d+)\.png/i.exec(src);
+  if(m&&DARK_IDS[m[1]])return true;
+  var n=candName(img);
+  return !!(n&&DARK_NAMES[n]);
+}
+function classify(img){try{img.classList.toggle("sf-dark-logo",isDark(img));}catch(e){}}
+function sweep(root){var q=root&&root.querySelectorAll?root.querySelectorAll("img"):document.querySelectorAll("img");for(var i=0;i<q.length;i++)classify(q[i]);}
+function boot(){
+  sweep(document);
+  try{new MutationObserver(function(recs){recs.forEach(function(r){
+    if(r.type==="attributes"&&r.target&&r.target.tagName==="IMG"){classify(r.target);return;}
+    (r.addedNodes||[]).forEach(function(n){if(!n||n.nodeType!==1)return;
+      if(n.tagName==="IMG")classify(n);
+      else if(n.querySelectorAll){var q=n.querySelectorAll("img");for(var i=0;i<q.length;i++)classify(q[i]);}});
+  });}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["src"]});}catch(e){}
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
 </body>
 </html>
 
