@@ -183,11 +183,25 @@ input:focus,select:focus{border-color:var(--emerald)}
 .recap-stats b.good{color:#4ade80}.recap-stats b.bad{color:#f87171}
 .recap-storyline{background:linear-gradient(135deg,#1a2b33,#0f1f28);border:1px solid #f4c54255;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;line-height:1.5}
 .myweek-game{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#0a1e26;border:1px solid #18343e;border-radius:10px}
-.myweek-game-info{min-width:0}
+.myweek-game-info{flex:1;min-width:0}
 .myweek-game-teams{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .myweek-game-meta{font-size:9px;color:#71858e;margin-top:3px}
 .myweek-enter{flex-shrink:0;background:linear-gradient(135deg,#f4c542,#dca52b);color:#071016;font-weight:900;font-size:10px;letter-spacing:.08em;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;min-height:44px}
 .myweek-done{text-align:center;padding:16px;color:#4ade80;font-weight:700;font-size:13px}
+.myweek-game-coach{font-size:9px;font-weight:800;letter-spacing:.1em;color:#f4c542;margin-bottom:4px}
+.myweek-you{border-color:#f4c54266;box-shadow:0 0 0 1px #f4c54233}
+.myweek-score{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.myweek-check{color:#4ade80;font-weight:900;font-size:16px}
+.myweek-score b{font-size:15px}
+.myweek-wl{font-size:9px;font-weight:900;padding:2px 7px;border-radius:6px}
+.myweek-wl-w{background:#4ade8022;color:#4ade80}
+.myweek-wl-l{background:#f8717122;color:#f87171}
+.myweek-wl-t{background:#71858e22;color:#71858e}
+.myweek-bye{font-size:10px;font-weight:900;letter-spacing:.12em;color:#71858e;flex-shrink:0}
+.myweek-pending{font-size:9px;font-weight:800;letter-spacing:.1em;color:#71858e;flex-shrink:0}
+.myweek-logo{width:44px;height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:center}
+.myweek-logo-img{width:44px;height:44px;object-fit:contain}
+.myweek-logo-fb{width:44px;height:44px;flex:0 0 44px}
 .result-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check-row{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #18343e;border-radius:9px;background:#061319;font-size:9px}.check-row input{width:auto}
 .enter-result{cursor:pointer;border:1px solid rgba(16,185,129,.34);background:#07372d;color:#76eac8;border-radius:7px;padding:6px 8px;font-size:8px;font-weight:900;text-transform:uppercase}
 @media(max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr)}}
@@ -9093,27 +9107,37 @@ function renderMyWeek(){
   if(!mine){host.innerHTML='<div class="myweek-done">No program linked</div>';return;}
   const wk=currentWeek();
   try{ $("myWeekMeta").textContent=`Week ${wk}`; }catch(_){}
-  const pid=String(mine.person_id||"");
-  const unplayed=(state.games||[]).filter(g=>
-    String(g.person_id||"")===pid &&
-    String(g.status||"").toLowerCase()!=="completed" &&
-    !g.is_bye &&
-    Number(g.week_number||0)===Number(wk)
-  );
-  if(!unplayed.length){
-    host.innerHTML='<div class="myweek-done">✓ All caught up for Week '+wk+'</div>';
-    return;
-  }
-  host.innerHTML=unplayed.map(g=>{
+  const myPid=String(mine.person_id||"");
+  const hasScore=g=>String(g.status||"").toLowerCase()==="completed"&&Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against));
+  const logoFor=p=>{
+    const t=String(p.team_name||"");
+    const srcs=[...new Set([p.logo_url,p.team_logo_url,(t&&window.CDHQLogoResolver?.knownLogo?.(t))||""].filter(Boolean))];
+    if(!srcs.length) return `<div class="team-fallback myweek-logo-fb">${esc(initials(t||p.coach_name))}</div>`;
+    return `<img class="myweek-logo-img" src="${esc(srcs[0])}" alt="${esc(t?t+" logo":"team logo")}" data-sf-logo-initials="${esc(initials(t||p.coach_name))}"${srcs.length>1?` data-sf-logo-fallback="${esc(srcs.slice(1).join("|"))}"`:""} loading="lazy" decoding="async" onerror="window.sfLogoFallback&&window.sfLogoFallback(this)">`;
+  };
+  const coaches=(state.programs||[]).filter(p=>p.person_id&&p.coach_name);
+  // Logged-in coach first, then the rest alphabetically.
+  const ordered=[...coaches].sort((a,b)=>{
+    const am=String(a.person_id)===myPid, bm=String(b.person_id)===myPid;
+    if(am!==bm) return am?-1:1;
+    return String(a.coach_name||"").localeCompare(String(b.coach_name||""));
+  });
+  host.innerHTML=ordered.map(p=>{
+    const pid=String(p.person_id), isYou=pid===myPid;
+    const g=(state.games||[]).find(x=>String(x.person_id||"")===pid&&Number(x.week_number||0)===Number(wk)&&!x.is_bye);
+    const coachLine=`<div class="myweek-game-coach">${esc(p.coach_name)}${isYou?' · YOU':''}</div>`;
+    const rowCls=`myweek-game${isYou?' myweek-you':''}`;
+    const logoHtml=`<div class="myweek-logo">${logoFor(p)}</div>`;
+    if(!g) return `<div class="${rowCls}">${logoHtml}<div class="myweek-game-info">${coachLine}<div class="myweek-game-teams">${esc(p.team_name||"")}</div></div><div class="myweek-bye">BYE</div></div>`;
     const vs=g.home_away==="away"?`at ${esc(g.opponent_team||"Opponent")}`:`vs ${esc(g.opponent_team||"Opponent")}`;
-    return `<div class="myweek-game">
-      <div class="myweek-game-info">
-        <div class="myweek-game-teams">${esc(g.team_name||"My Team")} ${vs}</div>
-        <div class="myweek-game-meta">Week ${g.week_number} · ${g.home_away==="away"?"AWAY":"HOME"}</div>
-      </div>
-      <button class="myweek-enter" onclick="openResultModal('${esc(g.id)}')">ENTER SCORE</button>
-    </div>`;
-  }).join("");
+    const matchup=`<div class="myweek-game-teams">${esc(g.team_name||p.team_name||"")} ${vs}</div><div class="myweek-game-meta">Week ${g.week_number} · ${g.home_away==="away"?"AWAY":"HOME"}</div>`;
+    if(hasScore(g)){
+      const pf=Number(g.points_for), pa=Number(g.points_against), wl=pf>pa?"W":pf<pa?"L":"T";
+      return `<div class="${rowCls}">${logoHtml}<div class="myweek-game-info">${coachLine}${matchup}</div><div class="myweek-score"><span class="myweek-check">✓</span><b>${pf}–${pa}</b><span class="myweek-wl myweek-wl-${wl.toLowerCase()}">${wl}</span></div></div>`;
+    }
+    const action=isYou?`<button class="myweek-enter" onclick="openResultModal('${esc(g.id)}')">ENTER SCORE</button>`:`<div class="myweek-pending">NOT SCORED</div>`;
+    return `<div class="${rowCls}">${logoHtml}<div class="myweek-game-info">${coachLine}${matchup}</div>${action}</div>`;
+  }).join("")||'<div class="myweek-done">No coaches found</div>';
  }catch(e){ console.error("[myweek] failed:",e); }
 }
 function renderAll(){renderSeasonRecap();renderTop25();renderGotw();renderMyWeek();renderCoaches();renderStandings();renderWire();renderNext();if(window.renderConferenceRace)window.renderConferenceRace();renderSchedule();renderCareer();renderTrophies();renderAnalytics();renderStorylines();renderRivalries();renderHQCommand();updateOverviewDataVisibility();renderCommissioner()}
@@ -12225,7 +12249,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12258,7 +12282,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12935,7 +12959,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.7";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.8";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13890,7 +13914,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8';
   }
   function boot(){
     build();
@@ -13900,7 +13924,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.7';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.8';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14307,7 +14331,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.7';
+    if(m)m.textContent='PROD 9.8.8';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16227,7 +16251,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.7';
+    if(m)m.textContent='PROD 9.8.8';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16237,7 +16261,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.8';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
