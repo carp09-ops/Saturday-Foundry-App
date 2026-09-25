@@ -7043,6 +7043,14 @@ function vegasPerspective(row,g=null){
  const p=Number(row.home_win_probability);
  return {teamIsHome,teamSpread:Number.isFinite(spread)?(teamIsHome?spread:-spread):null,teamWinProbability:Number.isFinite(p)?(teamIsHome?p:1-p):null,teamMoneyline:teamIsHome?row.home_moneyline:row.away_moneyline,opponentMoneyline:teamIsHome?row.away_moneyline:row.home_moneyline,projectedFor:teamIsHome?row.projected_home_score:row.projected_away_score,projectedAgainst:teamIsHome?row.projected_away_score:row.projected_home_score,total:row.total_line};
 }
+// Game entries exist once per team, so several rows can share a game id.
+// Prefer the entry for the Vegas row's own team so spreads/labels use the right perspective.
+function gameEntryForVegasRow(r){
+ const gid=String(r.id||r.game_id||"");
+ const rows=(state.games||[]).filter(x=>String(x.id)===gid);
+ const want=String(r.team_name||"").trim().toLowerCase();
+ return (want&&rows.find(x=>String(x.team_name||"").trim().toLowerCase()===want))||rows[0]||r;
+}
 function fmtSpread(v){if(v==null||!Number.isFinite(Number(v)))return"—";const n=Number(v);return n===0?"PK":`${n>0?"+":""}${n.toFixed(1)}`}
 function fmtML(v){if(v==null||!Number.isFinite(Number(v)))return"—";const n=Number(v);return `${n>0?"+":""}${Math.round(n)}`}
 function vegasGradeClass(v){v=String(v||"").toUpperCase();return v==="COVER"||v==="OVER"?"":v==="PUSH"?"push":"loss"}
@@ -7056,7 +7064,7 @@ function decorateGameCardsWithVegas(rows=state.vegas||[]){
  document.querySelectorAll('[data-game-card]').forEach(card=>{
    card.querySelector('.vegas-strip')?.remove();
    const row=byId.get(String(card.dataset.gameCard)); if(!row||row.spread_home==null)return;
-   const g=(state.games||[]).find(x=>String(x.id)===String(card.dataset.gameCard)); const p=vegasPerspective(row,g);
+   const g=gameEntryForVegasRow(row); const p=vegasPerspective(row,g);
    const done=(g?.status||row.status)==='completed'; const div=document.createElement('div'); div.className='vegas-strip';
    div.innerHTML=`<div class="vegas-strip-head"><span>DYNASTY VEGAS</span><span>${esc(String(row.confidence||'').toUpperCase())} CONFIDENCE</span></div><div class="vegas-strip-grid"><div><span>Spread</span><b>${fmtSpread(p.teamSpread)}</b></div><div><span>O/U</span><b>${row.total_line??'—'}</b></div><div><span>Projected</span><b>${p.projectedFor??'—'}–${p.projectedAgainst??'—'}</b></div><div><span>Win Prob</span><b>${p.teamWinProbability==null?'—':Math.round(p.teamWinProbability*100)+'%'}</b></div></div>${done?`<span class="vegas-grade ${vegasGradeClass(row.ats_result)}">ATS: ${esc(row.ats_result||'—')}</span><span class="vegas-grade ${vegasGradeClass(row.total_result)}">TOTAL: ${esc(row.total_result||'—')}</span>`:''}`;
    card.appendChild(div);
@@ -7148,7 +7156,7 @@ function renderVegas(failed=false){
    const vals=[g?.team_conference,r?.team_conference,g?.opponent_conference,r?.opponent_conference].filter(Boolean);
    const same=vals.find(v=>v&&String(v).trim());return same||'Other / Independent';
  };
- const vegasCard=r=>{const g=(state.games||[]).find(x=>String(x.id)===String(r.id||r.game_id))||r,p=vegasPerspective(r,g);const teamHome=p.teamIsHome;const home={id:teamHome?r.team_id:r.opponent_team_id,name:teamHome?r.team_name:r.opponent_team},away={id:teamHome?r.opponent_team_id:r.team_id,name:teamHome?r.opponent_team:r.team_name};const hl=vegasTeamLogo(home.id,home.name),al=vegasTeamLogo(away.id,away.name);const homeSpread=Number(r.spread_home),fav=homeSpread<0?home.name:homeSpread>0?away.name:'PICK EM';return `<article class="vegas-game ${String(window.CDHQVegasFocusGame||'')===String(r.id||r.game_id)?'vegas-focus':''}" data-vegas-game-card="${esc(String(r.id||r.game_id||''))}"><div class="vegas-game-top"><span>${esc(r.week_label||`Week ${r.week_number}`)} · ${esc(r.coach_name||'Dynasty')}</span><strong>${esc(fav)}${homeSpread!==0?' FAVORITE':''}</strong></div><div class="vegas-match"><div class="vegas-side">${al?`<img src="${esc(al)}" alt="">`:''}<div><div class="vegas-team">${esc(away.name||'Away')}</div><div class="vegas-role">AWAY · ${fmtSpread(-homeSpread)}</div></div></div><div class="vegas-vs">AT</div><div class="vegas-side right"><div><div class="vegas-team">${esc(home.name||'Home')}</div><div class="vegas-role">HOME · ${fmtSpread(homeSpread)}</div></div>${hl?`<img src="${esc(hl)}" alt="">`:''}</div></div><div class="vegas-line-grid"><div><span>O/U</span><b>${r.total_line??'—'}</b></div><div><span>Projected</span><b>${r.projected_away_score??'—'}–${r.projected_home_score??'—'}</b></div><div><span>Home Win</span><b>${r.home_win_probability==null?'—':Math.round(Number(r.home_win_probability)*100)+'%'}</b></div><div><span>Moneyline</span><b>${fmtML(r.away_moneyline)} / ${fmtML(r.home_moneyline)}</b></div></div><div class="vegas-confidence">MODEL CONFIDENCE: <strong>${esc(String(r.confidence||'—').toUpperCase())}</strong> · ${esc(r.model_version||'')}</div></article>`};
+ const vegasCard=r=>{const g=gameEntryForVegasRow(r),p=vegasPerspective(r,g);const teamHome=p.teamIsHome;const home={id:teamHome?r.team_id:r.opponent_team_id,name:teamHome?r.team_name:r.opponent_team},away={id:teamHome?r.opponent_team_id:r.team_id,name:teamHome?r.opponent_team:r.team_name};const hl=vegasTeamLogo(home.id,home.name),al=vegasTeamLogo(away.id,away.name);const homeSpread=Number(r.spread_home),fav=homeSpread<0?home.name:homeSpread>0?away.name:'PICK EM';return `<article class="vegas-game ${String(window.CDHQVegasFocusGame||'')===String(r.id||r.game_id)?'vegas-focus':''}" data-vegas-game-card="${esc(String(r.id||r.game_id||''))}"><div class="vegas-game-top"><span>${esc(r.week_label||`Week ${r.week_number}`)} · ${esc(r.coach_name||'Dynasty')}</span><strong>${esc(fav)}${homeSpread!==0?' FAVORITE':''}</strong></div><div class="vegas-match"><div class="vegas-side">${al?`<img src="${esc(al)}" alt="">`:''}<div><div class="vegas-team">${esc(away.name||'Away')}</div><div class="vegas-role">AWAY · ${fmtSpread(-homeSpread)}</div></div></div><div class="vegas-vs">AT</div><div class="vegas-side right"><div><div class="vegas-team">${esc(home.name||'Home')}</div><div class="vegas-role">HOME · ${fmtSpread(homeSpread)}</div></div>${hl?`<img src="${esc(hl)}" alt="">`:''}</div></div><div class="vegas-line-grid"><div><span>O/U</span><b>${r.total_line??'—'}</b></div><div><span>Projected</span><b>${r.projected_away_score??'—'}–${r.projected_home_score??'—'}</b></div><div><span>Home Win</span><b>${r.home_win_probability==null?'—':Math.round(Number(r.home_win_probability)*100)+'%'}</b></div><div><span>Moneyline</span><b>${fmtML(r.away_moneyline)} / ${fmtML(r.home_moneyline)}</b></div></div><div class="vegas-confidence">MODEL CONFIDENCE: <strong>${esc(String(r.confidence||'—').toUpperCase())}</strong> · ${esc(r.model_version||'')}</div></article>`};
  const grouped=new Map();unique.forEach(r=>{const g=(state.games||[]).find(x=>String(x.id)===String(r.id||r.game_id))||r,c=vegasConferenceName(r,g);if(!grouped.has(c))grouped.set(c,[]);grouped.get(c).push(r)});
  const groupOrder=[...grouped.keys()].sort((a,b)=>{const ap=grouped.get(a).some(r=>r.person_id||r.coach_name&&r.coach_name!=='Dynasty')?0:1,bp=grouped.get(b).some(r=>r.person_id||r.coach_name&&r.coach_name!=='Dynasty')?0:1;return ap-bp||a.localeCompare(b)});
  $("vegasBoard").innerHTML=groupOrder.map((conf,i)=>{const rs=grouped.get(conf),hasControlled=rs.some(r=>r.person_id||r.coach_name&&r.coach_name!=='Dynasty');return `<details class="vegas-conf-group" ${hasControlled||i===0?'open':''}><summary><span>${esc(conf)}</span><b>${rs.length} GAME${rs.length===1?'':'S'}</b><em>▾</em></summary><div class="vegas-conf-games">${rs.map(vegasCard).join('')}</div></details>`}).join('')||'<div class="vegas-empty">No stored Vegas lines for the current week yet.</div>';
@@ -7427,10 +7435,14 @@ function selectGotwCarousel(week){
    return `${Number(g.week_number)||0}|${teams.join("::")}`;
  };
  const unique=new Map();
+ // Each game is stored once per team, so mirrored entries share a matchup key.
+ // Prefer the home team's entry: the card template renders an away@home layout
+ // (opponent left, team right) and its probability bar assumes the entry is the home side.
+ const isHomeEntry=x=>String(x.home_away||"")!=="away";
  raw.forEach(g=>{
    const key=matchupKey(g);
    const prior=unique.get(key);
-   if(!prior || (isDynastyGotwGame(g)&&!isDynastyGotwGame(prior)) || gotwScore(g)>gotwScore(prior))unique.set(key,g);
+   if(!prior||(isHomeEntry(g)&&!isHomeEntry(prior))||(isHomeEntry(g)===isHomeEntry(prior)&&((isDynastyGotwGame(g)&&!isDynastyGotwGame(prior))||gotwScore(g)>gotwScore(prior))))unique.set(key,g);
  });
  const games=[...unique.values()];
  const dynasty=games.filter(isDynastyGotwGame).sort((a,b)=>gotwScore(b)-gotwScore(a)||String(a.id).localeCompare(String(b.id)));
@@ -7503,7 +7515,7 @@ function gotwSlideMarkup(pick,index,total){
     </div>
     ${probability}
   </div>
-  ${hasMarket?`<div class="gotw-vegas"><div><span>Spread</span><b>${fmtSpread(vp.teamSpread)}</b></div><div><span>O/U</span><b>${vr.total_line??"—"}</b></div><div><span>Moneyline</span><b>${fmtML(vp.teamMoneyline)}</b></div></div>`:""}
+  ${hasMarket?`<div class="gotw-vegas"><div><span>Home spread</span><b>${fmtSpread(vp.teamSpread)}</b></div><div><span>O/U</span><b>${vr.total_line??"—"}</b></div><div><span>Home ML</span><b>${fmtML(vp.teamMoneyline)}</b></div></div>`:""}
   <div class="gotw-action-row"><button type="button" class="gotw-schedule-link ${dynastyGame?"dynasty":""}" data-gotw-game="${esc(g.id)}">${dynastyGame&&g.status==="scheduled"?"OPEN DYNASTY GAME · ENTER SCORE →":"VIEW GAME IN SCHEDULE →"}</button></div>
  </section>`;
 }
@@ -12213,7 +12225,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.6'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12246,7 +12258,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.6'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12923,7 +12935,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.6";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.7";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13878,7 +13890,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.6';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7';
   }
   function boot(){
     build();
@@ -13888,7 +13900,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.6';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.7';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14295,7 +14307,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.6';
+    if(m)m.textContent='PROD 9.8.7';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16215,7 +16227,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.6';
+    if(m)m.textContent='PROD 9.8.7';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16225,7 +16237,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.6';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.7';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
