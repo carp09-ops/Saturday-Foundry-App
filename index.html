@@ -7690,68 +7690,23 @@ function renderSchedule(){
  $("weekCards").innerHTML=`${cfpBracketHtml()}<div class="v21-playable-grid">${currentHtml}</div>${byeGames.length?`<div class="v21-bye-row">${byeGames.map(byeCard).join("")}</div>`:""}`;
  decorateGameCardsWithVegas();
 
+ const SF_ANVIL='<span class="sf-control-anvil" title="User Controlled" aria-label="User Controlled"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 4h18c4 0 6-1 9-3v5c-2 3-5 5-9 6h-3v3h6v3H9v-3h5v-3H9C5 12 3 9 2 4Zm9 15h10l3 4H7l4-4Z"/></svg></span>';
  const groups=weeks.map(w=>{
    const games=visibleGames.filter(g=>Number(g.week_number||0)===w.n);
    const real=[...games.filter(g=>!g.is_bye)].sort((a,b)=>Number(!isDynastyScheduleGame(a))-Number(!isDynastyScheduleGame(b)));
-   const b=games.filter(g=>g.is_bye);
-   if(!real.length&&!b.length) return '';
-   const done=real.length>0&&real.every(g=>g.status==="completed");
-   return `<details class="v21-week-group" ${w.n===selectedWeek?"open":""}>
-     <summary>
-       <div><strong>${esc(w.label)}</strong><span>${real.length} game${real.length===1?"":"s"}${b.length?` · ${b.length} bye${b.length===1?"":"s"}`:""}</span></div>
-       <div class="${done?"pos":real.some(g=>g.status==="completed")?"":"v21-muted"}">${done?"COMPLETE":w.n===selectedWeek?"ACTIVE":"VIEW"}</div>
-     </summary>
-     <div class="v21-week-list">
-       ${real.map(g=>{
-         const displayRank=scheduleDisplayRanks(g);
-         const dynastyGame=isDynastyScheduleGame(g);
+   if(!real.length) return '';
+   const done=real.every(g=>g.status==="completed");
+   const nArch=real.length;
+   return `<details class="v21-week-group" ${w.n===selectedWeek?"open":""}><summary><div><strong>${esc(w.label)}</strong><span>${nArch} archived game${nArch===1?"":"s"}</span></div><div>${done?"COMPLETE":"VIEW"}</div></summary><div class="v21-week-list">${real.map(g=>{
+         // QA: active season now uses the same clean archive rows as past seasons
+         // (coach · matchup · result), not the old matchup cards.
+         const gDone=g.status==="completed";
          const p=controlledPerspectiveForGame(g);
          const cls=p?.result==="W"?"pos":p?.result==="L"?"neg":"";
-         const done=g.status==="completed";
-         const ab=nationalBadgeFor(g);
-         const ac=gameClassification(g);
-         // QA 9.8.0: the conference logo in the kicker already says "conference".
-         const acRedundant=done&&!!ab&&/^CONFERENCE$/.test(String(ac||''));
-         const resultLabel=done?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`FINAL ${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
-         // QA 9.8.0: winner emphasis on neutral finals; dynasty cards keep
-         // their user-perspective coloring via cls.
-         const apf=Number(g.points_for),apa=Number(g.points_against);
-         const archNeutral=done&&!cls&&Number.isFinite(apf)&&Number.isFinite(apa)&&apf!==apa;
-         const archScore=done?(archNeutral
-           ?`<b><span class="${apf>apa?'v21-winner':'v21-dim'}">${g.points_for??""}</span><i>–</i><span class="${apa>apf?'v21-winner':'v21-dim'}">${g.points_against??""}</span></b>`
-           :`<b>${g.points_for??""}<i>–</i>${g.points_against??""}</b>`):`<b class="upcoming">—</b>`;
-         const teamLogo=logoFor(g.team_id,g.team_name);
-         const oppLogo=logoFor(g.opponent_team_id,g.opponent_team);
-         return `<article class="sf-archive-matchup-card ${dynastyGame?"dynasty":""}" data-game-card="${g.id}">
-           <div class="sf-archive-card-top">
-             <span>${dynastyGame?`<em class="dynasty-hq-badge archive">◆ FOUNDRY</em> `:""}${dynastyGame?esc(g.coach_name||"—"):(ab?nationalBadgeMarkup(ab):esc(g.coach_name||conferenceLabelForGame(g)))}</span>
-             <strong>${acRedundant?"":esc(ac)}</strong>
-           </div>
-           <div class="sf-archive-card-main">
-             <div class="sf-archive-team-stack">
-               <div class="sf-archive-team-row">
-                 ${teamLogo?`<img class="sf-archive-team-logo" src="${esc(teamLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.team_name||"")}">🏈</span>`}
-                 <div><small>${g.home_away==="away"?"AWAY":"HOME"}</small><b>${displayRank.team?`<span>#${displayRank.team}</span> `:""}${esc(g.team_name||"TBD")}</b></div>
-               </div>
-               <div class="sf-archive-team-row">
-                 ${oppLogo?`<img class="sf-archive-team-logo" src="${esc(oppLogo)}" alt="">`:`<span class="sf-archive-team-logo sf-archive-team-fallback" data-team-logo-name="${esc(g.opponent_team||"")}">🏈</span>`}
-                 <div><small>${g.home_away==="away"?"HOME":"AWAY"}</small><b>${displayRank.opponent?`<span>#${displayRank.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</b></div>
-               </div>
-             </div>
-             <div class="sf-archive-score ${cls}">
-               ${archScore}
-               ${(dynastyGame||!done)?`<span>${esc(resultLabel)}</span>`:""}
-             </div>
-           </div>
-           <div class="sf-archive-card-foot">
-             <span>${esc(g.week_label||`Week ${g.week_number}`)}</span>
-             <span>${liveStreamLinkMarkup(g,true)}</span>
-           </div>
-         </article>`;
-       }).join("")}
-       ${b.map(g=>`<div class="v21-archive-game bye"><span class="v21-archive-coach">${esc(g.coach_name||"—")}</span><span class="v21-archive-match">${esc(g.team_name||"Program")} · BYE</span><span class="v21-muted">BYE</span><span></span></div>`).join("")}
-     </div>
-   </details>`;
+         const resultLabel=gDone?(p?`${p.result} ${p.pointsFor}-${p.pointsAgainst}`:`${g.points_for??""}-${g.points_against??""}`):"UPCOMING";
+         const dynRow=isDynastyScheduleGame(g);
+         return `<div class="v21-archive-game"><span class="v21-archive-coach">${dynRow?SF_ANVIL:""}${esc(g.coach_name||(dynRow?"Coach":"—"))}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==="away"?"@":"vs"} ${esc(g.opponent_team||"TBD")}</span><span class="v21-archive-result ${cls}">${esc(resultLabel)}</span><span class="v21-archive-broadcast"></span></div>`;
+       }).join("")}</div></details>`;
  }).join("");
  $("scheduleRows").innerHTML=groups||`<div class="empty">No schedule available for ${scheduleTeamPersonId?esc(scheduleTeamProgram?.team_name||"this team"):"this filter"} yet.</div>`;
  hydrateMissingScheduleLogos();
