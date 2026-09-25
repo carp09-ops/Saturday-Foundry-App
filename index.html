@@ -14911,11 +14911,13 @@ img.sf-logo-system-v2{
 /* QA: center-justify single-row carousel team text (a legacy mobile rule forces .team-name left) */
 #overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .team-name,
 #overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .team-meta{text-align:center!important;width:100%!important}
+/* QA: reserve two lines for team names so meta/scores align across columns */
+#overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .team-name{min-height:2em!important;display:flex!important;align-items:center!important;justify-content:center!important}
 #overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .gotw-winpct{display:block!important;width:100%!important;text-align:center!important;margin-left:0!important;margin-right:0!important}
 /* QA: single DYNASTY VEGAS label under the probability bar (percents already shown per team) */
 #overview #gotw .gotw-prob-labels{justify-content:center!important}
 /* QA: completed games show the final score in the carousel (winner in gold) */
-#overview #gotw .gotw-final-score{display:block!important;width:100%!important;text-align:center!important;font-family:'Teko',sans-serif!important;font-size:22px!important;font-weight:800!important;line-height:1!important;margin:4px 0 0!important;color:#71858e!important}
+#overview #gotw .gotw-final-score{display:block!important;width:100%!important;text-align:center!important;font-family:'Teko',sans-serif!important;font-size:40px!important;font-weight:800!important;line-height:1!important;margin:6px 0 0!important;color:#71858e!important}
 #overview #gotw .gotw-final-score.winner{color:#f4c542!important}
 #overview #gotw .gotw-final-label{display:block!important;text-align:center!important;font-size:9px!important;font-weight:900!important;letter-spacing:.22em!important;color:#f4c542!important;margin:10px 0 4px!important}
 
