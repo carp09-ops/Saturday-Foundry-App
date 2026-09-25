@@ -5595,9 +5595,12 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 </section>
 
 <style id="sf-charts-css">
-#insightsTabs{margin:14px 0 6px;flex-wrap:nowrap;scrollbar-width:none}
+#insightsTabs{margin:14px 0 6px;flex-wrap:nowrap;scrollbar-width:none;border-radius:999px;padding:6px;background:rgba(4,16,23,.85);border:1px solid rgba(81,147,171,.25)}
 #insightsTabs::-webkit-scrollbar{display:none}
-#insightsTabs button{flex:none}
+#insightsTabs button{flex:none;border-radius:999px!important}
+#insightsTabs.sf-fade-r{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 52px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 52px),transparent)}
+#insightsTabs.sf-fade-l{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 52px),transparent);mask-image:linear-gradient(to left,#000 calc(100% - 52px),transparent)}
+#insightsTabs.sf-fade-l.sf-fade-r{-webkit-mask-image:linear-gradient(to right,transparent,#000 52px,#000 calc(100% - 52px),transparent);mask-image:linear-gradient(to right,transparent,#000 52px,#000 calc(100% - 52px),transparent)}
 .sf-chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.9rem;padding:1rem;margin-bottom:1rem;position:relative;overflow:hidden}
 .sf-chart-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,rgba(244,197,66,.7),transparent);pointer-events:none}
 .sf-chart-card .chart-head h3{font-family:Teko,sans-serif;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:.03em}
@@ -5957,11 +5960,14 @@ document.addEventListener('click',function(e){
   document.querySelectorAll('#insightsTabs button').forEach(function(x){x.classList.toggle('active',x===b);});
   document.querySelectorAll('#analytics .analytics-pane').forEach(function(p){p.classList.toggle('active',p.id===b.dataset.pane);});
   sfRenderInsightsPane(b.dataset.pane);
+  try{b.scrollIntoView({inline:'nearest',block:'nearest'});}catch(_){}
 },true);
+function sfPaintInsightsFade(){var el=document.getElementById('insightsTabs');if(!el)return;var max=el.scrollWidth-el.clientWidth;el.classList.toggle('sf-fade-l',el.scrollLeft>8);el.classList.toggle('sf-fade-r',max>8&&el.scrollLeft<max-8);}
+(function(){var el=document.getElementById('insightsTabs');if(el){el.onscroll=sfPaintInsightsFade;sfPaintInsightsFade();}})();
 var sfChartsResizeT=null;
 window.addEventListener('resize',function(){
   clearTimeout(sfChartsResizeT);
-  sfChartsResizeT=setTimeout(function(){renderChartsPane();},250);
+  sfChartsResizeT=setTimeout(function(){renderChartsPane();sfPaintInsightsFade();},250);
 });
 </script>
 <script id="sf-insights2">
