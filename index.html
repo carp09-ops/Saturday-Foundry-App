@@ -7695,7 +7695,10 @@ function renderStandings(){
 }
 function renderWire(){
  const week=currentWeek();
- const completed=(state.allGames||state.games||[]).filter(g=>g.status==="completed"&&!g.is_bye&&Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against)));
+ // allGames is emptied during boot before the background enrichment lands; never let the
+ // empty array shadow the current season's games or the wire renders with no headlines.
+ const gamesBase=(state.allGames&&state.allGames.length?state.allGames:state.games)||[];
+ const completed=gamesBase.filter(g=>g.status==="completed"&&!g.is_bye&&Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against)));
  const currentSeason=completed.filter(g=>Number(g.season_number||S.season_number)===Number(S.season_number));
  const standings=[...(state.standings||[])];
  const stories=[];
