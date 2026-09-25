@@ -2451,6 +2451,31 @@ body::after{
 }
 .ref-hero{background:linear-gradient(120deg,rgba(2,10,14,.68),rgba(4,15,20,.78))!important}
 .legacy-line-panel{background:rgba(2,10,14,.84)!important}
+
+.gotw-broadcast{display:grid!important;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:center}
+.gotw-matchup{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:12px;align-items:center}
+.hq-probability{border-left:1px solid rgba(245,189,56,.35);padding-left:18px;text-align:center;min-width:0}
+.hq-prob-title{font-family:"Barlow Condensed";font-size:12px;font-weight:900;letter-spacing:.08em;color:#dbe5e9}
+.hq-prob-grid{display:grid;grid-template-columns:1fr 62px 1fr;align-items:center;gap:7px;margin-top:8px}
+.hq-prob-grid>div:not(.hq-prob-ring){display:grid;gap:4px;justify-items:center}
+.hq-prob-grid strong{font-family:"Barlow Condensed";font-size:28px;line-height:1}
+.hq-prob-away{color:#ef5350}.hq-prob-home{color:#f5bd38}
+.hq-prob-grid img{width:36px;height:36px;object-fit:contain}
+.hq-prob-ring{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;position:relative;
+ background:conic-gradient(#f5bd38 0 calc(var(--home)*1%),#ef5350 calc(var(--home)*1%) 100%)}
+.hq-prob-ring::after{content:"";position:absolute;inset:9px;border-radius:50%;background:#071016}
+.hq-prob-ring span{position:relative;z-index:1;font-family:"Barlow Condensed";font-size:10px;font-weight:900;color:#92a4ad}
+.hq-probability small{display:block;margin-top:7px;font-size:6px;font-weight:850;color:#6f838d;letter-spacing:.055em}
+@media(max-width:900px){
+ .gotw-broadcast{grid-template-columns:1fr!important}
+ .hq-probability{border-left:0;border-top:1px solid rgba(245,189,56,.28);padding:13px 0 0}
+ .gotw-matchup{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
+}
+@media(max-width:520px){
+ .hq-prob-grid{max-width:260px;margin:8px auto 0}
+ .hq-prob-grid strong{font-size:24px}
+}
+</style>
 <style id="sf-legacy-story-cards">
 /* QA — Legacy Line story cards: horizontal snap-scroll, hero stats, team takeovers. */
 #wire .legacy-stories{display:flex;gap:10px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -2495,31 +2520,6 @@ body::after{
 .legacy-lead .legacy-faceoff{padding:4px 0}
 .legacy-lead .legacy-faceoff img{width:58px;height:58px}
 .legacy-lead-score{font-family:Teko,sans-serif;font-size:28px;line-height:1;color:#ffd968}
-</style>
-
-.gotw-broadcast{display:grid!important;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:center}
-.gotw-matchup{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:12px;align-items:center}
-.hq-probability{border-left:1px solid rgba(245,189,56,.35);padding-left:18px;text-align:center;min-width:0}
-.hq-prob-title{font-family:"Barlow Condensed";font-size:12px;font-weight:900;letter-spacing:.08em;color:#dbe5e9}
-.hq-prob-grid{display:grid;grid-template-columns:1fr 62px 1fr;align-items:center;gap:7px;margin-top:8px}
-.hq-prob-grid>div:not(.hq-prob-ring){display:grid;gap:4px;justify-items:center}
-.hq-prob-grid strong{font-family:"Barlow Condensed";font-size:28px;line-height:1}
-.hq-prob-away{color:#ef5350}.hq-prob-home{color:#f5bd38}
-.hq-prob-grid img{width:36px;height:36px;object-fit:contain}
-.hq-prob-ring{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;position:relative;
- background:conic-gradient(#f5bd38 0 calc(var(--home)*1%),#ef5350 calc(var(--home)*1%) 100%)}
-.hq-prob-ring::after{content:"";position:absolute;inset:9px;border-radius:50%;background:#071016}
-.hq-prob-ring span{position:relative;z-index:1;font-family:"Barlow Condensed";font-size:10px;font-weight:900;color:#92a4ad}
-.hq-probability small{display:block;margin-top:7px;font-size:6px;font-weight:850;color:#6f838d;letter-spacing:.055em}
-@media(max-width:900px){
- .gotw-broadcast{grid-template-columns:1fr!important}
- .hq-probability{border-left:0;border-top:1px solid rgba(245,189,56,.28);padding:13px 0 0}
- .gotw-matchup{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
-}
-@media(max-width:520px){
- .hq-prob-grid{max-width:260px;margin:8px auto 0}
- .hq-prob-grid strong{font-size:24px}
-}
 </style>
 <meta name="cdhq-release" content="1.1.1-stadium-logo-nav-probability">
 
