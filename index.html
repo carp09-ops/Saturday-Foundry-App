@@ -5466,7 +5466,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
     <div class="legacy-live"><span></span> LIVE DYNASTY DATA</div>
   </div>
 
-  <nav class="analytics-tabs" id="insightsTabs"><button type="button" class="active" data-pane="paneLegacy">Legacy</button><button type="button" data-pane="paneCharts">Charts</button></nav>
+  <nav class="analytics-tabs" id="insightsTabs"><button type="button" class="active" data-pane="paneLegacy">Legacy</button><button type="button" data-pane="paneCharts">Charts</button><button type="button" data-pane="panePower" title="Power Index">Power</button><button type="button" data-pane="paneLuck" title="Luck Index">Luck</button><button type="button" data-pane="paneClutch" title="Clutch Factor">Clutch</button><button type="button" data-pane="paneStreaks" title="Streaks &amp; Extremes">Streaks</button><button type="button" data-pane="paneVegas" title="Vegas Report Card">Vegas</button><button type="button" data-pane="paneCompare" title="Coach vs Coach">Compare</button></nav>
 
   <div class="analytics-pane active" id="paneLegacy">
   <div id="legacyThrone"></div>
@@ -5542,6 +5542,56 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <canvas id="chH2h"></canvas>
     </section>
   </div><!-- /paneCharts -->
+
+  <div class="analytics-pane" id="panePower">
+    <div class="legacy-section-head"><div><span>Composite Rating</span><h3>Power Index</h3></div><em>Who's actually best right now</em></div>
+    <section class="sf-chart-card">
+      <p class="sf-chart-sub">One number per coach: <b>50% win rate + 30% scoring margin + 20% schedule strength</b>. Margin is scaled to ±30 points so blowouts can't break the math.</p>
+      <div id="powerRows"></div>
+    </section>
+  </div><!-- /panePower -->
+
+  <div class="analytics-pane" id="paneLuck">
+    <div class="legacy-section-head"><div><span>Pythagorean Expectation</span><h3>Luck Index</h3></div><em>Deserve has nothing to do with it</em></div>
+    <section class="sf-chart-card">
+      <p class="sf-chart-sub">Expected wins from point differential (Pythagorean, exponent 2.37) versus actual wins. <b>Positive = winning more than the scores say you should.</b></p>
+      <div id="luckRows"></div>
+    </section>
+  </div><!-- /paneLuck -->
+
+  <div class="analytics-pane" id="paneClutch">
+    <div class="legacy-section-head"><div><span>Situational Record</span><h3>Clutch Factor</h3></div><em>When it matters most</em></div>
+    <section class="sf-chart-card">
+      <p class="sf-chart-sub">How each coach performs in the games that define seasons — one-score finishes, ranked opponents, playing as the underdog, and the postseason.</p>
+      <div id="clutchRows" class="sf-i2-cards"></div>
+    </section>
+  </div><!-- /paneClutch -->
+
+  <div class="analytics-pane" id="paneStreaks">
+    <div class="legacy-section-head"><div><span>Runs &amp; Records</span><h3>Streaks &amp; Extremes</h3></div><em>Hot, cold, and historic</em></div>
+    <section class="sf-chart-card">
+      <div id="streakRows"></div>
+    </section>
+  </div><!-- /paneStreaks -->
+
+  <div class="analytics-pane" id="paneVegas">
+    <div class="legacy-section-head"><div><span>Market Grades</span><h3>Vegas Report Card</h3></div><em>Against the number</em></div>
+    <section class="sf-chart-card">
+      <p class="sf-chart-sub">Every coach's season against the closing line — cover rate, totals tendency, average margin vs the number, and favorite/underdog splits.</p>
+      <div id="vegasCardRows" class="sf-i2-cards"></div>
+    </section>
+  </div><!-- /paneVegas -->
+
+  <div class="analytics-pane" id="paneCompare">
+    <div class="legacy-section-head"><div><span>Head to Head</span><h3>Coach vs Coach</h3></div><em>Settle it</em></div>
+    <section class="sf-chart-card">
+      <div class="sf-i2-selects">
+        <label><span>Coach A</span><select id="cmpA"></select></label>
+        <label><span>Coach B</span><select id="cmpB"></select></label>
+      </div>
+      <div id="compareRows"></div>
+    </section>
+  </div><!-- /paneCompare -->
 </section>
 
 <style id="sf-charts-css">
@@ -5559,6 +5609,46 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 .sf-charts-grid .sf-chart-card{margin-bottom:0}
 .sf-charts-grid{margin-bottom:1rem}
 @media(max-width:900px){.sf-charts-grid{grid-template-columns:1fr}.sf-charts-grid .sf-chart-card{margin-bottom:1rem}.sf-charts-grid{margin-bottom:0}}
+/* ---- Insights wave 2: shared row/card language ---- */
+.sf-i2-row{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid rgba(148,163,184,.1)}
+.sf-i2-row:last-child{border-bottom:0}
+.sf-i2-rank{font-family:Teko,sans-serif;font-size:1.7rem;color:#f4c542;width:32px;text-align:center;line-height:1}
+.sf-i2-id{width:118px;flex:none}
+.sf-i2-coach{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;color:#e6eef2;white-space:nowrap}
+.sf-i2-coach i{width:10px;height:10px;border-radius:3px;display:inline-block;box-shadow:0 0 8px rgba(0,0,0,.4)}
+.sf-i2-id small{display:block;font-size:8.5px;color:#64748b;font-weight:700;margin-top:3px;line-height:1.4}
+.sf-i2-barwrap{flex:1;min-width:0}
+.sf-i2-bar{height:10px;background:rgba(148,163,184,.12);border-radius:6px;overflow:hidden}
+.sf-i2-bar i{display:block;height:100%;border-radius:6px;transition:width .6s ease}
+.sf-i2-barwrap small{display:block;font-size:8.5px;color:#64748b;font-weight:700;margin-top:4px}
+.sf-i2-score{font-family:Teko,sans-serif;font-size:1.55rem;color:#fff;min-width:56px;text-align:right;line-height:1}
+.sf-i2-score.sm{font-size:1rem;letter-spacing:.06em;color:#aebcc3}
+.sf-i2-score.pos{color:#34d399}.sf-i2-score.neg{color:#f87171}
+.sf-i2-div{position:relative;height:10px;background:rgba(148,163,184,.12);border-radius:6px;overflow:hidden}
+.sf-i2-div::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(148,163,184,.4)}
+.sf-i2-div i{position:absolute;top:0;bottom:0;border-radius:6px}
+.sf-i2-subhead{font-size:9px;font-weight:900;letter-spacing:.14em;color:#f4c542;text-transform:uppercase;margin:14px 0 2px}
+.sf-i2-subhead:first-child{margin-top:0}
+.sf-i2-cards{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.sf-i2-card{background:rgba(3,13,18,.6);border:1px solid rgba(81,147,171,.22);border-radius:.7rem;padding:.85rem}
+.sf-i2-cardhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem}
+.sf-i2-cells{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.12);border-radius:.5rem;overflow:hidden}
+.sf-i2-cell{background:#04141a;padding:.55rem .4rem;text-align:center}
+.sf-i2-cell small{display:block;font-size:7.5px;font-weight:900;letter-spacing:.1em;color:#64748b;margin-bottom:2px}
+.sf-i2-cell b{font-family:Teko,sans-serif;font-size:1.35rem;color:#fff;line-height:1.1}
+.sf-i2-cell span{display:block;font-size:8.5px;color:#7d8f98;font-weight:700;margin-top:2px}
+.sf-i2-selects{display:flex;gap:.7rem;margin-bottom:1rem}
+.sf-i2-selects label{flex:1;display:flex;flex-direction:column;gap:4px}
+.sf-i2-selects span{font-size:8.5px;font-weight:900;letter-spacing:.12em;color:#64748b}
+.sf-i2-selects select{background:#04141a;color:#e6eef2;border:1px solid #1a3842;border-radius:.5rem;padding:.55rem;font-size:.8rem;font-weight:700}
+.sf-i2-versus{display:flex;align-items:center;justify-content:space-between;padding:.4rem .2rem .9rem}
+.sf-i2-versus>span{font-family:Teko,sans-serif;font-size:1.2rem;color:#f4c542;letter-spacing:.1em}
+.sf-i2-mval{flex:1;font-family:Teko,sans-serif;font-size:1.3rem;color:#8fa1a9;text-align:center}
+.sf-i2-mval:first-child{text-align:right}.sf-i2-mval:last-child{text-align:left}
+.sf-i2-mval.win{color:#f4c542;text-shadow:0 0 14px rgba(244,197,66,.35)}
+.sf-i2-mlabel{flex:none;font-size:8px;font-weight:900;letter-spacing:.12em;color:#64748b;padding:0 10px}
+.sf-i2-verdict{margin-top:.9rem;padding:.7rem;text-align:center;font-size:.85rem;font-weight:800;color:#f4c542;background:rgba(244,197,66,.07);border:1px solid rgba(244,197,66,.25);border-radius:.6rem}
+@media(max-width:900px){.sf-i2-cards{grid-template-columns:1fr}.sf-i2-id{width:96px}}
 </style>
 <script id="sf-charts">
 /* Saturday Foundry charts — hand-rolled canvas, no dependencies. */
@@ -5864,12 +5954,367 @@ document.addEventListener('click',function(e){
   var b=e.target.closest('#insightsTabs button'); if(!b)return;
   document.querySelectorAll('#insightsTabs button').forEach(function(x){x.classList.toggle('active',x===b);});
   document.querySelectorAll('#analytics .analytics-pane').forEach(function(p){p.classList.toggle('active',p.id===b.dataset.pane);});
-  if(b.dataset.pane==='paneCharts')renderChartsPane();
+  sfRenderInsightsPane(b.dataset.pane);
 },true);
 var sfChartsResizeT=null;
 window.addEventListener('resize',function(){
   clearTimeout(sfChartsResizeT);
   sfChartsResizeT=setTimeout(function(){renderChartsPane();},250);
+});
+</script>
+<script id="sf-insights2">
+/* Dynasty Insights — second wave: Power, Luck, Clutch, Streaks, Vegas, Compare.
+   Hand-rolled DOM (no deps), same visual language as the Charts pane. */
+function sfI2Coaches(){ try{return sfChartCoaches();}catch(_){return [];} }
+function sfI2Games(pid){
+  return (state.games||[]).filter(function(g){return String(g.person_id)===String(pid)&&g.status==='completed'&&!g.is_bye;});
+}
+function sfI2WL(gs){
+  var w=0,l=0;
+  gs.forEach(function(g){ if(g.result==='W')w++; else if(g.result==='L')l++; });
+  return {w:w,l:l,n:w+l,pct:(w+l)>0?w/(w+l):0};
+}
+function sfI2Mov(gs){
+  var m=gs.map(function(g){return Number(g.points_for)-Number(g.points_against);}).filter(Number.isFinite);
+  if(!m.length)return 0;
+  return m.reduce(function(a,b){return a+b;},0)/m.length;
+}
+function sfI2PFPA(gs){
+  var pf=0,pa=0,n=0;
+  gs.forEach(function(g){
+    var a=Number(g.points_for),b=Number(g.points_against);
+    if(Number.isFinite(a)&&Number.isFinite(b)){pf+=a;pa+=b;n++;}
+  });
+  return {pf:pf,pa:pa,n:n,ppg:n?pf/n:0,papg:n?pa/n:0};
+}
+/* Opponent records, deduplicated by game id (one row per game). */
+var _sfI2RecCache=null,_sfI2RecKey='';
+function sfI2TeamRecs(){
+  var key=String((typeof S!=='undefined'&&S&&S.season_id)||'')+'|'+((state.games||[]).length);
+  if(_sfI2RecCache&&_sfI2RecKey===key)return _sfI2RecCache;
+  var seen={},rec={};
+  (state.games||[]).forEach(function(g){
+    if(g.status!=='completed'||g.is_bye)return;
+    var id=String(g.id||''); if(!id||seen[id])return; seen[id]=1;
+    var pf=Number(g.points_for),pa=Number(g.points_against);
+    if(!Number.isFinite(pf)||!Number.isFinite(pa))return;
+    var t=String(g.team_name||''),o=String(g.opponent_team||'');
+    if(!t||!o)return;
+    if(!rec[t])rec[t]={w:0,l:0,t:0};
+    if(!rec[o])rec[o]={w:0,l:0,t:0};
+    if(pf>pa){rec[t].w++;rec[o].l++;}
+    else if(pa>pf){rec[o].w++;rec[t].l++;}
+    else{rec[t].t++;rec[o].t++;}
+  });
+  _sfI2RecCache=rec;_sfI2RecKey=key;return rec;
+}
+/* ---- Power Index: 50% win rate + 30% scoring margin (±30 scaled) + 20% SOS ---- */
+function sfI2Power(pid){
+  var gs=sfI2Games(pid),wl=sfI2WL(gs),mov=sfI2Mov(gs),recs=sfI2TeamRecs();
+  var sos=0,sosN=0;
+  gs.forEach(function(g){
+    var r=recs[String(g.opponent_team||'')],gp=r?(r.w+r.l+r.t):0;
+    if(r&&gp>0){sos+=(r.w+r.t*0.5)/gp;sosN++;}
+  });
+  sos=sosN>0?sos/sosN:0.5;
+  var movScore=(Math.max(-30,Math.min(30,mov))+30)/60;
+  var score=100*(0.50*wl.pct+0.30*movScore+0.20*sos);
+  return {w:wl.w,l:wl.l,n:wl.n,pct:wl.pct,mov:mov,sos:sos,score:score};
+}
+/* ---- Luck Index: Pythagorean expectation (exp 2.37) vs actual ---- */
+function sfI2Luck(pid){
+  var gs=sfI2Games(pid),pf=0,pa=0,w=0,l=0;
+  gs.forEach(function(g){
+    var a=Number(g.points_for),b=Number(g.points_against);
+    if(!Number.isFinite(a)||!Number.isFinite(b))return;
+    pf+=a;pa+=b;
+    if(g.result==='W')w++;else if(g.result==='L')l++;
+  });
+  var n=w+l,e=2.37,expP=0.5;
+  if(pf>0||pa>0){var pfe=Math.pow(pf,e),pae=Math.pow(pa,e);expP=(pfe+pae)>0?pfe/(pfe+pae):0.5;}
+  var expW=expP*n;
+  return {w:w,l:l,n:n,expW:expW,expL:n-expW,luck:w-expW,pf:pf,pa:pa};
+}
+/* ---- Clutch Factor: one-score, vs ranked, as underdog, postseason ---- */
+function sfI2Clutch(pid){
+  var gs=sfI2Games(pid),byId={};
+  (state.vegas||[]).forEach(function(r){byId[String(r.game_id||r.id||'')]=r;});
+  function grp(f){return sfI2WL(gs.filter(f));}
+  var one=grp(function(g){return Math.abs(Number(g.points_for)-Number(g.points_against))<=8;});
+  var ranked=grp(function(g){
+    try{var r=scheduleDisplayRanks(g);return !!(r&&r.opponent!=null);}catch(_){return false;}
+  });
+  var dog=grp(function(g){
+    var v=byId[String(g.id)];if(!v)return false;
+    try{var p=vegasPerspective(v,g);return !!(p&&p.teamSpread!=null&&p.teamSpread>0);}catch(_){return false;}
+  });
+  var post=grp(function(g){return ['bowl','playoff','national_championship'].indexOf(String(g.game_type||''))>=0;});
+  var parts=[one,ranked,dog,post].filter(function(x){return x.n>0;});
+  var score=parts.length?parts.reduce(function(a,x){return a+x.pct;},0)/parts.length:null;
+  return {one:one,ranked:ranked,dog:dog,post:post,score:score};
+}
+/* ---- Streaks ---- */
+function sfI2Streaks(pid){
+  var gs=sfI2Games(pid).slice().sort(function(a,b){return Number(a.week_number||0)-Number(b.week_number||0);});
+  var runType=null,run=0,bestW=0,i,r;
+  for(i=0;i<gs.length;i++){r=gs[i].result;
+    if(r!=='W'&&r!=='L'){runType=null;run=0;continue;}
+    if(r===runType)run++;else{runType=r;run=1;}
+    if(r==='W')bestW=Math.max(bestW,run);
+  }
+  var aT=null,aN=0;
+  for(i=gs.length-1;i>=0;i--){r=gs[i].result;
+    if(r!=='W'&&r!=='L')break;
+    if(aT===null){aT=r;aN=1;}else if(r===aT)aN++;else break;
+  }
+  return {active:{type:aT,n:aN},bestW:bestW,n:gs.length};
+}
+/* ---- League extremes (coach-perspective rows only) ---- */
+function sfI2Extremes(){
+  var gs=(state.games||[]).filter(function(g){
+    return g&&g.person_id&&g.status==='completed'&&!g.is_bye&&
+      Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against));
+  });
+  function mov(g){return Number(g.points_for)-Number(g.points_against);}
+  function pick(cmp){var b=null;gs.forEach(function(g){if(!b||cmp(g,b))b=g;});return b;}
+  return {
+    blowout:pick(function(g,b){return mov(g)>mov(b);}),
+    worstLoss:pick(function(g,b){return mov(g)<mov(b);}),
+    shootout:pick(function(g,b){return (Number(g.points_for)+Number(g.points_against))>(Number(b.points_for)+Number(b.points_against));}),
+    nailbiter:pick(function(g,b){return Math.abs(mov(g))<Math.abs(mov(b));})
+  };
+}
+/* ---- Vegas report card ---- */
+function sfI2Vegas(pid){
+  var byId={};
+  (state.vegas||[]).forEach(function(r){byId[String(r.game_id||r.id||'')]=r;});
+  var gs=sfI2Games(pid);
+  var a={n:0,w:0,l:0,p:0,ow:0,ol:0,op:0,diffs:[],fav:{w:0,l:0,p:0,n:0},dog:{w:0,l:0,p:0,n:0}};
+  gs.forEach(function(g){
+    var v=byId[String(g.id)];if(!v||v.spread_home==null)return;
+    a.n++;
+    var r=String(v.ats_result||'').toUpperCase(),t=String(v.total_result||'').toUpperCase();
+    if(r==='COVER')a.w++;else if(r==='PUSH')a.p++;else a.l++;
+    if(t==='OVER')a.ow++;else if(t==='UNDER')a.ol++;else if(t==='PUSH')a.op++;
+    var sp=null;
+    try{var px=vegasPerspective(v,g);sp=px?px.teamSpread:null;}catch(_){}
+    if(sp!=null&&Number.isFinite(sp)){
+      var d=(Number(g.points_for)-Number(g.points_against))+sp;
+      if(Number.isFinite(d))a.diffs.push(d);
+      var bkt=sp>0?a.dog:(sp<0?a.fav:null);
+      if(bkt){bkt.n++;if(r==='COVER')bkt.w++;else if(r==='PUSH')bkt.p++;else bkt.l++;}
+    }
+  });
+  function pct(x){return x.n?(x.w+x.p*0.5)/x.n:0;}
+  return {
+    n:a.n,ats:{w:a.w,l:a.l,p:a.p,pct:a.n?(a.w+a.p*0.5)/a.n:0},
+    ou:{o:a.ow,u:a.ol,p:a.op,pct:(a.ow+a.ol+a.op)?a.ow/(a.ow+a.ol+a.op):0},
+    fav:{w:a.fav.w,l:a.fav.l,p:a.fav.p,n:a.fav.n,pct:pct(a.fav)},
+    dog:{w:a.dog.w,l:a.dog.l,p:a.dog.p,n:a.dog.n,pct:pct(a.dog)},
+    avgDiff:a.diffs.length?a.diffs.reduce(function(x,y){return x+y;},0)/a.diffs.length:null
+  };
+}
+/* ---- Head-to-head between two coaches ---- */
+function sfI2H2H(pidA,pidB){
+  var cb=null;
+  sfI2Coaches().forEach(function(c){if(String(c.person_id)===String(pidB))cb=c;});
+  var opp=cb?String(cb.team||'').toLowerCase():'';
+  var gs=(state.games||[]).filter(function(g){
+    return String(g.person_id)===String(pidA)&&g.status==='completed'&&!g.is_bye&&opp&&
+      String(g.opponent_team||'').toLowerCase()===opp;
+  });
+  return sfI2WL(gs);
+}
+/* ================= renderers ================= */
+function sfI2Head(kicker,title,tag){
+  return '<div class="legacy-section-head"><div><span>'+kicker+'</span><h3>'+title+'</h3></div><em>'+tag+'</em></div>';
+}
+function sfI2CoachChip(c){
+  return '<span class="sf-i2-coach"><i style="background:'+c.color+'"></i>'+esc(c.short)+'</span>';
+}
+function sfI2Empty(msg){return '<div class="chart-empty">'+esc(msg)+'</div>';}
+
+function sfRenderPower(){
+  var pane=document.getElementById('panePower');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var rows=coaches.map(function(c){return {c:c,p:sfI2Power(c.person_id)};})
+    .filter(function(r){return r.p.n>0;})
+    .sort(function(a,b){return b.p.score-a.p.score;});
+  var el=document.getElementById('powerRows');
+  if(!rows.length){el.innerHTML=sfI2Empty('No completed games yet this season.');return;}
+  var mx=Math.max.apply(null,rows.map(function(r){return r.p.score;}).concat([1]));
+  var verdicts=['The team to beat.','A real contender.','Solid, not scary yet.','Work to do.'];
+  el.innerHTML=rows.map(function(r,i){
+    var v=i===0?verdicts[0]:(i===1?verdicts[1]:(i===rows.length-1?verdicts[3]:verdicts[2]));
+    return '<div class="sf-i2-row"><div class="sf-i2-rank">'+(i+1)+'</div>'+
+      '<div class="sf-i2-id">'+sfI2CoachChip(r.c)+'<small>'+r.p.w+'-'+r.p.l+' · MOV '+(r.p.mov>=0?'+':'')+r.p.mov.toFixed(1)+' · SOS '+(r.p.sos*100).toFixed(0)+'%</small></div>'+
+      '<div class="sf-i2-barwrap"><div class="sf-i2-bar"><i style="width:'+Math.max(3,r.p.score/mx*100).toFixed(1)+'%;background:'+r.c.color+'"></i></div><small>'+esc(v)+'</small></div>'+
+      '<div class="sf-i2-score">'+r.p.score.toFixed(1)+'</div></div>';
+  }).join('');
+}
+function sfRenderLuck(){
+  var pane=document.getElementById('paneLuck');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var rows=coaches.map(function(c){return {c:c,l:sfI2Luck(c.person_id)};})
+    .filter(function(r){return r.l.n>0;})
+    .sort(function(a,b){return b.l.luck-a.l.luck;});
+  var el=document.getElementById('luckRows');
+  if(!rows.length){el.innerHTML=sfI2Empty('No completed games yet this season.');return;}
+  var mx=Math.max.apply(null,rows.map(function(r){return Math.abs(r.l.luck);}).concat([0.5]));
+  el.innerHTML=rows.map(function(r){
+    var lk=r.l.luck,cls=lk>0.05?'pos':(lk<-0.05?'neg':'');
+    var lbl=lk>0.05?'CHARMED':(lk<-0.05?'DUE':'PAR');
+    var wpx=(Math.abs(lk)/mx*50).toFixed(1);
+    var bar=lk>=0
+      ?'<div class="sf-i2-div"><i style="left:50%;width:'+wpx+'%;background:#34d399"></i></div>'
+      :'<div class="sf-i2-div"><i style="right:50%;width:'+wpx+'%;background:#f87171"></i></div>';
+    return '<div class="sf-i2-row"><div class="sf-i2-id">'+sfI2CoachChip(r.c)+
+      '<small>Actual '+r.l.w+'-'+r.l.l+' · Expected '+r.l.expW.toFixed(1)+'-'+r.l.expL.toFixed(1)+'</small></div>'+
+      '<div class="sf-i2-barwrap">'+bar+'<small>'+lbl+'</small></div>'+
+      '<div class="sf-i2-score '+cls+'">'+(lk>=0?'+':'')+lk.toFixed(1)+'</div></div>';
+  }).join('');
+}
+function sfClutchCell(x,label){
+  if(!x||!x.n)return '<div class="sf-i2-cell"><small>'+label+'</small><b>—</b><span>no games</span></div>';
+  return '<div class="sf-i2-cell"><small>'+label+'</small><b>'+x.w+'-'+x.l+'</b><span>'+Math.round(x.pct*100)+'%</span></div>';
+}
+function sfRenderClutch(){
+  var pane=document.getElementById('paneClutch');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var rows=coaches.map(function(c){return {c:c,k:sfI2Clutch(c.person_id)};}).filter(function(r){
+    return (r.k.one.n+r.k.ranked.n+r.k.dog.n+r.k.post.n)>0;
+  }).sort(function(a,b){return (b.k.score==null?-1:b.k.score)-(a.k.score==null?-1:a.k.score);});
+  var el=document.getElementById('clutchRows');
+  if(!rows.length){el.innerHTML=sfI2Empty('No completed games yet this season.');return;}
+  el.innerHTML=rows.map(function(r){
+    var sc=r.k.score==null?'—':Math.round(r.k.score*100)+'%';
+    return '<div class="sf-i2-card"><div class="sf-i2-cardhead">'+sfI2CoachChip(r.c)+
+      '<div class="sf-i2-score'+(r.k.score!=null&&r.k.score>=0.6?' pos':'')+'">'+sc+'</div></div>'+
+      '<div class="sf-i2-cells">'+
+      sfClutchCell(r.k.one,'1-SCORE')+sfClutchCell(r.k.ranked,'VS RANKED')+
+      sfClutchCell(r.k.dog,'AS DOG')+sfClutchCell(r.k.post,'POSTSEASON')+
+      '</div></div>';
+  }).join('');
+}
+function sfStreakLine(s){
+  if(!s.active.type)return 'No active streak';
+  return (s.active.type==='W'?'W'+s.active.n:'L'+s.active.n);
+}
+function sfRenderStreaks(){
+  var pane=document.getElementById('paneStreaks');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var rows=coaches.map(function(c){return {c:c,s:sfI2Streaks(c.person_id)};}).filter(function(r){return r.s.n>0;});
+  var el=document.getElementById('streakRows');
+  if(!rows.length){el.innerHTML=sfI2Empty('No completed games yet this season.');return;}
+  var ex=sfI2Extremes();
+  function exRow(label,g,fmt){
+    if(!g)return '';
+    var cn='';try{cn=coachNameFor(String(g.person_id));}catch(_){}
+    return '<div class="sf-i2-row"><div class="sf-i2-id"><span class="sf-i2-coach"><i style="background:#f4c542"></i>'+esc(cn||'Coach')+'</span>'+
+      '<small>'+esc(g.team_name)+' '+g.points_for+'-'+g.points_against+' vs '+esc(g.opponent_team||'TBD')+' · Week '+g.week_number+'</small></div>'+
+      '<div class="sf-i2-score sm">'+esc(label)+'</div></div>';
+  }
+  el.innerHTML=
+    '<div class="sf-i2-subhead">Active streaks</div>'+
+    rows.map(function(r){
+      var cls=r.s.active.type==='W'?'pos':(r.s.active.type==='L'?'neg':'');
+      return '<div class="sf-i2-row"><div class="sf-i2-id">'+sfI2CoachChip(r.c)+
+        '<small>Longest win streak: '+r.s.bestW+'</small></div>'+
+        '<div class="sf-i2-score '+cls+'">'+esc(sfStreakLine(r.s))+'</div></div>';
+    }).join('')+
+    '<div class="sf-i2-subhead">Season extremes</div>'+
+    exRow('BIGGEST WIN',ex.blowout)+exRow('WORST LOSS',ex.worstLoss)+
+    exRow('SHOOTOUT',ex.shootout)+exRow('NAIL-BITER',ex.nailbiter);
+}
+function sfRenderVegasCard(){
+  var pane=document.getElementById('paneVegas');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var rows=coaches.map(function(c){return {c:c,v:sfI2Vegas(c.person_id)};})
+    .filter(function(r){return r.v.n>0;})
+    .sort(function(a,b){return b.v.ats.pct-a.v.ats.pct;});
+  var el=document.getElementById('vegasCardRows');
+  if(!rows.length){el.innerHTML=sfI2Empty('No graded Vegas lines yet this season.');return;}
+  el.innerHTML=rows.map(function(r){
+    var v=r.v;
+    function rec(x){return x.w+'-'+x.l+(x.p?'-'+x.p:'');}
+    var diff=v.avgDiff==null?'—':((v.avgDiff>=0?'+':'')+v.avgDiff.toFixed(1));
+    return '<div class="sf-i2-card"><div class="sf-i2-cardhead">'+sfI2CoachChip(r.c)+
+      '<div class="sf-i2-score'+(v.ats.pct>=0.55?' pos':'')+'">'+Math.round(v.ats.pct*100)+'%</div></div>'+
+      '<div class="sf-i2-cells">'+
+      '<div class="sf-i2-cell"><small>ATS</small><b>'+rec(v.ats)+'</b><span>'+v.n+' graded</span></div>'+
+      '<div class="sf-i2-cell"><small>O/U</small><b>'+v.ou.o+'-'+v.ou.u+(v.ou.p?'-'+v.ou.p:'')+'</b><span>'+Math.round(v.ou.pct*100)+'% over</span></div>'+
+      '<div class="sf-i2-cell"><small>VS NUMBER</small><b>'+diff+'</b><span>avg margin</span></div>'+
+      '<div class="sf-i2-cell"><small>FAV / DOG ATS</small><b>'+rec(v.fav)+' / '+rec(v.dog)+'</b><span>split</span></div>'+
+      '</div></div>';
+  }).join('')+
+  '<button class="intel-vegas-link" id="intelVegasLink2"><span>Dynasty Vegas</span><b>Full betting analytics →</b><em>Every tracked line lives in the Vegas studio.</em></button>';
+  var link=document.getElementById('intelVegasLink2');
+  if(link)link.addEventListener('click',function(){
+    var b=document.querySelector('[data-view="vegas"]');if(b)b.click();
+  });
+}
+function sfCompareMetrics(a,b){
+  var pa=sfI2Power(a),pb=sfI2Power(b);
+  var la=sfI2Luck(a),lb=sfI2Luck(b);
+  var ka=sfI2Clutch(a),kb=sfI2Clutch(b);
+  var va=sfI2Vegas(a),vb=sfI2Vegas(b);
+  var fa=sfI2PFPA(sfI2Games(a)),fb=sfI2PFPA(sfI2Games(b));
+  var h2hA=sfI2H2H(a,b),h2hB=sfI2H2H(b,a);
+  function fmtPct(x){return x.n?Math.round(x.pct*100)+'%':'—';}
+  return [
+    {label:'Record',fa:pa.w+'-'+pa.l,fb:pb.w+'-'+pb.l,win:pa.pct>pb.pct?'a':(pb.pct>pa.pct?'b':null),faN:pa.pct,fbN:pb.pct},
+    {label:'Power Index',fa:pa.score.toFixed(1),fb:pb.score.toFixed(1),win:pa.score>pb.score?'a':(pb.score>pa.score?'b':null)},
+    {label:'Avg Margin',fa:(pa.mov>=0?'+':'')+pa.mov.toFixed(1),fb:(pb.mov>=0?'+':'')+pb.mov.toFixed(1),win:pa.mov>pb.mov?'a':(pb.mov<pa.mov?'b':null)},
+    {label:'Scored / Allowed',fa:fa.ppg.toFixed(1)+' / '+fa.papg.toFixed(1),fb:fb.ppg.toFixed(1)+' / '+fb.papg.toFixed(1),win:(fa.ppg-fa.papg)>(fb.ppg-fb.papg)?'a':((fa.ppg-fa.papg)<(fb.ppg-fb.papg)?'b':null)},
+    {label:'Luck',fa:(la.luck>=0?'+':'')+la.luck.toFixed(1),fb:(lb.luck>=0?'+':'')+lb.luck.toFixed(1),win:la.luck>lb.luck?'a':(lb.luck>la.luck?'b':null)},
+    {label:'Clutch',fa:ka.score==null?'—':Math.round(ka.score*100)+'%',fb:kb.score==null?'—':Math.round(kb.score*100)+'%',win:(ka.score||0)>(kb.score||0)?'a':((kb.score||0)>(ka.score||0)?'b':null)},
+    {label:'ATS Cover %',fa:va.n?Math.round(va.ats.pct*100)+'%':'—',fb:vb.n?Math.round(vb.ats.pct*100)+'%':'—',win:va.ats.pct>vb.ats.pct?'a':(vb.ats.pct>va.ats.pct?'b':null)},
+    {label:'Head-to-Head',fa:h2hA.w+'-'+h2hA.l,fb:h2hB.w+'-'+h2hB.l,win:h2hA.w>h2hB.w?'a':(h2hB.w>h2hA.w?'b':null)}
+  ];
+}
+function sfRenderCompare(){
+  var pane=document.getElementById('paneCompare');if(!pane||!pane.classList.contains('active'))return;
+  var coaches=sfI2Coaches();
+  var sa=document.getElementById('cmpA'),sb=document.getElementById('cmpB');
+  function fill(sel,skip){
+    var cur=sel.value;
+    sel.innerHTML=coaches.map(function(c){return '<option value="'+c.person_id+'">'+esc(c.name)+'</option>';}).join('');
+    if(coaches.some(function(c){return String(c.person_id)===String(cur);}))sel.value=cur;
+    else if(coaches.length>1)sel.value=String(coaches[skip].person_id);
+  }
+  fill(sa,0);fill(sb,1);
+  if(String(sa.value)===String(sb.value)&&coaches.length>1)sb.value=String(coaches[1].person_id);
+  var ca=coaches.filter(function(c){return String(c.person_id)===String(sa.value);})[0];
+  var cb=coaches.filter(function(c){return String(c.person_id)===String(sb.value);})[0];
+  var el=document.getElementById('compareRows');
+  if(!ca||!cb){el.innerHTML=sfI2Empty('Pick two coaches to compare.');return;}
+  var rows=sfCompareMetrics(ca.person_id,cb.person_id);
+  var wins={a:0,b:0};
+  rows.forEach(function(r){if(r.win)wins[r.win]++;});
+  var verdict=wins.a===wins.b?'Dead even.':(wins.a>wins.b?ca.short+' takes it, '+wins.a+'-'+wins.b+'.':cb.short+' takes it, '+wins.b+'-'+wins.a+'.');
+  el.innerHTML='<div class="sf-i2-versus"><div>'+sfI2CoachChip(ca)+'</div><span>VS</span><div>'+sfI2CoachChip(cb)+'</div></div>'+
+    rows.map(function(r){
+      return '<div class="sf-i2-row"><div class="sf-i2-mval'+(r.win==='a'?' win':'')+'">'+esc(r.fa)+'</div>'+
+        '<div class="sf-i2-mlabel">'+esc(r.label)+'</div>'+
+        '<div class="sf-i2-mval'+(r.win==='b'?' win':'')+'">'+esc(r.fb)+'</div></div>';
+    }).join('')+
+    '<div class="sf-i2-verdict">'+esc(verdict)+'</div>';
+}
+function sfRenderInsightsPane(id){
+  try{
+    if(id==='paneCharts')renderChartsPane();
+    else if(id==='panePower')sfRenderPower();
+    else if(id==='paneLuck')sfRenderLuck();
+    else if(id==='paneClutch')sfRenderClutch();
+    else if(id==='paneStreaks')sfRenderStreaks();
+    else if(id==='paneVegas')sfRenderVegasCard();
+    else if(id==='paneCompare')sfRenderCompare();
+  }catch(e){console.error('[insights2] failed:',id,e);}
+}
+
+/* compare selects re-render the matchup */
+document.addEventListener('change',function(e){
+  if(e.target&&(e.target.id==='cmpA'||e.target.id==='cmpB'))sfRenderCompare();
 });
 </script>
 
@@ -8214,7 +8659,7 @@ function renderLegacyPillar(){
 
 /* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
    renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
-function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies();try{renderChartsPane()}catch(_){}}
+function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies();try{var ap=document.querySelector('#insightsTabs button.active');if(ap)sfRenderInsightsPane(ap.dataset.pane);}catch(_){}}
 
 function renderAnalytics(){renderAnalyticsSuite()}
 
