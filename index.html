@@ -5595,7 +5595,9 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 </section>
 
 <style id="sf-charts-css">
-#insightsTabs{margin:14px 0 6px}
+#insightsTabs{margin:14px 0 6px;flex-wrap:nowrap;scrollbar-width:none}
+#insightsTabs::-webkit-scrollbar{display:none}
+#insightsTabs button{flex:none}
 .sf-chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.9rem;padding:1rem;margin-bottom:1rem;position:relative;overflow:hidden}
 .sf-chart-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,rgba(244,197,66,.7),transparent);pointer-events:none}
 .sf-chart-card .chart-head h3{font-family:Teko,sans-serif;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:.03em}
