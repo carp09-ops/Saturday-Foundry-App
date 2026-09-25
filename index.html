@@ -5803,10 +5803,6 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
       <div class="score-entry"><div><div class="score-entry-name"><span id="myTeamLabel">My Team</span><span id="myTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Your final score</div></div><input id="myScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
       <div class="score-entry"><div><div class="score-entry-name"><span id="oppTeamLabel">Opponent</span><span id="oppTeamRankBadge" class="sf-score-rank hidden"></span></div><div class="score-entry-sub">Opponent final score</div></div><input id="oppScore" type="number" min="0" inputmode="numeric" placeholder="0"></div>
       <div class="result-options">
-        <input id="myRank" type="number" min="1" max="25" placeholder="Your rank (optional)">
-        <input id="oppRank" type="number" min="1" max="25" placeholder="Opponent rank (optional)">
-      </div>
-      <div class="result-options">
         <input id="resultEvent" placeholder="Event / bowl (optional)">
         <input id="resultNetwork" type="hidden" value="">
       </div>
@@ -7401,8 +7397,8 @@ function openResultModal(gameId){
  const myRankBadge=$("myTeamRankBadge"),oppRankBadge=$("oppTeamRankBadge");
  if(myRankBadge){myRankBadge.textContent=displayRank.team?"#"+displayRank.team:"UNRANKED";myRankBadge.classList.remove("hidden");myRankBadge.classList.toggle("unranked",!displayRank.team)}
  if(oppRankBadge){oppRankBadge.textContent=displayRank.opponent?"#"+displayRank.opponent:"UNRANKED";oppRankBadge.classList.remove("hidden");oppRankBadge.classList.toggle("unranked",!displayRank.opponent)}
- $("myScore").value="";$("oppScore").value="";$("myRank").value=displayRank.team||"";$("oppRank").value=displayRank.opponent||"";
- $("resultEvent").value=g.event_name||"";$("resultNetwork").value="";$("resultOT").checked=!!g.overtime;hide($("resultMessage"));
+ $("myScore").value="";$("oppScore").value="";
+ $("resultEvent").value=g.event_name||"";$("resultOT").checked=!!g.overtime;hide($("resultMessage"));
  $("resultModal").classList.remove("hidden");
 }
 function closeResultModal(){selectedGame=null;$("submitResultBtn").textContent="Save Final Result";$("resultModal").classList.add("hidden")}
@@ -7462,8 +7458,8 @@ async function submitSelectedResult(){
  const myScore=Number($("myScore").value),oppScore=Number($("oppScore").value);
  if(!Number.isInteger(myScore)||!Number.isInteger(oppScore)||myScore<0||oppScore<0){msg($("resultMessage"),"Enter both final scores.","error");return}
  if(myScore===oppScore){msg($("resultMessage"),"College football games cannot end in a tie.","error");return}
- const myRank=$("myRank").value?Number($("myRank").value):null,oppRank=$("oppRank").value?Number($("oppRank").value):null;
- if((myRank!==null&&(!Number.isInteger(myRank)||myRank<1||myRank>25))||(oppRank!==null&&(!Number.isInteger(oppRank)||oppRank<1||oppRank>25))){msg($("resultMessage"),"Rankings must be whole numbers from 1–25.","error");return}
+ // Rankings populate ahead of time from the rankings feed (shown as badges above); no manual entry.
+ const _dr=scheduleDisplayRanks(selectedGame),myRank=_dr.team||null,oppRank=_dr.opponent||null;
  try{
    $("submitResultBtn").disabled=true;msg($("resultMessage"),"Saving final result…");
    await Data.submitResult(selectedGame.id,{myScore,oppScore,myRank,oppRank,overtime:$("resultOT").checked,network:null,eventName:$("resultEvent").value.trim()||null});
