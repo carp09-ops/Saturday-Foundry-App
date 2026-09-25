@@ -2451,6 +2451,42 @@ body::after{
 }
 .ref-hero{background:linear-gradient(120deg,rgba(2,10,14,.68),rgba(4,15,20,.78))!important}
 .legacy-line-panel{background:rgba(2,10,14,.84)!important}
+<style id="sf-legacy-story-cards">
+/* QA — Legacy Line story cards: horizontal snap-scroll, hero stats, team takeovers. */
+#wire .legacy-stories{display:flex;gap:10px;overflow-x:auto;padding:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#wire .legacy-stories::-webkit-scrollbar{display:none}
+.legacy-story-card{--acc:#f5bd38;scroll-snap-align:start;flex:0 0 232px;background:linear-gradient(165deg,#0e1512,#070c0a 72%);border:1px solid rgba(245,189,56,.20);border-top:3px solid var(--acc);border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;gap:7px;position:relative}
+.legacy-story-card[data-accent="ice"]{--acc:#9adcff}
+.legacy-story-card[data-accent="cyan"]{--acc:#42d8ff}
+.legacy-story-card[data-accent="blue"]{--acc:#6aa8ff}
+.legacy-story-card[data-accent="gold"]{--acc:#f5bd38}
+.legacy-story-card[data-accent="lime"]{--acc:#a3e635}
+.legacy-story-card[data-accent="orange"]{--acc:#fb923c}
+.legacy-story-card[data-accent="purple"]{--acc:#c084fc}
+.legacy-story-card[data-accent="red"]{--acc:#f87171}
+.legacy-story-card[data-accent="violet"]{--acc:#a78bfa}
+.legacy-story-kicker{font-size:8px;font-weight:900;letter-spacing:.14em;color:var(--acc)}
+.legacy-story-art{font-size:30px;line-height:1.1}
+.legacy-story-hero{font-family:Teko,sans-serif;font-size:38px;line-height:1;color:#fff}
+.legacy-story-title{font-size:11px;font-weight:800;color:#e8eef0}
+.legacy-story-body{font-size:10.5px;color:#93a3ad;line-height:1.5;margin:0}
+.legacy-story-team{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:9px;border-top:1px solid rgba(245,189,56,.12);min-width:0}
+.legacy-story-team img{width:30px;height:30px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 0 6px rgba(245,189,56,.35))}
+.legacy-story-team b{font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legacy-vs{display:flex;align-items:center;gap:8px}
+.legacy-vs em{font-style:normal;font-size:8px;font-weight:900;letter-spacing:.1em;color:var(--acc)}
+.legacy-story-card.takeover{flex-basis:292px;background:linear-gradient(165deg,#161207,#0a0906 72%)}
+.legacy-story-card.takeover .legacy-story-teamlogo{display:flex;justify-content:center;padding:2px 0}
+.legacy-story-card.takeover .legacy-story-teamlogo img{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(245,189,56,.5))}
+.takeover-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.takeover-chip{font-size:9px;font-weight:700;color:#ffd968;background:rgba(245,189,56,.10);border:1px solid rgba(245,189,56,.32);border-radius:999px;padding:4px 9px;white-space:nowrap}
+.takeover-chip i{font-style:normal;margin-right:4px}
+.takeover-chip b{color:#fff}
+.legacy-story-hero span{font-size:12px;font-weight:800;letter-spacing:.08em;color:#93a3ad;margin-left:6px;vertical-align:middle}
+.legacy-faceoff{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0 2px}
+.legacy-faceoff img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(245,189,56,.4))}
+.legacy-faceoff em{font-style:normal;font-family:Teko,sans-serif;font-size:24px;line-height:1;color:var(--acc)}
+</style>
 
 .gotw-broadcast{display:grid!important;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:center}
 .gotw-matchup{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:12px;align-items:center}
@@ -5466,7 +5502,7 @@ img.sf-dark-logo{
     <section id="overview" class="view active"><div class="v13-overview">
 <section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div></div></section>
 <section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week"><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></section>
-<div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE LEGACY LINE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
+<div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE WIRE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
 <section id="myWeekPanel" class="ref-panel rounded-xl p-4" style="margin-bottom:14px">
   <div class="ref-panel-heading" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px"><span style="color:#f4c542">📋</span><h3 style="margin:0">YOUR WEEK</h3></div>
@@ -5476,7 +5512,7 @@ img.sf-dark-logo{
 </section>
 <section id="coaches" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5"></section>
 <section id="hqNewsDesk" class="hq-news-desk"><div class="hq-news-desk-head"><div><span>AROUND THE DYNASTY</span><h3>FOUNDRY NEWS DESK</h3></div><em>LIVE LEAGUE INTELLIGENCE</em></div><div class="hq-command-grid"><article class="hq-command-card hq-command-primary"><div class="hq-command-head"><div><span>LEAGUE INTEL</span><h3>Right Now</h3></div><b id="hqCommandWeek">LIVE</b></div><div id="hqCommandNow" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>CHRONICLE DESK</span><h3>Lead Story</h3></div><button type="button" onclick="switchView('storylines')">Open →</button></div><div id="hqCommandStory" class="hq-command-body"></div></article><article class="hq-command-card"><div class="hq-command-head"><div><span>RIVALRY WATCH</span><h3>Head-to-Head</h3></div><button type="button" onclick="switchView('rivalries')">Open →</button></div><div id="hqCommandRivalry" class="hq-command-body"></div></article></div></section>
-<section id="legacyLinePanel" class="ref-panel legacy-line-panel rounded-xl p-0 overflow-hidden"><div class="legacy-line-head"><div><span>⚡ THE LEGACY LINE</span><strong>THE BIG STORIES. ALL DYNASTY.</strong></div><em>LIVE DYNASTY FEED • AUTO-UPDATING</em></div><div id="wire"></div></section>
+<section id="legacyLinePanel" class="ref-panel legacy-line-panel rounded-xl p-0 overflow-hidden"><div class="legacy-line-head"><div><span>⚡ THE LEGACY LINE</span><strong>THE BIG STORIES. ALL DYNASTY.</strong></div><em>SEASON STORYLINES · SWIPE</em></div><div id="wire"></div></section>
 <section id="top25Panel" class="ref-panel rounded-xl top25-panel"><div id="top25Heading" class="ref-panel-heading" role="button" tabindex="0" aria-controls="top25Board" aria-expanded="true"><div class="flex items-center gap-2"><span class="text-amber-300">★</span><h3>TOP 25 RANKINGS</h3></div><button id="top25Toggle" class="top25-toggle" type="button" aria-label="Collapse Top 25"><span id="top25Meta">LATEST POLL</span><span class="top25-chevron">⌄</span></button></div><div id="top25Board" class="top25-board"></div></section>
 <section id="seasonPulsePanel" class="grid grid-cols-1 xl:grid-cols-2 gap-3.5"><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">🏆</span><h3>SEASON STANDINGS</h3></div><span id="standingsMeta"></span></div><div id="standings" class="mt-3"></div></div><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">✣</span><h3>⚡ POWER INDEX</h3></div><span>Who’s actually best right now</span></div><div class="space-y-2 mt-3" id="power"></div></div></section>
 </div></section>
@@ -7654,44 +7690,44 @@ function renderWire(){
  const currentSeason=completed.filter(g=>Number(g.season_number||S.season_number)===Number(S.season_number));
  const standings=[...(state.standings||[])];
  const stories=[];
- const add=(type,icon,title,body,accent="cyan",logo="",leader="")=>stories.push({type,icon,title,body,accent,logo,leader});
+ const add=(type,icon,title,body,accent="cyan",logo="",leader="",stat="",group="",unit="",extra=null)=>stories.push({type,icon,title,body,accent,logo,leader,stat,group,unit,extra});
 
  if(currentSeason.length){
    const largest=[...currentSeason].sort((a,b)=>Math.abs(Number(b.points_for)-Number(b.points_against))-Math.abs(Number(a.points_for)-Number(a.points_against)))[0];
    const margin=Math.abs(Number(largest.points_for)-Number(largest.points_against));
    const winner=Number(largest.points_for)>=Number(largest.points_against)?largest.team_name:largest.opponent_team;
-   add("COLD BLOODED","🥶","Largest Victory",`${winner} owns the season's biggest win at ${margin} points.`,"ice",logoFor(winner),winner);
+   add("COLD BLOODED","🥶","Largest Victory",`${winner} owns the season's biggest win — ${margin} points.`,"ice",logoFor(winner),winner,String(margin),"","pts");
 
    const explosion=[...currentSeason].sort((a,b)=>Math.max(Number(b.points_for),Number(b.points_against))-Math.max(Number(a.points_for),Number(a.points_against)))[0];
    const high=Math.max(Number(explosion.points_for),Number(explosion.points_against));
    const highTeam=Number(explosion.points_for)>=Number(explosion.points_against)?explosion.team_name:explosion.opponent_team;
-   add("OFFENSIVE EXPLOSION","⚡","Points Avalanche",`${highTeam} dropped ${high} — the highest single-team output this season.`,"cyan",logoFor(highTeam),highTeam);
+   add("OFFENSIVE EXPLOSION","⚡","Points Avalanche",`${highTeam} dropped ${high} — the highest single-team output this season.`,"cyan",logoFor(highTeam),highTeam,String(high),"","pts");
 
    const wins=currentSeason.filter(g=>g.result==="W");
    if(wins.length){
      const lockdown=[...wins].sort((a,b)=>Number(a.points_against)-Number(b.points_against))[0];
-     add("LOCKDOWN","🔒","Defense Travels",`${lockdown.team_name} allowed only ${lockdown.points_against} in its stingiest win.`,"blue",logoFor(lockdown.team_name),lockdown.team_name);
+     add("LOCKDOWN","🔒","Defense Travels",`${lockdown.team_name} allowed just ${lockdown.points_against} in its stingiest win.`,"blue",logoFor(lockdown.team_name),lockdown.team_name,String(lockdown.points_against),"","allowed");
    }
 
    const close=[...currentSeason].sort((a,b)=>Math.abs(Number(a.points_for)-Number(a.points_against))-Math.abs(Number(b.points_for)-Number(b.points_against)))[0];
    const closeMargin=Math.abs(Number(close.points_for)-Number(close.points_against));
-   add("NAIL BITER","⏱","Closest Finish",`${close.team_name} vs ${close.opponent_team} was decided by ${closeMargin} point${closeMargin===1?"":"s"}.`,"gold",logoFor(close.team_name),`${close.team_name} / ${close.opponent_team}`);
+   add("NAIL BITER","⏱","Closest Finish",`${close.team_name} vs ${close.opponent_team} — decided by ${closeMargin} point${closeMargin===1?"":"s"}.`,"gold",logoFor(close.team_name),`${close.team_name} vs ${close.opponent_team}`,"","","",{logo2:logoFor(close.opponent_team)});
  }
 
  const leader=[...standings].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0))[0];
- if(leader)add("TOP DOG","👑","League Leader",`${leader.coach_name} sits atop the dynasty at ${leader.wins}-${leader.losses}.`,"gold",leader.logo_url||logoFor(leader.team_name),leader.team_name);
+ if(leader)add("TOP DOG","👑","League Leader",`${leader.team_name} sits at ${leader.wins}-${leader.losses}, alone atop the dynasty.`,"gold",leader.logo_url||logoFor(leader.team_name),leader.team_name,`${leader.wins}-${leader.losses}`,leader.team_name);
 
 
  const pdLeader=[...standings].sort((a,b)=>Number(b.point_differential||0)-Number(a.point_differential||0))[0];
- if(pdLeader)add("POINT DIFFERENTIAL","↕","Margin King",`${pdLeader.coach_name} leads the dynasty at ${signed(pdLeader.point_differential||0)} point differential.`,"cyan",pdLeader.logo_url||logoFor(pdLeader.team_name),pdLeader.team_name);
+ if(pdLeader)add("POINT DIFFERENTIAL","↕","Margin King",`${pdLeader.team_name} leads the dynasty at ${signed(pdLeader.point_differential||0)} differential.`,"cyan",pdLeader.logo_url||logoFor(pdLeader.team_name),pdLeader.team_name,signed(pdLeader.point_differential||0),pdLeader.team_name);
 
  const scoringLeader=[...standings].sort((a,b)=>Number(b.points_for||b.total_points||0)-Number(a.points_for||a.total_points||0))[0];
  if(scoringLeader){
    const pts=Number(scoringLeader.points_for||scoringLeader.total_points||0);
-   if(pts>0)add("SCORING KING","🎯","Points Leader",`${scoringLeader.team_name} has scored ${pts} points — tops in the dynasty.`,"lime",scoringLeader.logo_url||logoFor(scoringLeader.team_name),scoringLeader.team_name);
+   if(pts>0)add("SCORING KING","🎯","Points Leader",`${scoringLeader.team_name} has scored ${pts} — tops in the dynasty.`,"lime",scoringLeader.logo_url||logoFor(scoringLeader.team_name),scoringLeader.team_name,String(pts),scoringLeader.team_name,"pts");
  }
  const hot=[...standings].map(x=>({x,s:streak(x.person_id)})).filter(o=>/^W\d+/.test(o.s)).sort((a,b)=>Number(b.s.slice(1))-Number(a.s.slice(1)))[0];
- if(hot)add("HEATER","🔥","Winning Streak",`${hot.x.coach_name} has won ${hot.s.slice(1)} straight with ${hot.x.team_name}.`,"orange",hot.x.logo_url||logoFor(hot.x.team_name),hot.x.team_name);
+ if(hot)add("HEATER","🔥","Winning Streak",`${hot.x.team_name} has won ${hot.s.slice(1)} straight.`,"orange",hot.x.logo_url||logoFor(hot.x.team_name),hot.x.team_name,hot.s.slice(1),hot.x.team_name,"straight");
 
  const rankHist={};
  [...completed].sort((a,b)=>Number(a.season_number||0)-Number(b.season_number||0)||Number(a.week_number||0)-Number(b.week_number||0)).forEach(g=>{
@@ -7708,30 +7744,54 @@ function renderWire(){
    const prog=(state.programs||[]).find(p=>p.person_id===rr.pid);
     const latestRank=currentProgramRank(prog)||rr.last.rank;
     const gain=rr.first.rank-latestRank;
-    if(gain>0)add("RISER","📈","Poll Climber",`${coach} climbed ${gain} spots from #${rr.first.rank} to #${latestRank}.`,"lime",logoFor(rr.last.g.team_name),rr.last.g.team_name);
+    if(gain>0)add("RISER","📈","Poll Climber",`${rr.last.g.team_name} climbed ${gain} spots, from #${rr.first.rank} to #${latestRank}.`,"lime",logoFor(rr.last.g.team_name),rr.last.g.team_name,`+${gain}`,rr.last.g.team_name,"spots");
  }
 
  const rankedWins=currentSeason.filter(g=>g.result==="W"&&g.opponent_rank);
  if(rankedWins.length){
    const statement=[...rankedWins].sort((a,b)=>Number(a.opponent_rank)-Number(b.opponent_rank))[0];
-   add("STATEMENT WIN","💥","Ranked Statement",`${statement.team_name} took down #${statement.opponent_rank} ${statement.opponent_team}.`,"purple",logoFor(statement.team_name),statement.team_name);
+   add("STATEMENT WIN","💥","Ranked Statement",`${statement.team_name} took down #${statement.opponent_rank} ${statement.opponent_team}.`,"purple",logoFor(statement.team_name),statement.team_name,`#${statement.opponent_rank}`,statement.team_name);
  }
  const upsets=currentSeason.filter(g=>g.result==="W"&&g.opponent_rank&&(!g.team_rank||Number(g.team_rank)>Number(g.opponent_rank)));
  if(upsets.length){
    const upset=[...upsets].sort((a,b)=>(Number(b.team_rank||26)-Number(b.opponent_rank))-(Number(a.team_rank||26)-Number(a.opponent_rank)))[0];
-   add("UPSET ALERT","🚨","Bracket Buster",`${upset.team_name} stunned #${upset.opponent_rank} ${upset.opponent_team}.`,"red",logoFor(upset.team_name),upset.team_name);
+   add("UPSET ALERT","🚨","Bracket Buster",`${upset.team_name} stunned #${upset.opponent_rank} ${upset.opponent_team}.`,"red",logoFor(upset.team_name),upset.team_name,`#${upset.opponent_rank}`,upset.team_name);
  }
 
  const gotw=selectGameOfWeek(week);
  if(gotw&&gotw.status==="scheduled"){
    const gr=scheduleDisplayRanks(gotw);
-   add("WHAT'S NEXT","★","Game of the Week",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}.`,"violet",logoFor(gotw.team_name),gotw.team_name);
+   add("WHAT'S NEXT","★","Game of the Week",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}.`,"violet",logoFor(gotw.team_name),`${gotw.team_name} vs ${gotw.opponent_team}`,"","","",{logo2:logoFor(gotw.opponent_team)});
  }
 
  if(!stories.length)add("SATURDAY FOUNDRY","🏟️","The Story Starts Here",`Week ${week} is ready. Results will automatically build the Legacy Line.`,"cyan","");
 
- const cards=stories.slice(0,10).map((st,i)=>`<details class="legacy-matrix-row ${st.accent}"><summary><span class="legacy-matrix-category"><i>${st.icon}</i>${esc(st.type)}</span><span class="legacy-matrix-leader">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<b>${esc(st.leader||st.title)}</b></span><span class="legacy-matrix-expand">+</span></summary><div class="legacy-matrix-detail"><strong>${esc(st.title)}</strong><p>${esc(st.body)}</p></div></details>`).join("");
- $("wire").innerHTML=`<div class="legacy-matrix"><div class="legacy-matrix-head"><span>CATEGORY</span><span>LEADER / SPOTLIGHT</span><span></span></div>${cards}</div>`;
+ const storyCard=st=>{
+   const vs=st.extra&&st.extra.logo2;
+   const unit=st.unit?`<span>${esc(st.unit)}</span>`:"";
+   const head=vs
+     ?`<div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em><img src="${esc(st.extra.logo2)}" alt=""></div>`
+     :`<span class="legacy-story-art">${st.icon}</span>${st.stat?`<div class="legacy-story-hero">${esc(st.stat)}${unit}</div>`:""}`;
+   const foot=vs
+     ?`<b>${esc(st.leader)}</b>`
+     :`${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<b>${esc(st.leader||st.title)}</b>`;
+   return `<article class="legacy-story-card${vs?" matchup":""}" data-accent="${esc(st.accent)}"><span class="legacy-story-kicker">${esc(st.type)}</span>${head}<div class="legacy-story-title">${esc(st.title)}</div><p class="legacy-story-body">${esc(st.body)}</p><div class="legacy-story-team">${foot}</div></article>`;
+ };
+ // Teams that own 2+ categories get one takeover feature card instead of repeats.
+ const byGroup={};
+ stories.forEach(st=>{if(st.group)(byGroup[st.group]=byGroup[st.group]||[]).push(st);});
+ const claimed=new Set();let cardsHtml="";
+ Object.keys(byGroup).forEach(team=>{
+   const arr=byGroup[team];if(arr.length<2)return;
+   arr.forEach(st=>claimed.add(st));
+   const rep=arr[0];
+   const dog=arr.find(st=>st.type==="TOP DOG")||rep;
+   const heroUnit=dog.unit?`<span>${esc(dog.unit)}</span>`:"";
+   const chips=arr.map(st=>`<span class="takeover-chip"><i>${st.icon}</i>${esc(st.title)} · <b>${esc(st.stat)}</b></span>`).join("");
+   cardsHtml+=`<article class="legacy-story-card takeover" data-accent="gold"><span class="legacy-story-kicker">DYNASTY TAKEOVER</span><div class="legacy-story-teamlogo">${rep.logo?`<img src="${esc(rep.logo)}" alt="">`:""}</div>${dog.stat?`<div class="legacy-story-hero">${esc(dog.stat)}${heroUnit}</div>`:""}<div class="legacy-story-title">${esc(team)}</div><p class="legacy-story-body">${esc(team)} is running the dynasty.</p><div class="takeover-chips">${chips}</div></article>`;
+ });
+ stories.forEach(st=>{if(!claimed.has(st))cardsHtml+=storyCard(st);});
+ $("wire").innerHTML=`<div class="legacy-stories">${cardsHtml}</div>`;
 
  const tickerText=stories.slice(0,8).map(st=>`${st.type}: ${st.body}`).join("   •   ");
  $("tickerCopy").innerHTML=`<div class="ticker-rail"><span>${esc(tickerText)}</span><span aria-hidden="true">${esc(tickerText)}</span></div>`;
