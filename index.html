@@ -15013,21 +15013,24 @@ img.sf-logo-system-v2{
 </style>
 <meta name="saturday-foundry-gotw-logo-plaque" content="v1-premium-foundry">
 
-<!-- Saturday Foundry PROD 9.7.9 — GOTW team-name type scale -->
+<!-- Saturday Foundry PROD 9.7.9 — GOTW team-name type scale.
+     QA fix: scoped out of the 9.8.2 single-row carousel (.gotw-single-row),
+     which has its own sizing; this older scale was overriding it and clipping
+     long team names on mobile. -->
 <style id="sf-qa-9-7-8-gotw-team-type">
-#overview #gotw .gotw-matchup .team-name,
-#overview #gotw .gotw-matchup .team-side.right .team-name{
+#overview #gotw .gotw-matchup:not(.gotw-single-row) .team-name,
+#overview #gotw .gotw-matchup:not(.gotw-single-row) .team-side.right .team-name{
   font-size:clamp(20px,2.35vw,32px)!important;
 }
 @media(max-width:700px){
-  #overview #gotw .gotw-matchup .team-name,
-  #overview #gotw .gotw-matchup .team-side.right .team-name{
+  #overview #gotw .gotw-matchup:not(.gotw-single-row) .team-name,
+  #overview #gotw .gotw-matchup:not(.gotw-single-row) .team-side.right .team-name{
     font-size:clamp(23px,7vw,32px)!important;
   }
 }
 @media (min-width:820px) and (max-width:1366px) and (orientation:landscape){
-  #overview #gotw .gotw-matchup .team-name,
-  #overview #gotw .gotw-matchup .team-side.right .team-name{
+  #overview #gotw .gotw-matchup:not(.gotw-single-row) .team-name,
+  #overview #gotw .gotw-matchup:not(.gotw-single-row) .team-side.right .team-name{
     font-size:clamp(24px,2.2vw,32px)!important;
   }
 }
