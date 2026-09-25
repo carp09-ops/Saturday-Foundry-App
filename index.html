@@ -2486,6 +2486,15 @@ body::after{
 .legacy-faceoff{display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 0 2px}
 .legacy-faceoff img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(245,189,56,.4))}
 .legacy-faceoff em{font-style:normal;font-family:Teko,sans-serif;font-size:24px;line-height:1;color:var(--acc)}
+.legacy-lead{--acc:#f5bd38;background:linear-gradient(165deg,#161207,#0a0906 72%);border:1px solid rgba(245,189,56,.30);border-top:3px solid var(--acc);border-radius:14px;padding:16px 14px;margin:12px 12px 0;display:flex;flex-direction:column;gap:9px}
+.legacy-lead[data-accent="red"]{--acc:#f87171}
+.legacy-lead[data-accent="gold"]{--acc:#f5bd38}
+.legacy-lead-top{display:flex;align-items:center;justify-content:space-between}
+.legacy-lead-art{font-size:30px;line-height:1}
+.legacy-lead-hed{font-family:Teko,sans-serif;font-size:32px;line-height:1.05;color:#fff}
+.legacy-lead .legacy-faceoff{padding:4px 0}
+.legacy-lead .legacy-faceoff img{width:58px;height:58px}
+.legacy-lead-score{font-family:Teko,sans-serif;font-size:28px;line-height:1;color:#ffd968}
 </style>
 
 .gotw-broadcast{display:grid!important;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:center}
@@ -7690,45 +7699,57 @@ function renderWire(){
  const currentSeason=completed.filter(g=>Number(g.season_number||S.season_number)===Number(S.season_number));
  const standings=[...(state.standings||[])];
  const stories=[];
- const add=(type,icon,title,body,accent="cyan",logo="",leader="",stat="",group="",unit="",extra=null)=>stories.push({type,icon,title,body,accent,logo,leader,stat,group,unit,extra});
+ const add=(type,icon,title,body,accent="cyan",logo="",leader="",stat="",group="",unit="",extra=null,kind="card")=>stories.push({type,icon,title,body,accent,logo,leader,stat,group,unit,extra,kind});
 
- if(currentSeason.length){
-   const largest=[...currentSeason].sort((a,b)=>Math.abs(Number(b.points_for)-Number(b.points_against))-Math.abs(Number(a.points_for)-Number(a.points_against)))[0];
-   const margin=Math.abs(Number(largest.points_for)-Number(largest.points_against));
-   const winner=Number(largest.points_for)>=Number(largest.points_against)?largest.team_name:largest.opponent_team;
-   add("COLD BLOODED","🥶","Largest Victory",`${winner} owns the season's biggest win — ${margin} points.`,"ice",logoFor(winner),winner,String(margin),"","pts");
-
-   const explosion=[...currentSeason].sort((a,b)=>Math.max(Number(b.points_for),Number(b.points_against))-Math.max(Number(a.points_for),Number(a.points_against)))[0];
-   const high=Math.max(Number(explosion.points_for),Number(explosion.points_against));
-   const highTeam=Number(explosion.points_for)>=Number(explosion.points_against)?explosion.team_name:explosion.opponent_team;
-   add("OFFENSIVE EXPLOSION","⚡","Points Avalanche",`${highTeam} dropped ${high} — the highest single-team output this season.`,"cyan",logoFor(highTeam),highTeam,String(high),"","pts");
-
-   const wins=currentSeason.filter(g=>g.result==="W");
-   if(wins.length){
-     const lockdown=[...wins].sort((a,b)=>Number(a.points_against)-Number(b.points_against))[0];
-     add("LOCKDOWN","🔒","Defense Travels",`${lockdown.team_name} allowed just ${lockdown.points_against} in its stingiest win.`,"blue",logoFor(lockdown.team_name),lockdown.team_name,String(lockdown.points_against),"","allowed");
+ // ---- The wire: narrative layer. Latest completed week becomes headlines, one lead story. ----
+ const leagueGames=currentSeason.filter(g=>g.person_id);
+ const storyWeek=leagueGames.length?Math.max(...leagueGames.map(g=>Number(g.week_number)||0)):null;
+ const weekGames=(storyWeek==null?[]:leagueGames.filter(g=>Number(g.week_number)===storyWeek)).slice(0,6);
+ const rankStr=r=>r?`#${r} `:"";
+ const gameStakes=g=>{
+   const bits=[];
+   const m=/^W(\d+)$/.exec(streak(g.person_id)||"");
+   if(g.result==="W"&&m&&Number(m[1])>=2)bits.push(`${m[1]} straight wins`);
+   if(g.result==="W"&&g.opponent_rank)bits.push(`takes down #${g.opponent_rank}`);
+   if(g.result==="L"&&g.team_rank)bits.push(`#${g.team_rank} goes down`);
+   return bits.join(" · ");
+ };
+ weekGames.forEach(g=>{
+   const pf=Number(g.points_for),pa=Number(g.points_against),won=g.result==="W";
+   const margin=Math.abs(pf-pa);
+   const wName=won?g.team_name:g.opponent_team,wScore=won?pf:pa;
+   const lName=won?g.opponent_team:g.team_name,lScore=won?pa:pf;
+   const score=`${wScore}–${lScore}`;
+   const upsetDiff=won&&g.opponent_rank?((Number(g.team_rank)||26)-Number(g.opponent_rank)):0;
+   let type,icon,accent,title;
+   if(upsetDiff>0){type="STUNNER";icon="🚨";accent="red";title=`${g.team_name} stuns #${g.opponent_rank} ${g.opponent_team}`;}
+   else if(!won&&g.team_rank){type="FALLS";icon="📉";accent="red";title=`#${g.team_rank} ${g.team_name} falls to ${g.opponent_team}`;}
+   else if(won&&margin<=7){type="SURVIVES";icon="⏱";accent="gold";title=`${rankStr(g.team_rank)}${g.team_name} escapes ${g.opponent_team}`;}
+   else if(won&&margin>=24){type="ROLLS";icon="💪";accent="ice";title=`${rankStr(g.team_rank)}${g.team_name} rolls past ${g.opponent_team}`;}
+   else{type="FINAL";icon="🏟️";accent="cyan";title=won?`${rankStr(g.team_rank)}${g.team_name} tops ${g.opponent_team}`:`${g.opponent_team} tops ${rankStr(g.team_rank)}${g.team_name}`;}
+   const stakes=gameStakes(g);
+   add(type,icon,title,`${wName} ${wScore}, ${lName} ${lScore}.${stakes?` ${stakes}.`:""}`,accent,logoFor(wName),`${wName} vs ${lName}`,score,"","",{logo2:logoFor(lName)},"card");
+   const st=stories[stories.length-1];st._margin=margin;st._upset=upsetDiff;st._total=pf+pa;
+ });
+ if(weekGames.length){
+   // Lead: biggest upset, else closest finish, else shootout.
+   const cands=stories.filter(s=>s.kind==="card");
+   const byUpset=cands.filter(s=>s._upset>0).sort((a,b)=>b._upset-a._upset)[0];
+   const lead=byUpset||[...cands].sort((a,b)=>a._margin-b._margin)[0];
+   lead.kind="lead";
+   lead.type=`LEAD STORY · WEEK ${storyWeek}`;
+   if(!byUpset){
+     if(lead._margin<=7){lead.icon="⏱";lead.title=`${lead.title.replace(/^([\s\S]*?) escapes /,"$1 survives ")} in a thriller`;}
+     else lead.icon="🔥";
    }
-
-   const close=[...currentSeason].sort((a,b)=>Math.abs(Number(a.points_for)-Number(a.points_against))-Math.abs(Number(b.points_for)-Number(b.points_against)))[0];
-   const closeMargin=Math.abs(Number(close.points_for)-Number(close.points_against));
-   add("NAIL BITER","⏱","Closest Finish",`${close.team_name} vs ${close.opponent_team} — decided by ${closeMargin} point${closeMargin===1?"":"s"}.`,"gold",logoFor(close.team_name),`${close.team_name} vs ${close.opponent_team}`,"","","",{logo2:logoFor(close.opponent_team)});
+   stories.forEach(s=>{delete s._margin;delete s._upset;delete s._total;});
  }
 
+ // ---- Notebook: season arcs the analytics tab doesn't own as narrative. ----
  const leader=[...standings].sort((a,b)=>Number(b.wins||0)-Number(a.wins||0)||Number(b.point_differential||0)-Number(a.point_differential||0))[0];
- if(leader)add("TOP DOG","👑","League Leader",`${leader.team_name} sits at ${leader.wins}-${leader.losses}, alone atop the dynasty.`,"gold",leader.logo_url||logoFor(leader.team_name),leader.team_name,`${leader.wins}-${leader.losses}`,leader.team_name);
-
-
- const pdLeader=[...standings].sort((a,b)=>Number(b.point_differential||0)-Number(a.point_differential||0))[0];
- if(pdLeader)add("POINT DIFFERENTIAL","↕","Margin King",`${pdLeader.team_name} leads the dynasty at ${signed(pdLeader.point_differential||0)} differential.`,"cyan",pdLeader.logo_url||logoFor(pdLeader.team_name),pdLeader.team_name,signed(pdLeader.point_differential||0),pdLeader.team_name);
-
- const scoringLeader=[...standings].sort((a,b)=>Number(b.points_for||b.total_points||0)-Number(a.points_for||a.total_points||0))[0];
- if(scoringLeader){
-   const pts=Number(scoringLeader.points_for||scoringLeader.total_points||0);
-   if(pts>0)add("SCORING KING","🎯","Points Leader",`${scoringLeader.team_name} has scored ${pts} — tops in the dynasty.`,"lime",scoringLeader.logo_url||logoFor(scoringLeader.team_name),scoringLeader.team_name,String(pts),scoringLeader.team_name,"pts");
- }
+ if(leader)add("TOP DOG","👑","Title Race",`${leader.team_name} sits at ${leader.wins}-${leader.losses}, alone atop the dynasty.`,"gold",leader.logo_url||logoFor(leader.team_name),leader.team_name,`${leader.wins}-${leader.losses}`,leader.team_name,"","", "notebook");
  const hot=[...standings].map(x=>({x,s:streak(x.person_id)})).filter(o=>/^W\d+/.test(o.s)).sort((a,b)=>Number(b.s.slice(1))-Number(a.s.slice(1)))[0];
- if(hot)add("HEATER","🔥","Winning Streak",`${hot.x.team_name} has won ${hot.s.slice(1)} straight.`,"orange",hot.x.logo_url||logoFor(hot.x.team_name),hot.x.team_name,hot.s.slice(1),hot.x.team_name,"straight");
-
+ if(hot)add("HEATER","🔥","Winning Streak",`${hot.x.team_name} has won ${hot.s.slice(1)} straight.`,"orange",hot.x.logo_url||logoFor(hot.x.team_name),hot.x.team_name,hot.s.slice(1),hot.x.team_name,"straight","", "notebook");
  const rankHist={};
  [...completed].sort((a,b)=>Number(a.season_number||0)-Number(b.season_number||0)||Number(a.week_number||0)-Number(b.week_number||0)).forEach(g=>{
    if(!g.person_id||!g.team_rank)return;
@@ -7740,28 +7761,17 @@ function renderWire(){
    return gain>0?{pid,first,last,gain}:null;
  }).filter(Boolean).sort((a,b)=>b.gain-a.gain);
  if(risers[0]){
-   const rr=risers[0],coach=(state.career||[]).find(c=>c.person_id===rr.pid)?.coach_name||rr.last.g.coach_name||"A coach";
+   const rr=risers[0];
    const prog=(state.programs||[]).find(p=>p.person_id===rr.pid);
-    const latestRank=currentProgramRank(prog)||rr.last.rank;
-    const gain=rr.first.rank-latestRank;
-    if(gain>0)add("RISER","📈","Poll Climber",`${rr.last.g.team_name} climbed ${gain} spots, from #${rr.first.rank} to #${latestRank}.`,"lime",logoFor(rr.last.g.team_name),rr.last.g.team_name,`+${gain}`,rr.last.g.team_name,"spots");
- }
-
- const rankedWins=currentSeason.filter(g=>g.result==="W"&&g.opponent_rank);
- if(rankedWins.length){
-   const statement=[...rankedWins].sort((a,b)=>Number(a.opponent_rank)-Number(b.opponent_rank))[0];
-   add("STATEMENT WIN","💥","Ranked Statement",`${statement.team_name} took down #${statement.opponent_rank} ${statement.opponent_team}.`,"purple",logoFor(statement.team_name),statement.team_name,`#${statement.opponent_rank}`,statement.team_name);
- }
- const upsets=currentSeason.filter(g=>g.result==="W"&&g.opponent_rank&&(!g.team_rank||Number(g.team_rank)>Number(g.opponent_rank)));
- if(upsets.length){
-   const upset=[...upsets].sort((a,b)=>(Number(b.team_rank||26)-Number(b.opponent_rank))-(Number(a.team_rank||26)-Number(a.opponent_rank)))[0];
-   add("UPSET ALERT","🚨","Bracket Buster",`${upset.team_name} stunned #${upset.opponent_rank} ${upset.opponent_team}.`,"red",logoFor(upset.team_name),upset.team_name,`#${upset.opponent_rank}`,upset.team_name);
+   const latestRank=currentProgramRank(prog)||rr.last.rank;
+   const gain=rr.first.rank-latestRank;
+   if(gain>0)add("RISER","📈","Poll Climber",`${rr.last.g.team_name} climbed ${gain} spots, from #${rr.first.rank} to #${latestRank}.`,"lime",logoFor(rr.last.g.team_name),rr.last.g.team_name,`+${gain}`,rr.last.g.team_name,"spots","", "notebook");
  }
 
  const gotw=selectGameOfWeek(week);
  if(gotw&&gotw.status==="scheduled"){
    const gr=scheduleDisplayRanks(gotw);
-   add("WHAT'S NEXT","★","Game of the Week",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}.`,"violet",logoFor(gotw.team_name),`${gotw.team_name} vs ${gotw.opponent_team}`,"","","",{logo2:logoFor(gotw.opponent_team)});
+   add("WHAT'S NEXT","★","Game of the Week",`${gr.team?`#${gr.team} `:""}${gotw.team_name} ${gotw.home_away==="away"?"at":"vs"} ${gr.opponent?`#${gr.opponent} `:""}${gotw.opponent_team}.`,"violet",logoFor(gotw.team_name),`${gotw.team_name} vs ${gotw.opponent_team}`,"","","",{logo2:logoFor(gotw.opponent_team)},"card");
  }
 
  if(!stories.length)add("SATURDAY FOUNDRY","🏟️","The Story Starts Here",`Week ${week} is ready. Results will automatically build the Legacy Line.`,"cyan","");
@@ -7778,8 +7788,11 @@ function renderWire(){
    return `<article class="legacy-story-card${vs?" matchup":""}" data-accent="${esc(st.accent)}"><span class="legacy-story-kicker">${esc(st.type)}</span>${head}<div class="legacy-story-title">${esc(st.title)}</div><p class="legacy-story-body">${esc(st.body)}</p><div class="legacy-story-team">${foot}</div></article>`;
  };
  // Teams that own 2+ categories get one takeover feature card instead of repeats.
+ const leadCard=st=>`<article class="legacy-lead" data-accent="${esc(st.accent)}"><div class="legacy-lead-top"><span class="legacy-story-kicker">${esc(st.type)}</span><span class="legacy-lead-art">${st.icon}</span></div><div class="legacy-lead-hed">${esc(st.title)}</div><div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em>${st.extra&&st.extra.logo2?`<img src="${esc(st.extra.logo2)}" alt="">`:""}</div><div class="legacy-lead-score">${esc(st.stat)}</div><p class="legacy-story-body">${esc(st.body)}</p></article>`;
+ const lead=stories.find(s=>s.kind==="lead");
+ const rest=stories.filter(s=>s.kind!=="lead");
  const byGroup={};
- stories.forEach(st=>{if(st.group)(byGroup[st.group]=byGroup[st.group]||[]).push(st);});
+ rest.forEach(st=>{if(st.group)(byGroup[st.group]=byGroup[st.group]||[]).push(st);});
  const claimed=new Set();let cardsHtml="";
  Object.keys(byGroup).forEach(team=>{
    const arr=byGroup[team];if(arr.length<2)return;
@@ -7790,8 +7803,8 @@ function renderWire(){
    const chips=arr.map(st=>`<span class="takeover-chip"><i>${st.icon}</i>${esc(st.title)} · <b>${esc(st.stat)}</b></span>`).join("");
    cardsHtml+=`<article class="legacy-story-card takeover" data-accent="gold"><span class="legacy-story-kicker">DYNASTY TAKEOVER</span><div class="legacy-story-teamlogo">${rep.logo?`<img src="${esc(rep.logo)}" alt="">`:""}</div>${dog.stat?`<div class="legacy-story-hero">${esc(dog.stat)}${heroUnit}</div>`:""}<div class="legacy-story-title">${esc(team)}</div><p class="legacy-story-body">${esc(team)} is running the dynasty.</p><div class="takeover-chips">${chips}</div></article>`;
  });
- stories.forEach(st=>{if(!claimed.has(st))cardsHtml+=storyCard(st);});
- $("wire").innerHTML=`<div class="legacy-stories">${cardsHtml}</div>`;
+ rest.forEach(st=>{if(!claimed.has(st))cardsHtml+=storyCard(st);});
+ $("wire").innerHTML=`${lead?leadCard(lead):""}<div class="legacy-stories">${cardsHtml}</div>`;
 
  const tickerText=stories.slice(0,8).map(st=>`${st.type}: ${st.body}`).join("   •   ");
  $("tickerCopy").innerHTML=`<div class="ticker-rail"><span>${esc(tickerText)}</span><span aria-hidden="true">${esc(tickerText)}</span></div>`;
