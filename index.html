@@ -6612,17 +6612,20 @@ function gotwSlideMarkup(pick,index,total){
  const hasMarket=!!(vp&&Number.isFinite(Number(vp.teamWinProbability)));
  const teamPct=hasMarket?Math.round(Number(vp.teamWinProbability)*100):null;
  const oppPct=hasMarket?100-teamPct:null;
- const probability=hasMarket?`<div class="gotw-prob-wrap" aria-label="Dynasty Vegas win probability">
+ // Completed games show the final score in place of win probability.
+ const teamFinalScore=Number(g.points_for??g.team_score), oppFinalScore=Number(g.points_against??g.opponent_score);
+ const hasFinalScore=String(g.status||"")==="completed"&&Number.isFinite(teamFinalScore)&&Number.isFinite(oppFinalScore);
+ const probability=hasFinalScore?`<div class="gotw-prob-wrap" aria-label="Final score"><span class="gotw-final-label">FINAL</span></div>`:hasMarket?`<div class="gotw-prob-wrap" aria-label="Dynasty Vegas win probability">
       <div class="gotw-prob-bar"><span class="gotw-prob-away" style="width:${oppPct}%"></span><span class="gotw-prob-home" style="width:${teamPct}%"></span></div>
-      <div class="gotw-prob-labels"><b class="away">${oppPct}%</b><span>DYNASTY VEGAS</span><b class="home">${teamPct}%</b></div>
+      <div class="gotw-prob-labels"><span>DYNASTY VEGAS</span></div>
     </div>`:`<div class="gotw-prob-wrap gotw-no-market" aria-label="Dynasty Vegas market pending"><div class="gotw-no-market-copy"><strong>MARKET PENDING</strong><span>Dynasty Vegas line is still loading</span></div></div>`;
  return `<section class="gotw-carousel-slide ${index===activeGotwSlide?"active":""}" data-gotw-slide="${index}" aria-hidden="${index===activeGotwSlide?"false":"true"}">
   <div class="gotw-slide-kicker"><span class="gotw-feature-type ${pick.kind}">${esc(pick.label)}</span><span class="gotw-feature-reason">${esc(gotwSlideReason(g))}</span></div>
   <div class="gotw-body gotw-broadcast">
     <div class="gotw-matchup gotw-single-row">
-      <div class="gotw-team-col">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div>${hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
+      <div class="gotw-team-col">${ol?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(ol)}" alt="${esc(g.opponent_team||"Opponent")} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.opponent_team)}</span></span>`}<div class="team-name">${ranks.opponent?`<span style="color:var(--gold)">#${ranks.opponent}</span> `:""}${esc(g.opponent_team||"TBD")}</div><div class="team-meta">${g.home_away==="away"?"HOME":"AWAY"} • ${oppRecord.wins}-${oppRecord.losses}</div>${hasFinalScore?`<span class="gotw-final-score${oppFinalScore>teamFinalScore?" winner":""}">${oppFinalScore}</span>`:hasMarket?`<span class="gotw-winpct away">${oppPct}%</span>`:""}</div>
       ${(()=>{const b=(typeof nationalBadgeFor==='function')?nationalBadgeFor(g):null;return b&&b.src?`<div class="gotw-center-badge"><img src="${esc(b.src)}" alt="${esc(b.label||'Game badge')}"><span>${esc(b.label||'')}</span></div>`:`<div class="gotw-center-vs">VS</div>`;})()}
-      <div class="gotw-team-col">${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}<div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div>${hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}</div>
+      <div class="gotw-team-col">${l?`<span class="gotw-logo-plaque"><img class="team-logo" src="${esc(l)}" alt="${esc(g.team_name)} logo"></span>`:`<span class="gotw-logo-plaque fallback"><span class="team-fallback">${initials(g.team_name)}</span></span>`}<div class="team-name">${ranks.team?`<span style="color:var(--gold)">#${ranks.team}</span> `:""}${esc(g.team_name)}</div><div class="team-meta">${g.home_away==="away"?"AWAY":"HOME"}${g.coach_name?` • ${esc(g.coach_name)}`:""} • ${teamRecord.wins}-${teamRecord.losses}</div>${hasFinalScore?`<span class="gotw-final-score${teamFinalScore>oppFinalScore?" winner":""}">${teamFinalScore}</span>`:hasMarket?`<span class="gotw-winpct home">${teamPct}%</span>`:""}</div>
     </div>
     ${probability}
   </div>
@@ -14905,6 +14908,16 @@ img.sf-logo-system-v2{
   #overview #gotw .gotw-matchup.gotw-single-row{grid-template-columns:1fr auto 1fr!important}
   #overview #gotw .gotw-vegas{grid-template-columns:repeat(3,1fr)!important}
 }
+/* QA: center-justify single-row carousel team text (a legacy mobile rule forces .team-name left) */
+#overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .team-name,
+#overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .team-meta{text-align:center!important;width:100%!important}
+#overview #gotw .gotw-matchup.gotw-single-row .gotw-team-col .gotw-winpct{display:block!important;width:100%!important;text-align:center!important;margin-left:0!important;margin-right:0!important}
+/* QA: single DYNASTY VEGAS label under the probability bar (percents already shown per team) */
+#overview #gotw .gotw-prob-labels{justify-content:center!important}
+/* QA: completed games show the final score in the carousel (winner in gold) */
+#overview #gotw .gotw-final-score{display:block!important;width:100%!important;text-align:center!important;font-family:'Teko',sans-serif!important;font-size:22px!important;font-weight:800!important;line-height:1!important;margin:4px 0 0!important;color:#71858e!important}
+#overview #gotw .gotw-final-score.winner{color:#f4c542!important}
+#overview #gotw .gotw-final-label{display:block!important;text-align:center!important;font-size:9px!important;font-weight:900!important;letter-spacing:.22em!important;color:#f4c542!important;margin:10px 0 4px!important}
 
 
 #overview #gotw .gotw-logo-plaque .team-fallback{
