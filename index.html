@@ -2493,6 +2493,7 @@ body::after{
 .legacy-story-kicker{font-size:8px;font-weight:900;letter-spacing:.14em;color:var(--acc)}
 .legacy-story-art{font-size:30px;line-height:1.1}
 .legacy-story-hero{font-family:Teko,sans-serif;font-size:38px;line-height:1;color:#fff}
+.legacy-story-score{font-family:Teko,sans-serif;font-size:27px;line-height:1;color:#fff;letter-spacing:.02em}
 .legacy-story-title{font-size:11px;font-weight:800;color:#e8eef0}
 .legacy-story-body{font-size:10.5px;color:#93a3ad;line-height:1.5;margin:0}
 .legacy-story-team{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:9px;border-top:1px solid rgba(245,189,56,.12);min-width:0}
@@ -7815,7 +7816,7 @@ function renderWire(){
    const vs=st.extra&&st.extra.logo2;
    const unit=st.unit?`<span>${esc(st.unit)}</span>`:"";
    const head=vs
-     ?`<div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em><img src="${esc(st.extra.logo2)}" alt=""></div>`
+     ?`<div class="legacy-faceoff">${st.logo?`<img src="${esc(st.logo)}" alt="">`:""}<em>VS</em><img src="${esc(st.extra.logo2)}" alt=""></div>${st.stat?`<div class="legacy-story-score">${esc(st.stat)}</div>`:""}`
      :`<span class="legacy-story-art">${st.icon}</span>${st.stat?`<div class="legacy-story-hero">${esc(st.stat)}${unit}</div>`:""}`;
    const foot=vs
      ?`<b>${esc(st.leader)}</b>`
