@@ -7732,17 +7732,19 @@ function renderWire(){
  });
  if(weekGames.length){
    // Lead: biggest upset, else closest finish, else shootout.
-   const cands=stories.filter(s=>s.kind==="card");
+   const cands=stories.filter(s=>s.kind==="headline");
    const byUpset=cands.filter(s=>s._upset>0).sort((a,b)=>b._upset-a._upset)[0];
    const lead=byUpset||[...cands].sort((a,b)=>a._margin-b._margin)[0];
-   lead.kind="lead";
-   lead.type=`LEAD STORY · WEEK ${storyWeek}`;
-   if(!byUpset){
-     if(lead._margin<=7){lead.icon="⏱";lead.title=`${lead.title.replace(/^([\s\S]*?) escapes /,"$1 survives ")} in a thriller`;}
-     else lead.icon="🔥";
+   if(lead){
+     lead.kind="lead";
+     lead.type=`LEAD STORY · WEEK ${storyWeek}`;
+     if(!byUpset){
+       if(lead._margin<=7){lead.icon="⏱";lead.title=`${lead.title.replace(/^([\s\S]*?) escapes /,"$1 survives ")} in a thriller`;}
+       else lead.icon="🔥";
+     }
+     const lstakes=gameStakes(weekGames[cands.indexOf(lead)]);
+     lead.body=lstakes?lstakes+".":"";
    }
-   const lstakes=gameStakes(weekGames[cands.indexOf(lead)]);
-   lead.body=lstakes?lstakes+".":"";
    stories.forEach(s=>{delete s._margin;delete s._upset;delete s._total;});
  }
 
