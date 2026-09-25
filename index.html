@@ -4710,6 +4710,12 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 img.sf-dark-logo{
   filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 0 9px rgba(255,255,255,.22))!important;
 }
+/* The legacy QA 9.6.17 contrast rule still sets filter:none!important on
+   #overview #gotw .gotw-matchup .team-logo (2,2,0); this (2,2,1) override
+   re-enables the halo there without touching the old rule. */
+#overview #gotw .gotw-matchup img.sf-dark-logo{
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 0 9px rgba(255,255,255,.22))!important;
+}
 </style>
 
 
