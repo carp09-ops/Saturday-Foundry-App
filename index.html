@@ -7452,6 +7452,7 @@ function showScoreRecap(gameId,myScore,oppScore,gameSnap){
      try{ $("recapStoryline").classList.add("hidden"); }catch(_){}
    }catch(err){ console.error("[recap] failed:",err); }
    try{ $("resultRecapModal").classList.remove("hidden"); }catch(_){}
+   try{ sfScoreFx(Number(myScore)>Number(oppScore)); }catch(_){}
 }
 async function submitSelectedResult(){
  if(!selectedGame)return;
@@ -9365,6 +9366,138 @@ body{
   filter:none!important;
 }
 </style>
+<style id="sf-score-flair">
+/* Score entry + recap: always centered, with foundry flair. */
+#resultModal,#resultRecapModal{align-items:center!important;justify-content:center!important;padding:16px!important}
+#resultModal .result-dialog,#resultRecapModal .result-dialog{
+  position:relative;
+  border:1px solid rgba(244,197,66,.45)!important;border-radius:16px!important;
+  background:linear-gradient(180deg,#071a21,#041016 62%)!important;
+  box-shadow:0 0 0 1px rgba(244,197,66,.12),0 30px 90px rgba(0,0,0,.8),0 0 70px rgba(244,197,66,.10)!important;
+  animation:sfModalPop .38s cubic-bezier(.2,1.35,.4,1);
+  max-height:calc(100dvh - 32px);
+}
+@keyframes sfModalPop{from{transform:translateY(16px) scale(.96);opacity:0}}
+#resultModal .result-dialog::before{
+  content:'';position:absolute;top:0;left:12%;right:12%;height:2px;pointer-events:none;z-index:1;
+  background:linear-gradient(90deg,transparent,#f4c542,transparent);
+  animation:sfEdgeGlow 2.6s ease-in-out infinite;
+}
+@keyframes sfEdgeGlow{0%,100%{opacity:.45}50%{opacity:1}}
+#resultModal .kicker{color:#f4c542;letter-spacing:.14em}
+#resultModal .result-head h3{font-family:'Teko',Impact,sans-serif;font-size:34px;letter-spacing:.03em;color:#fff8e6;text-shadow:0 2px 18px rgba(244,197,66,.25)}
+#resultModal .score-entry{border-color:#1e4049;background:linear-gradient(180deg,#08161c,#061319);transition:border-color .2s,box-shadow .2s}
+#resultModal .score-entry:focus-within{border-color:rgba(244,197,66,.65);box-shadow:0 0 0 3px rgba(244,197,66,.12)}
+#resultModal .score-entry input{font-family:'Teko',Impact,sans-serif!important;font-size:44px!important;line-height:1;color:#ffe9a8;background:transparent;border:0;text-shadow:0 2px 14px rgba(244,197,66,.25)}
+#resultModal .score-entry input::placeholder{color:#3d5a64;text-shadow:none}
+#submitResultBtn{position:relative;overflow:hidden;box-shadow:0 8px 26px rgba(244,197,66,.35);transition:transform .12s ease}
+#submitResultBtn:active{transform:scale(.97)}
+#submitResultBtn::after{content:'';position:absolute;top:0;bottom:0;width:45%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sfShine 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes sfShine{0%,55%{left:-60%}92%,100%{left:135%}}
+/* Recap: wins glow, losses shake under the boos. */
+#resultRecapModal .recap-result.win{text-shadow:0 0 26px rgba(74,222,128,.6);animation:sfWinPulse 1.8s ease-in-out infinite}
+@keyframes sfWinPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+#resultRecapModal .recap-result.loss{text-shadow:0 0 26px rgba(248,113,113,.5)}
+#resultRecapModal.struck .recap-dialog{animation:sfShake .45s ease}
+@keyframes sfShake{0%,100%{transform:translate(0)}20%{transform:translate(-7px,3px) rotate(-.4deg)}40%{transform:translate(6px,-4px)}60%{transform:translate(-5px,-2px) rotate(.4deg)}80%{transform:translate(4px,3px)}}
+#resultRecapModal.struck::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(220,38,38,.30));animation:sfBooFade 1.4s ease forwards}
+@keyframes sfBooFade{from{opacity:0}25%{opacity:1}to{opacity:0}}
+@media(max-width:768px){
+  #resultModal,#resultRecapModal{padding:16px!important}
+}
+@media(max-width:520px){
+  #resultModal,#resultRecapModal{padding:12px!important}
+}
+</style>
+<script id="sf-score-fx">
+/* Score-entry celebrations: confetti for a win, boos for a loss. */
+document.addEventListener('pointerdown',function(){
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    if(!window.__sfAudio) window.__sfAudio=new AC();
+    if(window.__sfAudio.state==='suspended') window.__sfAudio.resume();
+  }catch(_){}
+},true);
+function sfConfetti(){
+  try{
+    var c=document.createElement('canvas');
+    c.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2147483000';
+    document.body.appendChild(c);
+    var x=c.getContext('2d'); c.width=window.innerWidth; c.height=window.innerHeight;
+    var colors=['#f4c542','#ffffff','#2dd4bf','#f59e0b','#e11d48','#fbbf24'];
+    var P=[],W=window.innerWidth,H=window.innerHeight;
+    for(var i=0;i<170;i++){
+      var left=i%2===0;
+      P.push({x:left?W*0.10:W*0.90,y:H*0.72,
+        vx:(left?1:-1)*(4+Math.random()*6),vy:-(9+Math.random()*7),
+        s:5+Math.random()*7,r:Math.random()*Math.PI,vr:(Math.random()-.5)*0.3,
+        col:colors[i%colors.length],circ:Math.random()<0.4,life:1});
+    }
+    var frames=0;
+    (function tick(){
+      x.clearRect(0,0,c.width,c.height); frames++;
+      for(var j=0;j<P.length;j++){var p=P[j];
+        p.x+=p.vx;p.y+=p.vy;p.vy+=0.28;p.vx*=0.99;p.r+=p.vr;p.life-=0.007;
+        x.save();x.globalAlpha=Math.max(0,Math.min(1,p.life*1.5));
+        x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.col;
+        if(p.circ){x.beginPath();x.arc(0,0,p.s/2.4,0,7);x.fill();}
+        else{x.fillRect(-p.s/2,-p.s/3,p.s,p.s*0.66);}
+        x.restore();
+      }
+      if(frames<175){requestAnimationFrame(tick);}else{c.remove();}
+    })();
+  }catch(_){}
+}
+function sfBoo(){
+  try{
+    var AC=window.__sfAudio; if(!AC||AC.state!=='running') return;
+    var t=AC.currentTime+0.02,i;
+    var master=AC.createGain();
+    master.gain.setValueAtTime(0.0001,t);
+    master.gain.exponentialRampToValueAtTime(0.4,t+0.12);
+    master.gain.setValueAtTime(0.4,t+1.1);
+    master.gain.exponentialRampToValueAtTime(0.0001,t+1.9);
+    var lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=750; lp.Q.value=0.8;
+    master.connect(lp); lp.connect(AC.destination);
+    for(i=0;i<6;i++){
+      (function(){
+        var o=AC.createOscillator(); o.type='sawtooth';
+        var f=115+Math.random()*45;
+        o.frequency.setValueAtTime(f,t);
+        o.frequency.exponentialRampToValueAtTime(f*0.78,t+1.7);
+        var lfo=AC.createOscillator(); lfo.type='sine'; lfo.frequency.value=4.5+Math.random()*2.5;
+        var lg=AC.createGain(); lg.gain.value=f*0.035;
+        lfo.connect(lg); lg.connect(o.frequency);
+        var g=AC.createGain(); g.gain.value=0.16;
+        o.connect(g); g.connect(master);
+        o.start(t); lfo.start(t); o.stop(t+2); lfo.stop(t+2);
+      })();
+    }
+    var nb=AC.createBuffer(1,Math.floor(AC.sampleRate*1.8),AC.sampleRate);
+    var d=nb.getChannelData(0);
+    for(i=0;i<d.length;i++){d[i]=(Math.random()*2-1)*0.5;}
+    var ns=AC.createBufferSource(); ns.buffer=nb;
+    var nf=AC.createBiquadFilter(); nf.type='lowpass'; nf.frequency.value=300;
+    var ng=AC.createGain();
+    ng.gain.setValueAtTime(0.0001,t);
+    ng.gain.exponentialRampToValueAtTime(0.25,t+0.2);
+    ng.gain.exponentialRampToValueAtTime(0.0001,t+1.8);
+    ns.connect(nf); nf.connect(ng); ng.connect(AC.destination);
+    ns.start(t); ns.stop(t+1.9);
+  }catch(_){}
+}
+function sfScoreFx(won){
+  try{
+    if(won){ sfConfetti(); return; }
+    var m=document.getElementById('resultRecapModal');
+    if(m){
+      m.classList.remove('struck'); void m.offsetWidth; m.classList.add('struck');
+      setTimeout(function(){ m.classList.remove('struck'); },1600);
+    }
+    sfBoo();
+  }catch(_){}
+}
+</script>
 
 
 <style id="cdhq-no-stock-photo-final">
@@ -9389,6 +9522,8 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 #resultModal:not(.hidden){display:grid!important;z-index:2147482000!important}
 #resultModal.hidden{display:none!important}
 .enter-result{cursor:pointer!important;touch-action:manipulation;position:relative;z-index:2}
+
+
 
 /* Clearer active navigation and horizontal-nav ergonomics. */
 #nav button[data-view]{position:relative;white-space:nowrap}
