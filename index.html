@@ -5335,7 +5335,6 @@ img.sf-dark-logo{
 <meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
 <meta name="saturday-foundry-gotw-ranking-source" content="latest-official-poll-through-game-week-v2">
 <style id="sf-brk-v2">
-/* QA 9.8.14 — CFP bracket v2: rebuilt from scratch. Button + drag navigation. */
 .sf-brk{background:linear-gradient(180deg,#0b1118 0%,#070c11 100%);border:1px solid rgba(244,197,66,.28);border-radius:16px;padding:14px 0 12px;margin:0 0 14px;overflow:hidden}
 .sf-brk-head{display:flex;align-items:center;gap:10px;margin:0 14px 12px}
 .sf-brk-kicker{display:block;font-size:10px;letter-spacing:.18em;color:rgba(244,197,66,.75);font-weight:700}
@@ -5362,12 +5361,7 @@ img.sf-dark-logo{
 .sf-brk-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
 .sf-brk-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sf-brk-dot.on{background:#f4c542}
-@media(min-width:821px){
-.sf-brk-round{flex-basis:230px;min-width:230px}
-.sf-brk-nav{display:none}
-.sf-brk-view{overflow-x:auto}
-.sf-brk-track{transition:none}
-}
+@media(min-width:821px){.sf-brk-round{flex-basis:230px;min-width:230px}.sf-brk-nav{display:none}.sf-brk-view{overflow-x:auto}.sf-brk-track{transition:none}}
 </style>
 </head>
 <body>
@@ -8287,6 +8281,21 @@ function renderSchedule(){
  /* QA 9.8.0 — CFP bracket: auto-detected from playoff weeks (each playoff week =
     one round; national championship = final round). Rendered only on the
     unfiltered National board, and only once postseason games exist. */
+ /* QA 9.8.14 bracket v2 */
+ const brkV2TeamRow=(name,rank,logo,score)=>{
+   const lh=logo?`<img class="sf-brk-logo" src="${esc(logo)}" alt="" loading="lazy">`:`<span class="sf-brk-logo">🏈</span>`;
+   return `<div class="sf-brk-team">${lh}<span class="sf-brk-name">${rank?`<b class="sf-brk-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-brk-score">${score}</span></div>`;
+ };
+ const brkV2Card=(g,rl)=>{
+   const done=g.status==='completed';
+   const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
+   const label=g.event_label||g.bowl_name||g.event_name||rl||'College Football Playoff';
+   return `<article class="sf-brk-game"><div class="sf-brk-game-head"><span>${esc(label)}</span><strong>${done?'FINAL':'UPCOMING'}</strong></div>${brkV2TeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'')}${brkV2TeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'')}</article>`;
+ };
+ const brkV2=(rounds,labels,sn)=>{
+   const dots=rounds.map((_,i)=>`<button type="button" class="sf-brk-dot${i===0?' on':''}" data-brk-dot="${i}"></button>`).join('');
+   return `<section class="sf-brk"><div class="sf-brk-head"><div><span class="sf-brk-kicker">Postseason · Season ${esc(sn)}</span><h3>College Football Playoff</h3></div><div class="sf-brk-nav"><button type="button" class="sf-brk-btn" data-brk-dir="-1">‹</button><button type="button" class="sf-brk-btn" data-brk-dir="1">›</button></div></div><div class="sf-brk-view"><div class="sf-brk-track">${rounds.map((gs,i)=>`<div class="sf-brk-round"><h4>${esc(labels[i])}</h4><div class="sf-brk-games">${gs.map(g=>brkV2Card(g,labels[i])).join('')}</div></div>`).join('')}</div></div><div class="sf-brk-dots">${dots}</div></section>`;
+ };
  const cfpBracketHtml=()=>{
    if(scheduleTeamPersonId||scheduleConference!=='__all__')return '';
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
@@ -8322,21 +8331,6 @@ function renderSchedule(){
      const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
      const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
      const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
- /* QA 9.8.14 — CFP bracket v2: rebuilt from scratch. Button + drag navigation. */
- const brkV2TeamRow=(name,rank,logo,score)=>{
-   const logoHtml=logo?`<img class="sf-brk-logo" src="${esc(logo)}" alt="" loading="lazy">`:`<span class="sf-brk-logo">🏈</span>`;
-   return `<div class="sf-brk-team">${logoHtml}<span class="sf-brk-name">${rank?`<b class="sf-brk-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-brk-score">${score}</span></div>`;
- };
- const brkV2Card=(g,roundLabel)=>{
-   const done=g.status==='completed';
-   const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
-   const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
-   return `<article class="sf-brk-game"><div class="sf-brk-game-head"><span>${esc(label)}</span><strong>${done?'FINAL':'UPCOMING'}</strong></div>${brkV2TeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'')}${brkV2TeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'')}</article>`;
- };
- const brkV2=(rounds,labels,seasonNum)=>{
-   const dots=rounds.map((_,i)=>`<button type="button" class="sf-brk-dot${i===0?' on':''}" data-brk-dot="${i}" aria-label="Go to round ${i+1}"></button>`).join('');
-   return `<section class="sf-brk" aria-label="College Football Playoff bracket"><div class="sf-brk-head"><div><span class="sf-brk-kicker">Postseason · Season ${esc(seasonNum)}</span><h3>College Football Playoff</h3></div><div class="sf-brk-nav"><button type="button" class="sf-brk-btn" data-brk-dir="-1" aria-label="Previous round">‹</button><button type="button" class="sf-brk-btn" data-brk-dir="1" aria-label="Next round">›</button></div></div><div class="sf-brk-view"><div class="sf-brk-track">${rounds.map((games,i)=>`<div class="sf-brk-round"><h4>${esc(labels[i])}</h4><div class="sf-brk-games">${games.map(g=>brkV2Card(g,labels[i])).join('')}</div></div>`).join('')}</div></div><div class="sf-brk-dots">${dots}</div></section>`;
- };
      return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
    return brkV2(rounds, labels, S.season_number);
@@ -13190,73 +13184,8 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 })();
 </script>
 
-<script id="sf-cfp-touch-pan">
-/* QA 9.8.14 — mobile bracket touch-pan. iOS Safari will not honor a nested
-   horizontal overflow scroller here, so on phones the track is translated
-   directly via touch events (no scrolling involved). Desktop keeps native
-   overflow-x scrolling. */
-(function(){
-  function scrollerOf(t){ return (t && t.closest) ? t.closest('#schedule .sf-cfp-bracket-scroll') : null; }
-  function panActive(sc){
-    try{ return window.getComputedStyle(sc).overflowX === 'hidden'; }catch(e){ return false; }
-  }
-  document.addEventListener('touchstart', function(e){
-    var sc = scrollerOf(e.target);
-    if(!sc || !panActive(sc)) return;
-    var t = e.changedTouches[0];
-    sc._cfpPan = {id:t.identifier, x0:t.clientX, y0:t.clientY, tx:(sc._cfpTx||0), lock:null};
-  }, {passive:true});
-  function findTouch(e, id){
-    for(var i=0;i<e.changedTouches.length;i++) if(e.changedTouches[i].identifier===id) return e.changedTouches[i];
-    return null;
-  }
-  document.addEventListener('touchmove', function(e){
-    var sc = scrollerOf(e.target);
-    if(!sc || !sc._cfpPan) return;
-    var p = sc._cfpPan, t = findTouch(e, p.id);
-    if(!t){ sc._cfpPan = null; return; }
-    var dx = t.clientX - p.x0, dy = t.clientY - p.y0;
-    if(!p.lock){
-      if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-      p.lock = (Math.abs(dx) > Math.abs(dy)) ? 'x' : 'y';
-      if(p.lock === 'y'){ sc._cfpPan = null; return; }
-    }
-    var track = sc.querySelector('.sf-cfp-bracket-track');
-    if(!track){ sc._cfpPan = null; return; }
-    var max = Math.max(0, track.offsetWidth - sc.clientWidth);
-    var nx = p.tx + dx;
-    if(nx > 0) nx = 0;
-    if(nx < -max) nx = -max;
-    track.style.transform = 'translateX(' + nx + 'px)';
-    sc._cfpTx = nx;
-    if(e.cancelable) e.preventDefault();
-  }, {passive:false});
-  function endPan(e){
-    var sc = scrollerOf(e.target);
-    if(sc) sc._cfpPan = null;
-  }
-  document.addEventListener('touchend', endPan, {passive:true});
-  document.addEventListener('touchcancel', endPan, {passive:true});
-  /* QA 9.8.14 — bracket diagnostic: append track/scroller widths to the build pill. */
-  function cfpDiag(){
-    try{
-      var sc = document.querySelector('#schedule .sf-cfp-bracket-scroll');
-      var m = document.getElementById('sfBuildMarker');
-      if(!sc || !m) return;
-      var track = sc.querySelector('.sf-cfp-bracket-track');
-      var tw = track ? track.offsetWidth : -1;
-      var sw = sc.clientWidth;
-      var ox = window.getComputedStyle(sc).overflowX;
-      if(m.textContent.indexOf('cfp:') < 0) m.textContent += ' · cfp:' + tw + '/' + sw + '/' + ox;
-    }catch(e){}
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cfpDiag);
-  else cfpDiag();
-  setTimeout(cfpDiag, 1500);
-})();
-</script>
+
 <script id="sf-brk-nav">
-/* QA 9.8.14 — bracket v2 navigation: arrow buttons + dots + touch drag. */
 (function(){
   function brkGo(brk, idx){
     var track=brk.querySelector('.sf-brk-track');
@@ -13286,45 +13215,6 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
     else idx=parseInt(btn.getAttribute('data-brk-dot'),10);
     brkGo(brk,idx);
   });
-  /* Touch drag as enhancement (buttons are primary). */
-  var drag=null;
-  document.addEventListener('touchstart',function(e){
-    var view=e.target&&e.target.closest?e.target.closest('.sf-brk-view'):null;
-    if(!view) return;
-    var brk=view.closest('.sf-brk');
-    var t=e.changedTouches[0];
-    drag={brk:brk,view:view,track:view.querySelector('.sf-brk-track'),id:t.identifier,x0:t.clientX,tx:0,moved:false};
-    var m=/translateX\((-?\d+)px\)/.exec(drag.track.style.transform||'');
-    drag.tx=m?parseInt(m[1],10):0;
-  },{passive:true});
-  document.addEventListener('touchmove',function(e){
-    if(!drag) return;
-    for(var i=0;i<e.changedTouches.length;i++){
-      var t=e.changedTouches[i];
-      if(t.identifier!==drag.id) continue;
-      var dx=t.clientX-drag.x0;
-      if(Math.abs(dx)>8) drag.moved=true;
-      if(drag.moved){
-        var maxX=Math.max(0,drag.track.scrollWidth-drag.view.clientWidth);
-        var nx=Math.max(-maxX,Math.min(0,drag.tx+dx));
-        drag.track.style.transition='none';
-        drag.track.style.transform='translateX('+nx+'px)';
-        if(e.cancelable) e.preventDefault();
-      }
-    }
-  },{passive:false});
-  function endDrag(e){
-    if(!drag) return;
-    var d=drag; drag=null;
-    d.track.style.transition='';
-    if(!d.moved) return;
-    var m=/translateX\((-?\d+)px\)/.exec(d.track.style.transform||'');
-    var x=m?parseInt(m[1],10):0;
-    var roundW=(d.track.children[0]?d.track.children[0].offsetWidth:200)+16;
-    brkGo(d.brk, Math.round(-x/roundW));
-  }
-  document.addEventListener('touchend',endDrag,{passive:true});
-  document.addEventListener('touchcancel',endDrag,{passive:true});
 })();
 </script>
 </body>
