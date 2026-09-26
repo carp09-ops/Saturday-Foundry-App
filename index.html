@@ -5334,6 +5334,41 @@ img.sf-dark-logo{
 </style>
 <meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
 <meta name="saturday-foundry-gotw-ranking-source" content="latest-official-poll-through-game-week-v2">
+<style id="sf-brk-v2">
+/* QA 9.8.14 — CFP bracket v2: rebuilt from scratch. Button + drag navigation. */
+.sf-brk{background:linear-gradient(180deg,#0b1118 0%,#070c11 100%);border:1px solid rgba(244,197,66,.28);border-radius:16px;padding:14px 0 12px;margin:0 0 14px;overflow:hidden}
+.sf-brk-head{display:flex;align-items:center;gap:10px;margin:0 14px 12px}
+.sf-brk-kicker{display:block;font-size:10px;letter-spacing:.18em;color:rgba(244,197,66,.75);font-weight:700}
+.sf-brk-head h3{margin:2px 0 0;font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:800;letter-spacing:.04em;color:#f5f1e6;text-transform:uppercase}
+.sf-brk-nav{margin-left:auto;display:flex;gap:8px}
+.sf-brk-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(244,197,66,.5);background:rgba(244,197,66,.1);color:#f4c542;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 0 2px;-webkit-tap-highlight-color:transparent}
+.sf-brk-btn:active{background:rgba(244,197,66,.25)}
+.sf-brk-btn:disabled{opacity:.3}
+.sf-brk-view{overflow:hidden;padding:2px 14px 4px}
+.sf-brk-track{display:flex;gap:16px;transition:transform .32s cubic-bezier(.2,.7,.3,1);will-change:transform}
+.sf-brk-round{flex:0 0 200px;min-width:200px}
+.sf-brk-round>h4{margin:0 0 8px;font-size:11px;letter-spacing:.22em;color:#f4c542;font-weight:800;text-transform:uppercase}
+.sf-brk-games{display:flex;flex-direction:column;gap:10px}
+.sf-brk-game{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}
+.sf-brk-game-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sf-brk-game-head span{font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase}
+.sf-brk-game-head strong{margin-left:auto;font-size:9px;letter-spacing:.14em;color:#f4c542;font-weight:800}
+.sf-brk-team{display:flex;align-items:center;gap:8px;padding:5px 0}
+.sf-brk-team+.sf-brk-team{border-top:1px solid rgba(255,255,255,.06)}
+.sf-brk-logo{width:26px;height:26px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:14px}
+.sf-brk-name{font-size:15px;font-weight:700;color:#f5f1e6;font-family:"Barlow Condensed",sans-serif;letter-spacing:.03em}
+.sf-brk-rank{font-size:10px;color:rgba(244,197,66,.8);font-weight:800;margin-right:4px}
+.sf-brk-score{margin-left:auto;font-size:15px;font-weight:800;color:#fff}
+.sf-brk-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.sf-brk-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sf-brk-dot.on{background:#f4c542}
+@media(min-width:821px){
+.sf-brk-round{flex-basis:230px;min-width:230px}
+.sf-brk-nav{display:none}
+.sf-brk-view{overflow-x:auto}
+.sf-brk-track{transition:none}
+}
+</style>
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -8287,9 +8322,24 @@ function renderSchedule(){
      const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
      const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
      const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
+ /* QA 9.8.14 — CFP bracket v2: rebuilt from scratch. Button + drag navigation. */
+ const brkV2TeamRow=(name,rank,logo,score)=>{
+   const logoHtml=logo?`<img class="sf-brk-logo" src="${esc(logo)}" alt="" loading="lazy">`:`<span class="sf-brk-logo">🏈</span>`;
+   return `<div class="sf-brk-team">${logoHtml}<span class="sf-brk-name">${rank?`<b class="sf-brk-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-brk-score">${score}</span></div>`;
+ };
+ const brkV2Card=(g,roundLabel)=>{
+   const done=g.status==='completed';
+   const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
+   const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
+   return `<article class="sf-brk-game"><div class="sf-brk-game-head"><span>${esc(label)}</span><strong>${done?'FINAL':'UPCOMING'}</strong></div>${brkV2TeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'')}${brkV2TeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'')}</article>`;
+ };
+ const brkV2=(rounds,labels,seasonNum)=>{
+   const dots=rounds.map((_,i)=>`<button type="button" class="sf-brk-dot${i===0?' on':''}" data-brk-dot="${i}" aria-label="Go to round ${i+1}"></button>`).join('');
+   return `<section class="sf-brk" aria-label="College Football Playoff bracket"><div class="sf-brk-head"><div><span class="sf-brk-kicker">Postseason · Season ${esc(seasonNum)}</span><h3>College Football Playoff</h3></div><div class="sf-brk-nav"><button type="button" class="sf-brk-btn" data-brk-dir="-1" aria-label="Previous round">‹</button><button type="button" class="sf-brk-btn" data-brk-dir="1" aria-label="Next round">›</button></div></div><div class="sf-brk-view"><div class="sf-brk-track">${rounds.map((games,i)=>`<div class="sf-brk-round"><h4>${esc(labels[i])}</h4><div class="sf-brk-games">${games.map(g=>brkV2Card(g,labels[i])).join('')}</div></div>`).join('')}</div></div><div class="sf-brk-dots">${dots}</div></section>`;
+ };
      return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
-   return `<section class="sf-cfp-bracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3><span class="sf-cfp-swipe-hint">SWIPE / SCROLL →</span></div><div class="sf-cfp-bracket-scroll"><div class="sf-cfp-bracket-track">${rounds.map((games,i)=>`<div class="sf-cfp-round"><h4>${esc(labels[i])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[i])).join('')}</div></div>`).join('')}</div></div></div></div></section>`;
+   return brkV2(rounds, labels, S.season_number);
  };
  let currentHtml='';
  if(scheduleConference==="__all__"){
@@ -12280,7 +12330,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13d'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.14'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12313,7 +12363,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13d'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.14'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12990,7 +13040,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.13d";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.14";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13141,7 +13191,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 </script>
 
 <script id="sf-cfp-touch-pan">
-/* QA 9.8.13d — mobile bracket touch-pan. iOS Safari will not honor a nested
+/* QA 9.8.14 — mobile bracket touch-pan. iOS Safari will not honor a nested
    horizontal overflow scroller here, so on phones the track is translated
    directly via touch events (no scrolling involved). Desktop keeps native
    overflow-x scrolling. */
@@ -13187,7 +13237,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   }
   document.addEventListener('touchend', endPan, {passive:true});
   document.addEventListener('touchcancel', endPan, {passive:true});
-  /* QA 9.8.13d — bracket diagnostic: append track/scroller widths to the build pill. */
+  /* QA 9.8.14 — bracket diagnostic: append track/scroller widths to the build pill. */
   function cfpDiag(){
     try{
       var sc = document.querySelector('#schedule .sf-cfp-bracket-scroll');
@@ -13203,6 +13253,78 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cfpDiag);
   else cfpDiag();
   setTimeout(cfpDiag, 1500);
+})();
+</script>
+<script id="sf-brk-nav">
+/* QA 9.8.14 — bracket v2 navigation: arrow buttons + dots + touch drag. */
+(function(){
+  function brkGo(brk, idx){
+    var track=brk.querySelector('.sf-brk-track');
+    var view=brk.querySelector('.sf-brk-view');
+    if(!track||!view) return;
+    var n=track.children.length;
+    idx=Math.max(0,Math.min(n-1,idx));
+    brk._brkIdx=idx;
+    var roundW=(track.children[0]?track.children[0].offsetWidth:200)+16;
+    var maxX=Math.max(0,track.scrollWidth-view.clientWidth);
+    var x=Math.min(idx*roundW,maxX);
+    track.style.transform='translateX('+(-x)+'px)';
+    var dots=brk.querySelectorAll('.sf-brk-dot');
+    for(var i=0;i<dots.length;i++) dots[i].classList.toggle('on',i===idx);
+    var prev=brk.querySelector('[data-brk-dir="-1"]');
+    var next=brk.querySelector('[data-brk-dir="1"]');
+    if(prev) prev.disabled=(idx===0);
+    if(next) next.disabled=(idx===n-1);
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target&&e.target.closest?e.target.closest('.sf-brk-btn,.sf-brk-dot'):null;
+    if(!btn) return;
+    var brk=btn.closest('.sf-brk');
+    if(!brk) return;
+    var idx=brk._brkIdx||0;
+    if(btn.hasAttribute('data-brk-dir')) idx+=parseInt(btn.getAttribute('data-brk-dir'),10);
+    else idx=parseInt(btn.getAttribute('data-brk-dot'),10);
+    brkGo(brk,idx);
+  });
+  /* Touch drag as enhancement (buttons are primary). */
+  var drag=null;
+  document.addEventListener('touchstart',function(e){
+    var view=e.target&&e.target.closest?e.target.closest('.sf-brk-view'):null;
+    if(!view) return;
+    var brk=view.closest('.sf-brk');
+    var t=e.changedTouches[0];
+    drag={brk:brk,view:view,track:view.querySelector('.sf-brk-track'),id:t.identifier,x0:t.clientX,tx:0,moved:false};
+    var m=/translateX\((-?\d+)px\)/.exec(drag.track.style.transform||'');
+    drag.tx=m?parseInt(m[1],10):0;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!drag) return;
+    for(var i=0;i<e.changedTouches.length;i++){
+      var t=e.changedTouches[i];
+      if(t.identifier!==drag.id) continue;
+      var dx=t.clientX-drag.x0;
+      if(Math.abs(dx)>8) drag.moved=true;
+      if(drag.moved){
+        var maxX=Math.max(0,drag.track.scrollWidth-drag.view.clientWidth);
+        var nx=Math.max(-maxX,Math.min(0,drag.tx+dx));
+        drag.track.style.transition='none';
+        drag.track.style.transform='translateX('+nx+'px)';
+        if(e.cancelable) e.preventDefault();
+      }
+    }
+  },{passive:false});
+  function endDrag(e){
+    if(!drag) return;
+    var d=drag; drag=null;
+    d.track.style.transition='';
+    if(!d.moved) return;
+    var m=/translateX\((-?\d+)px\)/.exec(d.track.style.transform||'');
+    var x=m?parseInt(m[1],10):0;
+    var roundW=(d.track.children[0]?d.track.children[0].offsetWidth:200)+16;
+    brkGo(d.brk, Math.round(-x/roundW));
+  }
+  document.addEventListener('touchend',endDrag,{passive:true});
+  document.addEventListener('touchcancel',endDrag,{passive:true});
 })();
 </script>
 </body>
@@ -14113,7 +14235,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13d';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.14';
   }
   function boot(){
     build();
@@ -14123,7 +14245,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.13d';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.14';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14530,7 +14652,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.13d';
+    if(m)m.textContent='QA 9.8.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16475,7 +16597,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.13d';
+    if(m)m.textContent='QA 9.8.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16485,7 +16607,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13d';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.14';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
