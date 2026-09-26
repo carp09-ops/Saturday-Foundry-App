@@ -8278,8 +8278,8 @@ function renderSchedule(){
    if(natty.length)rounds.push(natty);
    if(!rounds.length)return '';
    const n=rounds.length;
-   const early=n===4?['First Round','Quarterfinals','Semifinals']:n===3?['Quarterfinals','Semifinals']:n===2?['Semifinals']:rounds.slice(0,n-1).map((_,i)=>`Round ${i+1}`);
-   const labels=[...early,natty.length?'National Championship':'Final'];
+   // QA 9.8.17: pills use Round 1, Round 2, etc. (Championship for the final)
+   const labels=rounds.map((_,i)=>i===n-1&&natty.length?'Championship':`Round ${i+1}`);
    // Round weeks for pill default: use the week_number of each round's games
    const roundWeeks=rounds.map(games=>{
      const w=games.map(g=>Number(g.week_number||0)).filter(x=>x>0&&x<900);
@@ -12301,7 +12301,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.16'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.17'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
