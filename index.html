@@ -8271,7 +8271,7 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   // QA 9.8.32: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
+   // QA 9.8.33: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
    let byeTeams=allSeasonGames.filter(g=>{
      if(!g?.is_bye) return false;
      const en=String(g?.event_name||''), gt=String(g?.game_type||'').toLowerCase(), wk=Number(g?.week_number||0);
@@ -8281,12 +8281,12 @@ function renderSchedule(){
    if(!byeTeams.length){
      byeTeams=allSeasonGames.filter(g=>g?.is_bye&&Number(g?.week_number||0)>=16);
    }
-   // QA 9.8.32: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.33: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.32: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.33: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
@@ -8318,7 +8318,7 @@ function renderSchedule(){
        const r1games=rounds[0]||[];
        for(let i=0;i<Math.min(byeTeams.length,slots);i++){
          const bt=byeTeams[i];
-         // QA 9.8.32: opponent is Winner of the i-th Round 1 game
+         // QA 9.8.33: opponent is Winner of the i-th Round 1 game
          let opp='TBD';
          const r1g=r1games[i];
          if(r1g){
@@ -8329,7 +8329,7 @@ function renderSchedule(){
          games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:opp,team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     // QA 9.8.32: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
+     // QA 9.8.33: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
      if(r===1&&rounds.length){
        const prev=rounds[0]||[];
        for(let i=games.length;i<sizes[r];i++){
@@ -8354,7 +8354,7 @@ function renderSchedule(){
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
-     // QA 9.8.32: if default round is all-TBD but a later round has real content (bye teams/games),
+     // QA 9.8.33: if default round is all-TBD but a later round has real content (bye teams/games),
      // jump to the latest round with meaningful content
      const hasContent=(games)=>games.some(g=>{
        const t1=String(g?.team_name||'').toUpperCase(), t2=String(g?.opponent_team||'').toUpperCase();
@@ -10845,13 +10845,13 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 
   /* Stable hero proportions: title and GOTW are separate contained columns. */
   #overview .ref-hero{width:100%!important;max-width:100%!important;min-height:300px!important;max-height:320px!important;overflow:hidden!important}
-  /* QA 9.8.32: force hero compact on mobile */
+  /* QA 9.8.33: force hero compact on mobile */
   @media(max-width:900px){
     #overview .ref-hero{min-height:280px!important;max-height:300px!important;height:auto!important}
     #overview .ref-hero>.relative{min-height:280px!important;max-height:300px!important}
   }
   #overview .ref-hero>.relative.z-10.grid{
-    width:100%!important;max-width:100%!important;min-width:0!important;min-height:300px!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;min-height:280px!important;max-height:300px!important;
     display:grid!important;grid-template-columns:minmax(330px,.78fr) minmax(0,1.22fr)!important;
     gap:28px!important;align-items:center!important;padding:32px clamp(26px,2.4vw,42px)!important;box-sizing:border-box!important
   }
@@ -12379,7 +12379,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.32'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.33'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12412,7 +12412,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.32'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.33'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13089,7 +13089,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.32";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.33";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14199,7 +14199,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.32';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.33';
   }
   function boot(){
     build();
@@ -14209,7 +14209,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.32';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.33';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14616,7 +14616,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.32';
+    if(m)m.textContent='QA 9.8.33';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16543,7 +16543,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.32';
+    if(m)m.textContent='QA 9.8.33';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16553,7 +16553,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.32';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.33';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
