@@ -12280,7 +12280,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13a'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12313,7 +12313,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12990,7 +12990,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.10";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.13b";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13137,6 +13137,48 @@ function boot(){
   });}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:["src"]});}catch(e){}
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+})();
+</script>
+
+<script id="sf-cfp-drag-scroll">
+/* QA 9.8.13b — CFP bracket drag-to-scroll. iOS Safari quirk fallback: native
+   touch scrolling of the inner track is unreliable, so a horizontal finger drag
+   is converted to scrollLeft directly. touch-action:pan-y keeps vertical page
+   scroll native. Delegated so it survives bracket re-renders. */
+(function(){
+  var SEL = '#schedule .sf-cfp-bracket-scroll';
+  var st = null, suppressClick = false;
+  function scrollerOf(t){ return (t && t.closest) ? t.closest(SEL) : null; }
+  document.addEventListener('pointerdown', function(e){
+    var sc = scrollerOf(e.target);
+    if(!sc) return;
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    st = { sc: sc, x: e.clientX, y: e.clientY, left: sc.scrollLeft, horiz: false, pid: e.pointerId };
+  }, { capture: true, passive: true });
+  document.addEventListener('pointermove', function(e){
+    if(!st || e.pointerId !== st.pid) return;
+    var dx = e.clientX - st.x, dy = e.clientY - st.y;
+    if(!st.horiz){
+      if(Math.abs(dx) < 12) return;
+      if(Math.abs(dy) > Math.abs(dx)){ st = null; return; }
+      st.horiz = true;
+    }
+    st.sc.scrollLeft = st.left - dx;
+  }, { capture: true, passive: true });
+  function end(e){
+    if(!st || (e && e.pointerId !== st.pid)) return;
+    var dx = e ? (e.clientX - st.x) : 0;
+    if(st.horiz && Math.abs(dx) > 10) suppressClick = true;
+    st = null;
+  }
+  document.addEventListener('pointerup', end, { capture: true, passive: true });
+  document.addEventListener('pointercancel', end, { capture: true, passive: true });
+  document.addEventListener('dragstart', function(e){
+    if(scrollerOf(e.target)) e.preventDefault();
+  }, { capture: true });
+  document.addEventListener('click', function(e){
+    if(suppressClick){ suppressClick = false; e.stopPropagation(); e.preventDefault(); }
+  }, { capture: true });
 })();
 </script>
 </body>
@@ -14047,7 +14089,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b';
   }
   function boot(){
     build();
@@ -14057,7 +14099,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.10';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.13b';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14464,7 +14506,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.10';
+    if(m)m.textContent='QA 9.8.13b';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14881,7 +14923,7 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.30);border-radius:999px}
   #schedule .sf-cfp-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:999px}
   #schedule .sf-cfp-swipe-hint{margin-left:auto;font-size:8px;font-weight:900;letter-spacing:.13em;color:#7d7044;white-space:nowrap}
-  #schedule .sf-cfp-bracket-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(244,197,66,.45) rgba(255,255,255,.05);padding:2px 16px 10px}
+  #schedule .sf-cfp-bracket-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(244,197,66,.45) rgba(255,255,255,.05);padding:2px 16px 10px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar{height:8px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.42);border-radius:99px}
@@ -16409,7 +16451,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.8.10';
+    if(m)m.textContent='QA 9.8.13b';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16419,7 +16461,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
