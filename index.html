@@ -762,7 +762,7 @@ nav::-webkit-scrollbar,.week-nav::-webkit-scrollbar{display:none}
     .ref-hero {
       min-height: 310px;
       background:
-        linear-gradient(90deg, rgba(2,8,12,.94) 0%, rgba(2,8,12,.54) 45%, rgba(2,8,12,.90) 100%),
+        linear-gradient(90deg, rgba(2,8,12,.68) 0%, rgba(2,8,12,.36) 45%, rgba(2,8,12,.66) 100%),
         radial-gradient(circle at 50% 55%, rgba(244,197,66,.10), transparent 32%),
         linear-gradient(180deg, rgba(9,28,37,.92), rgba(3,11,15,.96));
       border: 1px solid rgba(89,166,192,.20);
@@ -1074,8 +1074,8 @@ nav::-webkit-scrollbar,.week-nav::-webkit-scrollbar{display:none}
       .cfb-header h1 { font-size:1.08rem !important; max-width:190px; }
       .cfb-header .h-11.w-11 { height:42px !important; width:42px !important; }
       .cfb-header .text-\[10px\] { font-size:8px !important; }
-      .ref-hero { min-height:470px !important; border-radius:14px !important; }
-      .ref-hero > .relative { min-height:470px !important; padding:1rem !important; gap:.85rem !important; }
+      .ref-hero { min-height:320px !important; border-radius:14px !important; }
+      .ref-hero > .relative { min-height:320px !important; padding:1rem !important; gap:.6rem !important; }
       .ref-title-inline { font-size:clamp(3rem,14.5vw,4.8rem) !important; }
       .ref-subtitle { font-size:9px !important; letter-spacing:.11em !important; }
       .ref-gotw { width:100%; }
@@ -1125,7 +1125,7 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 /* keep auth/onboarding operational and above canonical shell */
 .auth,.team-select-wrap{position:relative;z-index:60}.auth-card,.team-select-card{background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(3,11,15,.99));border:1px solid rgba(81,147,171,.35)}
 @media(max-width:1024px){#coaches,#analyticsShowcase{grid-template-columns:repeat(2,minmax(0,1fr))}#nextGames{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){#app{padding:.75rem}.cfb-header{position:relative!important}#coaches,#analyticsShowcase,#nextGames,.analytics-grid{grid-template-columns:1fr}.ref-hero{min-height:520px!important}.ref-hero>.relative{min-height:520px}.ref-gotw{width:100%}.gotw-teams{grid-template-columns:1fr}.vs{text-align:center}.team-side.right{justify-content:flex-start;text-align:left}.v13-header-inner{align-items:flex-start!important;flex-direction:column!important}#sessionBar{width:100%;justify-content:flex-end}#navWrap{padding-top:.5rem}}
+@media(max-width:700px){#app{padding:.75rem}.cfb-header{position:relative!important}#coaches,#analyticsShowcase,#nextGames,.analytics-grid{grid-template-columns:1fr}.ref-hero{min-height:320px!important}.ref-hero>.relative{min-height:320px}.ref-gotw{width:100%}.gotw-teams{grid-template-columns:1fr}.vs{text-align:center}.team-side.right{justify-content:flex-start;text-align:left}.v13-header-inner{align-items:flex-start!important;flex-direction:column!important}#sessionBar{width:100%;justify-content:flex-end}#navWrap{padding-top:.5rem}}
 </style>
 
 <style id="v14-mobile-auth-hardening">
@@ -1162,7 +1162,7 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 @media(max-width:768px){
  .cfb-header{position:sticky!important;top:0!important}.canonical-header-row{padding-top:.65rem!important;padding-bottom:.65rem!important}.canonical-mobile-head{display:flex!important}.canonical-controls{display:none;position:absolute;top:100%;left:.75rem;right:.75rem;background:linear-gradient(180deg,rgba(4,12,10,.99),rgba(2,5,4,.99));border:1px solid rgba(16,185,129,.28);border-top:0;border-radius:0 0 .85rem .85rem;padding:.65rem;box-shadow:0 18px 34px rgba(0,0,0,.65);z-index:70;flex-direction:column;align-items:stretch}.cfb-header.mobile-open .canonical-controls{display:flex}.cfb-header.mobile-open #navWrap:not(.hidden){display:block!important}.cfb-header.mobile-open #sessionBar:not(.hidden){display:flex!important}
  #nav{flex-direction:column;align-items:stretch;overflow:visible;background:transparent;border:0;padding:0;box-shadow:none}#nav button{text-align:left;min-height:42px;font-size:.76rem;padding:.55rem .7rem}#sessionBar{width:100%;justify-content:space-between;padding-top:.55rem;border-top:1px solid rgba(148,163,184,.12)}#sessionEmail{display:none}#dynastySelect{max-width:180px;flex:1}
- #app{padding:.85rem .75rem 2rem!important}.ref-hero{min-height:520px!important}.ref-hero>.relative{min-height:520px!important;padding:1rem!important;align-content:center}.ref-title-inline{font-size:clamp(3.65rem,18vw,5.2rem)!important}.ref-gotw{margin-top:1rem}.ticker{height:34px!important}.ticker-label{font-size:9px!important;padding:0 9px!important}.ticker-copy{font-size:10px!important}
+ #app{padding:.85rem .75rem 2rem!important}.ref-hero{min-height:320px!important}.ref-hero>.relative{min-height:320px!important;padding:1rem!important;align-content:center;gap:.6rem!important}.ref-title-inline{font-size:clamp(3.65rem,18vw,5.2rem)!important}.ref-gotw{margin-top:1rem}.ticker{height:34px!important}.ticker-label{font-size:9px!important;padding:0 9px!important}.ticker-copy{font-size:10px!important}
  #coaches{grid-template-columns:1fr!important}#nextGames{grid-template-columns:1fr!important}
 }
 @media(min-width:769px) and (max-width:1024px){#coaches{grid-template-columns:repeat(2,minmax(0,1fr))!important}#nextGames{grid-template-columns:repeat(2,minmax(0,1fr))!important}.ref-hero>.relative{grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr)!important}}
@@ -1354,7 +1354,7 @@ body.v19-signed-in .v20-league-logo{
 /* Restore hero artwork using the embedded GameDay backdrop already packaged in V19+. */
 .ref-hero{
   background:
-    linear-gradient(90deg, rgba(2,8,12,.88) 0%, rgba(2,8,12,.46) 44%, rgba(2,8,12,.84) 100%),
+    linear-gradient(90deg, rgba(2,8,12,.62) 0%, rgba(2,8,12,.30) 44%, rgba(2,8,12,.68) 100%),
     radial-gradient(circle at 50% 55%, rgba(244,197,66,.10), transparent 32%),
     var(--v19-backdrop) center 48% / cover no-repeat !important;
 }
@@ -8271,7 +8271,7 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   // QA 9.8.28: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
+   // QA 9.8.29: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
    let byeTeams=allSeasonGames.filter(g=>{
      if(!g?.is_bye) return false;
      const en=String(g?.event_name||''), gt=String(g?.game_type||'').toLowerCase(), wk=Number(g?.week_number||0);
@@ -8281,12 +8281,12 @@ function renderSchedule(){
    if(!byeTeams.length){
      byeTeams=allSeasonGames.filter(g=>g?.is_bye&&Number(g?.week_number||0)>=16);
    }
-   // QA 9.8.28: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.29: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.28: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.29: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
@@ -8318,7 +8318,7 @@ function renderSchedule(){
        const r1games=rounds[0]||[];
        for(let i=0;i<Math.min(byeTeams.length,slots);i++){
          const bt=byeTeams[i];
-         // QA 9.8.28: opponent is Winner of the i-th Round 1 game
+         // QA 9.8.29: opponent is Winner of the i-th Round 1 game
          let opp='TBD';
          const r1g=r1games[i];
          if(r1g){
@@ -8329,7 +8329,7 @@ function renderSchedule(){
          games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:opp,team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     // QA 9.8.28: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
+     // QA 9.8.29: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
      if(r===1&&rounds.length){
        const prev=rounds[0]||[];
        for(let i=games.length;i<sizes[r];i++){
@@ -8354,7 +8354,7 @@ function renderSchedule(){
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
-     // QA 9.8.28: if default round is all-TBD but a later round has real content (bye teams/games),
+     // QA 9.8.29: if default round is all-TBD but a later round has real content (bye teams/games),
      // jump to the latest round with meaningful content
      const hasContent=(games)=>games.some(g=>{
        const t1=String(g?.team_name||'').toUpperCase(), t2=String(g?.opponent_team||'').toUpperCase();
@@ -12374,7 +12374,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.28'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.29'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
