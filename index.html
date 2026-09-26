@@ -8272,18 +8272,30 @@ function renderSchedule(){
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
    const byeTeams=allSeasonGames.filter(g=>g?.is_bye&&/CFP First Round Bye/i.test(String(g?.event_name||'')));
-   // QA 9.8.18: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.19: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.18: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.19: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
    const sizes=[4,4,2,1];
    const tbdGame=(r,idx)=>({id:`cfp-tbd-r${r}-${idx}`,game_type:r===3?'national_championship':'cfp',status:'scheduled',team_name:'TBD',opponent_team:'TBD',team_id:null,opponent_team_id:null,event_name:null,week_number:999});
    const rounds=[];
+   // Helper: short team name for winner-of labels (skip TBD)
+   const shortName=n=>{ n=String(n||'').trim(); return (n&&n.toUpperCase()!=='TBD')?n:''; };
+   const winnerOf=(g1,g2)=>{
+     const a1=shortName(g1?.team_name), b1=shortName(g1?.opponent_team);
+     const a2=shortName(g2?.team_name), b2=shortName(g2?.opponent_team);
+     const m1=[a1,b1].filter(Boolean).join('/');
+     const m2=[a2,b2].filter(Boolean).join('/');
+     if(m1&&m2) return [`Winner of ${m1}`,`Winner of ${m2}`];
+     if(m1) return [`Winner of ${m1}`,'TBD'];
+     if(m2) return ['TBD',`Winner of ${m2}`];
+     return ['TBD','TBD'];
+   };
    for(let r=0;r<4;r++){
      let games=[];
      if(r===3&&natty.length){
@@ -8299,7 +8311,18 @@ function renderSchedule(){
          games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:'TBD',team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     while(games.length<sizes[r]) games.push(tbdGame(r,games.length));
+     // QA 9.8.19: TBD slots show "Winner of Team/Team" from feeding matchup
+     if(r>0&&rounds.length){
+       const prev=rounds[r-1];
+       for(let i=games.length;i<sizes[r];i++){
+         // Each game in round r is fed by 2 games from round r-1
+         const f1=prev[(i*2)%prev.length], f2=prev[(i*2+1)%prev.length];
+         const [w1,w2]=winnerOf(f1,f2);
+         games.push({id:`cfp-tbd-r${r}-${i}`,game_type:r===3?'national_championship':'cfp',status:'scheduled',team_name:w1,opponent_team:w2,team_id:null,opponent_team_id:null,event_name:null,week_number:999});
+       }
+     }else{
+       while(games.length<sizes[r]) games.push(tbdGame(r,games.length));
+     }
      rounds.push(games.slice(0,sizes[r]));
    }
    const n=rounds.length;
@@ -12322,7 +12345,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.18'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.19'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
