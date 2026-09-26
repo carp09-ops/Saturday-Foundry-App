@@ -14870,7 +14870,7 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
      the dark card (glow-only, no plate), matching the team-logo glow convention. */
   #schedule .sf-national-conf-badge .sf-event-badge,#schedule .sf-event-badge-header .sf-event-badge{filter:drop-shadow(0 0 2px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,255,255,.35))!important}
   /* QA 9.8.13a — in-game inspired 12-team CFP bracket board. */
-  #schedule .sf-cfp-bracket{margin:0 0 20px;padding:16px 0 16px;border:1px solid rgba(244,197,66,.24);border-radius:18px;background:radial-gradient(circle at 82% 12%,rgba(244,197,66,.08),transparent 24%),linear-gradient(145deg,#151715,#080b0c 58%,#050708);box-shadow:0 20px 55px rgba(0,0,0,.36);overflow:hidden}
+  #schedule .sf-cfp-bracket{margin:0 0 20px;padding:16px 0 16px;border:1px solid rgba(244,197,66,.24);border-radius:18px;background:radial-gradient(circle at 82% 12%,rgba(244,197,66,.08),transparent 24%),linear-gradient(145deg,#151715,#080b0c 58%,#050708);box-shadow:0 20px 55px rgba(0,0,0,.36)}
   #schedule .sf-cfp-bracket-head{display:flex;align-items:baseline;gap:10px;margin:0 16px 12px;padding-bottom:12px;border-bottom:1px solid rgba(244,197,66,.16);flex-wrap:wrap}
   #schedule .sf-cfp-bracket-kicker{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:850;letter-spacing:.09em;text-transform:uppercase;color:#f5f1e5}
   #schedule .sf-cfp-bracket-head h3{margin:0;font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:850;letter-spacing:.04em;text-transform:uppercase;color:#f4c542}
@@ -14881,11 +14881,11 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.30);border-radius:999px}
   #schedule .sf-cfp-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:999px}
   #schedule .sf-cfp-swipe-hint{margin-left:auto;font-size:8px;font-weight:900;letter-spacing:.13em;color:#7d7044;white-space:nowrap}
-  #schedule .sf-cfp-bracket-scroll{width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(244,197,66,.45) rgba(255,255,255,.05);padding:2px 16px 10px}
+  #schedule .sf-cfp-bracket-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(244,197,66,.45) rgba(255,255,255,.05);padding:2px 16px 10px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar{height:8px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
   #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.42);border-radius:99px}
-  #schedule .sf-cfp-bracket-track{min-width:1080px;display:grid;grid-template-columns:repeat(4,220px);column-gap:50px;align-items:stretch}
+  #schedule .sf-cfp-bracket-track{min-width:1080px;width:max-content;display:grid;grid-template-columns:repeat(4,220px);column-gap:50px;align-items:stretch}
   #schedule .sf-cfp-round{position:relative;margin:0;min-width:220px;display:flex;flex-direction:column}
   #schedule .sf-cfp-round>h4{margin:0 0 12px;font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:850;letter-spacing:.1em;text-align:center;text-transform:uppercase;color:#e5b93e}
   #schedule .sf-cfp-matchups{display:flex;flex-direction:column;justify-content:space-around;gap:14px;flex:1}
