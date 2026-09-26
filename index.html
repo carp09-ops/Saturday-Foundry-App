@@ -8271,7 +8271,7 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   // QA 9.8.25: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
+   // QA 9.8.26: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
    let byeTeams=allSeasonGames.filter(g=>{
      if(!g?.is_bye) return false;
      const en=String(g?.event_name||''), gt=String(g?.game_type||'').toLowerCase(), wk=Number(g?.week_number||0);
@@ -8281,12 +8281,12 @@ function renderSchedule(){
    if(!byeTeams.length){
      byeTeams=allSeasonGames.filter(g=>g?.is_bye&&Number(g?.week_number||0)>=16);
    }
-   // QA 9.8.25: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.26: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.25: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.26: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
@@ -8318,7 +8318,7 @@ function renderSchedule(){
        const r1games=rounds[0]||[];
        for(let i=0;i<Math.min(byeTeams.length,slots);i++){
          const bt=byeTeams[i];
-         // QA 9.8.25: opponent is Winner of the i-th Round 1 game
+         // QA 9.8.26: opponent is Winner of the i-th Round 1 game
          let opp='TBD';
          const r1g=r1games[i];
          if(r1g){
@@ -8329,7 +8329,7 @@ function renderSchedule(){
          games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:opp,team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     // QA 9.8.25: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
+     // QA 9.8.26: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
      if(r===1&&rounds.length){
        const prev=rounds[0]||[];
        for(let i=games.length;i<sizes[r];i++){
@@ -8354,7 +8354,7 @@ function renderSchedule(){
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
-     // QA 9.8.25: if default round is all-TBD but a later round has real content (bye teams/games),
+     // QA 9.8.26: if default round is all-TBD but a later round has real content (bye teams/games),
      // jump to the latest round with meaningful content
      const hasContent=(games)=>games.some(g=>{
        const t1=String(g?.team_name||'').toUpperCase(), t2=String(g?.opponent_team||'').toUpperCase();
@@ -8370,7 +8370,8 @@ function renderSchedule(){
    }
    const active=Math.max(0,Math.min(n-1,window.__cfpActiveRound||0));
    const cfpTeamRow=(name,rank,logo,score,cls)=>`<div class="sf-cfp-team${cls==='v21-winner'?' sf-cfp-winner':''}">${logo?`<img class="sf-cfp-logo" src="${esc(logo)}" alt="">`:`<span class="sf-cfp-logo sf-cfp-logo-fallback">🏈</span>`}<span class="sf-cfp-name">${rank?`<b class="sf-cfp-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-cfp-score ${cls}">${score}</span></div>`;
-   const cfpGameCard=(g,roundLabel)=>{
+   const cfpGameCard=(g,roundLabel,isChamp)=>{
+     const champCls=isChamp?' sf-cfp-game-champ':'';
      const done=g.status==='completed';
      const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
      const pf=Number(g.points_for),pa=Number(g.points_against);
@@ -8378,11 +8379,11 @@ function renderSchedule(){
      const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
      const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
      const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
-     return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
+     return `<article class="sf-cfp-game${champCls}" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
    const pills=labels.map((label,i)=>`<button type="button" class="sf-cfp-pill${i===active?' on':''}" data-cfp-round="${i}">${esc(label)}</button>`).join('');
    const games=rounds[active];
-   return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-hero"><img class="sf-cfp-hero-img" src="assets/cfp-trophy-stadium.jpg" alt="College Football Playoff trophy" loading="lazy"><div class="sf-cfp-hero-overlay"></div><div class="sf-cfp-hero-text"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4>${active===n-1?'<div class="sf-cfp-trophy-wrap"><img class="sf-cfp-trophy-img" src="assets/cfp-trophy.png" alt="National Championship trophy" loading="lazy"></div>':''}<div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active])).join('')}</div></div></section>`;
+   return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-hero"><img class="sf-cfp-hero-img" src="assets/cfp-trophy-stadium.jpg" alt="College Football Playoff trophy" loading="lazy"><div class="sf-cfp-hero-overlay"></div><div class="sf-cfp-hero-text"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active],active===n-1)).join('')}</div></div></section>`;
  };;;
  let currentHtml='';
  if(scheduleConference==="__all__"){
@@ -12373,7 +12374,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.25'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.26'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -15024,8 +15025,9 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-bracket-kicker{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
   #schedule .sf-cfp-hero-text h3{margin:4px 0 0;font-size:24px;font-weight:800;letter-spacing:.01em;color:#f2f6f7;text-shadow:0 2px 12px rgba(0,0,0,.6)}
   #schedule .sf-cfp-round{margin-bottom:14px}
-  #schedule .sf-cfp-trophy-wrap{display:flex;justify-content:center;margin:0 0 12px}
-  #schedule .sf-cfp-trophy-img{height:180px;width:auto;filter:drop-shadow(0 8px 24px rgba(244,197,66,.25))}
+  #schedule .sf-cfp-game-champ{position:relative;overflow:hidden}
+  #schedule .sf-cfp-game-champ::before{content:'';position:absolute;inset:0;background:url('assets/cfp-trophy.png') right 8px center/contain no-repeat;opacity:.18;pointer-events:none}
+  #schedule .sf-cfp-game-champ>*{position:relative;z-index:1}
   #schedule .sf-cfp-round>h4{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fa0ab}
   #schedule .sf-cfp-matchups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
   #schedule .sf-cfp-game{border:1px solid rgba(244,197,66,.22);border-radius:14px;background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(2,11,15,.98));padding:10px 14px}
