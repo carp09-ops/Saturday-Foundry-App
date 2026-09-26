@@ -8271,29 +8271,50 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   if(!post.length)return '';
+   const byeTeams=allSeasonGames.filter(g=>g?.is_bye&&/CFP First Round Bye/i.test(String(g?.event_name||'')));
+   // QA 9.8.18: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   let cw=0;
+   try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
+   const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
+   if(!isPostseason)return '';
+   // QA 9.8.18: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
-   const rounds=[...new Set(post.filter(g=>isCfpGame(cfpType(g))).map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
-     .map(w=>post.filter(g=>isCfpGame(cfpType(g))&&Number(g.week_number||0)===w));
-   if(natty.length)rounds.push(natty);
-   if(!rounds.length)return '';
+   const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
+   const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
+   const sizes=[4,4,2,1];
+   const tbdGame=(r,idx)=>({id:`cfp-tbd-r${r}-${idx}`,game_type:r===3?'national_championship':'cfp',status:'scheduled',team_name:'TBD',opponent_team:'TBD',team_id:null,opponent_team_id:null,event_name:null,week_number:999});
+   const rounds=[];
+   for(let r=0;r<4;r++){
+     let games=[];
+     if(r===3&&natty.length){
+       games=natty.slice(0,1);
+     }else if(r<weeks.length){
+       games=cfpGames.filter(g=>Number(g.week_number||0)===weeks[r]);
+     }
+     // Round 2 (index 1): slot bye teams vs TBD
+     if(r===1&&byeTeams.length){
+       const slots=sizes[r]-games.length;
+       for(let i=0;i<Math.min(byeTeams.length,slots);i++){
+         const bt=byeTeams[i];
+         games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:'TBD',team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
+       }
+     }
+     while(games.length<sizes[r]) games.push(tbdGame(r,games.length));
+     rounds.push(games.slice(0,sizes[r]));
+   }
    const n=rounds.length;
-   // QA 9.8.17: pills use Round 1, Round 2, etc. (Championship for the final)
-   const labels=rounds.map((_,i)=>i===n-1&&natty.length?'Championship':`Round ${i+1}`);
-   // Round weeks for pill default: use the week_number of each round's games
-   const roundWeeks=rounds.map(games=>{
-     const w=games.map(g=>Number(g.week_number||0)).filter(x=>x>0&&x<900);
-     return w.length?Math.min(...w):0;
+   const labels=rounds.map((_,i)=>i===n-1?'Championship':`Round ${i+1}`);
+   const roundWeeks=rounds.map((games,r)=>{
+     if(r===3&&natty.length) return Number(natty[0].week_number||0);
+     if(r<weeks.length) return weeks[r];
+     return 0;
    });
-   // Default active round based on current week
    if(window.__cfpActiveRound==null){
-     let cw=0;
-     try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
-     if(!cw){ try{ cw=(typeof selectedWeek!=='undefined')?selectedWeek:0; }catch(_){} }
      let best=0;
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
+     // If no weeks yet (all TBD), default to Round 1
      window.__cfpActiveRound=best;
    }
    const active=Math.max(0,Math.min(n-1,window.__cfpActiveRound||0));
@@ -8311,7 +8332,7 @@ function renderSchedule(){
    const pills=labels.map((label,i)=>`<button type="button" class="sf-cfp-pill${i===active?' on':''}" data-cfp-round="${i}">${esc(label)}</button>`).join('');
    const games=rounds[active];
    return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active])).join('')}</div></div></section>`;
- };;
+ };;;
  let currentHtml='';
  if(scheduleConference==="__all__"){
    const dynastyPlayable=playable.filter(isDynastyScheduleGame);
@@ -12301,7 +12322,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.17'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.18'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -13176,6 +13197,23 @@ document.addEventListener('click',function(e){
 });
 </script>
 <script id="sf-view-bracket-nav">
+function sfIsPostseason(){
+  try{
+    var cw=(typeof currentWeek==='function')?currentWeek():0;
+    if(cw>=16) return true;
+    var games=(typeof allSeasonGames!=='undefined'?allSeasonGames:[])||[];
+    for(var i=0;i<games.length;i++){
+      var t=String(games[i]?.game_type||'').toLowerCase();
+      if(t==='playoff'||t==='cfp'||t==='national_championship') return true;
+      if(games[i]?.is_bye&&/CFP First Round Bye/i.test(String(games[i]?.event_name||''))) return true;
+    }
+  }catch(_){}
+  return false;
+}
+function sfUpdateBracketBtn(){
+  var btn=document.getElementById('viewCfpBracketBtn');
+  if(btn) btn.style.display=sfIsPostseason()?'':'none';
+}
 document.addEventListener('click',function(e){
   var btn=e.target&&e.target.closest?e.target.closest('#viewCfpBracketBtn'):null;
   if(!btn) return;
@@ -13195,6 +13233,7 @@ document.addEventListener('click',function(e){
   },100);
 });
 </script>
+<script>document.addEventListener("DOMContentLoaded",sfUpdateBracketBtn);setInterval(sfUpdateBracketBtn,5000);</script>
 </body>
 </html>
 
