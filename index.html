@@ -4612,7 +4612,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 .canonical-nav .hq-nav-label{text-transform:uppercase!important;letter-spacing:.07em!important;font-size:9px!important}
 .sf-overview-hero{min-height:360px!important;background:#060707!important;border:1px solid rgba(216,170,77,.30)!important}
 .sf-overview-hero .sf-hero-backdrop{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,6,6,.94) 0%,rgba(5,6,6,.76) 40%,rgba(5,6,6,.38) 72%,rgba(5,6,6,.72) 100%),url('assets/saturday-foundry-hero-wordless.webp') center 43%/cover no-repeat;filter:saturate(.82) contrast(1.03)}
-.sf-hero-copy{max-width:650px}.sf-hero-lockup{width:min(560px,100%);height:auto;display:block;mix-blend-mode:screen;filter:contrast(1.05) saturate(.9);border-radius:4px}.sf-hero-tagline{margin-top:16px;color:var(--sf-gold-hi);letter-spacing:.28em;font-size:11px;font-weight:900;text-transform:uppercase;text-shadow:0 2px 12px #000}
+.sf-hero-copy{max-width:650px}.sf-hero-lockup{width:min(560px,100%);height:auto;display:block;mix-blend-mode:multiply;filter:contrast(1.05) saturate(.9);border-radius:4px}.sf-hero-tagline{margin-top:16px;color:var(--sf-gold-hi);letter-spacing:.28em;font-size:11px;font-weight:900;text-transform:uppercase;text-shadow:0 2px 12px #000}
 #overview .ref-gotw{border:1px solid rgba(216,170,77,.34)!important;background:rgba(8,9,8,.9)!important;backdrop-filter:blur(12px)}
 #legacyLineTicker{border-color:rgba(216,170,77,.22)!important;background:linear-gradient(90deg,#0b0c0b,#11110f)!important}.ticker-label{background:linear-gradient(135deg,#f4d17d,#d8aa4d 58%,#a46e22)!important;color:#14110a!important}.ticker-copy{color:#d8cfbf!important}
 #hqMobileNav .mn-icon img{width:24px!important;height:24px!important;object-fit:contain!important;filter:none!important}
@@ -4643,7 +4643,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 #records .coach-trading-card.is-flipped .coach-card-back{opacity:1;visibility:visible;pointer-events:auto}
 #records .coach-card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:saturate(.95) contrast(1.04);transform:scale(1.012)}
 #records .coach-card-front:after{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(1,5,8,.02) 0%,rgba(1,5,8,.04) 40%,rgba(1,5,8,.27) 58%,rgba(1,5,8,.86) 78%,#020608 100%),linear-gradient(90deg,rgba(2,7,10,.32),transparent 26%,transparent 74%,rgba(2,7,10,.22))}
-#records .coach-card-chrome{position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(122deg,rgba(255,255,255,.12),transparent 13%,transparent 82%,rgba(213,168,62,.10));mix-blend-mode:screen}
+#records .coach-card-chrome{position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(122deg,rgba(255,255,255,.12),transparent 13%,transparent 82%,rgba(213,168,62,.10));mix-blend-mode:multiply}
 #records .coach-card-front-top{position:absolute;z-index:9;left:24px;right:24px;top:22px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 #records .coach-card-brand{display:flex;align-items:center;gap:8px;font:900 9px/1.05 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#f1d989;text-shadow:0 2px 10px #000}
 #records .coach-card-brand img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 3px 10px #000)}
@@ -8271,7 +8271,7 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   // QA 9.8.26: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
+   // QA 9.8.27: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
    let byeTeams=allSeasonGames.filter(g=>{
      if(!g?.is_bye) return false;
      const en=String(g?.event_name||''), gt=String(g?.game_type||'').toLowerCase(), wk=Number(g?.week_number||0);
@@ -8281,12 +8281,12 @@ function renderSchedule(){
    if(!byeTeams.length){
      byeTeams=allSeasonGames.filter(g=>g?.is_bye&&Number(g?.week_number||0)>=16);
    }
-   // QA 9.8.26: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.27: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.26: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.27: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
@@ -8318,7 +8318,7 @@ function renderSchedule(){
        const r1games=rounds[0]||[];
        for(let i=0;i<Math.min(byeTeams.length,slots);i++){
          const bt=byeTeams[i];
-         // QA 9.8.26: opponent is Winner of the i-th Round 1 game
+         // QA 9.8.27: opponent is Winner of the i-th Round 1 game
          let opp='TBD';
          const r1g=r1games[i];
          if(r1g){
@@ -8329,7 +8329,7 @@ function renderSchedule(){
          games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:opp,team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     // QA 9.8.26: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
+     // QA 9.8.27: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
      if(r===1&&rounds.length){
        const prev=rounds[0]||[];
        for(let i=games.length;i<sizes[r];i++){
@@ -8354,7 +8354,7 @@ function renderSchedule(){
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
-     // QA 9.8.26: if default round is all-TBD but a later round has real content (bye teams/games),
+     // QA 9.8.27: if default round is all-TBD but a later round has real content (bye teams/games),
      // jump to the latest round with meaningful content
      const hasContent=(games)=>games.some(g=>{
        const t1=String(g?.team_name||'').toUpperCase(), t2=String(g?.opponent_team||'').toUpperCase();
@@ -8383,7 +8383,7 @@ function renderSchedule(){
    };
    const pills=labels.map((label,i)=>`<button type="button" class="sf-cfp-pill${i===active?' on':''}" data-cfp-round="${i}">${esc(label)}</button>`).join('');
    const games=rounds[active];
-   return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-hero"><img class="sf-cfp-hero-img" src="assets/cfp-trophy-stadium.jpg" alt="College Football Playoff trophy" loading="lazy"><div class="sf-cfp-hero-overlay"></div><div class="sf-cfp-hero-text"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active],active===n-1)).join('')}</div></div></section>`;
+   return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-hero"><img class="sf-cfp-hero-img" src="assets/cfp-trophy-hero.jpg" alt="College Football Playoff trophy" loading="lazy"><div class="sf-cfp-hero-overlay"></div><div class="sf-cfp-hero-text"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active],active===n-1)).join('')}</div></div></section>`;
  };;;
  let currentHtml='';
  if(scheduleConference==="__all__"){
@@ -12374,7 +12374,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.26'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.27'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -15026,7 +15026,7 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   #schedule .sf-cfp-hero-text h3{margin:4px 0 0;font-size:24px;font-weight:800;letter-spacing:.01em;color:#f2f6f7;text-shadow:0 2px 12px rgba(0,0,0,.6)}
   #schedule .sf-cfp-round{margin-bottom:14px}
   #schedule .sf-cfp-game-champ{position:relative;overflow:hidden}
-  #schedule .sf-cfp-game-champ::before{content:'';position:absolute;inset:0;background:url('assets/cfp-trophy.png') right 8px center/contain no-repeat;opacity:.18;pointer-events:none}
+  #schedule .sf-cfp-game-champ::before{content:'';position:absolute;inset:0;background:url('assets/cfp-trophy.png') right 8px center/contain no-repeat;opacity:.22;pointer-events:none;mix-blend-mode:multiply}
   #schedule .sf-cfp-game-champ>*{position:relative;z-index:1}
   #schedule .sf-cfp-round>h4{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fa0ab}
   #schedule .sf-cfp-matchups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
