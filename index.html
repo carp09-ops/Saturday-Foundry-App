@@ -8605,6 +8605,7 @@ function renderTrophies(){
  const isNat=t=>/national/.test(typeOf(t));
  const isConf=t=>/conference/.test(typeOf(t));
  const isHeisman=t=>/heisman/.test(typeOf(t));
+ const isNationalAward=t=>/heisman|player_award/.test(typeOf(t));
  const isBowl=t=>/bowl/.test(typeOf(t));
  const isPlayoffGame=g=>["playoff","national_championship"].includes(norm(g?.game_type));
  const isBowlGame=g=>norm(g?.game_type)==="bowl";
@@ -8633,27 +8634,28 @@ function renderTrophies(){
  });
  const totalNat=trophies.filter(isNat).length;
  const totalConf=trophies.filter(isConf).length;
- const totalHeisman=trophies.filter(isHeisman).length;
+ const totalAwards=trophies.filter(isNationalAward).length;
  $("trophyRoomSummary").innerHTML=`
    <div class="legacy-summary-card"><span class="legacy-summary-icon">🏆</span><b>${totalNat}</b><small>National<br>Championships</small></div>
    <div class="legacy-summary-card"><span class="legacy-summary-icon">💍</span><b>${totalConf}</b><small>Conference<br>Titles</small></div>
-   <div class="legacy-summary-card"><span class="legacy-summary-icon">🏅</span><b>${totalHeisman}</b><small>Heismans</small></div>`;
+   <div class="legacy-summary-card"><span class="legacy-summary-icon">🏅</span><b>${totalAwards}</b><small>National<br>Awards</small></div>`;
  $("trophyGrid").innerHTML=coaches.map(c=>{
    const p=programFor(c),logo=p?.logo_url||window.CDHQLogoResolver?.knownLogo?.(p?.team_name)||"";
    const honors=trophies.filter(t=>byPerson(t,c));
    const games=gamesFor(c).filter(g=>g.status==="completed"&&!g.is_bye);
    const nat=honors.filter(isNat).length;
    const conf=honors.filter(isConf).length;
-   const heisman=honors.filter(isHeisman).length;
-   const heismanDetails=(state.heismans||[]).filter(a=>a?.person_id&&c?.person_id?String(a.person_id)===String(c.person_id):norm(a?.coach_name)===norm(c?.coach_name)).map(a=>{
+   const nationalAwards=honors.filter(isNationalAward).length;
+   const awardDetails=(state.heismans||[]).filter(a=>a?.person_id&&c?.person_id?String(a.person_id)===String(c.person_id):norm(a?.coach_name)===norm(c?.coach_name)).map(a=>{
      const sm=(seasons||[]).find(x=>String(x.season_id)===String(a.season_id)||Number(x.season_number)===Number(a.season_number));
      const year=Number(sm?.year||0)||null;
-     const player=a.player_name||'Heisman Trophy Winner';
+     const award=a.award_name||'Heisman Trophy';
+     const player=a.player_name||'Winner not recorded';
      /* Team AT AWARD TIME: coach's team from games in that season, not current team */
      const seasonTeam=games.find(g=>Number(g.season_number)===Number(a.season_number)&&g.team_name)?.team_name;
-     const meta=[a.player_position,seasonTeam||a.team_name].filter(Boolean).join(' · ');
-     return {year,player,meta};
-   }).sort((a,b)=>(b.year||0)-(a.year||0));
+     const meta=[player,a.player_position,seasonTeam||a.team_name].filter(Boolean).join(' · ');
+     return {year,award,meta};
+   }).sort((a,b)=>(b.year||0)-(a.year||0)||String(a.award).localeCompare(String(b.award)));
    const playoffSeasons=new Set(games.filter(isPlayoffGame).map(g=>Number(g.season_number||0)).filter(Boolean));
    const bowls=games.filter(isBowlGame);
    const bowlW=bowls.filter(g=>g.result==="W").length,bowlL=bowls.filter(g=>g.result==="L").length;
@@ -8669,10 +8671,10 @@ function renderTrophies(){
       <div class="legacy-stat-row">
         <div><b>${conf}</b><small>CONF<br>TITLES</small></div>
         <div><b>${playoffSeasons.size}</b><small>CFP<br>APPS</small></div>
-        <div><b>${heisman}</b><small>HEISMANS</small></div>
+        <div><b>${nationalAwards}</b><small>NATIONAL<br>AWARDS</small></div>
       </div>
       <div class="legacy-bowl-record">Bowl Record <b>${bowlW}-${bowlL}</b></div>
-      ${heismanDetails.length?`<div class="legacy-heisman-list"><div class="legacy-heisman-title">🏅 Heisman Winners</div>${heismanDetails.map(h=>`<div class="legacy-heisman-item"><div><strong>${esc(h.player)}</strong>${h.meta?`<span>${esc(h.meta)}</span>`:""}</div><span class="legacy-heisman-year">${h.year||"YEAR N/A"}</span></div>`).join("")}</div>`:""}
+      ${awardDetails.length?`<div class="legacy-heisman-list"><div class="legacy-heisman-title">🏅 National Award Winners</div>${awardDetails.map(h=>`<div class="legacy-heisman-item"><div><strong>${esc(h.award)}</strong>${h.meta?`<span>${esc(h.meta)}</span>`:""}</div><span class="legacy-heisman-year">${h.year||"YEAR N/A"}</span></div>`).join("")}</div>`:""}
       ${decorated?`<div class="legacy-decorated-note">${decorated} decorated season${decorated===1?"":"s"}</div>`:""}
     </article>`;
  }).join("")||'<div class="empty">No dynasty programs are available yet.</div>';
@@ -12270,7 +12272,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.11'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.12'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
