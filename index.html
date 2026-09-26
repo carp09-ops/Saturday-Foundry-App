@@ -8271,7 +8271,7 @@ function renderSchedule(){
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
-   // QA 9.8.22: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
+   // QA 9.8.23: bye teams = is_bye records with playoff context, OR teams with no Round 1 game but in postseason
    let byeTeams=allSeasonGames.filter(g=>{
      if(!g?.is_bye) return false;
      const en=String(g?.event_name||''), gt=String(g?.game_type||'').toLowerCase(), wk=Number(g?.week_number||0);
@@ -8281,12 +8281,12 @@ function renderSchedule(){
    if(!byeTeams.length){
      byeTeams=allSeasonGames.filter(g=>g?.is_bye&&Number(g?.week_number||0)>=16);
    }
-   // QA 9.8.22: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
+   // QA 9.8.23: postseason-only. Show if CFP games/bye teams exist, or week >= 16.
    let cw=0;
    try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
    const isPostseason=post.length>0||byeTeams.length>0||cw>=16;
    if(!isPostseason)return '';
-   // QA 9.8.22: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
+   // QA 9.8.23: always show 4 rounds, TBD for undecided, bye teams slotted in Round 2.
    const natty=post.filter(g=>cfpType(g)==='national_championship');
    const cfpGames=post.filter(g=>isCfpGame(cfpType(g)));
    const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
@@ -8312,22 +8312,30 @@ function renderSchedule(){
      }else if(r<weeks.length){
        games=cfpGames.filter(g=>Number(g.week_number||0)===weeks[r]);
      }
-     // Round 2 (index 1): slot bye teams vs TBD
+     // Round 2 (index 1): bye teams vs Winner of corresponding Round 1 game (in-order)
      if(r===1&&byeTeams.length){
        const slots=sizes[r]-games.length;
+       const r1games=rounds[0]||[];
        for(let i=0;i<Math.min(byeTeams.length,slots);i++){
          const bt=byeTeams[i];
-         games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:'TBD',team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
+         // QA 9.8.23: opponent is Winner of the i-th Round 1 game
+         let opp='TBD';
+         const r1g=r1games[i];
+         if(r1g){
+           const a1=shortName(r1g.team_name), b1=shortName(r1g.opponent_team);
+           const m=[a1,b1].filter(Boolean).join('/');
+           if(m) opp=`Winner of ${m}`;
+         }
+         games.push({id:'cfp-bye-'+(bt.id||i),game_type:'cfp',status:'scheduled',team_name:bt.team_name||bt.coach_name||'TBD',opponent_team:opp,team_id:bt.team_id||null,opponent_team_id:null,event_name:'CFP Quarterfinal — First Round Bye',week_number:weeks[r]||17});
        }
      }
-     // QA 9.8.22: TBD slots show "Winner of Team/Team" from feeding matchup
-     if(r>0&&rounds.length){
-       const prev=rounds[r-1];
+     // QA 9.8.23: Only Round 2 gets Winner-of from Round 1. Round 3+ stays TBD until prior rounds conclude.
+     if(r===1&&rounds.length){
+       const prev=rounds[0]||[];
        for(let i=games.length;i<sizes[r];i++){
-         // Each game in round r is fed by 2 games from round r-1
          const f1=prev[(i*2)%prev.length], f2=prev[(i*2+1)%prev.length];
          const [w1,w2]=winnerOf(f1,f2);
-         games.push({id:`cfp-tbd-r${r}-${i}`,game_type:r===3?'national_championship':'cfp',status:'scheduled',team_name:w1,opponent_team:w2,team_id:null,opponent_team_id:null,event_name:null,week_number:999});
+         games.push({id:`cfp-tbd-r${r}-${i}`,game_type:'cfp',status:'scheduled',team_name:w1,opponent_team:w2,team_id:null,opponent_team_id:null,event_name:null,week_number:999});
        }
      }else{
        while(games.length<sizes[r]) games.push(tbdGame(r,games.length));
@@ -8346,7 +8354,7 @@ function renderSchedule(){
      for(let i=0;i<roundWeeks.length;i++){
        if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
      }
-     // QA 9.8.22: if default round is all-TBD but a later round has real content (bye teams/games),
+     // QA 9.8.23: if default round is all-TBD but a later round has real content (bye teams/games),
      // jump to the latest round with meaningful content
      const hasContent=(games)=>games.some(g=>{
        const t1=String(g?.team_name||'').toUpperCase(), t2=String(g?.opponent_team||'').toUpperCase();
@@ -12365,7 +12373,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.22'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.23'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
