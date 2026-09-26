@@ -12280,7 +12280,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13c'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12313,7 +12313,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13c'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -12990,7 +12990,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.13b";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.13c";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13140,45 +13140,53 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 })();
 </script>
 
-<script id="sf-cfp-drag-scroll">
-/* QA 9.8.13b — CFP bracket drag-to-scroll. iOS Safari quirk fallback: native
-   touch scrolling of the inner track is unreliable, so a horizontal finger drag
-   is converted to scrollLeft directly. touch-action:pan-y keeps vertical page
-   scroll native. Delegated so it survives bracket re-renders. */
+<script id="sf-cfp-touch-pan">
+/* QA 9.8.13c — mobile bracket touch-pan. iOS Safari will not honor a nested
+   horizontal overflow scroller here, so on phones the track is translated
+   directly via touch events (no scrolling involved). Desktop keeps native
+   overflow-x scrolling. */
 (function(){
-  var SEL = '#schedule .sf-cfp-bracket-scroll';
-  var st = null, suppressClick = false;
-  function scrollerOf(t){ return (t && t.closest) ? t.closest(SEL) : null; }
-  document.addEventListener('pointerdown', function(e){
-    var sc = scrollerOf(e.target);
-    if(!sc) return;
-    if(e.pointerType === 'mouse' && e.button !== 0) return;
-    st = { sc: sc, x: e.clientX, y: e.clientY, left: sc.scrollLeft, horiz: false, pid: e.pointerId };
-  }, { capture: true, passive: true });
-  document.addEventListener('pointermove', function(e){
-    if(!st || e.pointerId !== st.pid) return;
-    var dx = e.clientX - st.x, dy = e.clientY - st.y;
-    if(!st.horiz){
-      if(Math.abs(dx) < 12) return;
-      if(Math.abs(dy) > Math.abs(dx)){ st = null; return; }
-      st.horiz = true;
-    }
-    st.sc.scrollLeft = st.left - dx;
-  }, { capture: true, passive: true });
-  function end(e){
-    if(!st || (e && e.pointerId !== st.pid)) return;
-    var dx = e ? (e.clientX - st.x) : 0;
-    if(st.horiz && Math.abs(dx) > 10) suppressClick = true;
-    st = null;
+  function scrollerOf(t){ return (t && t.closest) ? t.closest('#schedule .sf-cfp-bracket-scroll') : null; }
+  function panActive(sc){
+    try{ return window.getComputedStyle(sc).overflowX === 'hidden'; }catch(e){ return false; }
   }
-  document.addEventListener('pointerup', end, { capture: true, passive: true });
-  document.addEventListener('pointercancel', end, { capture: true, passive: true });
-  document.addEventListener('dragstart', function(e){
-    if(scrollerOf(e.target)) e.preventDefault();
-  }, { capture: true });
-  document.addEventListener('click', function(e){
-    if(suppressClick){ suppressClick = false; e.stopPropagation(); e.preventDefault(); }
-  }, { capture: true });
+  document.addEventListener('touchstart', function(e){
+    var sc = scrollerOf(e.target);
+    if(!sc || !panActive(sc)) return;
+    var t = e.changedTouches[0];
+    sc._cfpPan = {id:t.identifier, x0:t.clientX, y0:t.clientY, tx:(sc._cfpTx||0), lock:null};
+  }, {passive:true});
+  function findTouch(e, id){
+    for(var i=0;i<e.changedTouches.length;i++) if(e.changedTouches[i].identifier===id) return e.changedTouches[i];
+    return null;
+  }
+  document.addEventListener('touchmove', function(e){
+    var sc = scrollerOf(e.target);
+    if(!sc || !sc._cfpPan) return;
+    var p = sc._cfpPan, t = findTouch(e, p.id);
+    if(!t){ sc._cfpPan = null; return; }
+    var dx = t.clientX - p.x0, dy = t.clientY - p.y0;
+    if(!p.lock){
+      if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      p.lock = (Math.abs(dx) > Math.abs(dy)) ? 'x' : 'y';
+      if(p.lock === 'y'){ sc._cfpPan = null; return; }
+    }
+    var track = sc.querySelector('.sf-cfp-bracket-track');
+    if(!track){ sc._cfpPan = null; return; }
+    var max = Math.max(0, track.offsetWidth - sc.clientWidth);
+    var nx = p.tx + dx;
+    if(nx > 0) nx = 0;
+    if(nx < -max) nx = -max;
+    track.style.transform = 'translateX(' + nx + 'px)';
+    sc._cfpTx = nx;
+    if(e.cancelable) e.preventDefault();
+  }, {passive:false});
+  function endPan(e){
+    var sc = scrollerOf(e.target);
+    if(sc) sc._cfpPan = null;
+  }
+  document.addEventListener('touchend', endPan, {passive:true});
+  document.addEventListener('touchcancel', endPan, {passive:true});
 })();
 </script>
 </body>
@@ -14089,7 +14097,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13c';
   }
   function boot(){
     build();
@@ -14099,7 +14107,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.13b';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.13c';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14506,7 +14514,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.13b';
+    if(m)m.textContent='QA 9.8.13c';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14956,8 +14964,8 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
     #schedule .sf-cfp-bracket{padding:13px 0 8px;border-radius:14px}
     #schedule .sf-cfp-bracket-head{margin:0 10px 10px;align-items:flex-start}
     #schedule .sf-cfp-bracket-head h3{font-size:20px}\n    #schedule .sf-cfp-scroll-hint{width:100%;margin-left:0}\n    #schedule .sf-cfp-board{grid-template-columns:repeat(4,220px);column-gap:34px;min-width:970px}
-    #schedule .sf-cfp-bracket-scroll{padding:2px 10px 12px}
-    #schedule .sf-cfp-bracket-track{min-width:1000px;grid-template-columns:repeat(4,220px);column-gap:40px}
+    #schedule .sf-cfp-bracket-scroll{overflow:hidden;padding:2px 10px 12px;touch-action:pan-y;cursor:grab}
+    #schedule .sf-cfp-bracket-track{min-width:884px;grid-template-columns:repeat(4,200px);column-gap:28px;will-change:transform}
     #schedule .sf-cfp-swipe-hint{width:100%;margin-left:0}
   }
   /* QA 9.8.0 — National cards: winner emphasis on neutral finals + tighter Vegas panel. */
@@ -16451,7 +16459,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.13b';
+    if(m)m.textContent='QA 9.8.13c';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16461,7 +16469,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13b';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.13c';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
