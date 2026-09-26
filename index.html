@@ -5334,34 +5334,16 @@ img.sf-dark-logo{
 </style>
 <meta name="saturday-foundry-gotw-vegas-outline" content="removed-v1">
 <meta name="saturday-foundry-gotw-ranking-source" content="latest-official-poll-through-game-week-v2">
-<style id="sf-brk-v2">
-.sf-brk{background:linear-gradient(180deg,#0b1118 0%,#070c11 100%);border:1px solid rgba(244,197,66,.28);border-radius:16px;padding:14px 0 12px;margin:0 0 14px;overflow:hidden}
-.sf-brk-head{display:flex;align-items:center;gap:10px;margin:0 14px 12px}
-.sf-brk-kicker{display:block;font-size:10px;letter-spacing:.18em;color:rgba(244,197,66,.75);font-weight:700}
-.sf-brk-head h3{margin:2px 0 0;font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:800;letter-spacing:.04em;color:#f5f1e6;text-transform:uppercase}
-.sf-brk-nav{margin-left:auto;display:flex;gap:8px}
-.sf-brk-btn{width:36px;height:36px;border-radius:50%;border:1px solid rgba(244,197,66,.5);background:rgba(244,197,66,.1);color:#f4c542;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 0 2px;-webkit-tap-highlight-color:transparent}
-.sf-brk-btn:active{background:rgba(244,197,66,.25)}
-.sf-brk-btn:disabled{opacity:.3}
-.sf-brk-view{overflow:hidden;padding:2px 14px 4px}
-.sf-brk-track{display:flex;gap:16px;transition:transform .32s cubic-bezier(.2,.7,.3,1);will-change:transform}
-.sf-brk-round{flex:0 0 200px;min-width:200px}
-.sf-brk-round>h4{margin:0 0 8px;font-size:11px;letter-spacing:.22em;color:#f4c542;font-weight:800;text-transform:uppercase}
-.sf-brk-games{display:flex;flex-direction:column;gap:10px}
-.sf-brk-game{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}
-.sf-brk-game-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.sf-brk-game-head span{font-size:9px;letter-spacing:.14em;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase}
-.sf-brk-game-head strong{margin-left:auto;font-size:9px;letter-spacing:.14em;color:#f4c542;font-weight:800}
-.sf-brk-team{display:flex;align-items:center;gap:8px;padding:5px 0}
-.sf-brk-team+.sf-brk-team{border-top:1px solid rgba(255,255,255,.06)}
-.sf-brk-logo{width:26px;height:26px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:14px}
-.sf-brk-name{font-size:15px;font-weight:700;color:#f5f1e6;font-family:"Barlow Condensed",sans-serif;letter-spacing:.03em}
-.sf-brk-rank{font-size:10px;color:rgba(244,197,66,.8);font-weight:800;margin-right:4px}
-.sf-brk-score{margin-left:auto;font-size:15px;font-weight:800;color:#fff}
-.sf-brk-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
-.sf-brk-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sf-brk-dot.on{background:#f4c542}
-@media(min-width:821px){.sf-brk-round{flex-basis:230px;min-width:230px}.sf-brk-nav{display:none}.sf-brk-view{overflow-x:auto}.sf-brk-track{transition:none}}
+<style id="sf-cfp-pills">
+.sf-cfp-pills{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.sf-cfp-pill{padding:8px 16px;border-radius:999px;border:1px solid rgba(244,197,66,.35);background:rgba(244,197,66,.06);color:#f4c542;font-size:12px;font-weight:700;letter-spacing:.04em;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.sf-cfp-pill.on{background:#f4c542;color:#0b1118;border-color:#f4c542}
+.sf-cfp-pill:active{transform:scale(.96)}
+</style>
+<style id="sf-view-bracket-btn">
+.sf-view-bracket-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:12px 0;padding:12px;border-radius:12px;border:1px solid rgba(244,197,66,.4);background:linear-gradient(180deg,rgba(244,197,66,.12),rgba(244,197,66,.04));color:#f4c542;font-size:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sf-view-bracket-btn:active{transform:scale(.98)}
+.sf-view-bracket-btn span{font-size:16px}
 </style>
 </head>
 <body>
@@ -5582,6 +5564,9 @@ img.sf-dark-logo{
     <section id="overview" class="view active"><div class="v13-overview">
 <section class="ref-hero rounded-2xl overflow-hidden relative sf-overview-hero"><div class="sf-hero-backdrop" aria-hidden="true"></div><div class="relative z-10 grid grid-cols-1 md:grid-cols-[1.05fr_.95fr] lg:grid-cols-[1.15fr_.85fr] gap-5 lg:gap-6 p-5 sm:p-6 lg:p-8 items-center"><div class="sf-hero-copy"><div class="flex items-center gap-3 mb-3"><span class="ref-kicker"><span id="heroSeason">Season —</span> • <span id="heroWeek">Week —</span></span><span class="h-px flex-1 max-w-[170px] bg-gradient-to-r from-amber-400/80 to-transparent"></span></div><img class="sf-hero-lockup" decoding="async" src="assets/saturday-foundry-lockup.webp" alt="Saturday Foundry — College Dynasty Manager"><div class="sf-hero-tagline">YOUR DYNASTY, FORGED ON SATURDAYS.</div></div></div></section>
 <section class="sf-gotw-standalone-shell" aria-label="Saturday Foundry Games of the Week"><div class="ref-gotw rounded-xl overflow-hidden shadow-2xl" id="gotw"></div></section>
+<button type="button" id="viewCfpBracketBtn" class="sf-view-bracket-btn">
+  <span>🏆</span> View CFP Bracket
+</button>
 <div id="legacyLineTicker" class="ticker legacy-line-top"><div class="ticker-label">⚡ THE WIRE</div><div id="tickerCopy" class="ticker-copy">Loading dynasty feed…</div></div>
 <section id="myWeekPanel" class="ref-panel rounded-xl p-4" style="margin-bottom:14px">
   <div class="ref-panel-heading" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -8281,60 +8266,52 @@ function renderSchedule(){
  /* QA 9.8.0 — CFP bracket: auto-detected from playoff weeks (each playoff week =
     one round; national championship = final round). Rendered only on the
     unfiltered National board, and only once postseason games exist. */
- /* QA 9.8.15 bracket v2 */
- const brkV2TeamRow=(name,rank,logo,score)=>{
-   const lh=logo?`<img class="sf-brk-logo" src="${esc(logo)}" alt="" loading="lazy">`:`<span class="sf-brk-logo">🏈</span>`;
-   return `<div class="sf-brk-team">${lh}<span class="sf-brk-name">${rank?`<b class="sf-brk-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-brk-score">${score}</span></div>`;
- };
- const brkV2Card=(g,rl)=>{
-   const done=g.status==='completed';
-   const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
-   const label=g.event_label||g.bowl_name||g.event_name||rl||'College Football Playoff';
-   return `<article class="sf-brk-game"><div class="sf-brk-game-head"><span>${esc(label)}</span><strong>${done?'FINAL':'UPCOMING'}</strong></div>${brkV2TeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'')}${brkV2TeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'')}</article>`;
- };
- const brkV2=(rounds,labels,sn)=>{
-   const dots=rounds.map((_,i)=>`<button type="button" class="sf-brk-dot${i===0?' on':''}" data-brk-dot="${i}"></button>`).join('');
-   return `<section class="sf-brk"><div class="sf-brk-head"><div><span class="sf-brk-kicker">Postseason · Season ${esc(sn)}</span><h3>College Football Playoff</h3></div><div class="sf-brk-nav"><button type="button" class="sf-brk-btn" data-brk-dir="-1">‹</button><button type="button" class="sf-brk-btn" data-brk-dir="1">›</button></div></div><div class="sf-brk-view"><div class="sf-brk-track">${rounds.map((gs,i)=>`<div class="sf-brk-round"><h4>${esc(labels[i])}</h4><div class="sf-brk-games">${gs.map(g=>brkV2Card(g,labels[i])).join('')}</div></div>`).join('')}</div></div><div class="sf-brk-dots">${dots}</div></section>`;
- };
  const cfpBracketHtml=()=>{
    if(scheduleTeamPersonId||scheduleConference!=='__all__')return '';
    const cfpType=g=>String(g?.game_type||'').toLowerCase();
-   /* QA 9.8.1: accept 'cfp' as well as 'playoff' so AI-imported postseason games
-      always land in the bracket regardless of which synonym was stored. */
    const isCfpGame=t=>t==='playoff'||t==='cfp';
    const post=allSeasonGames.filter(g=>!g?.is_bye&&(isCfpGame(cfpType(g))||cfpType(g)==='national_championship'));
    if(!post.length)return '';
    const natty=post.filter(g=>cfpType(g)==='national_championship');
-   const byeRound=allSeasonGames.filter(g=>g?.is_bye&&/CFP First Round Bye/i.test(String(g?.event_name||'')));
    const rounds=[...new Set(post.filter(g=>isCfpGame(cfpType(g))).map(g=>Number(g.week_number||0)))].sort((a,b)=>a-b)
      .map(w=>post.filter(g=>isCfpGame(cfpType(g))&&Number(g.week_number||0)===w));
    if(natty.length)rounds.push(natty);
-   else{
-     if(byeRound.length&&rounds.length===1)rounds.push(byeRound);
-     const placeholderRound=(count,type)=>Array.from({length:count},(_,i)=>({id:'cfp-placeholder-'+type+'-'+i,game_type:type==='natty'?'national_championship':'cfp',status:'scheduled',team_name:'TBD',opponent_team:'TBD',team_id:null,opponent_team_id:null,event_name:null,week_number:999+i}));
-     if(rounds.length===1)rounds.push(placeholderRound(4,'qf'));
-     if(rounds.length===2)rounds.push(placeholderRound(2,'sf'));
-     if(rounds.length===3)rounds.push(placeholderRound(1,'natty'));
-   }
    if(!rounds.length)return '';
    const n=rounds.length;
    const early=n===4?['First Round','Quarterfinals','Semifinals']:n===3?['Quarterfinals','Semifinals']:n===2?['Semifinals']:rounds.slice(0,n-1).map((_,i)=>`Round ${i+1}`);
    const labels=[...early,natty.length?'National Championship':'Final'];
+   // Round weeks for pill default: use the week_number of each round's games
+   const roundWeeks=rounds.map(games=>{
+     const w=games.map(g=>Number(g.week_number||0)).filter(x=>x>0&&x<900);
+     return w.length?Math.min(...w):0;
+   });
+   // Default active round based on current week
+   if(window.__cfpActiveRound==null){
+     let cw=0;
+     try{ cw=(typeof currentWeek==='function')?currentWeek():0; }catch(_){}
+     if(!cw){ try{ cw=(typeof selectedWeek!=='undefined')?selectedWeek:0; }catch(_){} }
+     let best=0;
+     for(let i=0;i<roundWeeks.length;i++){
+       if(roundWeeks[i]&&cw>=roundWeeks[i]) best=i;
+     }
+     window.__cfpActiveRound=best;
+   }
+   const active=Math.max(0,Math.min(n-1,window.__cfpActiveRound||0));
    const cfpTeamRow=(name,rank,logo,score,cls)=>`<div class="sf-cfp-team${cls==='v21-winner'?' sf-cfp-winner':''}">${logo?`<img class="sf-cfp-logo" src="${esc(logo)}" alt="">`:`<span class="sf-cfp-logo sf-cfp-logo-fallback">🏈</span>`}<span class="sf-cfp-name">${rank?`<b class="sf-cfp-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><span class="sf-cfp-score ${cls}">${score}</span></div>`;
    const cfpGameCard=(g,roundLabel)=>{
      const done=g.status==='completed';
      const rk=(typeof scheduleDisplayRanks==='function'?scheduleDisplayRanks(g):{})||{};
      const pf=Number(g.points_for),pa=Number(g.points_against);
      const decided=done&&Number.isFinite(pf)&&Number.isFinite(pa)&&pf!==pa;
-     /* QA 9.8.1: bracket cards show the playoff/natty badge, and the head falls back
-        to the round label so AI-imported games without an event name still read well. */
      const label=g.event_label||g.bowl_name||g.event_name||roundLabel||'College Football Playoff';
      const badge=(typeof nationalBadgeFor==='function'?nationalBadgeFor(g):null)||null;
      const badgeHtml=badge&&badge.src?`<img class="sf-cfp-badge" src="${esc(badge.src)}" alt="${esc(badge.label||'Playoff')}" loading="lazy">`:'';
      return `<article class="sf-cfp-game" data-cfp-game="${esc(g.id)}"><div class="sf-cfp-game-head">${badgeHtml}<span>${esc(label)}</span><strong class="${done?'sf-cfp-final':''}">${done?'FINAL':'UPCOMING'}</strong></div>${cfpTeamRow(g.team_name,rk.team,logoFor(g.team_id,g.team_name),done?(g.points_for??''):'' ,decided?(pf>pa?'v21-winner':'v21-dim'):'')}${cfpTeamRow(g.opponent_team,rk.opponent,logoFor(g.opponent_team_id,g.opponent_team),done?(g.points_against??''):'',decided?(pa>pf?'v21-winner':'v21-dim'):'')}</article>`;
    };
-   return brkV2(rounds, labels, S.season_number);
- };
+   const pills=labels.map((label,i)=>`<button type="button" class="sf-cfp-pill${i===active?' on':''}" data-cfp-round="${i}">${esc(label)}</button>`).join('');
+   const games=rounds[active];
+   return `<section class="sf-cfp-bracket" id="cfpBracket" aria-label="College Football Playoff bracket"><div class="sf-cfp-bracket-head"><span class="sf-cfp-bracket-kicker">Postseason · Season ${esc(S.season_number)}</span><h3>College Football Playoff</h3></div><div class="sf-cfp-pills" role="tablist" aria-label="Playoff rounds">${pills}</div><div class="sf-cfp-round"><h4>${esc(labels[active])}</h4><div class="sf-cfp-matchups">${games.map(g=>cfpGameCard(g,labels[active])).join('')}</div></div></section>`;
+ };;
  let currentHtml='';
  if(scheduleConference==="__all__"){
    const dynastyPlayable=playable.filter(isDynastyScheduleGame);
@@ -12324,7 +12301,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.15'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.16'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12357,7 +12334,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.15'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13034,7 +13011,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.8.15";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.8.10";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -13183,39 +13160,40 @@ function boot(){
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
 })();
 </script>
-
-
-<script id="sf-brk-nav">
-(function(){
-  function brkGo(brk, idx){
-    var track=brk.querySelector('.sf-brk-track');
-    var view=brk.querySelector('.sf-brk-view');
-    if(!track||!view) return;
-    var n=track.children.length;
-    idx=Math.max(0,Math.min(n-1,idx));
-    brk._brkIdx=idx;
-    var roundW=(track.children[0]?track.children[0].offsetWidth:200)+16;
-    var maxX=Math.max(0,track.scrollWidth-view.clientWidth);
-    var x=Math.min(idx*roundW,maxX);
-    track.style.transform='translateX('+(-x)+'px)';
-    var dots=brk.querySelectorAll('.sf-brk-dot');
-    for(var i=0;i<dots.length;i++) dots[i].classList.toggle('on',i===idx);
-    var prev=brk.querySelector('[data-brk-dir="-1"]');
-    var next=brk.querySelector('[data-brk-dir="1"]');
-    if(prev) prev.disabled=(idx===0);
-    if(next) next.disabled=(idx===n-1);
-  }
-  document.addEventListener('click',function(e){
-    var btn=e.target&&e.target.closest?e.target.closest('.sf-brk-btn,.sf-brk-dot'):null;
-    if(!btn) return;
-    var brk=btn.closest('.sf-brk');
-    if(!brk) return;
-    var idx=brk._brkIdx||0;
-    if(btn.hasAttribute('data-brk-dir')) idx+=parseInt(btn.getAttribute('data-brk-dir'),10);
-    else idx=parseInt(btn.getAttribute('data-brk-dot'),10);
-    brkGo(brk,idx);
-  });
-})();
+<script id="sf-cfp-pill-nav">
+document.addEventListener('click',function(e){
+  var pill=e.target&&e.target.closest?e.target.closest('.sf-cfp-pill'):null;
+  if(!pill) return;
+  var idx=parseInt(pill.getAttribute('data-cfp-round'),10);
+  if(isNaN(idx)) return;
+  window.__cfpActiveRound=idx;
+  if(typeof renderSchedule==='function') renderSchedule();
+  // Keep the bracket in view after re-render
+  setTimeout(function(){
+    var brk=document.getElementById('cfpBracket');
+    if(brk) brk.scrollIntoView({behavior:'smooth',block:'start'});
+  },50);
+});
+</script>
+<script id="sf-view-bracket-nav">
+document.addEventListener('click',function(e){
+  var btn=e.target&&e.target.closest?e.target.closest('#viewCfpBracketBtn'):null;
+  if(!btn) return;
+  // Switch to Schedule tab
+  var tabBtn=document.querySelector('button[data-view="schedule"]');
+  if(tabBtn) tabBtn.click();
+  else if(typeof XP!=='undefined'&&XP.go) XP.go('schedule');
+  // Switch to National mode
+  setTimeout(function(){
+    var natBtn=document.querySelector('[data-sf-schedule-mode="national"]');
+    if(natBtn&&!natBtn.classList.contains('active')) natBtn.click();
+    // Scroll to bracket
+    setTimeout(function(){
+      var brk=document.getElementById('cfpBracket');
+      if(brk) brk.scrollIntoView({behavior:'smooth',block:'start'});
+    },150);
+  },100);
+});
 </script>
 </body>
 </html>
@@ -14125,7 +14103,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.15';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10';
   }
   function boot(){
     build();
@@ -14135,7 +14113,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.8.15';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.8.10';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14542,7 +14520,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.15';
+    if(m)m.textContent='PROD 9.8.10';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14947,55 +14925,31 @@ img.sf-team-identity-logo-v5[data-sf-team-control="user"]{filter:drop-shadow(0 0
   /* QA 9.8.0 — National board: soft white glow lifts dark conference/event marks off
      the dark card (glow-only, no plate), matching the team-logo glow convention. */
   #schedule .sf-national-conf-badge .sf-event-badge,#schedule .sf-event-badge-header .sf-event-badge{filter:drop-shadow(0 0 2px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,255,255,.35))!important}
-  /* QA 9.8.13a — in-game inspired 12-team CFP bracket board. */
-  #schedule .sf-cfp-bracket{margin:0 0 20px;padding:16px 0 16px;border:1px solid rgba(244,197,66,.24);border-radius:18px;background:radial-gradient(circle at 82% 12%,rgba(244,197,66,.08),transparent 24%),linear-gradient(145deg,#151715,#080b0c 58%,#050708);box-shadow:0 20px 55px rgba(0,0,0,.36)}
-  #schedule .sf-cfp-bracket-head{display:flex;align-items:baseline;gap:10px;margin:0 16px 12px;padding-bottom:12px;border-bottom:1px solid rgba(244,197,66,.16);flex-wrap:wrap}
-  #schedule .sf-cfp-bracket-kicker{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:850;letter-spacing:.09em;text-transform:uppercase;color:#f5f1e5}
-  #schedule .sf-cfp-bracket-head h3{margin:0;font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:850;letter-spacing:.04em;text-transform:uppercase;color:#f4c542}
-  #schedule .sf-cfp-scroll-hint{margin-left:auto;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:#806f3d;white-space:nowrap}
-  #schedule .sf-cfp-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;padding:2px 2px 12px}
-  #schedule .sf-cfp-board{display:grid;grid-template-columns:repeat(4,230px);column-gap:42px;align-items:stretch;min-width:1050px;width:max-content}
-  #schedule .sf-cfp-scroll::-webkit-scrollbar{height:9px}
-  #schedule .sf-cfp-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.30);border-radius:999px}
-  #schedule .sf-cfp-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:999px}
-  #schedule .sf-cfp-swipe-hint{margin-left:auto;font-size:8px;font-weight:900;letter-spacing:.13em;color:#7d7044;white-space:nowrap}
-  #schedule .sf-cfp-bracket-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:rgba(244,197,66,.45) rgba(255,255,255,.05);padding:2px 16px 10px}
-  #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar{height:8px}
-  #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
-  #schedule .sf-cfp-bracket-scroll::-webkit-scrollbar-thumb{background:rgba(244,197,66,.42);border-radius:99px}
-  #schedule .sf-cfp-bracket-track{min-width:1080px;width:max-content;display:grid;grid-template-columns:repeat(4,220px);column-gap:50px;align-items:stretch}
-  #schedule .sf-cfp-round{position:relative;margin:0;min-width:220px;display:flex;flex-direction:column}
-  #schedule .sf-cfp-round>h4{margin:0 0 12px;font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:850;letter-spacing:.1em;text-align:center;text-transform:uppercase;color:#e5b93e}
-  #schedule .sf-cfp-matchups{display:flex;flex-direction:column;justify-content:space-around;gap:14px;flex:1}
-  #schedule .sf-cfp-round:nth-of-type(3) .sf-cfp-matchups{padding:44px 0}
-  #schedule .sf-cfp-round:nth-of-type(4) .sf-cfp-matchups{padding:132px 0}
-  #schedule .sf-cfp-round:nth-of-type(5) .sf-cfp-matchups{padding:190px 0}
-  #schedule .sf-cfp-game{position:relative;border:1px solid rgba(226,229,225,.42);border-radius:6px;background:linear-gradient(180deg,#2b3031,#181c1d);padding:5px 9px;box-shadow:0 8px 18px rgba(0,0,0,.28)}
-  #schedule .sf-cfp-game:after{content:"";position:absolute;right:-28px;top:50%;width:28px;height:1px;background:rgba(227,229,226,.68)}
-  #schedule .sf-cfp-round:last-child .sf-cfp-game:after{display:none}
-  #schedule .sf-cfp-game-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:3px;min-height:18px}
-  #schedule .sf-cfp-game-head span{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8f9b9f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #schedule .sf-cfp-game-head strong{font-size:8px;letter-spacing:.1em;color:#6f7b7f;white-space:nowrap;margin-left:auto}
+  /* QA 9.8.0 — CFP bracket: postseason overview atop the National board. */
+  #schedule .sf-cfp-bracket{margin:0 0 18px}
+  #schedule .sf-cfp-bracket-head{display:flex;align-items:baseline;gap:10px;margin:2px 0 12px;flex-wrap:wrap}
+  #schedule .sf-cfp-bracket-kicker{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
+  #schedule .sf-cfp-bracket-head h3{margin:0;font-size:20px;font-weight:800;letter-spacing:.01em;color:#f2f6f7}
+  #schedule .sf-cfp-round{margin-bottom:14px}
+  #schedule .sf-cfp-round>h4{margin:0 0 8px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fa0ab}
+  #schedule .sf-cfp-matchups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #schedule .sf-cfp-game{border:1px solid rgba(244,197,66,.22);border-radius:14px;background:linear-gradient(145deg,rgba(5,18,24,.98),rgba(2,11,15,.98));padding:10px 14px}
+  #schedule .sf-cfp-game-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+  #schedule .sf-cfp-game-head span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8fa0ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #schedule .sf-cfp-game-head strong{font-size:10px;letter-spacing:.1em;color:#667b86;white-space:nowrap;margin-left:auto}
   #schedule .sf-cfp-game-head strong.sf-cfp-final{color:#f4c542}
-  #schedule .sf-cfp-badge{width:17px;height:17px;object-fit:contain;flex:none;filter:drop-shadow(0 0 5px rgba(255,255,255,.26))}
-  #schedule .sf-cfp-team{display:grid;grid-template-columns:27px minmax(0,1fr) auto;align-items:center;gap:7px;padding:5px 0}
-  #schedule .sf-cfp-team+.sf-cfp-team{border-top:1px solid rgba(255,255,255,.10)}
-  #schedule .sf-cfp-logo{width:27px;height:27px;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.55))}
-  #schedule .sf-cfp-logo-fallback{display:grid;place-items:center;font-size:15px}
-  #schedule .sf-cfp-name{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:800;color:#eef1ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+  /* QA 9.8.1: playoff/natty badge on bracket cards — glow-only, matches the badge treatment. */
+  #schedule .sf-cfp-badge{width:22px;height:22px;object-fit:contain;flex:none;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}
+  #schedule .sf-cfp-team{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:5px 0}
+  #schedule .sf-cfp-logo{width:30px;height:30px;object-fit:contain}
+  #schedule .sf-cfp-logo-fallback{display:grid;place-items:center;font-size:18px}
+  #schedule .sf-cfp-name{font-size:15px;font-weight:700;color:#dfe7ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #schedule .sf-cfp-team.sf-cfp-winner .sf-cfp-name{color:#fff}
-  #schedule .sf-cfp-rank{display:inline-block;min-width:23px;color:#f4c542;margin-right:4px;font-size:15px}
-  #schedule .sf-cfp-score{font-family:"Barlow Condensed",sans-serif;font-size:19px;font-weight:850;color:#d4dcdd;min-width:26px;text-align:right}
+  #schedule .sf-cfp-rank{color:#f4c542;margin-right:6px;font-size:13px}
+  #schedule .sf-cfp-score{font-size:17px;font-weight:800;color:#c7d2d8;min-width:34px;text-align:right}
   #schedule .sf-cfp-score.v21-winner{color:#f4c542!important}
-  #schedule .sf-cfp-score.v21-dim{color:#606b70!important}
-  @media(max-width:820px){
-    #schedule .sf-cfp-bracket{padding:13px 0 8px;border-radius:14px}
-    #schedule .sf-cfp-bracket-head{margin:0 10px 10px;align-items:flex-start}
-    #schedule .sf-cfp-bracket-head h3{font-size:20px}\n    #schedule .sf-cfp-scroll-hint{width:100%;margin-left:0}\n    #schedule .sf-cfp-board{grid-template-columns:repeat(4,220px);column-gap:34px;min-width:970px}
-    #schedule .sf-cfp-bracket-scroll{overflow:hidden;padding:2px 10px 12px;touch-action:pan-y;cursor:grab}
-    #schedule .sf-cfp-bracket-track{min-width:884px;grid-template-columns:repeat(4,200px);column-gap:28px;will-change:transform}
-    #schedule .sf-cfp-swipe-hint{width:100%;margin-left:0}
-  }
+  #schedule .sf-cfp-score.v21-dim{color:#5d6a74!important}
+  @media(max-width:820px){#schedule .sf-cfp-matchups{grid-template-columns:1fr}}
   /* QA 9.8.0 — National cards: winner emphasis on neutral finals + tighter Vegas panel. */
   #schedule .v21-score .v21-winner{color:var(--tb-gold,#f4c542)!important}
   #schedule .v21-score .v21-dim{color:#5d6a74!important}
@@ -16487,7 +16441,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.8.15';
+    if(m)m.textContent='PROD 9.8.10';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16497,7 +16451,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.15';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.10';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
