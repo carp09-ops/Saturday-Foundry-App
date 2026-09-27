@@ -7127,25 +7127,43 @@ function decorateGameCardsWithVegas(rows=state.vegas||[]){
    card.appendChild(div);
  });
 }
+function refreshVegasSurfaces(rows){
+ state.vegas=rows;
+ decorateGameCardsWithVegas(rows);
+ renderGotw();
+ renderVegas();
+ renderMarketIq();
+ renderAdminVegas();
+ // GameDay schedule cards read Vegas data at render time. Re-render them after
+ // market generation/fetch so the new line appears without a reload or restart.
+ try{renderSchedule()}catch(error){console.warn('Schedule Vegas refresh failed',error)}
+}
 async function loadVegasInBackground(dynastyId,seasonId){
  const token=++vegasRequestToken,key=vegasKey(dynastyId,seasonId),cached=vegasCache.get(key);
- const refreshVegasSurfaces=rows=>{
-   state.vegas=rows;
-   decorateGameCardsWithVegas(rows);
-   // GameDay schedule cards read vegasForGame() at render time and are intentionally
-   // skipped by decorateGameCardsWithVegas(). Re-render the schedule after market
-   // hydration so newly generated odds appear immediately without a reload/tab change.
-   if(typeof renderSchedule==="function")renderSchedule();
-   renderGotw();renderVegas();renderMarketIq();renderAdminVegas();
- };
  if(cached){refreshVegasSurfaces(cached);return}
  const st=$("vegasStatus");if(st){st.textContent='● LOADING MARKET';st.className='vegas-status loading'}
- try{const rows=await Data.vegas(dynastyId,seasonId);if(token!==vegasRequestToken)return;const clean=Array.isArray(rows)?rows:[];vegasCache.set(key,clean);refreshVegasSurfaces(clean);ensureVegasLegacy()}
- catch(error){if(token!==vegasRequestToken)return;console.warn('Vegas unavailable',error);state.vegas=[];if(st){st.textContent='● MARKET TEMPORARILY UNAVAILABLE';st.className='vegas-status error'};renderVegas(true)}
+ try{
+   const rows=await Data.vegas(dynastyId,seasonId);
+   if(token!==vegasRequestToken)return;
+   const clean=Array.isArray(rows)?rows:[];
+   vegasCache.set(key,clean);
+   refreshVegasSurfaces(clean);
+   ensureVegasLegacy();
+ }catch(error){
+   if(token!==vegasRequestToken)return;
+   console.warn('Vegas unavailable',error);
+   state.vegas=[];
+   if(st){st.textContent='● MARKET TEMPORARILY UNAVAILABLE';st.className='vegas-status error'}
+   renderVegas(true)
+ }
 }
 async function generateVegasForGame(gameId){
  if(!gameId||!D?.dynasty_id||!S?.season_id)return;
- try{await Data.generateVegas(gameId);vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));loadVegasInBackground(D.dynasty_id,S.season_id)}catch(error){console.warn('Vegas line generation failed',error)}
+ try{
+   await Data.generateVegas(gameId);
+   vegasCache.delete(vegasKey(D.dynasty_id,S.season_id));
+   await loadVegasInBackground(D.dynasty_id,S.season_id);
+ }catch(error){console.warn('Vegas line generation failed',error)}
 }
 
 function vegasCoachRows(rows){return rows.filter(r=>r.coach_name&&r.status==='completed'&&r.points_for!=null&&r.points_against!=null)}
