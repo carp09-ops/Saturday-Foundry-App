@@ -4623,7 +4623,7 @@ body{background:radial-gradient(circle at 50% 0,rgba(216,170,77,.08),transparent
 .team-select-head h1:after{content:' · SATURDAY FOUNDRY';color:var(--sf-gold);font-size:.42em;letter-spacing:.08em;vertical-align:middle}
 @media(max-width:700px){#siteHeader .hq-site-brand{width:142px!important;height:46px!important}.sf-overview-hero{min-height:280px!important;max-height:300px!important}.sf-overview-hero .sf-hero-backdrop{background:linear-gradient(180deg,rgba(5,6,6,.38),rgba(5,6,6,.68) 42%,rgba(5,6,6,.94) 76%),url('assets/saturday-foundry-mobile-wordless.webp') center 65%/cover no-repeat}.sf-overview-hero>.relative{display:flex!important;flex-direction:column!important;justify-content:flex-end!important;min-height:280px!important;max-height:300px!important;padding:18px!important}.sf-hero-copy{padding-top:0!important}.sf-hero-lockup{width:285px!important;max-width:86vw!important}.sf-hero-tagline{font-size:9px!important;line-height:1.6!important;letter-spacing:.20em!important}.sf-overview-hero .ref-gotw{width:100%!important}.canonical-nav{display:none!important}}
 </style>
-  <meta name="saturday-foundry-production-release" content="9.6.17-gotw-logo-contrast">
+  <meta name="saturday-foundry-production-release" content="9.6.18-vegas-refresh">
 <style id="record-book-trading-cards-v1">
 /* Coaches Card — mockup-matched collectible coach cards */
 #records{--card-gold:#d5a83e;--card-cream:#f4e0a0}
@@ -7129,9 +7129,18 @@ function decorateGameCardsWithVegas(rows=state.vegas||[]){
 }
 async function loadVegasInBackground(dynastyId,seasonId){
  const token=++vegasRequestToken,key=vegasKey(dynastyId,seasonId),cached=vegasCache.get(key);
- if(cached){state.vegas=cached;decorateGameCardsWithVegas(cached);renderGotw();renderVegas();renderMarketIq();renderAdminVegas();return}
+ const refreshVegasSurfaces=rows=>{
+   state.vegas=rows;
+   decorateGameCardsWithVegas(rows);
+   // GameDay schedule cards read vegasForGame() at render time and are intentionally
+   // skipped by decorateGameCardsWithVegas(). Re-render the schedule after market
+   // hydration so newly generated odds appear immediately without a reload/tab change.
+   if(typeof renderSchedule==="function")renderSchedule();
+   renderGotw();renderVegas();renderMarketIq();renderAdminVegas();
+ };
+ if(cached){refreshVegasSurfaces(cached);return}
  const st=$("vegasStatus");if(st){st.textContent='● LOADING MARKET';st.className='vegas-status loading'}
- try{const rows=await Data.vegas(dynastyId,seasonId);if(token!==vegasRequestToken)return;const clean=Array.isArray(rows)?rows:[];vegasCache.set(key,clean);state.vegas=clean;decorateGameCardsWithVegas(clean);renderGotw();renderVegas();renderMarketIq();renderAdminVegas();ensureVegasLegacy()}
+ try{const rows=await Data.vegas(dynastyId,seasonId);if(token!==vegasRequestToken)return;const clean=Array.isArray(rows)?rows:[];vegasCache.set(key,clean);refreshVegasSurfaces(clean);ensureVegasLegacy()}
  catch(error){if(token!==vegasRequestToken)return;console.warn('Vegas unavailable',error);state.vegas=[];if(st){st.textContent='● MARKET TEMPORARILY UNAVAILABLE';st.className='vegas-status error'};renderVegas(true)}
 }
 async function generateVegasForGame(gameId){
