@@ -9472,14 +9472,15 @@ async function renderDynastyChooser(){
    await Promise.all(dynasties.map(async d=>{
      if(d._chooserProgramResolved)return;
      try{
-       const programs=await Data.myPrograms(d.dynasty_id);
+       const [programs,dynastySeasons]=await Promise.all([Data.myPrograms(d.dynasty_id),Data.seasons(d.dynasty_id)]);
        const rows=Array.isArray(programs)?programs:[];
-       const ranked=[...rows].sort((a,b)=>{
-         const active=Number(!!b.is_active)-Number(!!a.is_active);if(active)return active;
-         const season=Number(b.season_number||0)-Number(a.season_number||0);if(season)return season;
-         return Number(b.year||0)-Number(a.year||0);
-       });
-       d._chooserProgram=ranked[0]||null;
+       const seasonRows=Array.isArray(dynastySeasons)?dynastySeasons:[];
+       const currentSeason=seasonRows.find(s=>s.is_active)||seasonRows.find(s=>String(s.status||"").toLowerCase()==="active")||seasonRows.find(s=>String(s.status||"").toLowerCase()==="setup")||[...seasonRows].sort((a,b)=>Number(b.season_number||0)-Number(a.season_number||0))[0]||null;
+       // PROD 9.8.46: v_my_programs is membership-only and does not expose
+       // is_active/season_number/year. Resolve the chooser identity by the
+       // dynasty's actual current season_id so coaching moves cannot fall back
+       // to an older membership (for example WSB App State after moving teams).
+       d._chooserProgram=(currentSeason?rows.find(p=>String(p.season_id)===String(currentSeason.season_id)):null)||rows[rows.length-1]||null;
      }catch(err){
        console.warn('Dynasty chooser program lookup skipped:',err);
        d._chooserProgram=null;
@@ -12474,7 +12475,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.45'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.8.46'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
