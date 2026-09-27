@@ -7127,15 +7127,44 @@ function decorateGameCardsWithVegas(rows=state.vegas||[]){
    card.appendChild(div);
  });
 }
+function applyVegasToGameRows(gameRows,rows){
+ const byId=new Map();
+ (rows||[]).forEach(r=>{
+   const id=String(r?.id||r?.game_id||"");
+   if(!id)return;
+   const prev=byId.get(id);
+   if(!prev||(!prev.coach_name&&r.coach_name))byId.set(id,r);
+ });
+ return (gameRows||[]).map(g=>{
+   const v=byId.get(String(g?.id||g?.game_id||""));
+   if(!v)return g;
+   return {...g,
+     vegas_line:v,
+     spread_home:v.spread_home,
+     total_line:v.total_line,
+     home_moneyline:v.home_moneyline,
+     away_moneyline:v.away_moneyline,
+     projected_home_score:v.projected_home_score,
+     projected_away_score:v.projected_away_score,
+     home_win_probability:v.home_win_probability,
+     confidence:v.confidence,
+     model_version:v.model_version,
+     vegas_generated_at:v.generated_at
+   };
+ });
+}
 function refreshVegasSurfaces(rows){
- state.vegas=rows;
- decorateGameCardsWithVegas(rows);
+ const clean=Array.isArray(rows)?rows:[];
+ state.vegas=clean;
+ // Persist the market directly onto the schedule/game rows too. The GameDay
+ // renderer can now render a line even if a global lookup races the schedule.
+ state.games=applyVegasToGameRows(state.games,clean);
+ state.scheduleGames=applyVegasToGameRows(state.scheduleGames,clean);
+ decorateGameCardsWithVegas(clean);
  renderGotw();
  renderVegas();
  renderMarketIq();
  renderAdminVegas();
- // GameDay schedule cards read Vegas data at render time. Re-render them after
- // market generation/fetch so the new line appears without a reload or restart.
  try{renderSchedule()}catch(error){console.warn('Schedule Vegas refresh failed',error)}
 }
 async function loadVegasInBackground(dynastyId,seasonId){
@@ -9344,7 +9373,9 @@ async function loadSeason(id){
   };
   const rankedGames=(Array.isArray(games)?games:[]).map(hydrateRanks);
   const rankedScheduleGames=(Array.isArray(scheduleGames)?scheduleGames:[]).map(hydrateRanks);
-  state={...state,programs,standings,games:rankedGames,scheduleGames:rankedScheduleGames,rankings:rankingRows,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
+  const gamesWithVegas=applyVegasToGameRows(rankedGames,cleanVegas);
+  const scheduleGamesWithVegas=applyVegasToGameRows(rankedScheduleGames,cleanVegas);
+  state={...state,programs,standings,games:gamesWithVegas,scheduleGames:scheduleGamesWithVegas,rankings:rankingRows,vegas:cleanVegas,gotwGames:[],activeWeek:activeSeason&&Number.isInteger(normalizedWeek)?normalizedWeek:state.activeWeek};
   vegasCache.set(vegasKey(D.dynasty_id,S.season_id),cleanVegas);
   renderAll();
   decorateGameCardsWithVegas(cleanVegas);
@@ -13200,6 +13231,8 @@ window.gameDayCard=function(g,logoFn){
   /* Final reads away–home to match the sides, not the raw row perspective. */
   var awayScore=isAwayEntry?pf:pa, homeScore=isAwayEntry?pa:pf;
   var vr=(typeof vegasForGame==="function"?vegasForGame(g.id):null);
+  if(!vr&&g.vegas_line)vr=g.vegas_line;
+  if(!vr&&(g.spread_home!=null||g.total_line!=null))vr=g;
   var spreadHome=vr?Number(vr.spread_home):NaN, total=vr?(vr.total_line!=null?vr.total_line:null):null;
   var hasSpread=Number.isFinite(spreadHome);
   var initials=function(n){return String(n||"?").split(/[^A-Za-z0-9]+/).filter(Boolean).slice(0,2).map(function(w){return w[0].toUpperCase();}).join("")||"?";};
