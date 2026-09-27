@@ -8792,7 +8792,7 @@ function renderTrophies(){
  const isNationalAward=t=>/heisman|player_award/.test(typeOf(t));
  const isBowl=t=>/bowl/.test(typeOf(t));
  const isPlayoffGame=g=>["playoff","national_championship"].includes(norm(g?.game_type));
- const isBowlGame=g=>norm(g?.game_type)==="bowl";
+ const isBowlGame=g=>{const type=norm(g?.game_type).replace(/[\\s-]+/g,"_");return type==="bowl"||type==="bowl_game";};
  const byPerson=(t,p)=>t?.person_id&&p?.person_id?String(t.person_id)===String(p.person_id):norm(t?.coach_name||t?.recipient_name)===norm(p?.coach_name);
  const gamesFor=p=>allGames.filter(g=>g?.person_id&&p?.person_id?String(g.person_id)===String(p.person_id):norm(g?.coach_name)===norm(p?.coach_name));
  const programFor=p=>{
@@ -9442,7 +9442,7 @@ async function loadDynasty(i=0){
  window.CDHQLoader?.hide();
  Promise.allSettled(seasons.map(s=>Data.games(D.dynasty_id,s.season_id))).then(results=>{
    const sets=results.filter(r=>r.status==='fulfilled').map(r=>Array.isArray(r.value)?r.value:[]);
-   if(sets.length){state.allGames=sets.flat();renderCoaches();renderStorylines();renderRivalries();renderHQCommand();renderSeasonRecap();renderRecordBook();renderCareer();updateOverviewDataVisibility();}
+   if(sets.length){state.allGames=sets.flat();renderTrophies();renderCoaches();renderStorylines();renderRivalries();renderHQCommand();renderSeasonRecap();renderRecordBook();renderCareer();updateOverviewDataVisibility();}
  }).catch(err=>console.warn('Historical dynasty enrichment skipped:',err));
 }
 function hideDynastyChooser(){
