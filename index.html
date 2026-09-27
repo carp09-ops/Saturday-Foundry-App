@@ -9472,14 +9472,15 @@ async function renderDynastyChooser(){
    await Promise.all(dynasties.map(async d=>{
      if(d._chooserProgramResolved)return;
      try{
-       const programs=await Data.myPrograms(d.dynasty_id);
+       const [programs,dynastySeasons]=await Promise.all([Data.myPrograms(d.dynasty_id),Data.seasons(d.dynasty_id)]);
        const rows=Array.isArray(programs)?programs:[];
-       const ranked=[...rows].sort((a,b)=>{
-         const active=Number(!!b.is_active)-Number(!!a.is_active);if(active)return active;
-         const season=Number(b.season_number||0)-Number(a.season_number||0);if(season)return season;
-         return Number(b.year||0)-Number(a.year||0);
-       });
-       d._chooserProgram=ranked[0]||null;
+       const seasonRows=Array.isArray(dynastySeasons)?dynastySeasons:[];
+       // v_my_programs intentionally exposes membership/team fields only; it does
+       // not contain is_active, season_number, or year. Resolve the dynasty's
+       // current season from v_dynasty_seasons first, then select that exact
+       // membership. This prevents historical teams from appearing in the chooser.
+       const currentSeason=seasonRows.find(s=>s.is_active)||seasonRows.find(s=>s.status==="setup")||seasonRows[0]||null;
+       d._chooserProgram=currentSeason?rows.find(p=>String(p.season_id)===String(currentSeason.season_id))||null:rows[0]||null;
      }catch(err){
        console.warn('Dynasty chooser program lookup skipped:',err);
        d._chooserProgram=null;
