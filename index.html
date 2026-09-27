@@ -6889,6 +6889,7 @@ const Data={
  async rankings(d,s){const x=session();return req(`/rest/v1/weekly_rankings?select=*,team:teams(id,name,abbreviation,logo_url,conference)&dynasty_id=eq.${d}&season_id=eq.${s}&poll_type=eq.top25&order=week_number.asc,rank.asc`,{token:x.access_token})||[]},
  async saveRankings(d,s,w,rows){const x=session();return req('/rest/v1/rpc/save_weekly_top25',{method:"POST",token:x.access_token,body:{p_dynasty_id:d,p_season_id:s,p_week_number:Number(w),p_rows:rows.map(r=>({rank:r.rank,team_id:r.team_id,wins:r.wins,losses:r.losses}))}})},
  async vegas(d,s){const x=session();return req("/rest/v1/rpc/get_dynasty_vegas",{method:"POST",token:x.access_token,body:{p_dynasty_id:d,p_season_id:s}})},
+ async vegasLinesForGames(gameIds){const ids=[...new Set((gameIds||[]).filter(Boolean).map(String))];if(!ids.length)return[];const x=session();return req(`/rest/v1/game_vegas_lines?select=*&game_id=in.(${ids.join(",")})`,{token:x.access_token})||[]},
  async generateVegas(gameId){const x=session();return req("/rest/v1/rpc/generate_dynasty_vegas_line",{method:"POST",token:x.access_token,body:{p_game_id:gameId}})},
  async generateVegasWeek(dynastyId,seasonId,week){const x=session();return req("/rest/v1/rpc/generate_dynasty_vegas_week",{method:"POST",token:x.access_token,body:{p_dynasty_id:dynastyId,p_season_id:seasonId,p_week_number:Number(week)}})},
  async updateVegasLine(gameId,patch){const x=session();return req(`/rest/v1/game_vegas_lines?game_id=eq.${encodeURIComponent(gameId)}`,{method:"PATCH",token:x.access_token,body:patch})},
@@ -7167,14 +7168,39 @@ function refreshVegasSurfaces(rows){
  renderAdminVegas();
  try{renderSchedule()}catch(error){console.warn('Schedule Vegas refresh failed',error)}
 }
+async function hydrateMissingCurrentWeekVegas(rows,scheduleRows=null,gameRows=null){
+ const clean=Array.isArray(rows)?rows:[];
+ const week=Number(currentWeek());
+ const hasCurrent=clean.some(r=>Number(r.week_number)===week&&r.spread_home!=null);
+ if(hasCurrent)return clean;
+ const source=(Array.isArray(scheduleRows)&&scheduleRows.length)?scheduleRows:((Array.isArray(gameRows)&&gameRows.length)?gameRows:((state.scheduleGames?.length?state.scheduleGames:state.games)||[]));
+ const currentGames=source.filter(g=>Number(g.week_number)===week&&g.status==="scheduled"&&!g.is_bye);
+ if(!currentGames.length)return clean;
+ try{
+   const direct=await Data.vegasLinesForGames(currentGames.map(g=>g.id));
+   if(!Array.isArray(direct)||!direct.length)return clean;
+   const merged=[...clean],seen=new Set(clean.map(r=>String(r.id||r.game_id||"")));
+   for(const line of direct){
+     const g=currentGames.find(x=>String(x.id)===String(line.game_id));
+     if(!g||seen.has(String(line.game_id)))continue;
+     merged.push({...g,...line,id:g.id,game_id:g.id});
+     seen.add(String(line.game_id));
+   }
+   return merged;
+ }catch(error){
+   console.warn("Direct Vegas fallback unavailable",error);
+   return clean;
+ }
+}
 async function loadVegasInBackground(dynastyId,seasonId){
  const token=++vegasRequestToken,key=vegasKey(dynastyId,seasonId),cached=vegasCache.get(key);
- if(cached){refreshVegasSurfaces(cached);return}
+ if(cached){const hydrated=await hydrateMissingCurrentWeekVegas(cached);if(token!==vegasRequestToken)return;vegasCache.set(key,hydrated);refreshVegasSurfaces(hydrated);return}
  const st=$("vegasStatus");if(st){st.textContent='● LOADING MARKET';st.className='vegas-status loading'}
  try{
    const rows=await Data.vegas(dynastyId,seasonId);
    if(token!==vegasRequestToken)return;
-   const clean=Array.isArray(rows)?rows:[];
+   const clean=await hydrateMissingCurrentWeekVegas(Array.isArray(rows)?rows:[]);
+   if(token!==vegasRequestToken)return;
    vegasCache.set(key,clean);
    refreshVegasSurfaces(clean);
    ensureVegasLegacy();
@@ -9353,7 +9379,7 @@ async function loadSeason(id){
     activeSeason?Data.activeWeek(D.dynasty_id):Promise.resolve(state.activeWeek)
   ]);
   const normalizedWeek=(activeWeek==null||activeWeek==='')?null:Number(activeWeek);
-  const cleanVegas=Array.isArray(vegas)?vegas:[];
+  const cleanVegas=await hydrateMissingCurrentWeekVegas(Array.isArray(vegas)?vegas:[],scheduleGames,games);
   const rankingRows=Array.isArray(rankings)?rankings:[];
   const currentRankFor=(teamId,teamName,week)=>{
     const key=String(teamName||"").trim().toLowerCase(),w=Number(week||0);
@@ -13230,8 +13256,7 @@ window.gameDayCard=function(g,logoFn){
   var hasScore=done&&Number.isFinite(pf)&&Number.isFinite(pa);
   /* Final reads away–home to match the sides, not the raw row perspective. */
   var awayScore=isAwayEntry?pf:pa, homeScore=isAwayEntry?pa:pf;
-  var vr=(typeof vegasForGame==="function"?vegasForGame(g.id):null);
-  if(!vr&&g.vegas_line)vr=g.vegas_line;
+  var vr=g&&g.vegas_line?g.vegas_line:(typeof vegasForGame==="function"?vegasForGame(g.id):null);
   if(!vr&&(g.spread_home!=null||g.total_line!=null))vr=g;
   var spreadHome=vr?Number(vr.spread_home):NaN, total=vr?(vr.total_line!=null?vr.total_line:null):null;
   var hasSpread=Number.isFinite(spreadHome);
