@@ -7260,7 +7260,7 @@ function renderVegasAccolades(rows=vegasRowsAll()){
  el.innerHTML=cards.map(([l,v,s,e])=>`<article class="vegas-accolade"><span>${l}</span><b>${esc(v)}</b><small>${esc(s)}</small><em>${esc(e)}</em></article>`).join('')
 }
 function renderVegasRecordGrid(rows=vegasRowsAll()){
- const el=$('vegasRecordGrid');if(!el)return;const a=vegasMarketAchievements(rows),make=(label,x,metric)=>x?`<article class="vegas-record-card"><span>${label}</span><b>${esc(x.r?.coach_name||x.coach_name||x.coach||'—')}</b><strong>${esc(metric(x))}</strong><small>${x.r?`${esc(x.r.team_name||'')} · S${esc(x.r.season_number||'?')} W${esc(x.r.week_number||'?')}`:'Dynasty career'}</small></article>`:`<article class="vegas-record-card"><span>${label}</span><b>Not Yet Set</b><small>More graded games needed</small></article>`;
+ const el=$('vegasRecordGrid');if(!el)return;const a=vegasMarketAchievements(rows),make=(label,x,metric)=>x?`<article class="vegas-record-card"><span>${label}</span><b>${esc(x.r?.coach_name||x.coach_name||x.coach||'—')}</b><strong>${esc(metric(x))}</strong><small>${x.r?`${esc(x.r.team_name||'')} · S${esc(x.r.season_number||'?')} W${esc(x.r.week_number??'?')}`:'Dynasty career'}</small></article>`:`<article class="vegas-record-card"><span>${label}</span><b>Not Yet Set</b><small>More graded games needed</small></article>`;
  el.innerHTML=[make('Largest Cover',a.biggestCover,x=>signed(x.d.toFixed(1))),make('Worst Bad Beat',a.worstBeat,x=>signed(x.d.toFixed(1))),make('Biggest Upset',a.biggestUpset?{r:a.biggestUpset}:null,x=>fmtSpread(vegasPerspective(x.r).teamSpread)),make('Best ATS Coach',a.bestAts,x=>(x.coverPct*100).toFixed(1)+'%'),make('Best Favorite',a.bestFavorite,x=>`${x.w}-${x.l} ATS`),make('Best Underdog',a.bestUnderdog,x=>`${x.w}-${x.l} ATS`)].join('')
 }
 function renderMarketIq(){
@@ -7669,7 +7669,7 @@ function renderGotw(){
  const week=currentWeek(),picks=selectGotwCarousel(week);
  $("heroSeason").textContent=`Season ${S.season_number}`;$("heroWeek").textContent=`Week ${week}`;
  const shell=$("gotw");
- if(!picks.length){shell.classList.remove("gotw-carousel-shell");shell.innerHTML=`<div class="gotw-head"><span>Games of the Week</span><span>${esc(D?.short_name||D?.name||"Dynasty")} Network</span></div><div class="gotw-body empty">No game on this slate.</div>`;return}
+ if(!picks.length){shell.classList.remove("gotw-carousel-shell");const emptyCopy=week===0?"Preseason setup · Week 0 — no games on this slate yet.":"No game on this slate.";shell.innerHTML=`<div class="gotw-head"><span>Games of the Week</span><span>${esc(D?.short_name||D?.name||"Dynasty")} Network</span></div><div class="gotw-body empty">${emptyCopy}</div>`;return}
  if(activeGotwSlide>=picks.length)activeGotwSlide=0;
  shell.classList.add("gotw-carousel-shell");
  shell.innerHTML=`<button type="button" class="gotw-mobile-accordion" aria-expanded="true"><span><small>GAME OF THE WEEK</small><b>WEEK ${week}</b></span><i>⌃</i></button><div class="gotw-collapsible"><div class="gotw-carousel-top"><div class="gotw-broadcast-brand"><span class="gotw-network-label">SATURDAY FOUNDRY NETWORK</span><strong>GAMES OF THE WEEK</strong></div><div class="gotw-week-badge">WEEK ${week}</div></div><div class="gotw-carousel-stage">${picks.map((p,i)=>gotwSlideMarkup(p,i,picks.length)).join("")}</div><div class="gotw-carousel-position"><b class="gotw-carousel-count">${activeGotwSlide+1} OF ${picks.length}</b><span class="gotw-swipe-hint">SWIPE FOR MORE</span></div><div class="gotw-carousel-controls"><div class="gotw-micro-rail" aria-label="Featured games">${picks.map((_,i)=>`<button type="button" class="gotw-micro-step ${i===activeGotwSlide?"active":""}" data-gotw-dot="${i}" aria-label="Show featured game ${i+1}"><span>${String(i+1).padStart(2,"0")}</span></button>`).join("")}</div></div></div>`;
@@ -7702,7 +7702,7 @@ function retiredLegacyProfile(p){
 function currentProgramRank(program){
   if(!program)return null;
   const seasonNo=Number(S?.season_number||program.season_number||0);
-  const nowWeek=Number(currentWeek?.()||20);
+  const nowWeek=Number(currentWeek?.()??20);
   const norm=v=>String(v||"").trim().toLowerCase();
 
   // The official weekly poll is authoritative for current-rank presentation.
@@ -8059,7 +8059,7 @@ async function openMatchupEditor(gameId){
  if(g.status==="completed"&&!isCommissioner()){alert("Only a commissioner can edit a completed matchup.");return}
  editingMatchupId=g.id;
  await openMyScheduleBuilder();
- $("myScheduleWeek").value=g.week_number||1;
+ $("myScheduleWeek").value=g.week_number??0;
  $("myScheduleOpponent").value=g.opponent_team_id||"";
  $("myScheduleSide").value=g.home_away==="away"?"away":"home";
  $("myScheduleType").value=g.game_type||"regular_season";
@@ -8071,16 +8071,16 @@ async function openMatchupEditor(gameId){
  msg($("myScheduleMessage"),g.status==="completed"?"Commissioner correction mode. This updates the existing historical game.":"Editing existing matchup.","success");
 }
 
-function nextOpenScheduleWeek(mine,startWeek=1){
- const start=Math.max(1,Number(startWeek)||1);
+function nextOpenScheduleWeek(mine,startWeek=0){
+ const start=Math.max(0,Number(startWeek)||0);
  const occupied=new Set(
    (state.games||[])
      .filter(g=>g.status!=="cancelled"&&(
        (mine?.team_id&&String(g.team_id)===String(mine.team_id)) ||
        (mine?.team_name&&String(g.team_name||"").toLowerCase()===String(mine.team_name).toLowerCase())
      ))
-     .map(g=>Number(g.week_number||0))
-     .filter(Boolean)
+     .map(g=>Number(g.week_number??0))
+     .filter(Number.isFinite)
  );
  for(let w=start;w<=20;w++) if(!occupied.has(w)) return w;
  return Math.min(20,start);
@@ -8095,7 +8095,7 @@ async function openMyScheduleBuilder(){
  }
  const mine=(state.myPrograms||[]).find(p=>p.season_id===S.season_id);
  if(!mine){msg($("myScheduleMessage"),"You do not have a program assigned for this season.","error");return}
- const requestedWeek=Math.max(1,Number(selectedWeek||currentWeek()||1));
+ const requestedWeek=Math.max(0,Number(selectedWeek??currentWeek()??0));
  $("myScheduleWeek").value=nextOpenScheduleWeek(mine,requestedWeek);
  $("myScheduleTeam").innerHTML=`${mine.logo_url?`<img src="${esc(mine.logo_url)}" alt="">`:""}<div><b>${esc(mine.team_name)}</b><span>${esc(mine.conference||"")}</span></div>`;
  try{
@@ -8110,7 +8110,7 @@ async function saveMyScheduleGame(){
  const mine=(state.myPrograms||[]).find(p=>p.season_id===S.season_id),btn=$("saveMySchedule");
  if(!mine){msg($("myScheduleMessage"),"You do not have a program assigned for this season.","error");return}
  const week=Number($("myScheduleWeek").value),opp=$("myScheduleOpponent").value,isBye=opp==="__BYE__",rank=$("myScheduleOppRank").value?Number($("myScheduleOppRank").value):null,myRank=$("myScheduleMyRank")?.value?Number($("myScheduleMyRank").value):null;
- if(!Number.isInteger(week)||week<1||!opp){msg($("myScheduleMessage"),"Choose a valid week and opponent or Bye Week.","error");return}
+ if(!Number.isInteger(week)||week<0||!opp){msg($("myScheduleMessage"),"Choose a valid week and opponent or Bye Week.","error");return}
  if(!isBye&&(rank!==null&&(!Number.isInteger(rank)||rank<1||rank>25)||myRank!==null&&(!Number.isInteger(myRank)||myRank<1||myRank>25))){msg($("myScheduleMessage"),"Rankings must be whole numbers from 1–25.","error");return}
  if(editingMatchupId&&isBye){msg($("myScheduleMessage"),"To change an existing matchup into a bye, remove that matchup first and then add the bye.","error");return}
  try{
@@ -8611,7 +8611,7 @@ function recordBookGames(){
  const byKey=new Map();
  const quality=g=>{const m=String(g.result_method||g.source||'').toLowerCase();return /manual|hq|user|player/.test(m)?3:/sim|import|cpu/.test(m)?1:2};
  eligible.forEach(g=>{
-   const key=[g.person_id,g.season_id||g.season_number||'',g.week_number||'',String(g.team_name||'').toLowerCase(),String(g.opponent_team||'').toLowerCase()].join('|');
+   const key=[g.person_id,g.season_id||g.season_number||'',g.week_number??'',String(g.team_name||'').toLowerCase(),String(g.opponent_team||'').toLowerCase()].join('|');
    const prev=byKey.get(key);if(!prev||quality(g)>quality(prev))byKey.set(key,g);
  });
  return [...byKey.values()];
@@ -9273,10 +9273,10 @@ function renderSeasonRecap(){
  $('recapHonors').innerHTML=honors.map(t=>{const type=String(t.type||t.name||'Honor').replaceAll('_',' ');const who=t.recipient_name||t.coach_name||'';return `<article class="recap-honor"><span>🏆</span><div><small>${esc(type.toUpperCase())}</small><b>${esc(t.name||type)}</b><p>${esc(who)}${t.team_name?` · ${esc(t.team_name)}`:''}</p></div></article>`}).join('')||'<div class="empty">No season-specific awards have been recorded yet.</div>';
  $('recapPollMeta').textContent=finalWeek==null?'No stored poll':'Week '+finalWeek+' · latest stored poll';$('recapPoll').innerHTML=finalPoll.map(r=>`<div class="recap-poll-row"><b>${r.rank}</b>${r.team?.logo_url?`<img src="${esc(r.team.logo_url)}" alt="">`:''}<strong>${esc(r.team?.name||'Team')}</strong><span>${r.wins!=null?`${r.wins}-${r.losses}`:''}</span></div>`).join('')||'<div class="empty">No Top 25 poll is stored for this season.</div>';
  const scoreGame=g=>{let n=0;if(g.game_type==='national_championship')n+=1000;else if(g.game_type==='playoff')n+=700;else if(g.game_type==='conference_championship')n+=500;else if(g.game_type==='bowl')n+=300;if(g.opponent_rank)n+=160+(26-Number(g.opponent_rank))*5;if(g.person_id&&g.opponent_person_id)n+=180;const m=Math.abs(Number(g.points_for||0)-Number(g.points_against||0));n+=Math.max(0,80-m*8);return n};const sig=[...coachRows].sort((a,b)=>scoreGame(b)-scoreGame(a)).slice(0,6);
- $('recapGames').innerHTML=sig.map(g=>`<article class="recap-game"><div><small>WEEK ${esc(g.week_number||'—')} · ${esc(String(g.game_type||'regular season').replaceAll('_',' ').toUpperCase())}</small><b>${g.team_rank?`#${g.team_rank} `:''}${esc(g.team_name)} <em>${g.points_for??'—'}</em></b><b>${g.opponent_rank?`#${g.opponent_rank} `:''}${esc(g.opponent_team)} <em>${g.points_against??'—'}</em></b></div><span class="${g.result==='W'?'win':'loss'}">${esc(g.result||'FINAL')}</span></article>`).join('')||'<div class="empty">Signature games will appear as results are recorded.</div>';
+ $('recapGames').innerHTML=sig.map(g=>`<article class="recap-game"><div><small>WEEK ${esc(g.week_number??'—')} · ${esc(String(g.game_type||'regular season').replaceAll('_',' ').toUpperCase())}</small><b>${g.team_rank?`#${g.team_rank} `:''}${esc(g.team_name)} <em>${g.points_for??'—'}</em></b><b>${g.opponent_rank?`#${g.opponent_rank} `:''}${esc(g.opponent_team)} <em>${g.points_against??'—'}</em></b></div><span class="${g.result==='W'?'win':'loss'}">${esc(g.result||'FINAL')}</span></article>`).join('')||'<div class="empty">Signature games will appear as results are recorded.</div>';
  const chronicleMoments=[];for(const c of storyCoachPool(Number(ss.season_number))){const gs=storyCompleted(c.person_id,Number(ss.season_number));gs.forEach((g,i)=>{const ch=storyChapter(c,g,i,gs);let weight=Number(g.week_number||0);if(g.opponent_rank)weight+=80+(26-Number(g.opponent_rank))*3;if(g.opponent_person_id)weight+=90;if(['conference_championship','playoff','national_championship','bowl'].includes(String(g.game_type)))weight+=150;if(Math.abs(Number(g.points_for||0)-Number(g.points_against||0))<=7)weight+=35;chronicleMoments.push({c,g,ch,weight,i,total:gs.length})})}
  const chosen=[];const addMoment=m=>{if(m&&!chosen.some(x=>String(x.g.id||x.g.game_id)===String(m.g.id||m.g.game_id)&&String(x.c.person_id)===String(m.c.person_id)))chosen.push(m)};addMoment([...chronicleMoments].sort((a,b)=>Number(a.g.week_number)-Number(b.g.week_number))[0]);[...chronicleMoments].sort((a,b)=>b.weight-a.weight).forEach(addMoment);addMoment([...chronicleMoments].sort((a,b)=>Number(b.g.week_number)-Number(a.g.week_number))[0]);const displayMoments=chosen.slice(0,4).sort((a,b)=>Number(a.g.week_number)-Number(b.g.week_number));
- const cr=$('recapChronicle');if(cr){const mobileStory=window.matchMedia?.('(max-width: 700px)')?.matches;cr.innerHTML=displayMoments.map(({c,g,ch},idx)=>{const opp=`${g.opponent_rank?`#${g.opponent_rank} `:''}${g.opponent_team||'Opponent'}`;const team=g.team_name||c.team_name||'Team';const score=`${g.points_for??'—'}–${g.points_against??'—'}`;const takeaway=String(ch.text||'').split(/(?<=[.!?])\s+/)[0]||'';return `<details class="recap-chronicle-card ${g.result==='W'?'win':'loss'}" ${mobileStory?'': 'open'}><summary class="recap-chronicle-summary"><span class="recap-chronicle-week">WEEK ${esc(g.week_number||'—')}</span><span class="recap-chronicle-glance"><b>${esc(c.coach_name)} · ${esc(team)}</b><small>vs ${esc(opp)}</small></span><span class="recap-chronicle-final"><strong>${esc(score)}</strong><span class="recap-result ${g.result==='W'?'win':'loss'}">${esc(g.result||'FINAL')}</span></span><span class="recap-chronicle-chevron" aria-hidden="true"></span></summary><div class="recap-chronicle-body"><h4>${esc(ch.headline)}</h4>${takeaway?`<p>${esc(takeaway)}</p>`:''}<div class="recap-chronicle-tags">${ch.tags.slice(0,2).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></details>`}).join('')||'<div class="empty">Defining moments will appear here as this season writes its story.</div>';cr.querySelectorAll('.recap-chronicle-card').forEach(card=>card.addEventListener('toggle',()=>{if(!card.open)return;cr.querySelectorAll('.recap-chronicle-card[open]').forEach(other=>{if(other!==card&&window.matchMedia?.('(max-width: 700px)')?.matches)other.open=false})}))}
+ const cr=$('recapChronicle');if(cr){const mobileStory=window.matchMedia?.('(max-width: 700px)')?.matches;cr.innerHTML=displayMoments.map(({c,g,ch},idx)=>{const opp=`${g.opponent_rank?`#${g.opponent_rank} `:''}${g.opponent_team||'Opponent'}`;const team=g.team_name||c.team_name||'Team';const score=`${g.points_for??'—'}–${g.points_against??'—'}`;const takeaway=String(ch.text||'').split(/(?<=[.!?])\s+/)[0]||'';return `<details class="recap-chronicle-card ${g.result==='W'?'win':'loss'}" ${mobileStory?'': 'open'}><summary class="recap-chronicle-summary"><span class="recap-chronicle-week">WEEK ${esc(g.week_number??'—')}</span><span class="recap-chronicle-glance"><b>${esc(c.coach_name)} · ${esc(team)}</b><small>vs ${esc(opp)}</small></span><span class="recap-chronicle-final"><strong>${esc(score)}</strong><span class="recap-result ${g.result==='W'?'win':'loss'}">${esc(g.result||'FINAL')}</span></span><span class="recap-chronicle-chevron" aria-hidden="true"></span></summary><div class="recap-chronicle-body"><h4>${esc(ch.headline)}</h4>${takeaway?`<p>${esc(takeaway)}</p>`:''}<div class="recap-chronicle-tags">${ch.tags.slice(0,2).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div></details>`}).join('')||'<div class="empty">Defining moments will appear here as this season writes its story.</div>';cr.querySelectorAll('.recap-chronicle-card').forEach(card=>card.addEventListener('toggle',()=>{if(!card.open)return;cr.querySelectorAll('.recap-chronicle-card[open]').forEach(other=>{if(other!==card&&window.matchMedia?.('(max-width: 700px)')?.matches)other.open=false})}))}
  setRecapSectionCount('coaches',people.length);setRecapSectionCount('honors',honors.length);setRecapSectionCount('poll',finalPoll.length);setRecapSectionCount('games',sig.length);setRecapSectionCount('story',displayMoments.length);setupRecapMobileFolds();
  /* Top 25 always reflects the SELECTED season's final poll — load it if not cached */
  if(!state.recapRankings?.[ss.season_id]&&D?.dynasty_id&&ss.season_id){
@@ -9631,7 +9631,7 @@ $("newSeasonBtn").onclick=async()=>{
  const btn=$("newSeasonBtn"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null;
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg($("seasonAdminMessage"),"Enter a valid four-digit season year.","error");return}
  if(!confirm(`Start Season ${Number(S.season_number||0)+1}? The current active season will be marked complete.`))return;
- try{btn.disabled=true;msg($("seasonAdminMessage"),"Creating next season…");await Data.nextSeason(D.dynasty_id,year,$("carryPrograms").checked);msg($("seasonAdminMessage"),"Next season created.","success");dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)))}catch(e){msg($("seasonAdminMessage"),e.message,"error")}finally{btn.disabled=false}
+ try{btn.disabled=true;msg($("seasonAdminMessage"),"Creating next season…");await Data.nextSeason(D.dynasty_id,year,$("carryPrograms").checked);await Data.setActiveWeek(D.dynasty_id,0);msg($("seasonAdminMessage"),"Next season created at Week 0.","success");dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)))}catch(e){msg($("seasonAdminMessage"),e.message,"error")}finally{btn.disabled=false}
 };
 $("setWeekBtn").onclick=async()=>{
  const btn=$("setWeekBtn"),w=Number($("activeWeekInput").value);if(!Number.isInteger(w)||w<0){msg($("weekAdminMessage"),"Enter a valid week.","error");return}
@@ -10018,7 +10018,7 @@ window.renderSchedule = window.renderSchedule || function(){
  openMatchupEditor=async function(gameId){
    const g=(state.games||[]).find(x=>x.id===gameId);if(!g)return;editingGameRecord=g;
    try{await fillTeamOptions(g)}catch(e){alert(e.message||String(e));return}
-   const o=orientedGame(g);$('geWeek').value=g.week_number||1;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geEvent').value=g.event_name||'';$('geNetwork').value='';$('geOT').checked=!!g.overtime;
+   const o=orientedGame(g);$('geWeek').value=g.week_number??0;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geEvent').value=g.event_name||'';$('geNetwork').value='';$('geOT').checked=!!g.overtime;
    $('geKickoff').value='';if(g.kickoff_time){const d=new Date(g.kickoff_time);if(!Number.isNaN(d.valueOf()))$('geKickoff').value=new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
    const ed=latestEdit(g.id);$('gameEditTitle').textContent=`Edit Week ${g.week_number} Game`;$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Any dynasty member can correct this record.`;$('gameEditAudit').textContent=ed?`Previously edited by ${ed.edited_by_name||'a dynasty member'} on ${fmtEditTime(ed.edited_at)}. Your save will create a new audit entry.`:'No prior edits logged. Your save will record your identity, timestamp, and before/after values.';$('gameEditMessage').textContent='';$('gameEditMessage').className='game-edit-message';$('gameEditModal').classList.remove('hidden');
  };
@@ -10067,14 +10067,14 @@ window.renderSchedule = window.renderSchedule || function(){
  async function openSimpleGame(gameId=null){
    simpleGameId=gameId||null;const g=gameId?(state.games||[]).find(x=>x.id===gameId):null;
    try{await simpleTeams(g)}catch(e){alert(e.message||String(e));return}
-   if(g){const o=simpleOriented(g);$('gameEditTitle').textContent='Edit Game';$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Change only what needs correcting.`;$('geWeek').value=g.week_number||1;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geOT').checked=!!g.overtime;$('geResultMethod').value=g.result_method||'played';$('gameEditSave').textContent='Save Game'}
-   else{$('gameEditTitle').textContent='Add Game';$('gameEditSubtitle').textContent='Record the matchup exactly as it appears in CFB 27. For a bye, choose your team as HOME and select BYE WEEK as the away team.';$('geWeek').value=selectedWeek||currentWeek()||1;$('geType').value='regular_season';$('geHomeScore').value='';$('geAwayScore').value='';$('geHomeRank').value='';$('geAwayRank').value='';$('geHomeTeam').value='';$('geAwayTeam').value='';$('geOT').checked=false;$('geResultMethod').value='played';$('gameEditSave').textContent='Save Game'}
+   if(g){const o=simpleOriented(g);$('gameEditTitle').textContent='Edit Game';$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Change only what needs correcting.`;$('geWeek').value=g.week_number??0;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geOT').checked=!!g.overtime;$('geResultMethod').value=g.result_method||'played';$('gameEditSave').textContent='Save Game'}
+   else{$('gameEditTitle').textContent='Add Game';$('gameEditSubtitle').textContent='Record the matchup exactly as it appears in CFB 27. For a bye, choose your team as HOME and select BYE WEEK as the away team.';$('geWeek').value=selectedWeek??currentWeek()??0;$('geType').value='regular_season';$('geHomeScore').value='';$('geAwayScore').value='';$('geHomeRank').value='';$('geAwayRank').value='';$('geHomeTeam').value='';$('geAwayTeam').value='';$('geOT').checked=false;$('geResultMethod').value='played';$('gameEditSave').textContent='Save Game'}
    setSimpleMessage('');$('gameEditAudit').insertAdjacentHTML('afterend','');$('gameEditModal').classList.remove('hidden');
  }
  window.openMatchupEditor=openSimpleGame;
  async function simpleSave(){
    const week=Number($('geWeek').value),homeTeam=$('geHomeTeam').value,awayTeam=$('geAwayTeam').value;
-   if(!Number.isInteger(week)||week<1){setSimpleMessage('Enter a valid week.','error');return}
+   if(!Number.isInteger(week)||week<0){setSimpleMessage('Enter a valid week.','error');return}
    const isBye=awayTeam==='__BYE__';if(!homeTeam||(!isBye&&(!awayTeam||homeTeam===awayTeam))){setSimpleMessage('Choose two different teams, or select BYE WEEK.','error');return}
    const hs=$('geHomeScore').value,as=$('geAwayScore').value,bothBlank=hs===''&&as==='';
    if((hs==='')!==(as==='')){setSimpleMessage('Enter both scores or leave both blank for an upcoming game.','error');return}
@@ -10144,7 +10144,7 @@ window.renderSchedule = window.renderSchedule || function(){
  function previewGame(id){
    const g=[...(state.games||[]),...(state.allGames||[])].find(x=>String(x.id)===String(id));
    if(!g)return;
-   selectedWeek=Number(g.week_number||currentWeek());
+   selectedWeek=Number(g.week_number??currentWeek());
    switchView('schedule');
    renderSchedule();
    requestAnimationFrame(()=>{
@@ -10208,14 +10208,14 @@ window.renderSchedule = window.renderSchedule || function(){
     if(id&&!g){alert('Game not found. Refresh and try again.');return}
     simpleGameId=id||null;
     try{await fillTeams(g)}catch(e){alert(e.message||String(e));return}
-    if(g){const o=orient(g);$('gameEditTitle').textContent='Edit Game';$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Change only what needs correcting.`;$('geWeek').value=g.week_number||1;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geOT').checked=!!g.overtime;$('geResultMethod').value=g.result_method||'played';$('gameEditSave').textContent='Save Game'}
-    else{$('gameEditTitle').textContent='Add Game';$('gameEditSubtitle').textContent='Record the matchup exactly as it appears in CFB 27. For a bye, choose your team as HOME and select BYE WEEK as the away team.';$('geWeek').value=rt.getSelectedWeek()||rt.currentWeek()||1;$('geType').value='regular_season';$('geHomeScore').value='';$('geAwayScore').value='';$('geHomeRank').value='';$('geAwayRank').value='';$('geHomeTeam').value='';$('geAwayTeam').value='';$('geOT').checked=false;$('geResultMethod').value='played';$('gameEditSave').textContent='Save Game'}
+    if(g){const o=orient(g);$('gameEditTitle').textContent='Edit Game';$('gameEditSubtitle').textContent=`${o.away.name||'Away'} at ${o.home.name||'Home'} · Change only what needs correcting.`;$('geWeek').value=g.week_number??0;$('geType').value=g.game_type||'regular_season';$('geHomeScore').value=o.home.score??'';$('geAwayScore').value=o.away.score??'';$('geHomeRank').value=o.home.rank??'';$('geAwayRank').value=o.away.rank??'';$('geOT').checked=!!g.overtime;$('geResultMethod').value=g.result_method||'played';$('gameEditSave').textContent='Save Game'}
+    else{$('gameEditTitle').textContent='Add Game';$('gameEditSubtitle').textContent='Record the matchup exactly as it appears in CFB 27. For a bye, choose your team as HOME and select BYE WEEK as the away team.';$('geWeek').value=rt.getSelectedWeek()??rt.currentWeek()??0;$('geType').value='regular_season';$('geHomeScore').value='';$('geAwayScore').value='';$('geHomeRank').value='';$('geAwayRank').value='';$('geHomeTeam').value='';$('geAwayTeam').value='';$('geOT').checked=false;$('geResultMethod').value='played';$('gameEditSave').textContent='Save Game'}
     message('');$('gameEditModal')?.classList.remove('hidden');
   }
   async function saveGame(){
     const S=rt.getSeason();if(!S?.season_id)return;
     const week=Number($('geWeek').value),homeTeam=$('geHomeTeam').value,awayTeam=$('geAwayTeam').value;
-    if(!Number.isInteger(week)||week<1)return message('Enter a valid week.','error');
+    if(!Number.isInteger(week)||week<0)return message('Enter a valid week.','error');
     const isBye=awayTeam==='__BYE__'; if(!homeTeam||(!isBye&&(!awayTeam||homeTeam===awayTeam)))return message('Choose two different teams, or select BYE WEEK.','error');
     const hs=$('geHomeScore').value,as=$('geAwayScore').value,bothBlank=hs===''&&as==='';
     if((hs==='')!==(as===''))return message('Enter both scores or leave both blank for an upcoming game.','error');
@@ -11475,7 +11475,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
  function openGotwInSchedule(gameId){
    const g=findGame(gameId);
    if(!g)return false;
-   window.selectedWeek=Number(g.week_number||((typeof window.currentWeek==='function'&&window.currentWeek())||0));
+   window.selectedWeek=Number(g.week_number??((typeof window.currentWeek==='function'&&window.currentWeek())??0));
    try{ selectedWeek=window.selectedWeek; }catch(_e){}
    window.scheduleConference='__all__';
    try{ scheduleConference='__all__'; }catch(_e){}
@@ -14845,7 +14845,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     return src?`<img class="sf-match-logo${userCls}" src="${escV3(src)}" alt="${escV3(side.name)} logo">`:`<div class="sf-match-logo-fallback${userCls}">${escV3((side.name||'?').slice(0,2).toUpperCase())}</div>`;
   }
   function ownedV3(g){try{return typeof ownsGame==='function'&&ownsGame(g)}catch(_e){return false}}
-  function weekLabelV3(g){return String(g.week_label||`Week ${g.week_number||''}`).replace(/^Week\s+/i,'W')}
+  function weekLabelV3(g){return String(g.week_label||`Week ${g.week_number??''}`).replace(/^Week\s+/i,'W')}
   function perspectiveV3(g,p){
     if(!g||g.status!=='completed'||g.points_for==null||g.points_against==null)return null;
     const tid=String(p?.team_id||''),onTeam=String(g.team_id||'')===tid,onOpp=String(g.opponent_team_id||'')===tid;if(!onTeam&&!onOpp)return null;
