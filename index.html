@@ -8783,7 +8783,7 @@ function renderCareer(){
 }
 function renderTrophies(){
  const trophies=[...(state.trophies||[])];
- const allGames=[...(state.allGames||[])];
+ const allGames=[...((Array.isArray(state.allGames)&&state.allGames.length)?state.allGames:(state.games||[]))];
  const norm=v=>String(v||"").trim().toLowerCase();
  const typeOf=t=>norm(t?.type||t?.name);
  const isNat=t=>/national/.test(typeOf(t));
@@ -9442,7 +9442,7 @@ async function loadDynasty(i=0){
  window.CDHQLoader?.hide();
  Promise.allSettled(seasons.map(s=>Data.games(D.dynasty_id,s.season_id))).then(results=>{
    const sets=results.filter(r=>r.status==='fulfilled').map(r=>Array.isArray(r.value)?r.value:[]);
-   if(sets.length){state.allGames=sets.flat();renderCoaches();renderStorylines();renderRivalries();renderHQCommand();renderSeasonRecap();renderRecordBook();renderCareer();updateOverviewDataVisibility();}
+   if(sets.length){state.allGames=sets.flat();renderTrophies();renderCoaches();renderStorylines();renderRivalries();renderHQCommand();renderSeasonRecap();renderRecordBook();renderCareer();updateOverviewDataVisibility();}
  }).catch(err=>console.warn('Historical dynasty enrichment skipped:',err));
 }
 function hideDynastyChooser(){
