@@ -8792,7 +8792,7 @@ function renderTrophies(){
  const isNationalAward=t=>/heisman|player_award/.test(typeOf(t));
  const isBowl=t=>/bowl/.test(typeOf(t));
  const isPlayoffGame=g=>["playoff","national_championship"].includes(norm(g?.game_type));
- const isBowlGame=g=>{const type=norm(g?.game_type).replace(/[\\s-]+/g,"_");return type==="bowl"||type==="bowl_game";};
+ const isBowlGame=g=>{const type=norm(g?.game_type).replace(/[\\s-]+/g,"_"),event=norm(g?.event_name);return type==="bowl"||type==="bowl_game"||/\bbowl\b/.test(event);};
  const byPerson=(t,p)=>t?.person_id&&p?.person_id?String(t.person_id)===String(p.person_id):norm(t?.coach_name||t?.recipient_name)===norm(p?.coach_name);
  const gamesFor=p=>allGames.filter(g=>g?.person_id&&p?.person_id?String(g.person_id)===String(p.person_id):norm(g?.coach_name)===norm(p?.coach_name));
  const programFor=p=>{
