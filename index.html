@@ -7168,9 +7168,10 @@ function refreshVegasSurfaces(rows){
  renderAdminVegas();
  try{renderSchedule()}catch(error){console.warn('Schedule Vegas refresh failed',error)}
 }
-async function hydrateMissingCurrentWeekVegas(rows,scheduleRows=null,gameRows=null){
+async function hydrateMissingCurrentWeekVegas(rows,scheduleRows=null,gameRows=null,weekOverride=null){
  const clean=Array.isArray(rows)?rows:[];
- const week=Number(currentWeek());
+ const explicitWeek=Number(weekOverride);
+ const week=Number(Number.isInteger(explicitWeek)?explicitWeek:currentWeek());
  const hasCurrent=clean.some(r=>Number(r.week_number)===week&&r.spread_home!=null);
  if(hasCurrent)return clean;
  const source=(Array.isArray(scheduleRows)&&scheduleRows.length)?scheduleRows:((Array.isArray(gameRows)&&gameRows.length)?gameRows:((state.scheduleGames?.length?state.scheduleGames:state.games)||[]));
@@ -14741,11 +14742,19 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
       seasons=Array.isArray(ss)?ss:[];S=seasons.find(se=>String(se.season_id)===String(requestedSeasonId))||seasons.find(se=>se.is_active||String(se.status||'').toLowerCase()==='active')||seasons[0];if(!S)throw Error('This dynasty does not have a season to refresh.');const activeSeason=!!(S.is_active||String(S.status||'').toLowerCase()==='active');
       const [programs,standings,games,scheduleGames,rankings,vegas,nationalFinalizedWeek]=await Promise.all([Data.programs(dynastyId,S.season_id),Data.standings(dynastyId,S.season_id),Data.games(dynastyId,S.season_id),Data.scheduleGames(dynastyId,S.season_id),Data.rankings(dynastyId,S.season_id),Data.vegas(dynastyId,S.season_id),activeSeason&&typeof Data.nationalFinalizedWeek==='function'?Data.nationalFinalizedWeek(dynastyId,S.season_id):Promise.resolve(null)]);
       const historyResults=await Promise.allSettled((seasons||[]).map(se=>String(se.season_id)===String(S.season_id)?Promise.resolve(games):Data.games(dynastyId,se.season_id)));const allGames=historyResults.filter(r=>r.status==='fulfilled').flatMap(r=>Array.isArray(r.value)?r.value:[]);const cleanVegas=Array.isArray(vegas)?vegas:[],aw=(activeWeek==null||activeWeek==='')?null:Number(activeWeek),nf=Number(nationalFinalizedWeek);
-      state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,vegasAll:[],gotwGames:[],allGames,recapRankings:{},activeWeek:Number.isInteger(aw)?aw:null,nationalFinalizedWeek:activeSeason&&Number.isInteger(nf)?nf:null};selectedWeek=keepWeek;
-      if(typeof vegasLegacyLoadedFor!=='undefined')vegasLegacyLoadedFor=null;if(typeof vegasCache!=='undefined'&&vegasCache?.clear){vegasCache.clear();vegasCache.set(vegasKey(dynastyId,S.season_id),cleanVegas);}
+      // Refresh must preserve the same Vegas hydration path used by normal load/generation.
+      // Otherwise a full data refresh can replace hydrated Week 18 game rows with raw rows
+      // and make valid stored lines disappear from Schedule/GOTW until another reload.
+      const hydratedVegas=typeof hydrateMissingCurrentWeekVegas==='function'
+        ?await hydrateMissingCurrentWeekVegas(cleanVegas,scheduleGames,games,Number.isInteger(aw)?aw:null)
+        :cleanVegas;
+      const hydratedGames=typeof applyVegasToGameRows==='function'?applyVegasToGameRows(games,hydratedVegas):games;
+      const hydratedScheduleGames=typeof applyVegasToGameRows==='function'?applyVegasToGameRows(scheduleGames,hydratedVegas):scheduleGames;
+      state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,programs,standings,games:hydratedGames,scheduleGames:hydratedScheduleGames,rankings,vegas:hydratedVegas,vegasAll:[],gotwGames:[],allGames,recapRankings:{},activeWeek:Number.isInteger(aw)?aw:null,nationalFinalizedWeek:activeSeason&&Number.isInteger(nf)?nf:null};selectedWeek=keepWeek;
+      if(typeof vegasLegacyLoadedFor!=='undefined')vegasLegacyLoadedFor=null;if(typeof vegasCache!=='undefined'&&vegasCache?.clear){vegasCache.clear();vegasCache.set(vegasKey(dynastyId,S.season_id),hydratedVegas);}
       if(typeof refreshEditLog==='function'){try{await refreshEditLog()}catch(err){console.warn('Edit history refresh skipped:',err)}}
       updateShellForDynasty();updateSeasonSelector();if(typeof hideDynastyChooser==='function')hideDynastyChooser();byId('authScreen')?.classList.add('hidden');byId('teamScreen')?.classList.add('hidden');byId('claimScreen')?.classList.add('hidden');byId('app')?.classList.remove('hidden');byId('navWrap')?.classList.remove('hidden');
-      renderAll();if(typeof renderRecordBook==='function')renderRecordBook();if(typeof decorateGameCardsWithVegas==='function')decorateGameCardsWithVegas(cleanVegas);
+      renderAll();if(typeof renderRecordBook==='function')renderRecordBook();if(typeof decorateGameCardsWithVegas==='function')decorateGameCardsWithVegas(hydratedVegas);
       const recap=byId('recapSeasonSelect');if(recapSeason&&recap&&[...recap.options].some(o=>o.value===recapSeason)){recap.value=recapSeason;if(view==='recap'&&typeof renderSeasonRecap==='function')renderSeasonRecap();}const story=byId('storySeasonSelect');if(storySeason&&story&&[...story.options].some(o=>o.value===storySeason)){story.value=storySeason;if(view==='storylines'&&typeof renderStorylines==='function')renderStorylines();}
       if(view==='vegas'&&typeof renderVegas==='function')renderVegas();if(view==='analytics'&&typeof renderAnalyticsSuite==='function')renderAnalyticsSuite();if(view==='rivalries'&&typeof renderRivalries==='function')renderRivalries();if(view==='schedule'&&typeof renderSchedule==='function')renderSchedule();if(view==='overview'&&typeof renderHQCommand==='function')renderHQCommand();if(typeof ensureVegasLegacy==='function')Promise.resolve(ensureVegasLegacy()).catch(err=>console.warn('Vegas background refresh skipped:',err));
       restoreView(view,scrollX,scrollY);setSyncStatus('● FIELD SYNCED','success');window.CDHQToast?.(`Refreshed ${D?.short_name||D?.name||'dynasty'} · stayed on ${view==='overview'?'Overview':view}.`,'success');
