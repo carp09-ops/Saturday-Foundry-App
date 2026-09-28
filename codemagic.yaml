@@ -29,7 +29,10 @@ workflows:
           pod install
       - name: Fetch signing files
         script: |
-          xcode-project use-profiles --workspace "$XCODE_WORKSPACE"
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          keychain add-certificates
+          xcode-project use-profiles --project ios/App/App.xcodeproj
       - name: Build IPA
         script: |
           xcode-project build-ipa \
