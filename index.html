@@ -6893,7 +6893,15 @@ const Data={
  async scheduleGames(d,s){return this.view("v_schedule_entries",`dynasty_id=eq.${d}&season_id=eq.${s}&order=week_number.asc,team_name.asc`)},
  async rankings(d,s){const x=session();return req(`/rest/v1/weekly_rankings?select=*,team:teams(id,name,abbreviation,logo_url,conference)&dynasty_id=eq.${d}&season_id=eq.${s}&poll_type=eq.top25&order=week_number.asc,rank.asc`,{token:x.access_token})||[]},
  async saveRankings(d,s,w,rows){const x=session();return req('/rest/v1/rpc/save_weekly_top25',{method:"POST",token:x.access_token,body:{p_dynasty_id:d,p_season_id:s,p_week_number:Number(w),p_rows:rows.map(r=>({rank:r.rank,team_id:r.team_id,wins:r.wins,losses:r.losses}))}})},
- async vegas(d,s){const x=session();return req("/rest/v1/rpc/get_dynasty_vegas",{method:"POST",token:x.access_token,body:{p_dynasty_id:d,p_season_id:s}})},
+ async vegas(d,s){
+   const x=session(),rows=[],pageSize=1000;
+   for(let offset=0;;offset+=pageSize){
+     const page=await req(`/rest/v1/rpc/get_dynasty_vegas?limit=${pageSize}&offset=${offset}`,{method:"POST",token:x.access_token,body:{p_dynasty_id:d,p_season_id:s}});
+     if(!Array.isArray(page))throw Error('Vegas market returned an invalid page.');
+     rows.push(...page);
+     if(page.length<pageSize)return rows;
+   }
+ },
  async vegasLinesForGames(gameIds){const ids=[...new Set((gameIds||[]).filter(Boolean).map(String))];if(!ids.length)return[];const x=session();return req(`/rest/v1/game_vegas_lines?select=*&game_id=in.(${ids.join(",")})`,{token:x.access_token})||[]},
  async generateVegas(gameId){const x=session();return req("/rest/v1/rpc/generate_dynasty_vegas_line",{method:"POST",token:x.access_token,body:{p_game_id:gameId}})},
  async generateVegasWeek(dynastyId,seasonId,week){const x=session();return req("/rest/v1/rpc/generate_dynasty_vegas_week",{method:"POST",token:x.access_token,body:{p_dynasty_id:dynastyId,p_season_id:seasonId,p_week_number:Number(week)}})},
@@ -9647,7 +9655,7 @@ $("newSeasonBtn").onclick=async()=>{
 };
 $("setWeekBtn").onclick=async()=>{
  const btn=$("setWeekBtn"),w=Number($("activeWeekInput").value);if(!Number.isInteger(w)||w<0){msg($("weekAdminMessage"),"Enter a valid week.","error");return}
- try{btn.disabled=true;const saved=await Data.setActiveWeek(D.dynasty_id,w);state.activeWeek=(saved==null||saved===''||!Number.isInteger(Number(saved)))?w:Number(saved);selectedWeek=state.activeWeek;msg($("weekAdminMessage"),`Active week set to ${state.activeWeek}.`,"success");renderAll()}catch(e){msg($("weekAdminMessage"),e.message,"error")}finally{btn.disabled=false}
+ try{btn.disabled=true;const saved=await Data.setActiveWeek(D.dynasty_id,w);state.activeWeek=(saved==null||saved===''||!Number.isInteger(Number(saved)))?w:Number(saved);selectedWeek=state.activeWeek;msg($("weekAdminMessage"),`Active week set to ${state.activeWeek}.`,"success");renderAll();await loadVegasInBackground(D.dynasty_id,S.season_id)}catch(e){msg($("weekAdminMessage"),e.message,"error")}finally{btn.disabled=false}
 };
 function rankingTeamLookup(name){const k=teamKey(name);return (teamChoices||[]).find(t=>teamKey(t.team_name)===k)||null}
 
