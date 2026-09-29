@@ -16826,4 +16826,4 @@ img.sf-logo-system-v2{
 </script>
 <link rel="stylesheet" href="assets/import-desk.css">
 <script src="assets/import-desk.js" defer></script>
-<script id="sf-qa-import-marker">(function(){function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.8.57'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-qa-import-marker">(function(){var LABEL='QA 9.8.57',busy=false;function mark(){var m=document.getElementById('sfBuildMarker');if(!m)return;if(m.textContent!==LABEL){busy=true;m.textContent=LABEL;busy=false}}function boot(){mark();var m=document.getElementById('sfBuildMarker');if(m)new MutationObserver(function(){if(!busy&&m.textContent!==LABEL)requestAnimationFrame(mark)}).observe(m,{childList:true,characterData:true,subtree:true})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('pageshow',mark)})();</script>
