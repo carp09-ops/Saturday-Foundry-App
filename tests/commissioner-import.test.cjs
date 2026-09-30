@@ -1,6 +1,6 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
 let source=fs.readFileSync(path.join(__dirname,'../assets/import-desk.js'),'utf8');
-source=source.slice(0,source.indexOf("  if(document.readyState==='loading')"))+`function render(){} window.test={kickoff,metadata,photoDate,photoTime,rowStatus,publish,setup:(draft)=>{rows=draft;context=current()}};})();`;
+source=source.slice(0,source.indexOf("  if(document.readyState==='loading')"))+`function render(){const seen=new Set();for(const r of rows)r.state=rowStatus(r,seen)[0]} window.test={kickoff,metadata,photoDate,photoTime,rowStatus,publish,approveAll,drafts:()=>rows,setup:(draft)=>{rows=draft;context=current()}};})();`;
 const calls=[];let existing=[];
 const window={CDHQ_RUNTIME:{esc:String,getDynasty:()=>({dynasty_id:'d',role:'commissioner'}),getSeason:()=>({season_id:'s',year:2027}),getState:()=>({games:existing}),session:()=>({access_token:'test'}),req:async(url,args)=>{calls.push({url,body:args.body});return 'new-game'},Data:{games:async()=>existing,scheduleGames:async()=>[],editGameV2:async body=>{calls.push({url:'editGameV2',body})}},loadSeason:async()=>{}}};
 vm.runInNewContext(source,{window,document:{getElementById:()=>null},Intl,Date});
@@ -17,8 +17,9 @@ assert.equal(t.metadata(r,g).p_home_rank,7);assert.equal(t.metadata(r,g).p_kicko
 (async()=>{
  t.setup([{...r,week:0,date:'2027-09-11',time:'12:00',hr:'5',ar:'22',state:'ready'}]);await t.publish();
  assert.equal(calls[0].url,'/rest/v1/rpc/create_schedule_game');assert.equal(calls[0].body.p_week_number,0);assert.equal(calls[0].body.p_home_rank,5);assert.equal(calls[0].body.p_kickoff_time,'2027-09-11T16:00:00.000Z');assert(!('p_home_score' in calls[0].body));
+ calls.length=0;const good={...r,week:3,reviewRequired:true,confirmed:false};const bad={...r,week:4,home:'',reviewRequired:true,confirmed:false};t.setup([good,bad]);t.approveAll();assert(t.drafts().every(r=>r.confirmed));assert.equal(good.state,'ready');assert.equal(bad.state,'problem');assert.equal(calls.length,0);await t.publish();assert.equal(calls.length,0);
  existing=[g];calls.length=0;t.setup([{...r,date:'2027-09-11',time:'15:30',state:'ready'}]);await t.publish();
  assert.equal(calls[0].url,'/rest/v1/rpc/update_schedule_game');assert.equal(calls[0].body.p_network,'ESPN');assert.equal(calls[0].body.p_event_name,'Opening Day');assert.equal(calls[0].body.p_home_rank,7);
  existing=[{...g,status:'completed'}];assert.equal(t.rowStatus({...r,date:'2027-09-11',time:'15:30'},new Set())[0],'skip');
- console.log('PASS: ET conversion, invalid dates, Week 0 schedule RPC, rank persistence, existing metadata preservation, completed-game protection.');
+ console.log('PASS: ET conversion, invalid dates, Week 0 schedule RPC, rank persistence, existing metadata preservation, completed-game protection, bulk approval without publishing or bypassing invalid fields.');
 })().catch(e=>{console.error(e);process.exitCode=1});
