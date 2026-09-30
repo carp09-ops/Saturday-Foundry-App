@@ -244,6 +244,14 @@
     catch(e){note(`Could not load season teams: ${e.message}`,true)}
     card.scrollIntoView({behavior:'smooth',block:'start'});
   }
+  function installBuildMarker(){
+    // Replace the legacy observer target so this QA build has one version authority.
+    const old=$('sfBuildMarker');if(!old)return;
+    const marker=old.cloneNode(true);old.replaceWith(marker);
+    const mark=()=>{if(marker.textContent!=='QA 9.8.59')marker.textContent='QA 9.8.59';const more=$('sfMoreBuildVersion');if(more)more.textContent='QA 9.8.59'};
+    mark();new MutationObserver(mark).observe(marker,{childList:true,characterData:true,subtree:true});
+    window.addEventListener('pageshow',mark);
+  }
   function boot(){
     const admin=$('admin');if(!admin||$('sfImportDesk'))return;
     const button=document.createElement('button');button.type='button';button.id='sfImportOpen';button.className='btn primary';button.textContent='Import Schedule & Results';
@@ -260,6 +268,7 @@
     const observer=new MutationObserver(()=>{const visible=allowed();entry.classList.toggle('hidden',!visible);if(!visible){cancelRead();card.classList.add('hidden');}if(!card.classList.contains('hidden')&&current()!==context){cancelRead();rows=[];card.classList.add('hidden')}});
     observer.observe(admin,{attributes:true,attributeFilter:['class']});
     entry.classList.toggle('hidden',!allowed());
+    installBuildMarker();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
