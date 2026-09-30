@@ -47,3 +47,8 @@
 
 #sfImportDesk[aria-busy=true] .sf-import-spinner{animation:sf-import-spin .8s linear infinite}
 @media(prefers-reduced-motion:reduce){#sfImportDesk[aria-busy=true] .sf-import-spinner{animation:none}}
+#sfImportDesk .sf-import-source-preview{display:block;width:100%;height:auto;max-height:110px;object-fit:contain;object-position:left center;margin:12px 0;border:1px solid #52646b;border-radius:6px;background:#162027}
+
+#sfImportDesk[data-import-mode=schedule] .sf-import-score{display:none}
+#sfImportDesk[data-import-mode=schedule] .sf-import-fields{grid-template-columns:75px minmax(0,1fr) minmax(0,1fr)}
+@media(max-width:800px){#sfImportDesk[data-import-mode=schedule] .sf-import-fields{grid-template-columns:65px minmax(0,1fr) minmax(0,1fr)}}
