@@ -1,0 +1,24 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+let source=fs.readFileSync(path.join(__dirname,'../assets/import-desk.js'),'utf8');
+source=source.slice(0,source.indexOf("  if(document.readyState==='loading')"))+`function render(){} window.test={kickoff,metadata,photoDate,photoTime,rowStatus,publish,setup:(draft)=>{rows=draft;context=current()}};})();`;
+const calls=[];let existing=[];
+const window={CDHQ_RUNTIME:{esc:String,getDynasty:()=>({dynasty_id:'d',role:'commissioner'}),getSeason:()=>({season_id:'s',year:2027}),getState:()=>({games:existing}),session:()=>({access_token:'test'}),req:async(url,args)=>{calls.push({url,body:args.body});return 'new-game'},Data:{games:async()=>existing,scheduleGames:async()=>[],editGameV2:async body=>{calls.push({url:'editGameV2',body})}},loadSeason:async()=>{}}};
+vm.runInNewContext(source,{window,document:{getElementById:()=>null},Intl,Date});
+const t=window.test;
+assert.equal(t.kickoff({date:'2027-09-11',time:'12:00'}),'2027-09-11T16:00:00.000Z');
+assert.equal(t.kickoff({date:'2027-01-11',time:'12:00'}),'2027-01-11T17:00:00.000Z');
+assert.throws(()=>t.kickoff({date:'2027-03-14',time:'02:30'}));
+assert.throws(()=>t.kickoff({date:'2027-02-30',time:'12:00'}));
+assert.equal(t.photoDate('Sat, Sep 11'),'2027-09-11');assert.equal(t.photoDate('Sat, Sep 1'),'');
+assert.equal(t.photoTime('12:30 PM'),'12:30');assert.equal(t.photoTime('12:00 AM'),'00:00');
+const g={id:'g',week_number:2,home_away:'home',team_id:'h',opponent_team_id:'a',team_rank:7,opponent_rank:22,status:'scheduled',kickoff_time:'2027-09-11T16:00:00Z',network:'ESPN',event_name:'Opening Day'};
+const r={week:2,home:'h',away:'a',hs:'',as:'',date:'',time:'',hr:'',ar:''};
+assert.equal(t.metadata(r,g).p_home_rank,7);assert.equal(t.metadata(r,g).p_kickoff_time,g.kickoff_time);
+(async()=>{
+ t.setup([{...r,week:0,date:'2027-09-11',time:'12:00',hr:'5',ar:'22',state:'ready'}]);await t.publish();
+ assert.equal(calls[0].url,'/rest/v1/rpc/create_schedule_game');assert.equal(calls[0].body.p_week_number,0);assert.equal(calls[0].body.p_home_rank,5);assert.equal(calls[0].body.p_kickoff_time,'2027-09-11T16:00:00.000Z');assert(!('p_home_score' in calls[0].body));
+ existing=[g];calls.length=0;t.setup([{...r,date:'2027-09-11',time:'15:30',state:'ready'}]);await t.publish();
+ assert.equal(calls[0].url,'/rest/v1/rpc/update_schedule_game');assert.equal(calls[0].body.p_network,'ESPN');assert.equal(calls[0].body.p_event_name,'Opening Day');assert.equal(calls[0].body.p_home_rank,7);
+ existing=[{...g,status:'completed'}];assert.equal(t.rowStatus({...r,date:'2027-09-11',time:'15:30'},new Set())[0],'skip');
+ console.log('PASS: ET conversion, invalid dates, Week 0 schedule RPC, rank persistence, existing metadata preservation, completed-game protection.');
+})().catch(e=>{console.error(e);process.exitCode=1});

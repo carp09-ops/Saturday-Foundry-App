@@ -78,18 +78,46 @@
     return {team:'',text:clean};
   }
   function mode(){return $('sfImportMode')?.value||'schedule'}
+  const eastern=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  function kickoff(r){
+    if(!r.date&&!r.time)return null;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')||!/^\d{2}:\d{2}$/.test(r.time||''))throw Error('Enter both a valid date and kickoff time (ET).');
+    const target=Date.parse(`${r.date}T${r.time}:00Z`);if(!Number.isFinite(target))throw Error('Enter a valid kickoff date.');
+    let utc=target;
+    for(let i=0;i<3;i++){const parts=Object.fromEntries(eastern.formatToParts(new Date(utc)).map(x=>[x.type,x.value]));const wall=Date.parse(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:00Z`);utc+=target-wall}
+    const parts=Object.fromEntries(eastern.formatToParts(new Date(utc)).map(x=>[x.type,x.value]));
+    if(`${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`!==`${r.date}T${r.time}`)throw Error('This date or ET kickoff time is invalid.');
+    return new Date(utc).toISOString();
+  }
+  function metadata(r,g){
+    const o=g?oriented(g):null,awaySide=g?.home_away==='away';
+    const homeRank=g?(awaySide?g.opponent_rank:g.team_rank):null,awayRank=g?(awaySide?g.team_rank:g.opponent_rank):null;
+    return {p_kickoff_time:kickoff(r)||g?.kickoff_time||null,p_home_rank:r.hr===''||r.hr==null?homeRank??null:Number(r.hr),p_away_rank:r.ar===''||r.ar==null?awayRank??null:Number(r.ar)};
+  }
+  function metadataChanged(r,g){const m=metadata(r,g);return (r.date&&Date.parse(m.p_kickoff_time)!==Date.parse(g.kickoff_time))||(r.hr!==''&&r.hr!=null&&m.p_home_rank!==(g.home_away==='away'?g.opponent_rank:g.team_rank))||(r.ar!==''&&r.ar!=null&&m.p_away_rank!==(g.home_away==='away'?g.team_rank:g.opponent_rank))}
+  function photoDate(text){
+    const months=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];const match=text.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[ ,]*(\d{1,2})/i);const year=Number($('sfImportYear')?.value||rt.getSeason()?.year);
+    if(!match||!Number.isInteger(year)||year<1900||year>2200)return '';
+    const value=`${year}-${String(months.indexOf(match[1].toLowerCase())+1).padStart(2,'0')}-${match[2].padStart(2,'0')}`;const weekday=text.match(/\b(Sun|Mon|Tue|Wed|Thu|Fri|Sat)/i);if(weekday&&['sun','mon','tue','wed','thu','fri','sat'][new Date(value+'T12:00:00Z').getUTCDay()]!==weekday[1].toLowerCase())return '';return value;
+  }
+  function photoTime(text){const m=text.replace(/\s/g,'').match(/(\d{1,2})[:.](\d{2})(AM|PM)/i);if(!m||+m[1]<1||+m[1]>12||+m[2]>59)return '';return `${String(+m[1]%12+(m[3].toUpperCase()==='PM'?12:0)).padStart(2,'0')}:${m[2]}`}
+  function rankOf(text){const m=String(text||'').match(/^\s*#?(\d{1,2})\s*[A-Za-z]/);return m&&+m[1]>=1&&+m[1]<=25?m[1]:''}
   function rowStatus(r,seen){
     if(String(r.week).trim()===''||!Number.isInteger(Number(r.week))||Number(r.week)<0)return ['problem','Enter a valid week (Week 0 is supported).'];
     if(!r.home||!r.away||r.home===r.away)return ['problem',`Choose two different teams.${r.awayText||r.homeText?` OCR read: ${r.awayText||'?'} @ ${r.homeText||'?'}.`:''}`];
     if((r.uncertain||r.reviewRequired)&&!r.confirmed)return ['problem',r.reviewReason||'Confirm which team is home. Screenshot order alone may not establish home field.'];
+    try{kickoff(r)}catch(e){return ['problem',e.message]}
+    for(const field of ['hr','ar'])if(r[field]!==''&&r[field]!=null&&(!/^\d+$/.test(String(r[field]))||+r[field]<1||+r[field]>25))return ['problem','Ranks must be between 1 and 25, or blank.'];
     const k=key(r.week,r.home,r.away);if(seen.has(k))return ['problem','Duplicate matchup in this batch.'];seen.add(k);
     const existing=findGame(r),hasScore=r.hs!==''||r.as!=='';
+    if(hasScore&&Number(r.week)===0)return ['problem','Week 0 final scores must be entered with the individual score editor.'];
     if(mode()==='results'&&(!hasScore||r.hs===''||r.as===''))return ['problem','Both scores are required for results.'];
     if(hasScore&&(!/^\d+$/.test(String(r.hs))||!/^\d+$/.test(String(r.as))||Number(r.hs)===Number(r.as)))return ['problem','Enter two non-tied, nonnegative scores.'];
     if(mode()==='results'&&!existing)return ['problem','No scheduled game matches this week and these teams.'];
     if(existing){
       const o=oriented(existing);
-      if(!hasScore)return ['skip','Game already exists; no change needed.'];
+      if(o.home!==r.home||o.away!==r.away)return ['problem','Home/away order conflicts with the existing schedule.'];
+      if(!hasScore)return existing.status==='completed'?['skip','Completed game retained.']:metadataChanged(r,existing)?['ready','Update kickoff and ranks on the scheduled game.']:['skip','Game already exists; no change needed.'];
       if(existing.status==='completed'){
         if(Number(o.homeScore)===Number(r.hs)&&Number(o.awayScore)===Number(r.as))return ['skip','Scores already match.'];
         return ['problem','Final score conflicts with the database. Correct the row or edit that game individually.'];
@@ -106,11 +134,11 @@
     host.innerHTML=rows.map((r,i)=>{
       const [state,reason]=rowStatus(r,seen);r.state=state;
       if(state==='ready')ready++;if(state==='problem')problems++;
-      return `<div class="sf-import-row ${state}" data-row="${i}"><div class="sf-import-row-head"><strong>${esc(state==='ready'?'READY':state==='skip'?'ALREADY STORED':'NEEDS REVIEW')} · ${i+1}</strong><span>${esc(r.source||'Draft')}</span></div><div class="sf-import-fields"><label>Week<input data-field="week" type="number" min="0" value="${esc(r.week)}"></label><label>Home<select data-field="home">${optionList(r.home)}</select></label><label>Away<select data-field="away">${optionList(r.away)}</select></label><label class="sf-import-score">Home score<input data-field="hs" type="number" min="0" placeholder="—" value="${esc(r.hs)}"></label><label class="sf-import-score">Away score<input data-field="as" type="number" min="0" placeholder="—" value="${esc(r.as)}"></label></div>${r.uncertain||r.reviewRequired?`<label class="sf-import-confirm"><input data-field="confirmed" type="checkbox" ${r.confirmed?'checked':''}>${esc(r.confirmLabel||'I checked which team is home')}</label>`:''}${r.preview?`<img class="sf-import-source-preview" src="${esc(r.preview)}" alt="Original screenshot row ${i+1}" loading="lazy">`:""}<small>${esc(reason)}${r.raw?` · Source: ${esc(r.raw.slice(0,160))}`:''}</small><button type="button" class="secondary" data-remove="${i}" aria-label="Remove row ${i+1}">Remove</button></div>`;
+      return `<div class="sf-import-row ${state}" data-row="${i}"><div class="sf-import-row-head"><strong>${esc(state==='ready'?'READY':state==='skip'?'ALREADY STORED':'NEEDS REVIEW')} · ${i+1}</strong><span>${esc(r.source||'Draft')}</span></div><div class="sf-import-fields"><label>Week<input data-field="week" type="number" min="0" value="${esc(r.week)}"></label><label>Home<select data-field="home">${optionList(r.home)}</select></label><label>Away<select data-field="away">${optionList(r.away)}</select></label><label class="sf-import-score">Home score<input data-field="hs" type="number" min="0" placeholder="—" value="${esc(r.hs)}"></label><label class="sf-import-score">Away score<input data-field="as" type="number" min="0" placeholder="—" value="${esc(r.as)}"></label></div><div class="sf-import-fields sf-import-metadata"><label>Date<input data-field="date" type="date" value="${esc(r.date||'')}"></label><label>Kickoff (ET)<input data-field="time" type="time" value="${esc(r.time||'')}"></label><label>Home rank<input data-field="hr" type="number" min="1" max="25" placeholder="—" value="${esc(r.hr||'')}"></label><label>Away rank<input data-field="ar" type="number" min="1" max="25" placeholder="—" value="${esc(r.ar||'')}"></label></div>${r.uncertain||r.reviewRequired?`<label class="sf-import-confirm"><input data-field="confirmed" type="checkbox" ${r.confirmed?'checked':''}>${esc(r.confirmLabel||'I checked which team is home')}</label>`:''}${r.preview?`<img class="sf-import-source-preview" src="${esc(r.preview)}" alt="Original screenshot row ${i+1}" loading="lazy">`:""}<small>${esc(reason)}${r.raw?` · Source: ${esc(r.raw.slice(0,160))}`:''}</small><button type="button" class="secondary" data-remove="${i}" aria-label="Remove row ${i+1}">Remove</button></div>`;
     }).join('');
     $('sfImportCount').textContent=`${rows.length} draft · ${ready} ready · ${problems} need review`;
     $('sfImportPublish').disabled=busy||ready===0||problems>0||!allowed()||current()!==context;
-    for(const name of ['sfImportRead','sfImportMode','sfImportWeek','sfImportImages','sfImportAdd','sfImportClear','sfImportText','sfImportOpen','sfImportClose'])if($(name))$(name).disabled=busy||!allowed();
+    for(const name of ['sfImportRead','sfImportMode','sfImportWeek','sfImportYear','sfImportImages','sfImportAdd','sfImportClear','sfImportText','sfImportOpen','sfImportClose'])if($(name))$(name).disabled=busy||!allowed();
     for(const el of host.querySelectorAll('input,select,button'))el.disabled=busy;
     $('sfImportCancel').classList.toggle('hidden',!activeRead);
     $('sfImportRead').textContent=activeRead?'Reading Screenshots…':'Read Screenshots';
@@ -120,10 +148,10 @@
     const raw=String(line||'').trim();if(!raw||/^(week|home|away|team|rank|matchup|date|time|mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)[\s,:]/i.test(raw))return null;
     // CSV/TSV: week,away,home,away_score,home_score (or away,home,... with chosen week).
     const columns=raw.split(/\t|,/).map(x=>x.trim().replace(/^"|"$/g,''));
-    let week=defaultWeek,away='',home='',as='',hs='',uncertain=false;
+    let week=defaultWeek,away='',home='',as='',hs='',date='',time='',ar='',hr='',uncertain=false;
     if(columns.length>=2){
       let offset=0;if(/^\d+$/.test(columns[0])&&columns.length>=3){week=Number(columns[0]);offset=1}
-      away=columns[offset];home=columns[offset+1];as=columns[offset+2]||'';hs=columns[offset+3]||'';
+      away=columns[offset];home=columns[offset+1];as=columns[offset+2]||'';hs=columns[offset+3]||'';date=columns[offset+4]||'';time=columns[offset+5]||'';ar=columns[offset+6]||'';hr=columns[offset+7]||'';
       if(offset===0&&!resolve(away)&&!resolve(home))return null;
     }else{
       const wm=raw.match(/\bweek\s*(\d+)\b/i);if(wm)week=Number(wm[1]);
@@ -144,7 +172,7 @@
     }
     if(!away&&!home)return null;
     const cleanTeam=s=>String(s||'').replace(/^#?\d{1,2}\s+/,'').replace(/\s+\(?\d{1,3}-\d{1,3}\)?$/,'').trim();
-    return {week,away:resolve(cleanTeam(away)),home:resolve(cleanTeam(home)),awayText:away,homeText:home,as:String(as),hs:String(hs),raw,source,uncertain,confirmed:false};
+    return {week,date,time,ar:ar||rankOf(away),hr:hr||rankOf(home),away:resolve(cleanTeam(away)),home:resolve(cleanTeam(home)),awayText:away,homeText:home,as:String(as),hs:String(hs),raw,source,uncertain,confirmed:false};
   }
   function parse(text,source){
     let week=Number($('sfImportWeek').value||0);const output=[];
@@ -176,7 +204,8 @@
     const awayLeft=Math.max(0,separatorX-gap*4.85),awayRight=separatorX-gap*.4,homeLeft=separatorX+gap*1.85;
     const homeRight=dateHeading?dateHeading.bbox.x0-gap*.4:Math.min(image.width,separatorX+gap*5.8);
     if(awayRight<=awayLeft||homeRight<=homeLeft)return null;
-    return {words,rows,gap,separatorX,awayLeft,awayRight,homeLeft,homeRight};
+    const timeHeading=words.find(w=>/^time/i.test(w.text.trim())&&w.bbox.x0>homeRight);
+    return {words,rows,gap,separatorX,awayLeft,awayRight,homeLeft,homeRight,dateLeft:dateHeading?homeRight+gap*.15:null,timeLeft:timeHeading?.bbox.x0||image.width-gap*2.9};
   }
   function photoCrop(image,left,top,right,bottom,scale=4){
     left=Math.max(0,Math.floor(left));top=Math.max(0,Math.floor(top));right=Math.min(image.width,Math.ceil(right));bottom=Math.min(image.height,Math.ceil(bottom));
@@ -208,16 +237,20 @@
       const readCell=async(left,right)=>{
         const cell=photoCrop(image,left+delta,top,right+delta,bottom),seen=[];
         const spatial=layout.words.filter(w=>{const b=w.bbox,y=(b.y0+b.y1)/2,x=(b.x0+b.x1)/2;return Math.abs(y-row.y)<layout.gap*.38&&x>left+delta&&x<right+delta}).sort((a,b)=>a.bbox.x0-b.bbox.x0).map(w=>w.text).join(' ');
-        await worker.setParameters({tessedit_pageseg_mode:'7'});const first=await worker.recognize(cell);seen.push(first.data.text.trim());
+        await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789() &'});const first=await worker.recognize(cell);seen.push(first.data.text.trim());
         let chosen=cellMatch(seen[0]);const fromSpatial=cellMatch(spatial);
         if(!chosen.team||chosen.suggested){if(fromSpatial.team&&!fromSpatial.suggested)chosen=fromSpatial;else{await worker.setParameters({tessedit_pageseg_mode:'8'});const retry=await worker.recognize(cell);seen.push(retry.data.text.trim());const candidate=cellMatch(seen[1]);if(candidate.team&&(!candidate.suggested||!chosen.team))chosen=candidate;if(!chosen.team&&fromSpatial.team)chosen=fromSpatial}}
         cell.width=1;cell.height=1;return {...chosen,raw:seen.filter(Boolean).join(' / ')||spatial};
       };
       const away=await readCell(layout.awayLeft,layout.awayRight),home=await readCell(layout.homeLeft,layout.homeRight);
-      const review=[];if(weekRead&&week!==selectedWeek)review.push(`Screenshot shows Week ${week}, but you selected Week ${selectedWeek}. Confirm the screenshot week.`);if(!weekRead)review.push(`The screenshot week was unreadable; check selected Week ${week}.`);if(away.suggested||home.suggested)review.push('Check the suggested team spelling against the source row.');if(row.kind!=='at'&&row.kind!=='@')review.push('Check home/away order against the source row.');
-      const preview=photoCrop(image,layout.awayLeft+delta,top,layout.homeRight+delta,bottom,1.5).toDataURL('image/jpeg',.8);
+      const readExtra=async(left,right,whitelist)=>{await worker.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:whitelist});const spatial=layout.words.filter(w=>w.bbox.x0>=left&&w.bbox.x0<right&&Math.abs((w.bbox.y0+w.bbox.y1)/2-row.y)<layout.gap*.4&&/[0-9]|Sep|Sat|Thu/i.test(w.text));const center=spatial.length?median(spatial.map(w=>(w.bbox.y0+w.bbox.y1)/2)):row.y;const crop=photoCrop(image,left,center-layout.gap*.3,right,center+layout.gap*.3,5);let result=await worker.recognize(crop);let text=result.data.text.trim();const valid=t=>whitelist.includes(':')?!!photoTime(t):!!photoDate(t);if(!valid(text)){await worker.setParameters({tessedit_pageseg_mode:'6'});result=await worker.recognize(crop);if(valid(result.data.text))text=result.data.text.trim();else {await worker.setParameters({tessedit_pageseg_mode:'8'});result=await worker.recognize(crop);if(valid(result.data.text))text=result.data.text.trim()}}if(!valid(text)){const candidate=spatial.sort((a,b)=>a.bbox.x0-b.bbox.x0).map(w=>w.text).join(' ');if(valid(candidate)&&spatial.every(w=>w.confidence>=70))text=candidate}crop.width=1;crop.height=1;return text};
+      let date='',time='',dateRaw='',timeRaw='';
+      if(layout.dateLeft){dateRaw=await readExtra(layout.dateLeft,Math.min(layout.timeLeft-8,layout.dateLeft+layout.gap*2.15),'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789, ');timeRaw=await readExtra(layout.timeLeft-8,Math.min(image.width,layout.timeLeft+layout.gap*1.9),'0123456789:AMPamp ');date=photoDate(dateRaw);time=photoTime(timeRaw)}
+      const ar=rankOf(away.raw),hr=rankOf(home.raw);
+      const review=['Check screenshot dates, ET kickoff times, and both ranks against the source row.'];if(layout.dateLeft&&(!date||!time))review.push('Check the date and ET kickoff time; one was unreadable.');if(weekRead&&week!==selectedWeek)review.push(`Screenshot shows Week ${week}, but you selected Week ${selectedWeek}. Confirm the screenshot week.`);if(!weekRead)review.push(`The screenshot week was unreadable; check selected Week ${week}.`);if(away.suggested||home.suggested)review.push('Check the suggested team spelling against the source row.');if(row.kind!=='at'&&row.kind!=='@')review.push('Check home/away order against the source row.');
+      const preview=photoCrop(image,layout.awayLeft+delta,top,image.width,bottom,1.5).toDataURL('image/jpeg',.8);
       const raw=`${away.raw||'?'} @ ${home.raw||'?'}`;texts.push(`${week},${away.text||away.raw},${home.text||home.raw}`);
-      output.push({week,away:away.team,home:home.team,awayText:away.raw,homeText:home.raw,as:'',hs:'',raw,source,preview,uncertain:false,confirmed:false,reviewRequired:review.length>0,reviewReason:review.join(' '),confirmLabel:'I checked this matchup against the source row'});
+      output.push({week,away:away.team,home:home.team,awayText:away.raw,homeText:home.raw,as:'',hs:'',date,time,ar,hr,raw:raw+' · '+dateRaw+' '+timeRaw,source,preview,uncertain:false,confirmed:false,reviewRequired:review.length>0,reviewReason:review.join(' '),confirmLabel:'I checked teams, date, ET time, and ranks against this source row'});
     }
     if(activeRead){activeRead.cellIndex=null;activeRead.cellTotal=null}
     return {rows:output,text:texts.join('\n'),detected:layout.rows.length,weekRead,week};
@@ -305,11 +338,19 @@
         if(context!==current())throw Error('League or season changed. Import stopped.');
         note(`Publishing ${saved+1} of ${freshPending.length}…`);
         const existing=findGame(r);
-        const homeRank=existing?(existing.home_away==='away'?existing.opponent_rank:existing.team_rank):null;
-        const awayRank=existing?(existing.home_away==='away'?existing.team_rank:existing.opponent_rank):null;
-        const payload={p_week_number:Number(r.week),p_home_team_id:r.home,p_away_team_id:r.away,p_home_score:r.hs===''?null:Number(r.hs),p_away_score:r.as===''?null:Number(r.as),p_home_rank:homeRank??null,p_away_rank:awayRank??null,p_overtime:existing?.overtime||false,p_game_type:existing?.game_type||'regular_season',p_result_method:existing?.result_method||'played'};
-        if(existing)await rt.Data.editGameV2({p_game_id:existing.id,...payload});
-        else await rt.Data.createGameSimple({p_season_id:s.season_id,...payload});
+        const meta=metadata(r,existing),hasScore=r.hs!==''||r.as!=='';
+        const schedulePayload={p_week_number:Number(r.week),p_home_team_id:r.home,p_away_team_id:r.away,...meta,p_game_type:existing?.game_type||'regular_season',p_event_name:existing?.event_name||null,p_network:existing?.network||null};
+        const call=async(name,body)=>rt.req('/rest/v1/rpc/'+name,{method:'POST',token:rt.session().access_token,body});
+        if(!hasScore){
+          if(existing)await call('update_schedule_game',{p_game_id:existing.id,...schedulePayload});
+          else await call('create_schedule_game',{p_season_id:s.season_id,...schedulePayload});
+        }else{
+          if(Number(r.week)===0)throw Error('Week 0 final scores must be entered with the individual score editor.');
+          if(existing&&metadataChanged(r,existing))await call('update_schedule_game',{p_game_id:existing.id,...schedulePayload});
+          const payload={p_week_number:Number(r.week),p_home_team_id:r.home,p_away_team_id:r.away,p_home_score:Number(r.hs),p_away_score:Number(r.as),p_home_rank:meta.p_home_rank,p_away_rank:meta.p_away_rank,p_overtime:existing?.overtime||false,p_game_type:existing?.game_type||'regular_season',p_result_method:existing?.result_method||'played'};
+          if(existing)await rt.Data.editGameV2({p_game_id:existing.id,...payload});
+          else {const gameId=await call('create_schedule_game',{p_season_id:s.season_id,...schedulePayload});await rt.Data.editGameV2({p_game_id:gameId,...payload})}
+        }
         saved++;r.state='published';r.published=true;
       }
       rows=rows.filter(r=>!r.published);await rt.loadSeason(s.season_id);note(`Published ${saved} games to ${rt.getDynasty()?.name||'this league'} · Season ${s.season_number}.`);
@@ -319,6 +360,7 @@
     if(busy||!allowed())return;
     const card=$('sfImportDesk');card.classList.remove('hidden');context=current();rows=[];teams=[];liveGames=null;
     $('sfImportLeague').textContent=`${rt.getDynasty()?.name||'Current league'} · Season ${rt.getSeason()?.season_number||''}`;
+    $('sfImportYear').value=rt.getSeason()?.year||'';
     $('sfImportWeek').value=rt.getSelectedWeek()??rt.currentWeek()??0;
     note('Loading team names for this season…');render();
     try{teams=await rt.Data.scheduleTeams(rt.getSeason().season_id);if(context!==current())return;note(`Ready. ${teams.length} teams available. Screenshots are read in your browser; review each proposed row.`);render()}
@@ -329,7 +371,7 @@
     // Replace the legacy observer target so this QA build has one version authority.
     const old=$('sfBuildMarker');if(!old)return;
     const marker=old.cloneNode(true);old.replaceWith(marker);
-    const mark=()=>{if(marker.textContent!=='QA 9.8.60')marker.textContent='QA 9.8.60';const more=$('sfMoreBuildVersion');if(more)more.textContent='QA 9.8.60'};
+    const mark=()=>{if(marker.textContent!=='QA 9.8.61')marker.textContent='QA 9.8.61';const more=$('sfMoreBuildVersion');if(more)more.textContent='QA 9.8.61'};
     mark();new MutationObserver(mark).observe(marker,{childList:true,characterData:true,subtree:true});
     window.addEventListener('pageshow',mark);
   }
@@ -339,7 +381,7 @@
     const entry=document.createElement('section');entry.id='sfImportEntry';entry.className='admin-card sf-import-entry';
     entry.innerHTML='<div><div class="kicker">SCHEDULE & RESULTS</div><h3>Game Imports</h3><p>Bring your screenshots into a draft, review the games, then publish to the selected league and season.</p></div>';
     entry.appendChild(button);const grid=admin.querySelector('.admin-grid');grid?grid.before(entry):admin.prepend(entry);
-    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.setAttribute('aria-labelledby','sfImportTitle');card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK · QA 9.8.60</div><h3 id="sfImportTitle">Schedule & Results</h3><ol class="sf-import-steps" aria-label="Import steps"><li>1 · Upload</li><li>2 · Review</li><li>3 · Publish</li></ol><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review every matchup before publishing to this league and season.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><div id="sfImportProgress" class="sf-import-progress hidden" role="status" aria-live="polite"><div class="sf-import-progress-top"><span class="sf-import-spinner" aria-hidden="true"></span><strong id="sfImportProgressTitle">Starting the photo reader</strong><span id="sfImportProgressPercent">Working…</span></div><progress id="sfImportProgressBar" max="100" aria-label="Screenshot reading progress"></progress><div class="sf-import-progress-bottom"><small id="sfImportElapsed">0s elapsed</small><button id="sfImportCancel" class="secondary hidden" type="button">Cancel Reading</button></div></div><details class="sf-import-text-details"><summary>Text or CSV · alternate input & extracted text</summary><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div></details><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
+    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.setAttribute('aria-labelledby','sfImportTitle');card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK · QA 9.8.61</div><h3 id="sfImportTitle">Schedule & Results</h3><ol class="sf-import-steps" aria-label="Import steps"><li>1 · Upload</li><li>2 · Review</li><li>3 · Publish</li></ol><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review matchups, dates, ET kickoff times, and ranks before publishing. Blank metadata preserves existing values. Dates use the season year below.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Season year<input id="sfImportYear" type="number" min="1900" max="2200" placeholder="Year shown in game"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><div id="sfImportProgress" class="sf-import-progress hidden" role="status" aria-live="polite"><div class="sf-import-progress-top"><span class="sf-import-spinner" aria-hidden="true"></span><strong id="sfImportProgressTitle">Starting the photo reader</strong><span id="sfImportProgressPercent">Working…</span></div><progress id="sfImportProgressBar" max="100" aria-label="Screenshot reading progress"></progress><div class="sf-import-progress-bottom"><small id="sfImportElapsed">0s elapsed</small><button id="sfImportCancel" class="secondary hidden" type="button">Cancel Reading</button></div></div><details class="sf-import-text-details"><summary>Text or CSV · alternate input & extracted text</summary><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score[, YYYY-MM-DD, HH:MM (ET), away rank, home rank]. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div></details><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
     entry.after(card);
     $('sfImportCancel').onclick=cancelRead;
     button.onclick=open;$('sfImportClose').onclick=()=>card.classList.add('hidden');$('sfImportAdd').onclick=addText;$('sfImportRead').onclick=readImages;$('sfImportPublish').onclick=publish;
@@ -349,6 +391,7 @@
     const observer=new MutationObserver(()=>{const visible=allowed();entry.classList.toggle('hidden',!visible);if(!visible){cancelRead();card.classList.add('hidden');}if(!card.classList.contains('hidden')&&current()!==context){cancelRead();rows=[];card.classList.add('hidden')}});
     observer.observe(admin,{attributes:true,attributeFilter:['class']});
     entry.classList.toggle('hidden',!allowed());
+    const priorKickoff=window.gdKickoffLabel;window.gdKickoffLabel=g=>g?.kickoff_time?new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(g.kickoff_time))+' ET':priorKickoff?priorKickoff(g):'';
     installBuildMarker();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

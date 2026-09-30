@@ -52,3 +52,6 @@
 #sfImportDesk[data-import-mode=schedule] .sf-import-score{display:none}
 #sfImportDesk[data-import-mode=schedule] .sf-import-fields{grid-template-columns:75px minmax(0,1fr) minmax(0,1fr)}
 @media(max-width:800px){#sfImportDesk[data-import-mode=schedule] .sf-import-fields{grid-template-columns:65px minmax(0,1fr) minmax(0,1fr)}}
+
+#sfImportDesk .sf-import-fields.sf-import-metadata{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
+#sfImportDesk .sf-import-metadata input{min-width:0;width:100%;box-sizing:border-box}
