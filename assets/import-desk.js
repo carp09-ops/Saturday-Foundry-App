@@ -103,7 +103,19 @@
   async function loadOCR(){
     if(ocrWorker)return ocrWorker;
     if(!window.Tesseract){
-      await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js';s.onload=resolve;s.onerror=()=>reject(Error('Image reading could not load. Paste copied text or use CSV instead.'));document.head.appendChild(s)});
+      // The legacy app declares a global const URL for its database endpoint.
+      // Give the OCR bundle the native constructor in its own lexical scope.
+      const response=await fetch('https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js');
+      if(!response.ok)throw Error('Image reading could not load. Paste copied text or use CSV instead.');
+      const source=await response.text();
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        const bundleURL=window.URL.createObjectURL(new Blob(['(function(URL){\n',source,'\n}).call(window,window.URL);'],{type:'text/javascript'}));
+        script.src=bundleURL;
+        script.onload=()=>{window.URL.revokeObjectURL(bundleURL);resolve()};
+        script.onerror=()=>{window.URL.revokeObjectURL(bundleURL);reject(Error('Image reading could not load. Paste copied text or use CSV instead.'))};
+        document.head.appendChild(script);
+      });
     }
     ocrWorker=await window.Tesseract.createWorker('eng');return ocrWorker;
   }
@@ -159,7 +171,7 @@
     const admin=$('admin');if(!admin||$('sfImportDesk'))return;
     const button=document.createElement('button');button.type='button';button.id='sfImportOpen';button.className='btn primary';button.textContent='Import Schedule & Results';
     const first=admin.querySelector('.admin-card');first?.prepend(button);
-    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK</div><h3>Schedule & Results</h3><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review every matchup before publishing to this league and season.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
+    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK · QA 9.8.58</div><h3>Schedule & Results</h3><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review every matchup before publishing to this league and season.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
     first?.insertAdjacentElement('afterend',card);
     button.onclick=open;$('sfImportClose').onclick=()=>card.classList.add('hidden');$('sfImportAdd').onclick=addText;$('sfImportRead').onclick=readImages;$('sfImportPublish').onclick=publish;
     $('sfImportClear').onclick=()=>{rows=[];render();note('Draft cleared.')};$('sfImportMode').onchange=render;
