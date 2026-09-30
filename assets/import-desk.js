@@ -3,7 +3,8 @@
   'use strict';
   const rt=window.CDHQ_RUNTIME;
   if(!rt)return;
-  let rows=[],teams=[],busy=false,context='',ocrWorker=null;
+  let rows=[],teams=[],busy=false,context='',ocrWorker=null,activeRead=null;
+  const nativeWorkers=new Set();
   const $=id=>document.getElementById(id);
   const esc=rt.esc;
   const norm=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/\b(university|college|the)\b/g,'').replace(/[^a-z0-9]/g,'');
@@ -13,6 +14,42 @@
   function current(){const d=rt.getDynasty(),s=rt.getSeason();return d&&s?`${d.dynasty_id}:${s.season_id}`:''}
   function allowed(){return ['commissioner','co_commissioner'].includes(String(rt.getDynasty()?.role||''))}
   function note(message,error=false){const el=$('sfImportNote');if(el){el.textContent=message;el.classList.toggle('error',error)}}
+  function progress(title,percent=null){
+    const box=$('sfImportProgress');if(!box)return;
+    box.classList.remove('hidden');$('sfImportProgressTitle').textContent=title;
+    const bar=$('sfImportProgressBar');
+    if(percent===null)bar.removeAttribute('value');else bar.value=Math.max(0,Math.min(100,percent));
+    $('sfImportProgressPercent').textContent=percent===null?'Working…':`${Math.round(percent)}%`;
+  }
+  function disposeOCR(){
+    for(const worker of nativeWorkers)worker.terminate();nativeWorkers.clear();
+    if(ocrWorker)ocrWorker.terminate().catch(()=>{});ocrWorker=null;
+  }
+  function bounded(task,ms,message,signal){
+    return new Promise((resolve,reject)=>{
+      let timer;
+      const finish=(fn,value)=>{clearTimeout(timer);signal?.removeEventListener('abort',abort);fn(value)};
+      const abort=()=>finish(reject,signal.reason||Error('Screenshot reading cancelled.'));
+      if(signal?.aborted)return abort();
+      signal?.addEventListener('abort',abort,{once:true});
+      timer=setTimeout(()=>{const error=Error(message);if(activeRead?.controller.signal===signal)activeRead.controller.abort(error);else finish(reject,error)},ms);
+      Promise.resolve(task).then(value=>finish(resolve,value),error=>finish(reject,error));
+    });
+  }
+  function cancelRead(){if(activeRead)activeRead.controller.abort(Error('Screenshot reading cancelled. Completed draft rows are kept.'))}
+  async function prepareImage(file,signal){
+    if(file.size>25*1024*1024)throw Error(`${file.name} is over 25 MB. Select a smaller screenshot.`);
+    const objectURL=window.URL.createObjectURL(file),image=new Image();
+    try{
+      image.src=objectURL;
+      await bounded(image.decode(),15000,`Could not open ${file.name}. Use a JPEG or PNG screenshot.`,signal);
+      const scale=Math.min(1,2560/Math.max(image.naturalWidth,image.naturalHeight));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+      const ctx=canvas.getContext('2d');if(!ctx)throw Error('This browser could not prepare the screenshot.');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
+      return canvas;
+    }finally{window.URL.revokeObjectURL(objectURL)}
+  }
   // Historical allGames contains other seasons. Match only this season's live views.
   let liveGames=null;
   function games(){const st=rt.getState();return [...new Map([...(liveGames||st.games||[]),...(liveGames?[]:st.scheduleGames||[])].filter(g=>g?.id).map(g=>[id(g.id),g])).values()]}
@@ -52,6 +89,11 @@
     }).join('');
     $('sfImportCount').textContent=`${rows.length} draft · ${ready} ready · ${problems} need review`;
     $('sfImportPublish').disabled=busy||ready===0||problems>0||!allowed()||current()!==context;
+    for(const name of ['sfImportRead','sfImportMode','sfImportWeek','sfImportImages','sfImportAdd','sfImportClear','sfImportText','sfImportOpen','sfImportClose'])if($(name))$(name).disabled=busy||!allowed();
+    for(const el of host.querySelectorAll('input,select,button'))el.disabled=busy;
+    $('sfImportCancel').classList.toggle('hidden',!activeRead);
+    $('sfImportRead').textContent=activeRead?'Reading Screenshots…':'Read Screenshots';
+    $('sfImportDesk').setAttribute('aria-busy',String(busy));
   }
   function parseLine(line,defaultWeek,source){
     const raw=String(line||'').trim();if(!raw||/^(week|home|away|team|rank)[\s,:]/i.test(raw))return null;
@@ -100,39 +142,74 @@
     return output;
   }
   function addText(){if(!allowed())return;const parsed=parse($('sfImportText').value,'Text / CSV');if(!parsed.length)return note('No matchups recognized. Use one game per line: Away @ Home, or week,away,home,away score,home score.',true);rows.push(...parsed);render();note(`Added ${parsed.length} draft rows. Review team matches and home/away order before publishing.`)}
-  async function loadOCR(){
+  async function loadOCR(signal){
     if(ocrWorker)return ocrWorker;
+    progress('Starting the photo reader');
     if(!window.Tesseract){
-      // The legacy app declares a global const URL for its database endpoint.
-      // Give the OCR bundle the native constructor in its own lexical scope.
-      const response=await fetch('https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js');
-      if(!response.ok)throw Error('Image reading could not load. Paste copied text or use CSV instead.');
+      const response=await fetch('https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js',{signal});
+      if(!response.ok)throw Error('The photo reader could not download. Check your connection and retry.');
       const source=await response.text();
       await new Promise((resolve,reject)=>{
+        // Scope native browser constructors so the legacy database URL cannot shadow them.
+        window.sfImportWorkerFactory=function(...args){const worker=new window.Worker(...args);nativeWorkers.add(worker);worker.addEventListener('error',e=>{if(activeRead)activeRead.controller.abort(Error(e.message||'The photo reader stopped unexpectedly. Retry this screenshot.'))});return worker};
         const script=document.createElement('script');
-        const bundleURL=window.URL.createObjectURL(new Blob(['(function(URL){\n',source,'\n}).call(window,window.URL);'],{type:'text/javascript'}));
-        script.src=bundleURL;
-        script.onload=()=>{window.URL.revokeObjectURL(bundleURL);resolve()};
-        script.onerror=()=>{window.URL.revokeObjectURL(bundleURL);reject(Error('Image reading could not load. Paste copied text or use CSV instead.'))};
-        document.head.appendChild(script);
+        const bundleURL=window.URL.createObjectURL(new Blob(['(function(URL,Worker){\n',source,'\n}).call(window,window.URL,window.sfImportWorkerFactory);'],{type:'text/javascript'}));
+        const cleanup=()=>{window.URL.revokeObjectURL(bundleURL);delete window.sfImportWorkerFactory;signal.removeEventListener('abort',abort)};
+        const abort=()=>{script.remove();cleanup();reject(signal.reason)};
+        signal.addEventListener('abort',abort,{once:true});
+        script.src=bundleURL;script.onload=()=>{cleanup();window.Tesseract?resolve():reject(Error('The photo reader did not start. Retry this screenshot.'))};
+        script.onerror=()=>{cleanup();reject(Error('The photo reader could not load. Check your connection and retry.'))};document.head.appendChild(script);
       });
     }
-    ocrWorker=await window.Tesseract.createWorker('eng');return ocrWorker;
+    const pending=window.Tesseract.createWorker('eng',1,{
+      workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',
+      corePath:'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0',
+      langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int',
+      logger:message=>{
+        if(!activeRead||signal.aborted)return;
+        const reading=message.status==='recognizing text';
+        const labels={'loading tesseract core':'Loading the photo reader','initializing tesseract':'Starting the photo reader','loading language traineddata':'Downloading English text recognition (cached for next time)','initializing api':'Preparing text recognition'};
+        progress(reading?`Reading screenshot ${activeRead.index+1} of ${activeRead.total}`:(labels[message.status]||'Preparing the photo reader'),typeof message.progress==='number'?message.progress*100:null);
+      },
+      errorHandler:error=>{if(activeRead&&!signal.aborted)activeRead.controller.abort(Error(`Photo reader error: ${String(error)}. Retry this screenshot.`))}
+    });
+    pending.then(worker=>{if(signal.aborted)worker.terminate().catch(()=>{})},()=>{});
+    const worker=await pending;if(signal.aborted){await worker.terminate();throw signal.reason}
+    ocrWorker=worker;return worker;
   }
   async function readImages(){
+    if(busy||!allowed()||context!==current())return;
     const files=[...$('sfImportImages').files];if(!files.length)return note('Select one or more screenshots first.',true);
     if(files.length>12)return note('Import up to 12 screenshots at a time to keep review manageable.',true);
-    const startingContext=context,startingMode=mode();busy=true;render();try{
-      const worker=await loadOCR();let found=0,raw=[];
+    if(!teams.length)return note('Team names are still loading. Reopen the Import Desk and try again.',true);
+    const startingContext=context,startingMode=mode(),controller=new AbortController(),signal=controller.signal;
+    const job={controller,index:0,total:files.length,started:Date.now()};activeRead=job;busy=true;render();
+    $('sfImportProgress').scrollIntoView({behavior:'smooth',block:'nearest'});
+    progress('Starting the photo reader');note('Reading screenshots creates drafts only. The first use downloads the photo reader.');
+    $('sfImportElapsed').textContent='0s elapsed';
+    const clock=setInterval(()=>{$('sfImportElapsed').textContent=`${Math.floor((Date.now()-job.started)/1000)}s elapsed`},1000);
+    let found=0,completed=0,raw=[];
+    try{
+      const worker=await bounded(loadOCR(signal),45000,'The photo reader could not start within 45 seconds. Check your connection and retry. No games were published.',signal);
+      await bounded(worker.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'}),10000,'The photo reader could not prepare itself. Retry this screenshot.',signal);
       for(let i=0;i<files.length;i++){
-        note(`Reading screenshot ${i+1} of ${files.length}: ${files[i].name}`);
-        const result=await worker.recognize(files[i]);if(startingContext!==current()||startingMode!==mode())throw Error('League, season, or import type changed. Reopen the Import Desk and read the screenshots again.');const text=result.data?.text||'';
-        raw.push(`--- ${files[i].name} ---\n${text}`);
-        const proposed=parse(text,files[i].name);rows.push(...proposed);found+=proposed.length;
+        job.index=i;progress(`Preparing screenshot ${i+1} of ${files.length}`);
+        const image=await prepareImage(files[i],signal);
+        progress(`Reading screenshot ${i+1} of ${files.length}`,0);
+        const result=await bounded(worker.recognize(image),60000,`Screenshot ${i+1} took longer than 60 seconds. Try a tighter crop of the game list. Completed draft rows are kept.`,signal);
+        image.width=1;image.height=1;
+        if(startingContext!==current()||startingMode!==mode()||!allowed())throw Error('League, season, or access changed. Reopen the Import Desk and read the screenshots again.');
+        const text=result.data?.text||'';raw.push(`--- ${files[i].name} ---\n${text}`);
+        const proposed=parse(text,files[i].name);rows.push(...proposed);found+=proposed.length;completed++;
+        $('sfImportText').value=raw.join('\n\n');render();
+        note(`Read ${completed} of ${files.length} screenshots · ${found} proposed games so far.`);
       }
-      $('sfImportText').value=raw.join('\n\n');
-      note(`Read ${files.length} screenshots and proposed ${found} games. Check every row. OCR text is below for corrections; edit it and add missing games if needed.`);
-    }catch(e){note(e.message||String(e),true)}finally{busy=false;render()}
+      progress(`Finished · ${completed} screenshots · ${found} proposed games`,100);
+      note(found?`Read ${completed} screenshots and proposed ${found} games. Compare the draft count with your screenshots, then review teams, home/away and scores.`:'The photo reader finished but found no matchups. Open Text or CSV to inspect the extracted text. Try a clearer crop of the game list.',!found);
+    }catch(e){
+      controller.abort(e);disposeOCR();progress(`Stopped · ${completed} of ${files.length} screenshots read`);
+      note(`${e.message||String(e)}${completed?` ${found} proposed games from completed screenshots remain in your draft.`:''}`,true);
+    }finally{clearInterval(clock);if(activeRead===job)activeRead=null;busy=false;render()}
   }
   async function publish(){
     if(busy||!allowed()||context!==current())return note('Reopen the Import Desk for the selected league and season.',true);
@@ -158,8 +235,8 @@
     }catch(e){await rt.loadSeason(s.season_id).catch(()=>{});note(`Published ${saved} of ${pending.length}. Stopped: ${e.message||e}. Remaining rows are still drafts.`,true)}finally{liveGames=null;busy=false;render()}
   }
   async function open(){
-    if(!allowed())return;
-    const card=$('sfImportDesk');card.classList.remove('hidden');context=current();rows=[];liveGames=null;
+    if(busy||!allowed())return;
+    const card=$('sfImportDesk');card.classList.remove('hidden');context=current();rows=[];teams=[];liveGames=null;
     $('sfImportLeague').textContent=`${rt.getDynasty()?.name||'Current league'} · Season ${rt.getSeason()?.season_number||''}`;
     $('sfImportWeek').value=rt.getSelectedWeek()??rt.currentWeek()??0;
     note('Loading team names for this season…');render();
@@ -170,16 +247,19 @@
   function boot(){
     const admin=$('admin');if(!admin||$('sfImportDesk'))return;
     const button=document.createElement('button');button.type='button';button.id='sfImportOpen';button.className='btn primary';button.textContent='Import Schedule & Results';
-    const first=admin.querySelector('.admin-card');first?.prepend(button);
-    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK · QA 9.8.58</div><h3>Schedule & Results</h3><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review every matchup before publishing to this league and season.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
-    first?.insertAdjacentElement('afterend',card);
+    const entry=document.createElement('section');entry.id='sfImportEntry';entry.className='admin-card sf-import-entry';
+    entry.innerHTML='<div><div class="kicker">SCHEDULE & RESULTS</div><h3>Game Imports</h3><p>Bring your screenshots into a draft, review the games, then publish to the selected league and season.</p></div>';
+    entry.appendChild(button);const grid=admin.querySelector('.admin-grid');grid?grid.before(entry):admin.prepend(entry);
+    const card=document.createElement('section');card.id='sfImportDesk';card.className='hidden';card.setAttribute('aria-labelledby','sfImportTitle');card.innerHTML=`<div class="kicker">COMMISSIONER · IMPORT DESK · QA 9.8.59</div><h3 id="sfImportTitle">Schedule & Results</h3><ol class="sf-import-steps" aria-label="Import steps"><li>1 · Upload</li><li>2 · Review</li><li>3 · Publish</li></ol><p id="sfImportLeague"></p><p>Upload screenshots or paste one game per line. Review every matchup before publishing to this league and season.</p><div class="sf-import-grid"><label>Import type<select id="sfImportMode"><option value="schedule">Season schedule</option><option value="results">Weekly results</option></select></label><label>Default week<input id="sfImportWeek" type="number" min="0" value="0"></label><label>Screenshots (up to 12)<input id="sfImportImages" type="file" accept="image/*" multiple></label></div><div class="sf-import-actions"><button id="sfImportRead" type="button">Read Screenshots</button><button id="sfImportClose" class="secondary" type="button">Close</button></div><div id="sfImportProgress" class="sf-import-progress hidden" role="status" aria-live="polite"><div class="sf-import-progress-top"><span class="sf-import-spinner" aria-hidden="true"></span><strong id="sfImportProgressTitle">Starting the photo reader</strong><span id="sfImportProgressPercent">Working…</span></div><progress id="sfImportProgressBar" max="100" aria-label="Screenshot reading progress"></progress><div class="sf-import-progress-bottom"><small id="sfImportElapsed">0s elapsed</small><button id="sfImportCancel" class="secondary hidden" type="button">Cancel Reading</button></div></div><details class="sf-import-text-details"><summary>Text or CSV · alternate input & extracted text</summary><label class="sf-import-raw">Text or CSV <small>Format: Away @ Home, or week,away,home,away score,home score. OCR text appears here for editing.</small><textarea id="sfImportText" placeholder="0,Georgia State,Tennessee\n1,Notre Dame,Ohio State,17,24"></textarea></label><div class="sf-import-actions"><button id="sfImportAdd" class="secondary" type="button">Add Rows From Text</button><button id="sfImportClear" class="secondary" type="button">Clear Draft</button></div></details><div id="sfImportNote" class="sf-import-note" role="status"></div><div id="sfImportRows" class="sf-import-rows"></div><div class="sf-import-foot"><strong id="sfImportCount">0 draft</strong><div class="sf-import-actions"><button id="sfImportPublish" type="button" disabled>Publish Reviewed Games</button></div><small>Existing final scores are never overwritten by a batch. Correct those games individually using the audited game editor.</small></div>`;
+    entry.after(card);
+    $('sfImportCancel').onclick=cancelRead;
     button.onclick=open;$('sfImportClose').onclick=()=>card.classList.add('hidden');$('sfImportAdd').onclick=addText;$('sfImportRead').onclick=readImages;$('sfImportPublish').onclick=publish;
     $('sfImportClear').onclick=()=>{rows=[];render();note('Draft cleared.')};$('sfImportMode').onchange=render;
     $('sfImportRows').addEventListener('change',e=>{const el=e.target.closest('[data-field]'),parent=e.target.closest('[data-row]');if(!el||!parent)return;rows[Number(parent.dataset.row)][el.dataset.field]=el.type==='checkbox'?el.checked:el.value;render()});
     $('sfImportRows').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;rows.splice(Number(b.dataset.remove),1);render()});
-    const observer=new MutationObserver(()=>{const visible=allowed();button.classList.toggle('hidden',!visible);if(!visible)card.classList.add('hidden');if(!card.classList.contains('hidden')&&current()!==context){rows=[];card.classList.add('hidden')}});
+    const observer=new MutationObserver(()=>{const visible=allowed();entry.classList.toggle('hidden',!visible);if(!visible){cancelRead();card.classList.add('hidden');}if(!card.classList.contains('hidden')&&current()!==context){cancelRead();rows=[];card.classList.add('hidden')}});
     observer.observe(admin,{attributes:true,attributeFilter:['class']});
-    button.classList.toggle('hidden',!allowed());
+    entry.classList.toggle('hidden',!allowed());
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
