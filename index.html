@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* QA 9.9.10: league identity and rounded Legacy controls. */
+/* QA 9.9.11: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -6964,6 +6964,7 @@ const Data={
  async coachMoves(d){const s=session();return req("/rest/v1/rpc/get_coach_program_moves",{method:"POST",token:s.access_token,body:{p_dynasty_id:d}})||[]},
  async changeCoachProgram(seasonId,personId,teamId,reason){const s=session();return req("/rest/v1/rpc/commissioner_change_coach_program",{method:"POST",token:s.access_token,body:{p_season_id:seasonId,p_person_id:personId,p_new_team_id:teamId,p_reason:reason||null}})},
  async trophies(d){return this.view("v_trophy_room",`dynasty_id=eq.${d}&order=season_number.desc`)},
+ async vaultPostseason(d){return this.view("v_game_entries",`dynasty_id=eq.${d}&status=eq.completed&game_type=in.(bowl,playoff,national_championship,conference_championship)&order=season_number.desc,week_number.desc`)},
  async myPrograms(d){return this.view("v_my_programs",`dynasty_id=eq.${d}`)},
  async teamSelection(seasonId){const s=session();return req("/rest/v1/rpc/get_team_selection",{method:"POST",token:s.access_token,body:{p_season_id:seasonId}})},
  async scheduleTeams(seasonId){const s=session();return req("/rest/v1/rpc/get_schedule_team_options",{method:"POST",token:s.access_token,body:{p_season_id:seasonId}})},
@@ -8887,6 +8888,20 @@ function sfVaultArtFallback(img){
 function sfVaultArtImage(x,lazy=false){return `<img src="${esc(x.art)}" alt=""${lazy?' loading="lazy"':''} decoding="async" data-vault-fallback="${esc(x.artFallback||'assets/trophy-vault/award.webp')}" onerror="sfVaultArtFallback(this)">`}
 
 const sfVaultSelection={dynasty:null,coach:'all',season:'all',type:'all',selected:null};
+function sfVaultPostseasonGames(){
+ const rows=new Map();
+ // Complete postseason snapshot is available before the full history enrichment.
+ [...(state.allGames||[]),...(state.vaultPostseasonGames||[]),...(state.games||[])].forEach(g=>{
+  if(g.status!=='completed'||g.is_bye)return;
+  const key=[g.id||[g.season_id||g.season_number,g.week_number,g.team_name,g.opponent_team].join('|'),g.person_id].join('|');rows.set(key,g);
+ });
+ return [...rows.values()];
+}
+function sfVaultCoachPostseason(personId){
+ const games=sfVaultPostseasonGames().filter(g=>String(g.person_id)===String(personId));
+ const bowls=games.filter(g=>/^bowl(_game)?$/.test(String(g.game_type||''))||(/\bbowl\b/i.test(g.event_name||'')&&g.game_type!=='national_championship'));
+ return {bowlWins:bowls.filter(g=>g.result==='W').length,bowlLosses:bowls.filter(g=>g.result==='L').length,cfpApps:new Set(games.filter(g=>['playoff','national_championship'].includes(g.game_type)).map(g=>g.season_id||g.season_number)).size};
+}
 function sfVaultModel(){
  const norm=v=>String(v||'').trim().toLowerCase();
  const personKey=x=>String(x.person_id||norm(x.coach_name||x.recipient_name)||'unknown');
@@ -8909,6 +8924,16 @@ function sfVaultModel(){
   return {...t,...(detail||{}),team_name:t.team_name||t.metadata?.team||detail?.team_name,player_name:t.metadata?.player_name||detail?.player_name||(!t.metadata?.historical_count_import&&t.recipient_name!==t.coach_name?t.recipient_name:null),player_position:t.metadata?.position||detail?.player_position,type:t.type,name:detail?.award_name||t.name||String(t.type||'Award').replaceAll('_',' '),key:'t'+i,category:category(t),coachKey:personKey(t)};
  });
  awardRows.filter(a=>!used.has(a)).forEach((a,i)=>entries.push({...a,key:'a'+i,category:'award',coachKey:personKey(a),name:a.award_name||'Heisman Trophy'}));
+ // Game wins remain earned hardware even when an award row was never created.
+ sfVaultPostseasonGames().filter(g=>g.result==='W').forEach(g=>{
+  const kind=g.game_type==='conference_championship'?'conference':g.game_type==='national_championship'?'national':g.game_type==='bowl'||(g.game_type==='playoff'&&/\bbowl\b/i.test(g.event_name||''))?'bowl':null;
+  if(!kind)return;
+  const name=kind==='conference'?(/championship/i.test(g.event_name||'')&&g.event_name!=='Conference Championship'?g.event_name:(g.team_conference?g.team_conference+' Championship':'Conference Championship')):kind==='national'?'National Championship':g.event_name||'Bowl Victory';
+  const existing=entries.find(x=>x.category===kind&&samePerson(x,g)&&sameSeason(x,g)&&(kind!=='bowl'||String(x.metadata?.game_id||'')===String(g.id)||norm(x.name)===norm(name)||/^(bowl game|bowl victory)$/.test(norm(name))));
+  if(existing){existing.team_name=g.team_name||existing.team_name;return}
+  entries.push({...g,key:'game-'+g.id+'-'+g.person_id,category:kind,coachKey:personKey(g),name,type:kind==='conference'?'conference_championship':kind==='national'?'national_championship':'bowl_championship',metadata:{source:'verified_game',game_id:g.id}});
+  if(!coaches.has(personKey(g)))coaches.set(personKey(g),{key:personKey(g),person_id:g.person_id,coach_name:g.coach_name||'Coach'});
+ });
  entries.forEach(x=>{
   x.player_name=x.player_name||x.metadata?.player_name||(!x.metadata?.historical_count_import&&x.recipient_name!==x.coach_name?x.recipient_name:null);x.player_position=x.player_position||x.metadata?.position||null;
   const s=seasonFor(x);x.season_number=x.season_number??s?.season_number;x.year=s?.year||x.year||null;
@@ -8943,10 +8968,8 @@ function renderTrophies(){
  const program=coach?coachCardProgram(coach):null,portrait=coach?COACH_CARD_PORTRAITS[coachCardKey(coach.coach_name)]:null;
  const honors=coach?all.filter(x=>x.coachKey===coach.key):all;
  const counts=kind=>honors.filter(x=>x.category===kind).length;
- const coachGames=coach?(state.allGames||[]).filter(g=>String(g.person_id)===String(coach.person_id)&&g.status==='completed'&&!g.is_bye):[];
- const bowlGames=coachGames.filter(g=>/^bowl(_game)?$/.test(String(g.game_type||'').toLowerCase().replace(/[\s-]+/g,'_'))||/\bbowl\b/i.test(g.event_name||''));
- const bowlRecord=`${bowlGames.filter(g=>g.result==='W').length}–${bowlGames.filter(g=>g.result==='L').length}`;
- const cfpApps=new Set(coachGames.filter(g=>['playoff','national_championship'].includes(String(g.game_type||'').toLowerCase())).map(g=>g.season_number)).size;
+ const postseason=sfVaultCoachPostseason(coach?.person_id);
+ const bowlRecord=`${postseason.bowlWins}–${postseason.bowlLosses}`,cfpApps=postseason.cfpApps;
  const years=[...new Set(honors.map(x=>x.year).filter(Boolean))].sort((a,b)=>a-b);
  const option=(value,label,current)=>`<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;
  const leagueLogo=$('sfLegacyLeagueLogo');if(leagueLogo){leagueLogo.src=D?.logo_url||'assets/saturday-foundry-shield.webp';leagueLogo.alt=(D?.name||'Dynasty')+' logo'}
@@ -9541,8 +9564,8 @@ async function loadDynasty(i=0){
  $("dynastySelect").innerHTML=dynasties.map((d,idx)=>`<option value="${idx}" ${idx===i?"selected":""}>${esc(d.short_name||d.name)}</option>`).join("");
  if($("dynastyHubList")) renderDynastyHub();
  $("dynastySelect").classList.toggle("hidden",dynasties.length<2);
- const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek]=await Promise.all([Data.seasons(D.dynasty_id),Data.career(D.dynasty_id),Data.trophies(D.dynasty_id),Data.listHeismans(D.dynasty_id),Data.myPrograms(D.dynasty_id),Data.powerContext(D.dynasty_id),Data.careerStops(D.dynasty_id),Data.dynastyCoaches(D.dynasty_id),Data.coachMoves(D.dynasty_id),Data.activeWeek(D.dynasty_id)]);
- seasons=ss;state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek:(activeWeek==null||activeWeek===''||!Number.isInteger(Number(activeWeek)))?null:Number(activeWeek)};
+ const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek,vaultPostseasonGames]=await Promise.all([Data.seasons(D.dynasty_id),Data.career(D.dynasty_id),Data.trophies(D.dynasty_id),Data.listHeismans(D.dynasty_id),Data.myPrograms(D.dynasty_id),Data.powerContext(D.dynasty_id),Data.careerStops(D.dynasty_id),Data.dynastyCoaches(D.dynasty_id),Data.coachMoves(D.dynasty_id),Data.activeWeek(D.dynasty_id),Data.vaultPostseason(D.dynasty_id)]);
+ seasons=ss;state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,vaultPostseasonGames,activeWeek:(activeWeek==null||activeWeek===''||!Number.isInteger(Number(activeWeek)))?null:Number(activeWeek)};
  S=seasons.find(s=>s.is_active)||seasons.find(s=>s.status==="setup")||seasons[0];
  if(!S)throw Error("This dynasty does not have a season yet.");
  const owns=(myPrograms||[]).some(p=>p.season_id===S.season_id);
@@ -12594,7 +12617,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.10'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12627,7 +12650,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.10'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13304,7 +13327,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.10";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.11";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14415,7 +14438,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.10';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11';
   }
   function boot(){
     build();
@@ -14425,7 +14448,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.10';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.11';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14832,7 +14855,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.10';
+    if(m)m.textContent='QA 9.9.11';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14868,11 +14891,11 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
     setRefreshControlsBusy(true);setSyncStatus('● SYNCING','busy');window.CDHQLoader?.show('Refreshing dynasty data');
     try{
       const freshDynasties=await Data.dynasties();if(Array.isArray(freshDynasties)&&freshDynasties.length){dynasties=freshDynasties;D=dynasties.find(d=>String(d.dynasty_id)===String(dynastyId))||D;dynasties.forEach(d=>{delete d._chooserProgram;delete d._chooserProgramResolved;});}
-      const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek]=await Promise.all([Data.seasons(dynastyId),Data.career(dynastyId),Data.trophies(dynastyId),Data.listHeismans(dynastyId),Data.myPrograms(dynastyId),Data.powerContext(dynastyId),Data.careerStops(dynastyId),Data.dynastyCoaches(dynastyId),Data.coachMoves(dynastyId),Data.activeWeek(dynastyId)]);
+      const [ss,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,activeWeek,vaultPostseasonGames]=await Promise.all([Data.seasons(dynastyId),Data.career(dynastyId),Data.trophies(dynastyId),Data.listHeismans(dynastyId),Data.myPrograms(dynastyId),Data.powerContext(dynastyId),Data.careerStops(dynastyId),Data.dynastyCoaches(dynastyId),Data.coachMoves(dynastyId),Data.activeWeek(dynastyId),Data.vaultPostseason(dynastyId)]);
       seasons=Array.isArray(ss)?ss:[];S=seasons.find(se=>String(se.season_id)===String(requestedSeasonId))||seasons.find(se=>se.is_active||String(se.status||'').toLowerCase()==='active')||seasons[0];if(!S)throw Error('This dynasty does not have a season to refresh.');const activeSeason=!!(S.is_active||String(S.status||'').toLowerCase()==='active');
       const [programs,standings,games,scheduleGames,rankings,vegas,nationalFinalizedWeek]=await Promise.all([Data.programs(dynastyId,S.season_id),Data.standings(dynastyId,S.season_id),Data.games(dynastyId,S.season_id),Data.scheduleGames(dynastyId,S.season_id),Data.rankings(dynastyId,S.season_id),Data.vegas(dynastyId,S.season_id),activeSeason&&typeof Data.nationalFinalizedWeek==='function'?Data.nationalFinalizedWeek(dynastyId,S.season_id):Promise.resolve(null)]);
       const historyResults=await Promise.allSettled((seasons||[]).map(se=>String(se.season_id)===String(S.season_id)?Promise.resolve(games):Data.games(dynastyId,se.season_id)));const allGames=historyResults.filter(r=>r.status==='fulfilled').flatMap(r=>Array.isArray(r.value)?r.value:[]);const cleanVegas=Array.isArray(vegas)?vegas:[],aw=(activeWeek==null||activeWeek==='')?null:Number(activeWeek),nf=Number(nationalFinalizedWeek);
-      state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,vegasAll:[],gotwGames:[],allGames,recapRankings:{},activeWeek:Number.isInteger(aw)?aw:null,nationalFinalizedWeek:activeSeason&&Number.isInteger(nf)?nf:null};selectedWeek=keepWeek;
+      state={...state,career,trophies,heismans,myPrograms,powerContext,careerStops,dynastyCoaches,coachMoves,vaultPostseasonGames,programs,standings,games,scheduleGames,rankings,vegas:cleanVegas,vegasAll:[],gotwGames:[],allGames,recapRankings:{},activeWeek:Number.isInteger(aw)?aw:null,nationalFinalizedWeek:activeSeason&&Number.isInteger(nf)?nf:null};selectedWeek=keepWeek;
       if(typeof vegasLegacyLoadedFor!=='undefined')vegasLegacyLoadedFor=null;if(typeof vegasCache!=='undefined'&&vegasCache?.clear){vegasCache.clear();vegasCache.set(vegasKey(dynastyId,S.season_id),cleanVegas);}
       if(typeof refreshEditLog==='function'){try{await refreshEditLog()}catch(err){console.warn('Edit history refresh skipped:',err)}}
       updateShellForDynasty();updateSeasonSelector();if(typeof hideDynastyChooser==='function')hideDynastyChooser();byId('authScreen')?.classList.add('hidden');byId('teamScreen')?.classList.add('hidden');byId('claimScreen')?.classList.add('hidden');byId('app')?.classList.remove('hidden');byId('navWrap')?.classList.remove('hidden');
@@ -16842,7 +16865,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.10';
+    if(m)m.textContent='QA 9.9.11';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16852,7 +16875,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.10';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();

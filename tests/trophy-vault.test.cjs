@@ -34,6 +34,15 @@ context.state.trophies=[{id:'j2',person_id:'coach1',coach_name:'Coach',season_id
 assert.equal(context.sfVaultModel().entries[0].player_name,'Commissioner Winner');
 context.state.trophies=[];context.state.heismans=[{person_id:'rpcOnly',coach_name:'RPC Coach',season_id:'s1',award_name:'New Award'}];
 assert.equal(context.sfVaultModel().coaches[0].key,'rpcOnly');assert.equal(context.sfVaultModel().entries[0].category,'award');
+// Postseason history must be complete before full game enrichment and count once.
+const postseason=[1,2,3].map(n=>({id:'b'+n,person_id:'c',coach_name:'Corey',season_number:n,status:'completed',game_type:'bowl',event_name:'Alamo Bowl',result:'W',team_name:'Texas State'}));
+postseason.push({id:'cc2',person_id:'c',coach_name:'Corey',season_number:2,status:'completed',game_type:'conference_championship',event_name:'Pac-12 Championship',result:'W',team_name:'Texas State'});
+postseason.push({id:'cc3',person_id:'c',coach_name:'Corey',season_number:3,status:'completed',game_type:'conference_championship',event_name:'Pac-12 Championship',result:'L',team_name:'Texas State'});
+context.state={trophies:[{person_id:'c',coach_name:'Corey',season_number:1,name:'Alamo Bowl',type:'bowl_championship'},{person_id:'c',coach_name:'Corey',season_number:2,name:'Pac-12 Championship',type:'conference_championship'}],vaultPostseasonGames:postseason,allGames:[postseason[2]],games:[postseason[2]],heismans:[]};
+assert.equal(context.sfVaultCoachPostseason('c').bowlWins,3);assert.equal(context.sfVaultCoachPostseason('c').bowlLosses,0);
+model=context.sfVaultModel();assert.equal(model.entries.filter(x=>x.category==='bowl').length,3);assert.equal(model.entries.filter(x=>x.category==='conference').length,1);assert.equal(model.entries.length,4);
+context.state.games=[{...postseason[2],result:'L'}];assert.equal(context.sfVaultCoachPostseason('c').bowlWins,2);assert.equal(context.sfVaultCoachPostseason('c').bowlLosses,1);
+context.state={trophies:[],heismans:[],allGames:[],games:[],vaultPostseasonGames:[]};assert.equal(context.sfVaultModel().entries.length,0);
 let syntaxCount=0;
 for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/json/.test(match[1]))continue;new vm.Script(match[2]);syntaxCount++}
 const img={dataset:{vaultFallback:'assets/trophy-vault/award.webp'},src:'missing.webp',getAttribute(){return this.src},replaceWith(el){this.replacement=el}};
