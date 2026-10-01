@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* PROD 9.9.13: league identity and rounded Legacy controls. */
+/* QA 9.9.14: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -5400,6 +5400,35 @@ img.sf-dark-logo{
 #sfVaultDialog .sf-vault-detail-copy dt{font-size:8px;margin-bottom:4px}
 #sfVaultDialog .sf-vault-kicker{font-size:9px}
 @media(max-height:500px){#sfVaultDialog .sf-vault-detail-copy{padding:10px 16px}#sfVaultDialog .sf-vault-detail-copy p{display:none}#sfVaultDialog .sf-vault-detail-copy dl>div{padding:7px 0}#sfVaultDialog .sf-vault-detail-copy h3{font-size:24px!important}}
+</style>
+<style id="sf-vault-categories-9-9-14">
+.sf-vault-categories{display:flex!important;flex-direction:column;gap:26px;min-width:0}
+.sf-vault-category{min-width:0}
+.sf-vault-category-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #9d7c424f}
+.sf-vault-category-heading h3{font:750 27px/1.1 'Barlow Condensed',sans-serif!important;text-transform:uppercase;margin:0!important;color:#ecd39e!important}
+.sf-vault-category-heading>span{font:700 10px system-ui;color:#b9ad96;white-space:nowrap}
+.sf-vault-results{margin:0 0 18px;color:#a6afa9;font:500 11px/1.5 system-ui}
+.sf-vault-results button{color:#e9c87e;font-size:13px;text-decoration:underline;background:none;border:0;padding:4px}
+.sf-vault-hardware{cursor:default!important}
+.sf-vault-hardware .sf-vault-case-art{height:135px;margin:0 0 12px}
+.sf-vault-hardware .sf-vault-case-art img{height:125px!important}
+.sf-vault-hardware .sf-vault-case-name{margin:0!important;font-size:20px!important}
+.sf-vault-year-hint{font:500 9px/1.4 system-ui;color:#a69c86;margin:8px 0!important}
+.sf-vault-years{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.sf-vault-year{display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:center;min-height:44px;min-width:58px;padding:8px 10px;border:1px solid #79613b;border-radius:9px;background:#151b1c;color:#f0d191;text-align:left;cursor:pointer;font:600 12px/1.2 system-ui}
+.sf-vault-year strong{font-weight:800}.sf-vault-year small{grid-row:2;grid-column:1/-1;font-size:9px;color:#b6b4a7;overflow-wrap:anywhere}
+.sf-vault-year>span{grid-column:2;grid-row:1}
+.sf-vault-year:hover,.sf-vault-year.is-selected{border-color:#edc773;background:#393021}
+.sf-vault-year:focus-visible{outline:2px solid #f0cc7c;outline-offset:2px}
+.sf-vault-category-grid:has(>.sf-vault-hardware:only-child){grid-template-columns:1fr!important}
+.sf-vault-category-grid>.sf-vault-hardware:only-child{display:grid!important;grid-template-columns:100px minmax(0,1fr);gap:6px 16px;align-items:center!important}
+.sf-vault-category-grid>.sf-vault-hardware:only-child .sf-vault-case-art{grid-column:1;grid-row:1/4;height:120px;margin:0;border-bottom:0;border-right:1px solid #79613b66}
+.sf-vault-category-grid>.sf-vault-hardware:only-child .sf-vault-case-art img{height:110px!important}
+.sf-vault-category-grid>.sf-vault-hardware:only-child .sf-vault-case-name{grid-column:2;grid-row:1;align-self:end}
+.sf-vault-category-grid>.sf-vault-hardware:only-child .sf-vault-year-hint{grid-column:2;grid-row:2;margin:0!important}
+.sf-vault-category-grid>.sf-vault-hardware:only-child .sf-vault-years{grid-column:2;grid-row:3;align-self:start;margin:0}
+.sf-vault-category-empty{grid-column:1/-1;margin:0;padding:18px;border:1px dashed #79613b55;border-radius:9px;color:#9ba39e;font:400 12px/1.5 system-ui}
+@media(max-width:760px){.sf-vault-category-heading h3{font-size:24px!important}.sf-vault-hardware .sf-vault-case-name{font-size:17px!important}.sf-vault-hardware .sf-vault-case-art{height:105px}.sf-vault-hardware .sf-vault-case-art img{height:95px!important}.sf-vault-year{padding:8px;gap:3px 5px}.sf-vault-categories{gap:24px}}
 </style>
 </head>
 <body>
@@ -8984,6 +9013,23 @@ function sfVaultOpenDialog(x,trigger){
  dialog.addEventListener('close',()=>{props.forEach(p=>body.style[p]=saved[p]);html.style.overflow=htmlOverflow;window.scrollTo(0,y);trigger?.focus({preventScroll:true})},{once:true});
  dialog.showModal();
 }
+function sfVaultHardwareGroups(entries){
+ return [['national','Natty'],['conference','Conference'],['bowl','Bowl'],['award','Individual Awards']].map(([category,label])=>{
+  const groups=new Map(),rows=entries.filter(x=>x.category===category);
+  rows.forEach(x=>{
+   const award=category==='award'?SF_VAULT_AWARD_ART.find(a=>a.id===sfVaultAwardArt(x.name)?.id):null;
+   const name=category==='national'?'National Championship':award?.name||x.name;
+   const key=sfVaultAwardName(name).replace(/^conference usa|^c usa/,'cusa');
+   if(!groups.has(key))groups.set(key,{name,art:x,entries:[]});groups.get(key).entries.push(x);
+  });
+  const hardware=[...groups.values()].sort((a,b)=>a.name.localeCompare(b.name));
+  hardware.forEach(g=>g.entries.sort((a,b)=>Number(a.year||a.season_number||0)-Number(b.year||b.season_number||0)||a.coach_name.localeCompare(b.coach_name)));
+  return {category,label,count:rows.length,groups:hardware};
+ });
+}
+function sfVaultHardwareMarkup(shown,selection){
+ return sfVaultHardwareGroups(shown).filter(section=>selection.type==='all'||section.category===selection.type).map(section=>`<section class="sf-vault-category" data-vault-category="${section.category}" aria-labelledby="sfVaultCategory-${section.category}"><header class="sf-vault-category-heading"><h3 id="sfVaultCategory-${section.category}">${section.label}</h3><span>${section.count} earned</span></header><div class="sf-vault-grid sf-vault-category-grid">${section.groups.map(group=>`<article class="sf-vault-case sf-vault-hardware"><div class="sf-vault-case-art">${sfVaultArtImage(group.art,true)}</div><h4 class="sf-vault-case-name">${esc(group.name)}</h4><p class="sf-vault-year-hint">Earned years · tap for details</p><div class="sf-vault-years">${group.entries.map(x=>`<button type="button" class="sf-vault-year${x.key===selection.selected?' is-selected':''}" data-vault-trophy="${esc(x.key)}" aria-pressed="${x.key===selection.selected}" aria-label="View ${esc(x.name)}, ${esc(x.coach_name)}, ${x.year?'year '+esc(x.year)+', ':''}season ${esc(x.season_number??'not recorded')}"><strong>${x.year||('S'+(x.season_number??'—'))}</strong>${selection.coach==='all'?`<small>${esc(x.coach_name)}</small>`:''}<span aria-hidden="true">↗</span></button>`).join('')}</div></article>`).join('')||'<p class="sf-vault-category-empty">No hardware '+(shown.length?'in this category for these filters.':'recorded yet.')+'</p>'}</div></section>`).join('');
+}
 function renderTrophies(){
  const root=$('insightsTrophyRoom');if(!root)return;
  const v=sfVaultSelection,dynasty=String(D?.dynasty_id||'');
@@ -9008,8 +9054,8 @@ function renderTrophies(){
  <div class="sf-vault-filters"><label>Coach<select id="sfVaultCoach">${option('all','All coaches',v.coach)}${model.coaches.map(c=>option(c.key,c.coach_name,v.coach)).join('')}</select></label><label>Season<select id="sfVaultSeason">${option('all','All seasons',v.season)}${seasonNos.map(n=>{const s=(seasons||[]).find(s=>Number(s.season_number)===Number(n));return option(n,`Season ${n}${s?.year?' · '+s.year:''}`,v.season)}).join('')}</select></label><label>Hardware<select id="sfVaultType">${[['all','All hardware'],['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>option(k,t,v.type)).join('')}</select></label></div>
  <header class="sf-vault-plaque">${portrait?`<div class="sf-vault-portrait"><img src="${esc(portrait)}" alt="${esc(coach.coach_name)} coach portrait"></div>`:`<div class="sf-vault-seal"><img src="${esc(D?.logo_url||'assets/saturday-foundry-shield.webp')}" alt="${esc(D?.name||'Dynasty')} logo"></div>`}<div class="sf-vault-identity"><span class="sf-vault-kicker">${coach?'COACH COLLECTION':'DYNASTY COLLECTION'}</span><h4>${esc(coach?.coach_name||D?.name||'Dynasty')}</h4><p>${esc(program?.team||'Every coach. Every chapter.')}${years.length?` · ${years[0]}${years.length>1?'–'+years[years.length-1]:''}`:''}</p>${coach?`<p class="sf-vault-coach-record">Bowl record <b>${bowlRecord}</b> · CFP appearances <b>${cfpApps}</b></p>`:''}${coach&&!program?.active?'<span class="sf-vault-retired">RETIRED · LEGACY PRESERVED</span>':''}</div>${program?.logo?`<img class="sf-vault-team-logo" src="${esc(program.logo)}" alt="${esc(program.team)} logo">`:''}<div class="sf-vault-total"><b>${honors.length}</b><span>Earned trophies</span></div></header>
  <div id="trophyRoomSummary" class="sf-vault-summary">${[['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>`<div><b>${counts(k)}</b><span>${t}</span></div>`).join('')}</div>
- <div class="sf-vault-collection-head"><span>THE COLLECTION</span><p role="status">${shown.length} ${shown.length===1?'trophy':'trophies'}${v.type!=='all'||v.season!=='all'?' matching filters':''}</p></div>
- <div class="sf-vault-layout"><div id="trophyGrid" class="sf-vault-grid">${shown.map(x=>`<button type="button" class="sf-vault-case${x.key===v.selected?' is-selected':''}" data-vault-trophy="${esc(x.key)}" aria-pressed="${x.key===v.selected}" aria-label="View ${esc(x.name)}, ${esc(x.coach_name)}, season ${esc(x.season_number??'not recorded')}"><span class="sf-vault-case-tag">${x.year||('S'+(x.season_number??'—'))}</span><div class="sf-vault-case-art">${sfVaultArtImage(x,true)}</div><span class="sf-vault-case-name">${esc(x.name)}</span><span class="sf-vault-case-meta">${esc(x.category==='award'?x.player_name||x.coach_name:x.team_name)}</span><span class="sf-vault-case-action">View achievement <span aria-hidden="true">↗</span></span></button>`).join('')||`<div class="sf-vault-empty"><span>THE COLLECTION</span><h3>${all.length?'No trophies match these filters.':'The legacy starts here.'}</h3><p>${all.length?'Try another coach, season, or hardware type.':'Championships and player awards will appear as they are recorded.'}</p>${all.length?'<button type="button" data-vault-reset>Reset filters</button>':''}</div>`}</div><aside class="sf-vault-detail" aria-label="Selected trophy">${sfVaultDetails(selected)}</aside></div>
+ <p class="sf-vault-results" role="status">${shown.length} ${shown.length===1?'achievement':'achievements'}${v.type!=='all'||v.season!=='all'?' matching filters':''}${all.length&&!shown.length?' · <button type="button" data-vault-reset>Reset filters</button>':''}</p>
+ <div class="sf-vault-layout"><div id="trophyGrid" class="sf-vault-categories">${sfVaultHardwareMarkup(shown,v)}</div><aside class="sf-vault-detail" aria-label="Selected trophy">${sfVaultDetails(selected)}</aside></div>
  <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"></div></section>`;
  const existingFilters=root.querySelector('.sf-vault-filters');
  if(existingFilters){
@@ -12647,7 +12693,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.13'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.14'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12680,7 +12726,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.13'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.14'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13357,7 +13403,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.9.13";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.14";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14468,7 +14514,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.13';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.14';
   }
   function boot(){
     build();
@@ -14478,7 +14524,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.9.13';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.14';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14885,7 +14931,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.9.13';
+    if(m)m.textContent='QA 9.9.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16895,7 +16941,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.9.13';
+    if(m)m.textContent='QA 9.9.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16905,7 +16951,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.13';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.14';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
