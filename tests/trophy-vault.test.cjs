@@ -27,6 +27,13 @@ context.state.trophies.push({person_id:'c',season_number:2,type:'bowl_championsh
 assert.equal(context.sfVaultModel().entries.length,5,'New live records must update the collection');
 context.state={career:[],programs:[],trophies:[],heismans:[],allGames:[]};
 assert.equal(context.sfVaultModel().entries.length,0,'Switching leagues must clear old records');
+// Spreadsheet imports use recipient_name and metadata, while RPC details may be null.
+context.state={career:[],programs:[],allGames:[],trophies:[{id:'jet1',person_id:'coach1',coach_name:'Coach',season_id:'s1',type:'player_award',name:'Jet Award',recipient_name:'Return Winner',metadata:{team:'Historical Team',position:'KR'}}],heismans:[{award_id:'jet1',person_id:'coach1',coach_name:'Coach',season_id:'s1',award_name:'Jet Award',player_name:null,team_name:'Current Team'}]};
+model=context.sfVaultModel();assert.equal(model.entries.length,1);assert.equal(model.entries[0].player_name,'Return Winner');assert.equal(model.entries[0].player_position,'KR');assert.equal(model.entries[0].team_name,'Historical Team');assert.equal(model.entries[0].artworkId,'jet');
+context.state.trophies=[{id:'j2',person_id:'coach1',coach_name:'Coach',season_id:'s1',type:'player_award',name:'Jet Award',metadata:{player_name:'Commissioner Winner'}}];context.state.heismans=[];
+assert.equal(context.sfVaultModel().entries[0].player_name,'Commissioner Winner');
+context.state.trophies=[];context.state.heismans=[{person_id:'rpcOnly',coach_name:'RPC Coach',season_id:'s1',award_name:'New Award'}];
+assert.equal(context.sfVaultModel().coaches[0].key,'rpcOnly');assert.equal(context.sfVaultModel().entries[0].category,'award');
 let syntaxCount=0;
 for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/json/.test(match[1]))continue;new vm.Script(match[2]);syntaxCount++}
 const img={dataset:{vaultFallback:'assets/trophy-vault/award.webp'},src:'missing.webp',getAttribute(){return this.src},replaceWith(el){this.replacement=el}};
