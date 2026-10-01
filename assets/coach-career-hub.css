@@ -1,4 +1,4 @@
-/* QA 9.9.3: scoped career hub and persistent iOS focus zoom protection. */
+/* PROD 9.9.3: scoped career hub and persistent iOS focus zoom protection. */
 #dynastyChooserScreen #sfCareerHub{margin:18px 36px;color:#f0f4f5;min-width:0}
 #dynastyChooserScreen .sf-career-card{display:grid;grid-template-columns:150px minmax(0,1fr);border:1px solid #9d793a;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at top right,#28302b,transparent 65%),#0b151a;box-shadow:0 12px 32px #0005}
 #dynastyChooserScreen .sf-career-portrait{min-height:230px;background:#111d22;overflow:hidden}

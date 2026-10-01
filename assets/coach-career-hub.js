@@ -1,4 +1,4 @@
-/* Saturday Foundry QA 9.9.3 — authenticated coach career landing. */
+/* Saturday Foundry PROD 9.9.3 — authenticated coach career landing. */
 let sfCareerHubData=null;
 let sfCareerRequest=0;
 function sfEditionYear(value){const digits=String(value||'').replace(/\D/g,'');const n=Number(digits);return n>0&&n<100?2000+n:n;}
