@@ -9704,7 +9704,7 @@ async function renderDynastyChooser({silent=false}={}){
  if(!chooser||!grid)return;
  const count=dynasties.length;
  if(sub)sub.textContent="Your dynasty, forged on Saturdays. Your legacy, across every edition.";
- $("sfActiveEditionTitle").textContent=`Choose your dynasty · College Football ${window.sfActiveGameEdition}`;
+ $("sfActiveEditionTitle").textContent="Choose your dynasty";
  $("claimScreen").classList.add("hidden");$("teamScreen").classList.add("hidden");$("app").classList.add("hidden");$("navWrap").classList.add("hidden");
  chooser.classList.remove("hidden");document.body.classList.add("dynasty-chooser-active");
  if(!silent)grid.innerHTML='<div class="dynasty-chooser-empty" role="status">Loading your dynasties…</div>';
