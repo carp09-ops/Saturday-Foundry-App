@@ -11,6 +11,6 @@ assert.equal(ctx.sfCareerRecord({wins:0,losses:0,ties:1}),'0–0–1');
 const html=fs.readFileSync('index.html','utf8');let count=0;
 for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/ld\+json/.test(m[1]))continue;new vm.Script(m[2],{filename:`inline-${count++}`});}
 assert(!html.includes('if(dynasties.length===1){hideDynastyChooser();'));
-assert(html.includes('QA 9.9.0'));
+assert(html.includes('QA 9.9.1'));
 assert(!html.includes('user-scalable=no'));
 console.log(`Passed edition filter, retirement scope, record formatting, landing routing and ${count} inline script syntax checks.`);
