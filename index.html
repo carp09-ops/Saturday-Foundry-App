@@ -8884,15 +8884,30 @@ function renderTrophies(){
  const years=[...new Set(honors.map(x=>x.year).filter(Boolean))].sort((a,b)=>a-b);
  const option=(value,label,current)=>`<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;
  const dialog=$('sfVaultDialog');if(dialog?.open)dialog.close();
- root.innerHTML=`<div class="sf-vault-heading"><div><span class="sf-vault-kicker">SATURDAY FOUNDRY · THE ARCHIVE</span><h3>Trophy Room</h3><p>Your dynasty. Its greatest achievements.</p></div><span class="sf-vault-live">Live league records</span></div>
+ const markup=`<div class="sf-vault-heading"><div><span class="sf-vault-kicker">SATURDAY FOUNDRY · THE ARCHIVE</span><h3>Trophy Room</h3><p>Your dynasty. Its greatest achievements.</p></div><span class="sf-vault-live">Live league records</span></div>
  <div class="sf-vault-filters"><div class="sf-vault-league-context"><span>Current league</span><strong>${esc(D?.short_name||D?.name||'Dynasty')}</strong></div><label>Coach<select id="sfVaultCoach">${option('all','All coaches',v.coach)}${model.coaches.map(c=>option(c.key,c.coach_name,v.coach)).join('')}</select></label><label>Season<select id="sfVaultSeason">${option('all','All seasons',v.season)}${seasonNos.map(n=>{const s=(seasons||[]).find(s=>Number(s.season_number)===Number(n));return option(n,`Season ${n}${s?.year?' · '+s.year:''}`,v.season)}).join('')}</select></label><label>Hardware<select id="sfVaultType">${[['all','All hardware'],['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>option(k,t,v.type)).join('')}</select></label></div>
  <header class="sf-vault-plaque">${portrait?`<div class="sf-vault-portrait"><img src="${esc(portrait)}" alt="${esc(coach.coach_name)} coach portrait"></div>`:`<div class="sf-vault-seal">${D?.logo_url?`<img src="${esc(D.logo_url)}" alt="">`:'SF'}</div>`}<div class="sf-vault-identity"><span class="sf-vault-kicker">${coach?'COACH COLLECTION':'DYNASTY COLLECTION'}</span><h4>${esc(coach?.coach_name||D?.name||'Dynasty')}</h4><p>${esc(program?.team||'Every coach. Every chapter.')}${years.length?` · ${years[0]}${years.length>1?'–'+years[years.length-1]:''}`:''}</p>${coach?`<p class="sf-vault-coach-record">Bowl record <b>${bowlRecord}</b> · CFP appearances <b>${cfpApps}</b></p>`:''}${coach&&!program?.active?'<span class="sf-vault-retired">RETIRED · LEGACY PRESERVED</span>':''}</div>${program?.logo?`<img class="sf-vault-team-logo" src="${esc(program.logo)}" alt="${esc(program.team)} logo">`:''}<div class="sf-vault-total"><b>${honors.length}</b><span>Earned trophies</span></div></header>
  <div id="trophyRoomSummary" class="sf-vault-summary">${[['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>`<div><b>${counts(k)}</b><span>${t}</span></div>`).join('')}</div>
  <div class="sf-vault-collection-head"><span>THE COLLECTION</span><p role="status">${shown.length} ${shown.length===1?'trophy':'trophies'}${v.type!=='all'||v.season!=='all'?' matching filters':''}</p></div>
  <div class="sf-vault-layout"><div id="trophyGrid" class="sf-vault-grid">${shown.map(x=>`<button type="button" class="sf-vault-case${x.key===v.selected?' is-selected':''}" data-vault-trophy="${esc(x.key)}" aria-pressed="${x.key===v.selected}" aria-label="View ${esc(x.name)}, ${esc(x.coach_name)}, season ${esc(x.season_number??'not recorded')}"><span class="sf-vault-case-tag">${x.year||('S'+(x.season_number??'—'))}</span><div class="sf-vault-case-art"><img src="${esc(x.art)}" alt="" loading="lazy" onerror="this.hidden=true"></div><span class="sf-vault-case-name">${esc(x.name)}</span><span class="sf-vault-case-meta">${esc(x.category==='award'?x.player_name||x.coach_name:x.team_name)}</span><span class="sf-vault-case-action">View achievement <span aria-hidden="true">↗</span></span></button>`).join('')||`<div class="sf-vault-empty"><span>THE COLLECTION</span><h3>${all.length?'No trophies match these filters.':'The legacy starts here.'}</h3><p>${all.length?'Try another coach, season, or hardware type.':'Championships and player awards will appear as they are recorded.'}</p>${all.length?'<button type="button" data-vault-reset>Reset filters</button>':''}</div>`}</div><aside class="sf-vault-detail" aria-label="Selected trophy">${sfVaultDetails(selected)}</aside></div>
  <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"></div></section>`;
+ const existingFilters=root.querySelector('.sf-vault-filters');
+ if(existingFilters){
+  const template=document.createElement('template');template.innerHTML=markup;
+  const newFilters=template.content.querySelector('.sf-vault-filters');
+  for(const id of ['sfVaultCoach','sfVaultSeason','sfVaultType']){
+   const current=existingFilters.querySelector('#'+id),next=newFilters.querySelector('#'+id);
+   const signature=select=>JSON.stringify([...select.options].map(o=>[o.value,o.textContent]));
+   if(signature(current)!==signature(next))current.replaceChildren(...[...next.options].map(o=>o.cloneNode(true)));
+   current.value=next.value;
+  }
+  existingFilters.querySelector('.sf-vault-league-context strong').textContent=D?.short_name||D?.name||'Dynasty';
+  const children=[...template.content.children];
+  [...root.children].filter(el=>el!==existingFilters).forEach(el=>el.remove());
+  children.filter(el=>!el.classList.contains('sf-vault-filters')).forEach(el=>{if(el.classList.contains('sf-vault-heading'))root.insertBefore(el,existingFilters);else root.append(el)});
+ }else root.innerHTML=markup;
  if(!dialog){const el=document.createElement('dialog');el.id='sfVaultDialog';el.className='sf-vault-dialog';el.setAttribute('aria-label','Trophy details');el.innerHTML='<button type="button" class="sf-vault-close" aria-label="Close trophy details">×</button><div id="sfVaultDialogContent"></div>';document.body.append(el);el.querySelector('button').onclick=()=>el.close();el.addEventListener('click',e=>{if(e.target===el){const r=el.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)el.close()}})}
- root.onchange=e=>{const ids={sfVaultCoach:'coach',sfVaultSeason:'season',sfVaultType:'type'},id=e.target.id;if(ids[id]){v[ids[id]]=e.target.value;v.selected=null;renderTrophies();$(id)?.focus({preventScroll:true})}};
+ root.onchange=e=>{const ids={sfVaultCoach:'coach',sfVaultSeason:'season',sfVaultType:'type'},id=e.target.id;if(ids[id]){v[ids[id]]=e.target.value;v.selected=null;renderTrophies()}};
  root.onclick=e=>{const b=e.target.closest('[data-vault-trophy]');if(e.target.closest('[data-vault-reset]')){Object.assign(v,{coach:'all',season:'all',type:'all',selected:null});renderTrophies();$('sfVaultCoach')?.focus({preventScroll:true});return}if(!b)return;const x=shown.find(x=>x.key===b.dataset.vaultTrophy);if(!x)return;v.selected=x.key;root.querySelectorAll('[data-vault-trophy]').forEach(el=>{const active=el===b;el.classList.toggle('is-selected',active);el.setAttribute('aria-pressed',String(active))});root.querySelector('.sf-vault-detail').innerHTML=sfVaultDetails(x);if(window.matchMedia('(max-width:760px)').matches){$('sfVaultDialogContent').innerHTML=sfVaultDetails(x);$('sfVaultDialog').showModal()}};
  renderVegasTrophies();
 }
@@ -12514,7 +12529,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.5'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.6'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12547,7 +12562,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.5'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.6'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13224,7 +13239,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.5";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.6";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14335,7 +14350,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.5';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.6';
   }
   function boot(){
     build();
@@ -14345,7 +14360,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.5';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.6';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14752,7 +14767,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.5';
+    if(m)m.textContent='QA 9.9.6';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16762,7 +16777,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.5';
+    if(m)m.textContent='QA 9.9.6';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16772,7 +16787,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.5';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.6';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
