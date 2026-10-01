@@ -89,3 +89,37 @@
 #sfCareerTrophyArchiveBody .sf-vault-detail-copy{padding:16px}
 #sfCareerTrophyArchiveBody .sf-vault-case-art img{max-width:100%;object-fit:contain}
 @media(max-width:760px){#sfCareerTrophyArchiveBody .sf-vault-summary{grid-template-columns:repeat(2,minmax(0,1fr))}#sfCareerTrophyArchiveBody .sf-vault-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* QA 9.9.22: horizontal coaching journey, separated by edition and league. */
+#dynastyChooserScreen .sf-journey-timelines{min-width:0}
+#dynastyChooserScreen .sf-journey-guide{font-size:11px;line-height:1.5;color:#9ba99f;margin:12px 0 18px}
+#dynastyChooserScreen .sf-journey-edition{margin:0 0 26px;min-width:0}
+#dynastyChooserScreen .sf-journey-edition-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #6a5530;padding-bottom:10px;margin-bottom:14px}
+#dynastyChooserScreen .sf-journey-edition-head h4{font:700 21px/1.2 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#e8c476;margin:0}
+#dynastyChooserScreen .sf-journey-edition-head>span{font-size:10px;color:#a7a69b;white-space:nowrap}
+#dynastyChooserScreen .sf-journey-league{min-width:0;margin:12px 0 18px;padding:16px 14px 10px;border:1px solid #50442e;border-radius:12px;background:linear-gradient(140deg,#191c18,#0a1214)}
+#dynastyChooserScreen .sf-journey-league-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+#dynastyChooserScreen .sf-journey-league-head>div{min-width:0}
+#dynastyChooserScreen .sf-journey-league-head h5{display:inline;font:700 19px/1.25 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#ede6d2;overflow-wrap:anywhere;margin:0 7px 0 0}
+#dynastyChooserScreen .sf-journey-league-head p{font-size:10px;color:#9ca89f;margin:6px 0 0;line-height:1.4}
+#dynastyChooserScreen .sf-journey-league-head nav{display:flex;gap:6px;flex-shrink:0}
+#dynastyChooserScreen .sf-journey-league-head button{width:36px;height:36px;border:1px solid #705b32;border-radius:8px;background:#1c211c;color:#e8c476;font-size:19px;cursor:pointer}
+#dynastyChooserScreen .sf-journey-league-head button:disabled{opacity:.3;cursor:default}
+#dynastyChooserScreen .sf-journey-rail{display:flex;gap:0;list-style:none;margin:0;padding:6px 0 12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#816739 #131a17;min-width:0}
+#dynastyChooserScreen .sf-journey-rail:focus-visible,#dynastyChooserScreen .sf-journey-league-head button:focus-visible{outline:2px solid #efc86d;outline-offset:3px}
+#dynastyChooserScreen .sf-journey-stop{flex:0 0 180px;min-width:0;position:relative;padding:0 12px 0 0;scroll-snap-align:start}
+#dynastyChooserScreen .sf-journey-year{min-height:47px;box-sizing:border-box;font:700 24px/1.2 'Barlow Condensed',sans-serif;color:#d7c9a6;padding:0 0 12px 10px}
+#dynastyChooserScreen .sf-journey-year>span{display:block;font:500 9px/1.4 Inter,sans-serif;letter-spacing:.03em;color:#8b9b93;margin-top:3px}
+#dynastyChooserScreen .sf-journey-node:after{content:'';position:absolute;left:8px;top:3px;width:170px;height:2px;background:#5d5134}
+#dynastyChooserScreen .sf-journey-stop:last-child .sf-journey-node:after{display:none}
+#dynastyChooserScreen .sf-journey-node{position:relative;width:10px;height:10px;border:2px solid #c3a260;border-radius:50%;background:#17221d;margin:0 0 14px 10px;box-sizing:border-box}
+#dynastyChooserScreen .sf-journey-season{min-height:156px;padding:14px 12px;box-sizing:border-box;border:1px solid #394138;border-radius:10px;background:linear-gradient(155deg,#202820,#0d171a);display:flex;flex-direction:column;align-items:flex-start}
+#dynastyChooserScreen .sf-journey-season img,#dynastyChooserScreen .sf-journey-team-mark{width:42px;height:42px;object-fit:contain;margin-bottom:10px}
+#dynastyChooserScreen .sf-journey-team-mark{display:grid;place-items:center;font:800 22px 'Barlow Condensed',sans-serif;color:#a99976}
+#dynastyChooserScreen .sf-journey-season>b{font:700 18px/1.25 'Barlow Condensed',sans-serif;color:#ede6d2;overflow-wrap:anywhere}
+#dynastyChooserScreen .sf-journey-season>strong{font:700 29px/1.2 'Barlow Condensed',sans-serif;color:#e8c476;margin-top:10px}
+#dynastyChooserScreen .sf-journey-record-label{font-size:9px;color:#8d9e94}
+#dynastyChooserScreen .sf-journey-move{font:700 9px/1.4 Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#e8c476;border-top:1px solid #4d4932;padding-top:7px;margin-top:10px;align-self:stretch}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-node{background:#edc774;box-shadow:0 0 12px #e8c47644}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-year{color:#edc774}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-season{border-color:#aa8743}
+@media(max-width:700px){#dynastyChooserScreen .sf-journey-league{padding:12px 10px 8px}#dynastyChooserScreen .sf-journey-stop{flex-basis:164px}#dynastyChooserScreen .sf-journey-node:after{width:154px}#dynastyChooserScreen .sf-journey-league-head button{width:40px;height:40px}}
