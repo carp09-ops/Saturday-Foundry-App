@@ -13,7 +13,8 @@
 #dynastyChooserScreen .sf-career-metric span{display:block;font-size:11px;color:#a3b2b8;line-height:1.3}
 #dynastyChooserScreen .sf-career-profile-link{display:inline-block;margin-top:16px;color:#f5d68f;font-size:13px;min-height:32px}
 #dynastyChooserScreen .sf-career-edition-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:20px 0 10px}
-#dynastyChooserScreen .sf-career-edition-head h3,#dynastyChooserScreen .sf-career-dynasty-title{font:600 27px/1.2 'Teko',sans-serif;color:#fff;margin:0}
+#dynastyChooserScreen .sf-career-edition-head h3{font:600 27px/1.2 'Teko',sans-serif;color:#fff;margin:0}
+#dynastyChooserScreen #sfActiveEditionTitle{font:600 clamp(18px,2vw,22px)/1.3 'Barlow Condensed',sans-serif;color:#c5ad79;letter-spacing:.04em;text-transform:uppercase;overflow-wrap:break-word}
 #dynastyChooserScreen .sf-career-edition-head span{font-size:11px;color:#9baeb6}
 #dynastyChooserScreen .sf-career-editions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
 #dynastyChooserScreen .sf-career-edition{border:1px solid #344239;padding:14px 18px;background:#0b151aed;border-radius:10px}
