@@ -1,0 +1,24 @@
+const fs=require('node:fs');
+const vm=require('node:vm');
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const code=html.slice(html.indexOf('/* QA 9.9.4: live, per-dynasty trophy vault. */'),html.indexOf('\nfunction careerFor('));
+const context={state:{career:[{person_id:'c',coach_name:'Corey'}],programs:[{person_id:'c',coach_name:'Corey',team_name:'New Team'}],trophies:[{person_id:'c',coach_name:'Corey',season_number:1,type:'player_award',name:'Heisman Trophy'},{person_id:'c',coach_name:'Corey',season_number:1,type:'conference_championship',name:'Conference Championship'},{person_id:'c',coach_name:'Corey',season_number:2,type:'national_championship',name:'National Championship'}],heismans:[{person_id:'c',season_id:'s1',award_name:'Heisman Trophy',player_name:'Test Winner',player_position:'QB'},{person_id:'c',season_id:'s1',award_name:'Maxwell Award',player_name:'Another Winner'}],allGames:[{person_id:'c',season_number:1,team_name:'Old Team'},{person_id:'c',season_number:2,team_name:'New Team'}]},seasons:[{season_id:'s1',season_number:1,year:2026},{season_id:'s2',season_number:2,year:2027}]};
+vm.createContext(context);vm.runInContext(code,context);
+let model=context.sfVaultModel();
+assert.equal(model.entries.length,4,'Award view and player award details must count once');
+const heisman=model.entries.find(x=>x.name==='Heisman Trophy');
+assert.equal(heisman.player_name,'Test Winner');assert.equal(heisman.year,2026);assert.equal(heisman.team_name,'Old Team','Awards follow the team at award time');
+assert.equal(model.entries.filter(x=>x.category==='national').length,1);
+assert.equal(model.entries.filter(x=>x.category==='conference').length,1);
+assert.equal(model.entries.filter(x=>x.category==='award').length,2);
+context.state.programs[0].team_name='Third Team';
+assert.equal(context.sfVaultModel().entries.find(x=>x.name==='Heisman Trophy').team_name,'Old Team');
+context.state.trophies.push({person_id:'c',season_number:2,type:'bowl_championship',name:'Bowl Victory'});
+assert.equal(context.sfVaultModel().entries.length,5,'New live records must update the collection');
+context.state={career:[],programs:[],trophies:[],heismans:[],allGames:[]};
+assert.equal(context.sfVaultModel().entries.length,0,'Switching leagues must clear old records');
+let syntaxCount=0;
+for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/json/.test(match[1]))continue;new vm.Script(match[2]);syntaxCount++}
+console.log(`Trophy vault data checks passed; ${syntaxCount} inline scripts parsed.`);
