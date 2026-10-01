@@ -28,9 +28,9 @@ assert.equal(context.sfVaultModel().entries.length,5,'New live records must upda
 context.state={career:[],programs:[],trophies:[],heismans:[],allGames:[]};
 assert.equal(context.sfVaultModel().entries.length,0,'Switching leagues must clear old records');
 // Spreadsheet imports use recipient_name and metadata, while RPC details may be null.
-context.state={career:[],programs:[],allGames:[],trophies:[{id:'jet1',person_id:'coach1',coach_name:'Coach',season_id:'s1',type:'player_award',name:'Jet Award',recipient_name:'Return Winner',metadata:{team:'Historical Team',position:'KR'}}],heismans:[{award_id:'jet1',person_id:'coach1',coach_name:'Coach',season_id:'s1',award_name:'Jet Award',player_name:null,team_name:'Current Team'}]};
+context.state={career:[],programs:[],allGames:[],trophies:[{id:'jet1',person_id:'coach1',coach_name:'Valid Coach',season_id:'s1',type:'player_award',name:'Jet Award',recipient_name:'Return Winner',metadata:{team:'Historical Team',position:'KR'}}],heismans:[{award_id:'jet1',person_id:'coach1',coach_name:'Valid Coach',season_id:'s1',award_name:'Jet Award',player_name:null,team_name:'Current Team'}]};
 model=context.sfVaultModel();assert.equal(model.entries.length,1);assert.equal(model.entries[0].player_name,'Return Winner');assert.equal(model.entries[0].player_position,'KR');assert.equal(model.entries[0].team_name,'Historical Team');assert.equal(model.entries[0].artworkId,'jet');
-context.state.trophies=[{id:'j2',person_id:'coach1',coach_name:'Coach',season_id:'s1',type:'player_award',name:'Jet Award',metadata:{player_name:'Commissioner Winner'}}];context.state.heismans=[];
+context.state.trophies=[{id:'j2',person_id:'coach1',coach_name:'Valid Coach',season_id:'s1',type:'player_award',name:'Jet Award',metadata:{player_name:'Commissioner Winner'}}];context.state.heismans=[];
 assert.equal(context.sfVaultModel().entries[0].player_name,'Commissioner Winner');
 context.state.trophies=[];context.state.heismans=[{person_id:'rpcOnly',coach_name:'RPC Coach',season_id:'s1',award_name:'New Award'}];
 assert.equal(context.sfVaultModel().coaches[0].key,'rpcOnly');assert.equal(context.sfVaultModel().entries[0].category,'award');
@@ -43,6 +43,8 @@ assert.equal(context.sfVaultCoachPostseason('c').bowlWins,3);assert.equal(contex
 model=context.sfVaultModel();assert.equal(model.entries.filter(x=>x.category==='bowl').length,3);assert.equal(model.entries.filter(x=>x.category==='conference').length,1);assert.equal(model.entries.length,4);
 context.state.games=[{...postseason[2],result:'L'}];assert.equal(context.sfVaultCoachPostseason('c').bowlWins,2);assert.equal(context.sfVaultCoachPostseason('c').bowlLosses,1);
 context.state={trophies:[],heismans:[],allGames:[],games:[],vaultPostseasonGames:[]};assert.equal(context.sfVaultModel().entries.length,0);
+context.state={career:[{person_id:'review',coach_name:'Apple Review'},{person_id:'placeholder',coach_name:'Coach'},{person_id:'human',coach_name:'New Coach'}],trophies:[],heismans:[],allGames:[{id:'cpu',person_id:null,coach_name:null,status:'completed',game_type:'bowl',result:'W',team_name:'Navy'},{id:'test',person_id:'review',coach_name:'Apple Review',status:'completed',game_type:'bowl',result:'W'}]};
+model=context.sfVaultModel();assert.equal(model.coaches.length,1);assert.equal(model.coaches[0].coach_name,'New Coach');assert.equal(model.entries.length,0,'CPU games and review accounts are not coach trophies');
 let syntaxCount=0;
 for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/json/.test(match[1]))continue;new vm.Script(match[2]);syntaxCount++}
 const img={dataset:{vaultFallback:'assets/trophy-vault/award.webp'},src:'missing.webp',getAttribute(){return this.src},replaceWith(el){this.replacement=el}};

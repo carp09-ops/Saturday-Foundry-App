@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* QA 9.9.11: league identity and rounded Legacy controls. */
+/* QA 9.9.12: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -8888,11 +8888,15 @@ function sfVaultArtFallback(img){
 function sfVaultArtImage(x,lazy=false){return `<img src="${esc(x.art)}" alt=""${lazy?' loading="lazy"':''} decoding="async" data-vault-fallback="${esc(x.artFallback||'assets/trophy-vault/award.webp')}" onerror="sfVaultArtFallback(this)">`}
 
 const sfVaultSelection={dynasty:null,coach:'all',season:'all',type:'all',selected:null};
+function sfVaultValidCoach(x){
+ const name=String(x.coach_name||x.display_name||'').trim();
+ return !!name&&!/^(coach|unknown|unassigned|cpu|computer|apple\s*review)$/i.test(name)&&String(x.person_id||'')!=='9d5069d5-7dd3-43cf-ae79-1adb269d3201';
+}
 function sfVaultPostseasonGames(){
  const rows=new Map();
  // Complete postseason snapshot is available before the full history enrichment.
  [...(state.allGames||[]),...(state.vaultPostseasonGames||[]),...(state.games||[])].forEach(g=>{
-  if(g.status!=='completed'||g.is_bye)return;
+  if(g.status!=='completed'||g.is_bye||!g.person_id||!sfVaultValidCoach(g))return;
   const key=[g.id||[g.season_id||g.season_number,g.week_number,g.team_name,g.opponent_team].join('|'),g.person_id].join('|');rows.set(key,g);
  });
  return [...rows.values()];
@@ -8907,13 +8911,13 @@ function sfVaultModel(){
  const personKey=x=>String(x.person_id||norm(x.coach_name||x.recipient_name)||'unknown');
  const category=x=>{const t=norm(x.type||x.name);return /national.*champ/.test(t)?'national':/conference/.test(t)?'conference':/bowl/.test(t)?'bowl':'award'};
  const coaches=new Map();
- [...(state.career||[]),...(state.programs||[]),...(state.dynastyCoaches||[]),...(state.trophies||[]),...(state.heismans||[])].forEach(x=>{const key=personKey(x);if(key!=='unknown'&&!coaches.has(key))coaches.set(key,{...x,key,coach_name:x.coach_name||x.display_name||x.recipient_name||'Coach'})});
+ [...(state.career||[]),...(state.programs||[]),...(state.dynastyCoaches||[]),...(state.trophies||[]),...(state.heismans||[])].filter(sfVaultValidCoach).forEach(x=>{const key=personKey(x);if(key!=='unknown'&&!coaches.has(key))coaches.set(key,{...x,key,coach_name:x.coach_name||x.display_name})});
  const seasonFor=x=>(seasons||[]).find(s=>(x.season_id&&String(s.season_id)===String(x.season_id))||(x.season_number!=null&&Number(s.season_number)===Number(x.season_number)));
  const awardRows=state.heismans||[];
  const sameSeason=(a,b)=>a.season_id&&b.season_id?String(a.season_id)===String(b.season_id):Number(a.season_number??seasonFor(a)?.season_number)===Number(b.season_number??seasonFor(b)?.season_number);
  const samePerson=(a,b)=>personKey(a)===personKey(b);
  const used=new Set();
- const entries=(state.trophies||[]).map((t,i)=>{
+ const entries=(state.trophies||[]).filter(t=>coaches.has(personKey(t))).map((t,i)=>{
   let detail=null;
   if(category(t)==='award'){
    const candidates=awardRows.filter(a=>samePerson(t,a)&&sameSeason(t,a));
@@ -8923,7 +8927,7 @@ function sfVaultModel(){
   }
   return {...t,...(detail||{}),team_name:t.team_name||t.metadata?.team||detail?.team_name,player_name:t.metadata?.player_name||detail?.player_name||(!t.metadata?.historical_count_import&&t.recipient_name!==t.coach_name?t.recipient_name:null),player_position:t.metadata?.position||detail?.player_position,type:t.type,name:detail?.award_name||t.name||String(t.type||'Award').replaceAll('_',' '),key:'t'+i,category:category(t),coachKey:personKey(t)};
  });
- awardRows.filter(a=>!used.has(a)).forEach((a,i)=>entries.push({...a,key:'a'+i,category:'award',coachKey:personKey(a),name:a.award_name||'Heisman Trophy'}));
+ awardRows.filter(a=>!used.has(a)&&coaches.has(personKey(a))).forEach((a,i)=>entries.push({...a,key:'a'+i,category:'award',coachKey:personKey(a),name:a.award_name||'Heisman Trophy'}));
  // Game wins remain earned hardware even when an award row was never created.
  sfVaultPostseasonGames().filter(g=>g.result==='W').forEach(g=>{
   const kind=g.game_type==='conference_championship'?'conference':g.game_type==='national_championship'?'national':g.game_type==='bowl'||(g.game_type==='playoff'&&/\bbowl\b/i.test(g.event_name||''))?'bowl':null;
@@ -12617,7 +12621,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.12'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12650,7 +12654,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.12'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13327,7 +13331,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.11";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.12";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14438,7 +14442,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.12';
   }
   function boot(){
     build();
@@ -14448,7 +14452,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.11';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.12';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14855,7 +14859,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.11';
+    if(m)m.textContent='QA 9.9.12';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16865,7 +16869,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.11';
+    if(m)m.textContent='QA 9.9.12';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16875,7 +16879,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.11';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.12';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
