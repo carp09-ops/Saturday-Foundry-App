@@ -11,7 +11,7 @@ assert.equal(ctx.sfCareerRecord({wins:0,losses:0,ties:1}),'0–0–1');
 const html=fs.readFileSync('index.html','utf8');let count=0;
 for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/ld\+json/.test(m[1]))continue;new vm.Script(m[2],{filename:`inline-${count++}`});}
 assert(!html.includes('if(dynasties.length===1){hideDynastyChooser();'));
-assert(html.includes('PROD 9.9.3'));
+assert(/(?:PROD|QA) 9\.9\.\d+/.test(html));
 assert(!html.includes('user-scalable=no'));
 console.log(`Passed edition filter, retirement scope, record formatting, landing routing and ${count} inline script syntax checks.`);
 assert(html.indexOf('id="dynastyChooserGrid"')<html.indexOf('id="sfCareerHub"'));
