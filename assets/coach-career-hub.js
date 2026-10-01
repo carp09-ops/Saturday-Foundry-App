@@ -1,4 +1,4 @@
-/* Saturday Foundry QA 9.9.1 — authenticated coach career landing. */
+/* Saturday Foundry QA 9.9.2 — authenticated coach career landing. */
 let sfCareerHubData=null;
 let sfCareerRequest=0;
 function sfEditionYear(value){const digits=String(value||'').replace(/\D/g,'');const n=Number(digits);return n>0&&n<100?2000+n:n;}
@@ -28,9 +28,65 @@ function sfRenderCareerHub(hub){
  <details><summary>Statistical leaders (${facts.filter(f=>f.kind==='stat_leader').length})</summary><ul class="sf-career-facts">${factRows('stat_leader')||'<li>No statistical leaders recorded yet.</li>'}</ul></details></div></details>`;
  host.querySelector('[data-career-expand]')?.addEventListener('click',e=>{e.preventDefault();const profile=host.querySelector('#sfCareerProfile');profile.open=true;profile.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 }
-async function sfLoadCareerHub(){
+async function sfLoadCareerHub(silent=false){
  const request=++sfCareerRequest,host=document.getElementById('sfCareerHub');if(!host)return;
- host.innerHTML='<div class="sf-career-panel" role="status">Forging your career profile…</div>';
- try{const hub=await Data.careerHub();if(request===sfCareerRequest)sfRenderCareerHub(hub);}
- catch(error){if(request!==sfCareerRequest)return;host.innerHTML='<div class="sf-career-panel" role="status"><p>Your career profile could not load. Your dynasties are still available below.</p><button class="dynasty-chooser-action" type="button">Retry career profile</button></div>';host.querySelector('button').onclick=sfLoadCareerHub;console.warn('Career profile unavailable:',error);}
+ if(!silent)host.innerHTML='<div class="sf-career-panel" role="status">Forging your career profile…</div>';
+ try{const hub=await Data.careerHub();if(request===sfCareerRequest){if(JSON.stringify(hub)!==JSON.stringify(sfCareerHubData)||!host.querySelector('.sf-career-card')){const expanded=[...host.querySelectorAll('details')].map(d=>d.open);sfRenderCareerHub(hub);if(silent)host.querySelectorAll('details').forEach((d,i)=>{if(i<expanded.length)d.open=expanded[i];});}sfCareerSyncLabel(sfCareerSocket?.readyState===1?'Live updates connected':'Auto-refresh active');}}
+ catch(error){if(request!==sfCareerRequest)return;if(silent){sfCareerSyncLabel('Connection interrupted · retrying automatically');return;}host.innerHTML='<div class="sf-career-panel" role="status"><p>Your career profile could not load. Your dynasties are still available below.</p><button class="dynasty-chooser-action" type="button">Retry career profile</button></div>';host.querySelector('button').onclick=sfLoadCareerHub;console.warn('Career profile unavailable:',error);}
+}
+// Private notifications contain no game/coach data; always re-read through the authenticated RPC.
+let sfCareerSocket=null,sfCareerHeartbeat=null,sfCareerFallback=null,sfCareerReconnect=null,sfCareerDebounce=null;
+let sfCareerLiveGeneration=0,sfCareerRefreshing=false,sfCareerRefreshAgain=false;
+function sfCareerSyncLabel(text){const label=document.getElementById('sfCareerSync');if(label)label.textContent=text;}
+function sfCareerIsVisible(){return document.visibilityState!=='hidden'&&document.body.classList.contains('dynasty-chooser-active')&&!!session()?.access_token;}
+function sfStopCareerLive(){
+ sfCareerLiveGeneration++;sfCareerRequest++;sfCareerRefreshing=false;sfCareerRefreshAgain=false;
+ clearInterval(sfCareerHeartbeat);clearInterval(sfCareerFallback);clearTimeout(sfCareerReconnect);clearTimeout(sfCareerDebounce);
+ sfCareerHeartbeat=sfCareerFallback=sfCareerReconnect=sfCareerDebounce=null;
+ if(sfCareerSocket){const socket=sfCareerSocket;sfCareerSocket=null;socket.onclose=null;socket.close();}
+}
+async function sfRefreshCareerLanding(){
+ if(!sfCareerIsVisible())return;
+ if(sfCareerRefreshing){sfCareerRefreshAgain=true;return;}
+ const generation=sfCareerLiveGeneration;sfCareerRefreshing=true;
+ try{const rows=await Data.dynasties();if(generation!==sfCareerLiveGeneration||!sfCareerIsVisible())return;dynasties=rows;await renderDynastyChooser({silent:true});}
+ catch(error){sfCareerSyncLabel('Connection interrupted · retrying automatically');}
+ finally{if(generation===sfCareerLiveGeneration){sfCareerRefreshing=false;if(sfCareerRefreshAgain){sfCareerRefreshAgain=false;sfScheduleCareerRefresh();}}}
+}
+function sfScheduleCareerRefresh(){clearTimeout(sfCareerDebounce);sfCareerDebounce=setTimeout(sfRefreshCareerLanding,350);}
+function sfStartCareerLive(){
+ if(sfCareerFallback||!sfCareerIsVisible())return;
+ sfCareerFallback=setInterval(()=>{if(sfCareerIsVisible())sfRefreshCareerLanding();},30000);
+ sfConnectCareerLive();
+}
+function sfConnectCareerLive(){
+ if(!sfCareerIsVisible()||sfCareerSocket)return;
+ const generation=sfCareerLiveGeneration,s=session(),topic=`realtime:coach-career:${s.user.id}`;
+ let ref=0,token=s.access_token;
+ const socket=new WebSocket(`${URL.replace(/^https:/,'wss:')}/realtime/v1/websocket?apikey=${encodeURIComponent(KEY)}&vsn=1.0.0`);sfCareerSocket=socket;
+ const send=(event,payload={},target=topic)=>{if(socket.readyState===1)socket.send(JSON.stringify({topic:target,event,payload,ref:String(++ref),join_ref:target===topic?'1':null}));};
+ socket.onopen=()=>{
+  if(generation!==sfCareerLiveGeneration){socket.close();return;}
+  send('phx_join',{config:{broadcast:{ack:false,self:false},presence:{enabled:false},private:true},access_token:token});
+  sfCareerHeartbeat=setInterval(()=>{const current=session();if(current?.access_token!==token&&current?.access_token){token=current.access_token;send('access_token',{access_token:token});}send('heartbeat',{},'phoenix');},25000);
+ };
+ socket.onmessage=e=>{
+  if(generation!==sfCareerLiveGeneration)return;
+  let message;try{message=JSON.parse(e.data);}catch{return;}
+  if(message.event==='phx_reply'&&message.ref==='1'){
+   if(message.payload?.status==='ok'){sfCareerSyncLabel('Live updates connected');sfScheduleCareerRefresh();}
+   else{sfCareerSyncLabel('Auto-refresh active');socket.close();}
+  }
+  if(message.event==='broadcast'&&message.payload?.event==='career_changed')sfScheduleCareerRefresh();
+  if(message.event==='phx_error'||message.event==='phx_close')socket.close();
+ };
+ socket.onerror=()=>{sfCareerSyncLabel('Auto-refresh active');socket.close();};
+ socket.onclose=()=>{if(generation!==sfCareerLiveGeneration)return;sfCareerSocket=null;clearInterval(sfCareerHeartbeat);sfCareerHeartbeat=null;sfCareerSyncLabel('Auto-refresh active');sfCareerReconnect=setTimeout(sfConnectCareerLive,5000);};
+}
+if(typeof document!=='undefined'){
+ document.addEventListener('visibilitychange',()=>{if(sfCareerIsVisible()){sfStartCareerLive();sfScheduleCareerRefresh();}else if(document.visibilityState==='hidden')sfStopCareerLive();});
+ window.addEventListener('online',()=>{if(sfCareerIsVisible()){sfStartCareerLive();sfScheduleCareerRefresh();}});
+ window.addEventListener('focus',()=>{if(sfCareerIsVisible()){sfStartCareerLive();sfScheduleCareerRefresh();}});
+ window.addEventListener('pagehide',sfStopCareerLive);
+ window.addEventListener('pageshow',()=>{if(sfCareerIsVisible()){sfStartCareerLive();sfScheduleCareerRefresh();}});
 }
