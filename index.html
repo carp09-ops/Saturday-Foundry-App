@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* PROD 9.9.16: league identity and rounded Legacy controls. */
+/* PROD 9.9.20: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -5441,6 +5441,16 @@ img.sf-dark-logo{
 #trophyRoomSummary.sf-vault-summary>button:focus-visible{outline:2px solid #f5db9f;outline-offset:-4px}
 .sf-vault-metric-hint{font:500 10px/1.5 system-ui;color:#b4a17e;margin:0 0 18px}
 </style>
+
+<style id="sf-more-refresh-account-9-9-20">
+#hqMobileMoreSheet .hq-more-account{flex-wrap:wrap}
+#hqMobileMoreSheet .hq-more-account-meta{flex-basis:100%}
+#hqMobileMoreSheet .sf-more-account-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+#hqMobileMoreSheet .sf-more-account-actions #refreshDataBtn,#hqMobileMoreSheet .sf-more-account-actions .hq-more-logout{box-sizing:border-box;width:100%!important;min-width:0!important;height:46px!important;min-height:46px!important;padding:0 10px!important;display:flex!important;justify-content:center;align-items:center;gap:8px!important;border:1px solid rgba(216,170,77,.30)!important;border-radius:10px!important;background:linear-gradient(180deg,rgba(31,29,23,.96),rgba(12,13,12,.99))!important;color:#f4d17d!important;font:800 10px system-ui!important;letter-spacing:.06em!important;text-transform:uppercase}
+#hqMobileMoreSheet #refreshDataBtn .utility-label{display:block!important;font:inherit!important;color:inherit!important}
+#hqMobileMoreSheet #refreshDataBtn .sf-refresh-glyph,#hqMobileMoreSheet .hq-more-logout-icon{width:20px;height:20px;display:grid;place-items:center;font-size:20px!important;line-height:1!important;color:#f4d17d!important}
+#hqMobileMoreSheet #refreshDataBtn svg{width:20px;height:20px}
+</style>
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -5502,7 +5512,7 @@ img.sf-dark-logo{
       </nav></div>
       <div id="sessionBar" class="session hidden">
         <select id="dynastySelect" class="hidden"></select>
-        <button id="dynastyMenuBtn" class="dynasty-menu-btn" type="button" aria-haspopup="dialog"><span class="utility-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNNDMgMjBoNDJ2MjJjMCAyMC04IDMyLTIxIDM2LTEzLTQtMjEtMTYtMjEtMzZWMjBaIiBmaWxsPSJ1cmwoI2dvbGQpIiBzdHJva2U9IiM4YzVhMTEiIHN0cm9rZS13aWR0aD0iMyIvPgo8cGF0aCBkPSJNNDMgMjhIMjdjMCAyMiA4IDMxIDI0IDMyTTg1IDI4aDE2YzAgMjItOCAzMS0yNCAzMiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjYiLz4KPHBhdGggZD0iTTY0IDc4djE4TTQ2IDEwOGgzNk01MSA5NmgyNiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjciLz4KPC9nPgo8L3N2Zz4=" alt=""></span><span class="dynasty-menu-label">Dynasties</span><span class="dynasty-menu-caret" aria-hidden="true">▾</span></button>
+        <button id="dynastyMenuBtn" class="dynasty-menu-btn" type="button" aria-label="Open main dynasty selector"><span class="utility-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNNDMgMjBoNDJ2MjJjMCAyMC04IDMyLTIxIDM2LTEzLTQtMjEtMTYtMjEtMzZWMjBaIiBmaWxsPSJ1cmwoI2dvbGQpIiBzdHJva2U9IiM4YzVhMTEiIHN0cm9rZS13aWR0aD0iMyIvPgo8cGF0aCBkPSJNNDMgMjhIMjdjMCAyMiA4IDMxIDI0IDMyTTg1IDI4aDE2YzAgMjItOCAzMS0yNCAzMiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjYiLz4KPHBhdGggZD0iTTY0IDc4djE4TTQ2IDEwOGgzNk01MSA5NmgyNiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjciLz4KPC9nPgo8L3N2Zz4=" alt=""></span><span class="dynasty-menu-label">Dynasties</span><span class="dynasty-menu-caret" aria-hidden="true">▾</span></button>
         <span id="sessionEmail"></span>
         <button id="signOutBtn"><span class="utility-icon"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNNjggMjVIMjh2NzhoNDAiIHN0cm9rZT0idXJsKCNnb2xkKSIgc3Ryb2tlLXdpZHRoPSI3Ii8+CjxwYXRoIGQ9Ik01OSA2NGg1ME05MSA0N2wxOCAxNy0xOCAxNyIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjgiLz4KPC9nPgo8L3N2Zz4=" alt=""></span><span class="utility-label">Sign Out</span></button>
       </div>
@@ -5695,7 +5705,7 @@ img.sf-dark-logo{
         <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
       </div>
       <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
-      <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
+      
   </div>
 
  </section>
@@ -9041,6 +9051,14 @@ function sfVaultHardwareGroups(entries){
 function sfVaultHardwareMarkup(shown,selection){
  return sfVaultHardwareGroups(shown).filter(section=>selection.type==='all'||section.category===selection.type).map(section=>`<section class="sf-vault-category" data-vault-category="${section.category}" aria-labelledby="sfVaultCategory-${section.category}"><header class="sf-vault-category-heading"><h3 id="sfVaultCategory-${section.category}">${section.label}</h3><span>${section.count} earned</span></header><div class="sf-vault-grid sf-vault-category-grid">${section.groups.map(group=>`<article class="sf-vault-case sf-vault-hardware"><div class="sf-vault-case-art">${sfVaultArtImage(group.art,true)}</div><h4 class="sf-vault-case-name">${esc(group.name)}</h4><p class="sf-vault-year-hint">Earned years · tap for details</p><div class="sf-vault-years">${group.entries.map(x=>`<button type="button" class="sf-vault-year${x.key===selection.selected?' is-selected':''}" data-vault-trophy="${esc(x.key)}" aria-pressed="${x.key===selection.selected}" aria-label="View ${esc(x.name)}, ${esc(x.coach_name)}, ${x.year?'year '+esc(x.year)+', ':''}season ${esc(x.season_number??'not recorded')}"><strong>${x.year||('S'+(x.season_number??'—'))}</strong>${selection.coach==='all'?`<small>${esc(x.coach_name)}</small>`:''}<span aria-hidden="true">↗</span></button>`).join('')}</div></article>`).join('')||'<p class="sf-vault-category-empty">No '+({national:'national championships',conference:'conference titles',bowl:'bowl trophies',award:'individual awards'}[section.category])+' earned for these filters.</p>'}</div></section>`).join('');
 }
+
+function sfArchiveEntries(hub,edition,dynasty){
+ return (hub?.honors||[]).filter(x=>Number(x.game_edition_year)===Number(edition)&&(dynasty==='all'||String(x.dynasty_id)===String(dynasty))).map((x,i)=>{
+  const category=/national.*champ/i.test(x.type||x.name||'')?'national':/conference/i.test(x.type||x.name||'')?'conference':/bowl/i.test(x.type||x.name||'')?'bowl':'award';
+  const name=x.name||String(x.type||'Award').replaceAll('_',' '),artFallback=category==='national'?'assets/cfp-trophy-transparent.png':`assets/trophy-vault/${category}.webp`;
+  return {...x,key:'archive-'+i,category,name,coachKey:'career',coach_name:hub.coach?.name||'Coach',team_name:x.team_name||x.metadata?.team||'Team not recorded',player_name:x.player_name||x.metadata?.player_name||(!x.metadata?.historical_count_import?x.recipient_name:null),artFallback,art:category==='award'?(sfVaultAwardArt(name)?.src||artFallback):artFallback};
+ });
+}
 function renderTrophies(){
  const root=$('insightsTrophyRoom');if(!root)return;
  const v=sfVaultSelection,dynasty=String(D?.dynasty_id||'');
@@ -9069,7 +9087,7 @@ function renderTrophies(){
  <p class="sf-vault-metric-hint">Tap a category to filter · tap again to show all</p>
  <p class="sf-vault-results" role="status">${shown.length} ${shown.length===1?'achievement':'achievements'}${v.type!=='all'||v.season!=='all'?' matching filters':''}${all.length&&!shown.length?' · <button type="button" data-vault-reset>Reset filters</button>':''}</p>
  <div class="sf-vault-layout"><div id="trophyGrid" class="sf-vault-categories">${sfVaultHardwareMarkup(shown,v)}</div><aside class="sf-vault-detail" aria-label="Selected trophy">${sfVaultDetails(selected)}</aside></div>
- <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"></div></section>`;
+ `;
  const existingFilters=root.querySelector('.sf-vault-filters');
  if(existingFilters){
   const template=document.createElement('template');template.innerHTML=markup;
@@ -9786,7 +9804,13 @@ function closeDynastyHub(){
  $("dynastyMenuModal").classList.add("hidden");
  document.body.style.overflow="";
 }
-$("dynastyMenuBtn").onclick=openDynastyHub;
+async function openMainDynastySelector(){
+ closeDynastyHub();
+ try{dynasties=await Data.dynasties();}catch(error){console.warn('Dynasty refresh unavailable; using loaded leagues.',error);}
+ await renderDynastyChooser();
+ window.scrollTo({top:0,behavior:'instant'});
+}
+$("dynastyMenuBtn").onclick=openMainDynastySelector;
 $("closeDynastyMenuBtn").onclick=closeDynastyHub;
 $("dynastyMenuModal").onclick=e=>{if(e.target===$("dynastyMenuModal"))closeDynastyHub()};
 $("dynastyHubList").onclick=async e=>{
@@ -12706,7 +12730,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.16'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.20'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12739,7 +12763,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.16'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.20'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13416,7 +13440,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.9.16";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.9.20";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14527,7 +14551,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.16';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.20';
   }
   function boot(){
     build();
@@ -14537,7 +14561,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.9.16';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.9.20';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14944,7 +14968,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.9.16';
+    if(m)m.textContent='PROD 9.9.20';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14968,8 +14992,13 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   function activeViewName(){return document.querySelector('.view.active')?.id||'overview'}
   function setSyncStatus(text,kind=''){const el=byId('syncStatus');if(el){el.textContent=text;el.dataset.refreshState=kind||'';}const mobile=document.querySelector('.canonical-mobile-head .text-emerald-300');if(mobile)mobile.textContent=text;}
   function setRefreshControlsBusy(on){document.querySelectorAll('#refreshDataBtn,[data-mobile-more-action="refresh"]').forEach(b=>{b.disabled=!!on;b.classList.toggle('is-refreshing',!!on);b.setAttribute('aria-busy',on?'true':'false');});}
-  function ensureDesktopRefresh(){const bar=byId('sessionBar');if(!bar||byId('refreshDataBtn'))return;const btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true">↻</span><span class="utility-label">Refresh</span>';const email=byId('sessionEmail');if(email)bar.insertBefore(btn,email);else bar.appendChild(btn);}
-  function ensureMobileRefresh(){const g=byId('hqMobileMoreGrid');if(!g||g.querySelector('[data-mobile-more-action="refresh"]'))return;const b=document.createElement('button');b.type='button';b.dataset.mobileMoreAction='refresh';b.innerHTML='<span class="hq-more-icon" aria-hidden="true">↻</span><span>Refresh Data</span>';g.insertBefore(b,g.firstChild);}
+  function ensureDesktopRefresh(){
+    const account=document.querySelector('#hqMobileMoreSheet .hq-more-account'),logout=account?.querySelector('[data-mobile-more-action="logout"]');if(!account||!logout)return;
+    let actions=account.querySelector('.sf-more-account-actions');if(!actions){actions=document.createElement('div');actions.className='sf-more-account-actions';account.append(actions);actions.append(logout);}
+    let btn=byId('refreshDataBtn');if(!btn){btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></span><span class="utility-label">Refresh Data</span>';}
+    if(btn.parentElement!==actions)actions.prepend(btn);
+  }
+  function ensureMobileRefresh(){document.querySelectorAll('[data-mobile-more-action="refresh"]').forEach(b=>b.remove());ensureDesktopRefresh();}
   function restoreView(view,scrollX,scrollY){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view));document.querySelectorAll('#nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.querySelectorAll('#hqMobileNav [data-mobile-view]').forEach(b=>b.classList.toggle('active',b.dataset.mobileView===view));requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({left:scrollX,top:scrollY,behavior:'auto'})));}
   function updateShellForDynasty(){if(!D)return;const title=byId('headerTitle');if(title&&title.textContent!=='Saturday Foundry')title.textContent=`${D.name} • Saturday Foundry`;const logo=byId('leagueLogo');if(logo)logo.src=D.logo_url||'assets/saturday-foundry-shield.webp';const dynastySelect=byId('dynastySelect');if(dynastySelect){dynastySelect.innerHTML=(dynasties||[]).map((d,idx)=>`<option value="${idx}" ${String(d.dynasty_id)===String(D.dynasty_id)?'selected':''}>${escHtml(d.short_name||d.name)}</option>`).join('');dynastySelect.classList.toggle('hidden',(dynasties||[]).length<2);}if(byId('dynastyHubList')&&typeof renderDynastyHub==='function')renderDynastyHub();}
   function updateSeasonSelector(){const sel=byId('seasonSelect');if(!sel||!S)return;sel.innerHTML=(seasons||[]).map(se=>`<option value="${se.season_id}">Season ${se.season_number}${se.year?` · ${escHtml(se.year)}`:''}${se.is_active?' · Active':''}</option>`).join('');sel.value=S.season_id;}
@@ -16954,7 +16983,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.9.16';
+    if(m)m.textContent='PROD 9.9.20';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16964,7 +16993,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.16';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.9.20';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();

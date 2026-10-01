@@ -76,3 +76,15 @@
 @media(max-width:700px){
  #dynastyChooserScreen .sf-career-portrait{height:260px;padding:10px;box-sizing:border-box}
 }
+/* QA 9.9.17: archived hardware on the coach selector screen. */
+#sfCareerTrophyArchiveBody .sf-vault-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+#sfCareerTrophyArchiveBody .sf-vault-filters label{grid-column:auto}
+#sfCareerTrophyArchiveBody .sf-vault-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+#sfCareerTrophyArchiveBody .sf-vault-summary button{min-width:0;min-height:72px;padding:10px;border:1px solid #655532;border-radius:10px;background:#101a1c;color:#c9c6bc}
+#sfCareerTrophyArchiveBody .sf-vault-summary button b{display:block;font:700 28px 'Barlow Condensed',sans-serif;color:#e8c476}
+#sfCareerTrophyArchiveBody .sf-vault-summary button span{font:700 10px system-ui}
+#sfCareerTrophyArchiveBody .sf-vault-summary button.is-active{border-color:#efc86d;background:#342d1d}
+#sfCareerArchiveDetail:not([hidden]){display:block;margin-top:20px}
+#sfCareerTrophyArchiveBody .sf-vault-detail-copy{padding:16px}
+#sfCareerTrophyArchiveBody .sf-vault-case-art img{max-width:100%;object-fit:contain}
+@media(max-width:760px){#sfCareerTrophyArchiveBody .sf-vault-summary{grid-template-columns:repeat(2,minmax(0,1fr))}#sfCareerTrophyArchiveBody .sf-vault-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
