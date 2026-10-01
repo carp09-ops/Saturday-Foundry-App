@@ -6,6 +6,14 @@ const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
 const code=html.slice(html.indexOf('/* QA 9.9.4: live, per-dynasty trophy vault. */'),html.indexOf('\nfunction careerFor('));
 const context={state:{career:[{person_id:'c',coach_name:'Corey'}],programs:[{person_id:'c',coach_name:'Corey',team_name:'New Team'}],trophies:[{person_id:'c',coach_name:'Corey',season_number:1,type:'player_award',name:'Heisman Trophy'},{person_id:'c',coach_name:'Corey',season_number:1,type:'conference_championship',name:'Conference Championship'},{person_id:'c',coach_name:'Corey',season_number:2,type:'national_championship',name:'National Championship'}],heismans:[{person_id:'c',season_id:'s1',award_name:'Heisman Trophy',player_name:'Test Winner',player_position:'QB'},{person_id:'c',season_id:'s1',award_name:'Maxwell Award',player_name:'Another Winner'}],allGames:[{person_id:'c',season_number:1,team_name:'Old Team'},{person_id:'c',season_number:2,team_name:'New Team'}]},seasons:[{season_id:'s1',season_number:1,year:2026},{season_id:'s2',season_number:2,year:2027}]};
 vm.createContext(context);vm.runInContext(code,context);
+const awardsMenu=html.match(/<select id="heismanAward"[^>]*>([\s\S]*?)<\/select>/)[1];
+const supported=[...awardsMenu.matchAll(/value="([^"]+)"/g)].map(m=>m[1]);
+for(const name of supported){const art=context.sfVaultAwardArt(name);assert.ok(art,`Missing catalog entry: ${name}`);assert.ok(fs.existsSync(path.join(__dirname,'..',art.src)),`Missing artwork file: ${name}`)}
+assert.equal(context.sfVaultAwardArt('Bronko Nagurski Award').id,'bronko-nagurski');
+assert.equal(context.sfVaultAwardArt('Lombardi Award').id,'rotary-lombardi');
+assert.equal(context.sfVaultAwardArt('Davey O’Brien Award').id,'davey-obrien');
+assert.equal(context.sfVaultAwardArt('Shaun Alexander Award').id,'shaun-alexander');
+assert.equal(context.sfVaultAwardArt('An Unfamiliar Future Award'),null);
 let model=context.sfVaultModel();
 assert.equal(model.entries.length,4,'Award view and player award details must count once');
 const heisman=model.entries.find(x=>x.name==='Heisman Trophy');
@@ -21,4 +29,6 @@ context.state={career:[],programs:[],trophies:[],heismans:[],allGames:[]};
 assert.equal(context.sfVaultModel().entries.length,0,'Switching leagues must clear old records');
 let syntaxCount=0;
 for(const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/json/.test(match[1]))continue;new vm.Script(match[2]);syntaxCount++}
-console.log(`Trophy vault data checks passed; ${syntaxCount} inline scripts parsed.`);
+const img={dataset:{vaultFallback:'assets/trophy-vault/award.webp'},src:'missing.webp',getAttribute(){return this.src},replaceWith(el){this.replacement=el}};
+context.document={createElement:()=>({})};context.sfVaultArtFallback(img);assert.equal(img.src,'assets/trophy-vault/award.webp');context.sfVaultArtFallback(img);assert.equal(img.replacement.textContent,'Artwork unavailable');
+console.log(`Award catalog covers ${supported.length} entry-menu awards plus historical extras. Trophy vault data checks passed; ${syntaxCount} inline scripts parsed.`);
