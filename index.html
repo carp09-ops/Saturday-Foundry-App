@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* QA 9.9.18: league identity and rounded Legacy controls. */
+/* QA 9.9.19: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -5442,6 +5442,12 @@ img.sf-dark-logo{
 .sf-vault-metric-hint{font:500 10px/1.5 system-ui;color:#b4a17e;margin:0 0 18px}
 </style>
 
+<style id="sf-more-refresh-header-9-9-19">
+#hqMobileMoreSheet .sf-more-header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+#hqMobileMoreSheet #refreshDataBtn{width:auto!important;min-width:44px!important;height:44px!important;display:flex!important;gap:7px;padding:0 10px!important;flex:0 0 auto!important}
+#hqMobileMoreSheet #refreshDataBtn .utility-label{display:block!important;font:700 11px system-ui;color:#f4d17d!important}
+#hqMobileMoreSheet #refreshDataBtn .sf-refresh-glyph{font-size:22px!important;color:#f4d17d!important}
+</style>
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -12721,7 +12727,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.18'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12754,7 +12760,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.18'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13431,7 +13437,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.18";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.19";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14542,7 +14548,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.18';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19';
   }
   function boot(){
     build();
@@ -14552,7 +14558,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.18';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.19';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14959,7 +14965,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.18';
+    if(m)m.textContent='QA 9.9.19';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14983,8 +14989,13 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   function activeViewName(){return document.querySelector('.view.active')?.id||'overview'}
   function setSyncStatus(text,kind=''){const el=byId('syncStatus');if(el){el.textContent=text;el.dataset.refreshState=kind||'';}const mobile=document.querySelector('.canonical-mobile-head .text-emerald-300');if(mobile)mobile.textContent=text;}
   function setRefreshControlsBusy(on){document.querySelectorAll('#refreshDataBtn,[data-mobile-more-action="refresh"]').forEach(b=>{b.disabled=!!on;b.classList.toggle('is-refreshing',!!on);b.setAttribute('aria-busy',on?'true':'false');});}
-  function ensureDesktopRefresh(){const bar=byId('sessionBar');if(!bar||byId('refreshDataBtn'))return;const btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true">↻</span><span class="utility-label">Refresh</span>';const email=byId('sessionEmail');if(email)bar.insertBefore(btn,email);else bar.appendChild(btn);}
-  function ensureMobileRefresh(){const g=byId('hqMobileMoreGrid');if(!g||g.querySelector('[data-mobile-more-action="refresh"]'))return;const b=document.createElement('button');b.type='button';b.dataset.mobileMoreAction='refresh';b.innerHTML='<span class="hq-more-icon" aria-hidden="true">↻</span><span>Refresh Data</span>';g.insertBefore(b,g.firstChild);}
+  function ensureDesktopRefresh(){
+    const head=document.querySelector('#hqMobileMoreSheet .hq-more-head');if(!head)return;
+    let actions=head.querySelector('.sf-more-header-actions');if(!actions){actions=document.createElement('div');actions.className='sf-more-header-actions';head.append(actions);const close=head.querySelector('.hq-more-close');if(close)actions.append(close);}
+    let btn=byId('refreshDataBtn');if(!btn){btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true">↻</span><span class="utility-label">Refresh Data</span>';}
+    if(btn.parentElement!==actions)actions.prepend(btn);
+  }
+  function ensureMobileRefresh(){document.querySelectorAll('[data-mobile-more-action="refresh"]').forEach(b=>b.remove());ensureDesktopRefresh();}
   function restoreView(view,scrollX,scrollY){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===view));document.querySelectorAll('#nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.querySelectorAll('#hqMobileNav [data-mobile-view]').forEach(b=>b.classList.toggle('active',b.dataset.mobileView===view));requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({left:scrollX,top:scrollY,behavior:'auto'})));}
   function updateShellForDynasty(){if(!D)return;const title=byId('headerTitle');if(title&&title.textContent!=='Saturday Foundry')title.textContent=`${D.name} • Saturday Foundry`;const logo=byId('leagueLogo');if(logo)logo.src=D.logo_url||'assets/saturday-foundry-shield.webp';const dynastySelect=byId('dynastySelect');if(dynastySelect){dynastySelect.innerHTML=(dynasties||[]).map((d,idx)=>`<option value="${idx}" ${String(d.dynasty_id)===String(D.dynasty_id)?'selected':''}>${escHtml(d.short_name||d.name)}</option>`).join('');dynastySelect.classList.toggle('hidden',(dynasties||[]).length<2);}if(byId('dynastyHubList')&&typeof renderDynastyHub==='function')renderDynastyHub();}
   function updateSeasonSelector(){const sel=byId('seasonSelect');if(!sel||!S)return;sel.innerHTML=(seasons||[]).map(se=>`<option value="${se.season_id}">Season ${se.season_number}${se.year?` · ${escHtml(se.year)}`:''}${se.is_active?' · Active':''}</option>`).join('');sel.value=S.season_id;}
@@ -16969,7 +16980,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.18';
+    if(m)m.textContent='QA 9.9.19';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16979,7 +16990,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.18';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
