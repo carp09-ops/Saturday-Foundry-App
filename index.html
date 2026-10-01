@@ -1118,7 +1118,7 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 #glance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.glance-item{text-align:center;padding:.35rem}.glance-item b{display:block;font-family:Teko,sans-serif;font-size:1.75rem;color:#fff}.glance-item span{font-size:.6rem;color:#64748b}
 .ref-gotw .gotw-head{background:linear-gradient(100deg,#f4d15c,#dca52b);color:#071016;display:flex;justify-content:space-between;padding:.5rem .75rem;font-family:'Barlow Condensed',sans-serif;font-weight:850;letter-spacing:.04em;text-transform:uppercase}.gotw-body{padding:1rem}.gotw-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.7rem}.team-side{display:flex;align-items:center;gap:.55rem}.team-side.right{justify-content:flex-end;text-align:right}.team-name{font-family:Teko,sans-serif;font-size:1.25rem;color:#fff;font-weight:750;text-transform:uppercase}.team-meta{font-size:.58rem;color:#64748b}.vs{font-family:Teko,sans-serif;font-size:1.2rem;color:#475569}.gotw-foot{border-top:1px solid rgba(148,163,184,.12);display:flex;justify-content:space-between;margin-top:.8rem;padding-top:.65rem;font-size:.58rem;color:#94a3b8}.team-logo,.team-fallback{width:44px;height:44px;object-fit:contain;border-radius:.55rem}.team-fallback{display:grid;place-items:center;background:#071821;border:1px solid rgba(148,163,184,.15);font-family:Teko,sans-serif;font-size:1.2rem;color:#fff}
 /* Advanced analytics uses original panel hierarchy */
-#analytics.active{display:flex;flex-direction:column;gap:1.25rem}#analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.875rem}.showcase-card{position:relative;overflow:hidden;padding:.9rem;border-radius:.75rem;background:linear-gradient(145deg,rgba(6,18,24,.95),rgba(3,11,15,.96));border:1px solid rgba(148,163,184,.16);border-top:3px solid var(--accent,#19d39a)}.showcase-label{font-size:.55rem;color:#94a3b8;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.showcase-value{font-family:Teko,sans-serif;font-size:2rem;color:#fff;line-height:1}.showcase-sub{font-size:.58rem;color:#64748b}
+:is(#analytics,#legacy).active{display:flex;flex-direction:column;gap:1.25rem}#analyticsShowcase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.875rem}.showcase-card{position:relative;overflow:hidden;padding:.9rem;border-radius:.75rem;background:linear-gradient(145deg,rgba(6,18,24,.95),rgba(3,11,15,.96));border:1px solid rgba(148,163,184,.16);border-top:3px solid var(--accent,#19d39a)}.showcase-label{font-size:.55rem;color:#94a3b8;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.showcase-value{font-family:Teko,sans-serif;font-size:2rem;color:#fff;line-height:1}.showcase-sub{font-size:.58rem;color:#64748b}
 .analytics-tabs{display:flex;gap:.25rem;overflow-x:auto;background:#041017cc;padding:.25rem;border-radius:.55rem;border:1px solid #1e293b}.analytics-tabs button{padding:.4rem .7rem;border-radius:.4rem;color:#cbd5e1;font-size:.68rem;font-weight:800;white-space:nowrap}.analytics-tabs button.active{background:rgba(25,211,154,.13);color:#74e4be;border:1px solid rgba(25,211,154,.48)}.analytics-pane{display:none}.analytics-pane.active{display:block}.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.metric-card,.projection-card,.chart-card{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);border-radius:.75rem;padding:1rem}.projection-card{border-top:3px solid var(--coach,#19d39a)}.projection-name,.metric-title h4{font-family:Teko,sans-serif;font-size:1.45rem;color:#fff;text-transform:uppercase}.projection-team{font-size:.6rem;color:#64748b}.projection-finish{font-family:Teko,sans-serif;font-size:2rem;color:#f4c542}.projection-foot{font-size:.58rem;color:#64748b;margin-top:.5rem}.metric-title{display:flex;align-items:center;gap:.65rem}.metric-boxes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:.8rem;border:1px solid rgba(148,163,184,.12);border-radius:.55rem;overflow:hidden}.metric-box{padding:.7rem;text-align:center}.metric-box+ .metric-box{border-left:1px solid rgba(148,163,184,.12)}.metric-box small{display:block;font-size:.55rem;text-transform:uppercase;color:#64748b;font-weight:900}.metric-box b{font-family:Teko,sans-serif;font-size:1.7rem;color:#fff}.chart-wrap{height:310px}.chart-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:.65rem;margin-bottom:.7rem;border-bottom:1px solid rgba(148,163,184,.12)}.chart-head h3{font-family:Teko,sans-serif;font-size:1.35rem;color:#fff;text-transform:uppercase}.chart-head span{font-size:.58rem;color:#64748b}.form-list{display:flex;flex-direction:column;gap:.5rem}.form-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:.6rem;padding:.7rem;border:1px solid rgba(148,163,184,.11);border-radius:.5rem;background:#030d12}
 /* carry canonical panel look through schedule/trophies/records/admin */
 #schedule>.card,#records>.card,#admin>.card,#schedule>.section,#records>.section,#admin>.section{background:linear-gradient(145deg,rgba(5,18,24,.95),rgba(3,11,15,.97));border:1px solid rgba(81,147,171,.28);box-shadow:0 18px 40px -30px rgba(0,0,0,.98),inset 0 1px rgba(255,255,255,.02);border-radius:.75rem}
@@ -1170,8 +1170,8 @@ body{font-family:Inter,sans-serif!important}.hidden{display:none!important}
 
 <style id="v16-canonical-analytics">
 /* V16 — restore the original GameDay analytics hierarchy without changing data logic */
-#analytics{display:none}
-#analytics.active{display:block}
+:is(#analytics,#legacy){display:none}
+:is(#analytics,#legacy).active{display:block}
 #analyticsShowcase{margin-bottom:1.15rem}
 .showcase-card{
   min-height:126px; position:relative; isolation:isolate; overflow:hidden;
@@ -2193,8 +2193,8 @@ header .topbar{
 .intelligence-pane-head h3{font-family:"Barlow Condensed";font-size:28px;line-height:1;text-transform:uppercase;color:#fff;margin-top:2px}
 .intelligence-pane-head em{font-style:normal;font-size:8px;color:#788b95;text-align:right;text-transform:uppercase;letter-spacing:.06em}
 .intelligence-subhead{font-size:8px;font-weight:900;color:#74e4be;letter-spacing:.11em;text-transform:uppercase;margin:14px 2px 8px}
-#analytics .analytics-pane{display:none}
-#analytics .analytics-pane.active{display:block}
+:is(#analytics,#legacy) .analytics-pane{display:none}
+:is(#analytics,#legacy) .analytics-pane.active{display:block}
 @media(max-width:760px){.intelligence-hero,.intelligence-nav-wrap{align-items:flex-start;flex-direction:column}.intelligence-live{align-self:flex-start}.intelligence-tabs{width:100%;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px}.intelligence-tabs button{flex:0 0 auto}}
 </style>
 <meta name="cdhq-release-hotfix" content="1.0.14-dynasty-intelligence">
@@ -5367,6 +5367,13 @@ img.sf-dark-logo{
 </style>
 
 <style>.sf-vault-art-unavailable{color:#bba77e;font:500 11px/1.4 system-ui;text-align:center}</style>
+<style id="sf-legacy-navigation-style-9-9-8">
+#legacy{min-width:0}.sf-legacy-intro{padding:6px 0 18px}.sf-legacy-intro>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}.sf-legacy-intro h2{font:800 45px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#fff1d7;margin:7px 0}.sf-legacy-intro p{font:400 13px/1.5 system-ui;color:#a6afa9;margin:0}.sf-legacy-tabs{display:flex;gap:6px;width:fit-content;max-width:100%;padding:5px;border:1px solid #675337;border-radius:10px;background:#111819;margin:0 0 20px}.sf-legacy-tabs button{min-height:44px;padding:10px 20px;border:1px solid transparent;border-radius:7px;background:transparent;color:#b8b5a8;font:750 14px/1.2 system-ui;cursor:pointer}.sf-legacy-tabs button.active{background:linear-gradient(145deg,#43351b,#2c281e);color:#ffe1a4;border-color:#b18a44}.sf-legacy-tabs button:focus-visible{outline:2px solid #f0cc7c;outline-offset:2px}.sf-legacy-pane{display:none}.sf-legacy-pane.active{display:block}.sf-legacy-pane[hidden]{display:none!important}
+#siteHeader #nav.canonical-nav button[data-view="vegas"]{display:none!important}#sfDesktopMore{order:20}#sfDesktopMore.active{color:#e8c476!important}#hqMobileMoreGrid [data-mobile-more-destination="vegas"]{order:-1}
+@media(min-width:801px){#hqMobileMoreSheet.open{display:flex!important;align-items:center!important;padding:25px!important}#hqMobileMoreSheet .hq-more-panel{max-height:80vh!important;width:520px!important}.sf-legacy-tabs button{min-width:170px}}
+@media(max-width:800px){#sfDesktopMore{display:none!important}.sf-legacy-intro{padding:3px 0 15px}.sf-legacy-intro h2{font-size:38px}.sf-legacy-tabs{width:100%;box-sizing:border-box}.sf-legacy-tabs button{flex:1;padding:10px 8px;font-size:13px}}
+</style>
+
 </head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
@@ -5414,6 +5421,7 @@ img.sf-dark-logo{
       <div id="navWrap" class="nav-wrap hidden"><nav id="nav" class="canonical-nav">
         <button class="active" data-view="overview"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/home@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Overview</span></button>
         <button data-view="analytics"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/analytics@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Insights</span></button>
+        <button data-view="legacy"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/trophy-room@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Legacy</span></button>
         <button data-view="vegas"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/vegas@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Dynasty Vegas</span></button>
         <button data-view="storylines"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/coach-chronicles@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coach Chronicles</span></button>
         <button data-view="rivalries"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/rivalries@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Rivalries</span></button>
@@ -5423,6 +5431,7 @@ img.sf-dark-logo{
         
         <button data-view="records"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/records@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Coaches Card</span></button>
         <button id="adminNav" class="hidden" data-view="admin"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon sf-v4-static-premium" src="assets/icons-premium/settings@1x.webp" alt="" aria-hidden="true"></span><span class="hq-nav-label">Commissioner</span></button>
+        <button type="button" id="sfDesktopMore" aria-haspopup="dialog" aria-controls="hqMobileMoreSheet" onclick="return window.CDHQOpenMobileMore ? window.CDHQOpenMobileMore(event) : false"><span class="hq-nav-icon themed-nav-icon"><img class="sf-premium-nav-icon" src="assets/icons-premium/more@1x.webp" alt=""></span><span class="hq-nav-label">More</span></button>
       </nav></div>
       <div id="sessionBar" class="session hidden">
         <select id="dynastySelect" class="hidden"></select>
@@ -5605,19 +5614,26 @@ img.sf-dark-logo{
 <section id="top25Panel" class="ref-panel rounded-xl top25-panel"><div id="top25Heading" class="ref-panel-heading" role="button" tabindex="0" aria-controls="top25Board" aria-expanded="true"><div class="flex items-center gap-2"><span class="text-amber-300">★</span><h3>TOP 25 RANKINGS</h3></div><button id="top25Toggle" class="top25-toggle" type="button" aria-label="Collapse Top 25"><span id="top25Meta">LATEST POLL</span><span class="top25-chevron">⌄</span></button></div><div id="top25Board" class="top25-board"></div></section>
 <section id="seasonPulsePanel" class="grid grid-cols-1 xl:grid-cols-2 gap-3.5"><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">🏆</span><h3>SEASON STANDINGS</h3></div><span id="standingsMeta"></span></div><div id="standings" class="mt-3"></div></div><div class="ref-panel rounded-xl p-4"><div class="ref-panel-heading"><div class="flex items-center gap-2"><span class="text-amber-300">✣</span><h3>⚡ POWER INDEX</h3></div><span>Who’s actually best right now</span></div><div class="space-y-2 mt-3" id="power"></div></div></section>
 </div></section>
-<section id="analytics" class="view">
-  <div class="legacy-hero">
-    <div>
-      <span class="legacy-kicker">DYNASTY INSIGHTS</span>
-      <h2>Legacy</h2>
-      <p>The league's memory. Every banner, every drought, every throne — what kind of dynasty is each coach building?</p>
-    </div>
-    <div class="legacy-live"><span></span> LIVE DYNASTY DATA</div>
+<section id="legacy" class="view">
+ <div class="sf-legacy-intro"><span>THE DYNASTY ARCHIVE</span><h2>Legacy</h2><p>Championship hardware. Careers that leave a mark.</p></div>
+ <nav id="legacyTabs" class="sf-legacy-tabs" role="tablist" aria-label="Legacy sections">
+  <button type="button" id="sfTrophyCaseTab" role="tab" aria-selected="true" aria-controls="paneTrophyCase" tabindex="0" class="active" data-legacy-pane="paneTrophyCase">Trophy Case</button>
+  <button type="button" id="sfDynastyLegacyTab" role="tab" aria-selected="false" aria-controls="paneLegacy" tabindex="-1" data-legacy-pane="paneLegacy">Dynasty Legacy</button>
+ </nav>
+ <section id="paneTrophyCase" class="sf-legacy-pane active" role="tabpanel" aria-labelledby="sfTrophyCaseTab">
+    <div class="legacy-section" id="insightsTrophyRoom">
+    <div class="legacy-section-head"><div><span>Hardware</span><h3>Trophy Room</h3></div><em>Every banner, ring and award</em></div>
+    <div class="trophy-room-hero legacy-trophy-hero">
+        <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
+        <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
+      </div>
+      <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
+      <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
   </div>
 
-  <nav class="analytics-tabs" id="insightsTabs"><button type="button" class="active" data-pane="paneLegacy">Legacy</button><button type="button" data-pane="paneCharts">Charts</button><button type="button" data-pane="panePower" title="Power Index">Power</button><button type="button" data-pane="paneLuck" title="Luck Index">Luck</button><button type="button" data-pane="paneClutch" title="Clutch Factor">Clutch</button><button type="button" data-pane="paneStreaks" title="Streaks &amp; Extremes">Streaks</button><button type="button" data-pane="paneVegas" title="Vegas Report Card">Vegas</button><button type="button" data-pane="paneCompare" title="Coach vs Coach">Compare</button></nav>
+ </section>
+ <section id="paneLegacy" class="sf-legacy-pane" role="tabpanel" aria-labelledby="sfDynastyLegacyTab" hidden>
 
-  <div class="analytics-pane active" id="paneLegacy">
   <div id="legacyThrone"></div>
 
   <div class="legacy-section">
@@ -5635,26 +5651,23 @@ img.sf-dark-logo{
     <div id="legacyMilestones" class="legacy-milestones"></div>
   </div>
 
-    <div class="legacy-section" id="insightsTrophyRoom">
-    <div class="legacy-section-head"><div><span>Hardware</span><h3>Trophy Room</h3></div><em>Every banner, ring and award</em></div>
-    <div class="trophy-room-hero legacy-trophy-hero">
-        <div class="legacy-trophy-copy"><span>LEGACY DEFINES THE PROGRAM</span><h2>Dynasty Trophy Room</h2><p>Championship hardware, postseason success, national awards, and the achievements that define the dynasty era.</p></div>
-        <div id="trophyRoomSummary" class="trophy-room-summary legacy-trophy-summary"></div>
-      </div>
-      <div id="trophyGrid" class="coach-trophy-grid legacy-trophy-grid"></div>
-      <section id="vegasTrophySection" class="trophy-vegas-section"><div class="trophy-vegas-head"><div><span>DYNASTY VEGAS HONORS</span><h3>Market Achievements</h3></div><em>Calculated from stored pregame lines</em></div><div id="vegasTrophyGrid" class="vegas-trophy-grid"><div class="empty">Vegas history is loading…</div></div></section>
-  </div>
 
-<p class="legacy-footnote">Legacy is the first Dynasty Insights pillar. Identity and Trajectory are next.</p>
+
 
   <button class="intel-vegas-link" id="intelVegasLink">
     <span>Dynasty Vegas</span>
     <b>Full betting analytics →</b>
     <em>ATS kings, cover rates, upsets and every tracked line live in the Vegas studio.</em>
   </button>
-  </div><!-- /paneLegacy -->
 
-  <div class="analytics-pane" id="paneCharts">
+ </section>
+</section>
+<section id="analytics" class="view">
+ <div class="legacy-hero"><div><span class="legacy-kicker">DYNASTY INSIGHTS</span><h2>Intelligence</h2><p>The numbers behind your dynasty. Rankings, trends, and coach comparisons.</p></div><div class="legacy-live"><span></span> LIVE DYNASTY DATA</div></div>
+  <nav class="analytics-tabs" id="insightsTabs"><button type="button" class="active" data-pane="paneCharts">Charts</button><button type="button" data-pane="panePower" title="Power Index">Power</button><button type="button" data-pane="paneLuck" title="Luck Index">Luck</button><button type="button" data-pane="paneClutch" title="Clutch Factor">Clutch</button><button type="button" data-pane="paneStreaks" title="Streaks &amp; Extremes">Streaks</button><button type="button" data-pane="paneVegas" title="Vegas Report Card">Vegas</button><button type="button" data-pane="paneCompare" title="Coach vs Coach">Compare</button></nav>
+
+
+  <div class="analytics-pane active" id="paneCharts">
     <div class="legacy-section-head"><div><span>By The Numbers</span><h3>Charts</h3></div><em>Season visualizations, drawn from live league data</em></div>
 
     <section class="sf-chart-card">
@@ -7347,7 +7360,7 @@ function renderVegas(failed=false){
 }
 
 $("vegasStudioNav")?.addEventListener("click",e=>{const b=e.target.closest("button[data-vegas-pane]");if(!b)return;document.querySelectorAll("#vegasStudioNav button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll("#vegas .vegas-studio-pane").forEach(x=>x.classList.toggle("active",x.id===b.dataset.vegasPane));if(b.dataset.vegasPane==='vegasHistoryPane'){populateVegasHistoryFilters();filterVegasHistory()}});["vegasHistorySeason","vegasHistoryCoach","vegasHistoryResult"].forEach(id=>$(id)?.addEventListener("change",filterVegasHistory));
-$("nav").onclick=e=>{const b=e.target.closest("button[data-view]");if(b){switchView(b.dataset.view);if(b.dataset.view==="schedule"){selectedWeek=currentWeek();scheduleConference="__all__";renderSchedule();requestAnimationFrame(()=>centerActiveWeekRibbon("auto"))}if(b.dataset.view==="analytics")renderAnalyticsSuite();if(["vegas","trophies","records","analytics","storylines","rivalries"].includes(b.dataset.view))ensureVegasLegacy();if(b.dataset.view==="vegas")renderVegas();if(b.dataset.view==="storylines")renderStorylines();if(b.dataset.view==="rivalries")renderRivalries();if(b.dataset.view==="overview")renderHQCommand();if(b.dataset.view==="recap")renderSeasonRecap();const header=$("siteHeader"),toggle=$("mobileMenuToggle");if(header){header.classList.remove("mobile-open");if(toggle){toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}}}};
+$("nav").onclick=e=>{const b=e.target.closest("button[data-view]");if(b){switchView(b.dataset.view);if(b.dataset.view==="schedule"){selectedWeek=currentWeek();scheduleConference="__all__";renderSchedule();requestAnimationFrame(()=>centerActiveWeekRibbon("auto"))}if(b.dataset.view==="analytics"||b.dataset.view==="legacy")renderAnalyticsSuite();if(["vegas","trophies","legacy","records","analytics","storylines","rivalries"].includes(b.dataset.view))ensureVegasLegacy();if(b.dataset.view==="vegas")renderVegas();if(b.dataset.view==="storylines")renderStorylines();if(b.dataset.view==="rivalries")renderRivalries();if(b.dataset.view==="overview")renderHQCommand();if(b.dataset.view==="recap")renderSeasonRecap();const header=$("siteHeader"),toggle=$("mobileMenuToggle");if(header){header.classList.remove("mobile-open");if(toggle){toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}}}};
 $("intelVegasLink")?.addEventListener("click",()=>{switchView("vegas");ensureVegasLegacy();renderVegas()});
 
 function logoFor(team){
@@ -8925,7 +8938,7 @@ function renderTrophies(){
  const years=[...new Set(honors.map(x=>x.year).filter(Boolean))].sort((a,b)=>a-b);
  const option=(value,label,current)=>`<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;
  const dialog=$('sfVaultDialog');if(dialog?.open)dialog.close();
- const markup=`<div class="sf-vault-heading"><div><span class="sf-vault-kicker">SATURDAY FOUNDRY · THE ARCHIVE</span><h3>Trophy Room</h3><p>Your dynasty. Its greatest achievements.</p></div><span class="sf-vault-live">Live league records</span></div>
+ const markup=`<div class="sf-vault-heading"><div><span class="sf-vault-kicker">SATURDAY FOUNDRY · THE ARCHIVE</span><h3>Trophy Case</h3><p>Your dynasty. Its greatest achievements.</p></div><span class="sf-vault-live">Live league records</span></div>
  <div class="sf-vault-filters"><div class="sf-vault-league-context"><span>Current league</span><strong>${esc(D?.short_name||D?.name||'Dynasty')}</strong></div><label>Coach<select id="sfVaultCoach">${option('all','All coaches',v.coach)}${model.coaches.map(c=>option(c.key,c.coach_name,v.coach)).join('')}</select></label><label>Season<select id="sfVaultSeason">${option('all','All seasons',v.season)}${seasonNos.map(n=>{const s=(seasons||[]).find(s=>Number(s.season_number)===Number(n));return option(n,`Season ${n}${s?.year?' · '+s.year:''}`,v.season)}).join('')}</select></label><label>Hardware<select id="sfVaultType">${[['all','All hardware'],['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>option(k,t,v.type)).join('')}</select></label></div>
  <header class="sf-vault-plaque">${portrait?`<div class="sf-vault-portrait"><img src="${esc(portrait)}" alt="${esc(coach.coach_name)} coach portrait"></div>`:`<div class="sf-vault-seal">${D?.logo_url?`<img src="${esc(D.logo_url)}" alt="">`:'SF'}</div>`}<div class="sf-vault-identity"><span class="sf-vault-kicker">${coach?'COACH COLLECTION':'DYNASTY COLLECTION'}</span><h4>${esc(coach?.coach_name||D?.name||'Dynasty')}</h4><p>${esc(program?.team||'Every coach. Every chapter.')}${years.length?` · ${years[0]}${years.length>1?'–'+years[years.length-1]:''}`:''}</p>${coach?`<p class="sf-vault-coach-record">Bowl record <b>${bowlRecord}</b> · CFP appearances <b>${cfpApps}</b></p>`:''}${coach&&!program?.active?'<span class="sf-vault-retired">RETIRED · LEGACY PRESERVED</span>':''}</div>${program?.logo?`<img class="sf-vault-team-logo" src="${esc(program.logo)}" alt="${esc(program.team)} logo">`:''}<div class="sf-vault-total"><b>${honors.length}</b><span>Earned trophies</span></div></header>
  <div id="trophyRoomSummary" class="sf-vault-summary">${[['national','National titles'],['conference','Conference titles'],['bowl','Bowl trophies'],['award','Individual awards']].map(([k,t])=>`<div><b>${counts(k)}</b><span>${t}</span></div>`).join('')}</div>
@@ -9098,8 +9111,7 @@ function renderLegacyPillar(){
  });
 }
 
-/* Dynasty Insights entry: Legacy is the first pillar. Kept under the historic
-   renderAnalyticsSuite name so nav + renderAll wiring is untouched. */
+/* Shared live-data refresh for Intelligence and the separate Legacy view. */
 function renderAnalyticsSuite(){renderLegacyPillar();renderTrophies();try{var ap=document.querySelector('#insightsTabs button.active');if(ap)sfRenderInsightsPane(ap.dataset.pane);}catch(_){}}
 
 function renderAnalytics(){renderAnalyticsSuite()}
@@ -10816,7 +10828,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 <nav id="hqMobileNav" aria-label="Primary mobile navigation">
   <button type="button" data-mobile-view="overview"><span class="mn-icon"><img src="assets/icons/home.svg" alt=""></span><span>Overview</span></button>
   <button type="button" data-mobile-view="schedule"><span class="mn-icon"><img src="assets/icons/schedule.svg" alt=""></span><span>Schedule</span></button>
-  <button type="button" data-mobile-view="vegas"><span class="mn-icon"><img src="assets/icons/vegas.svg" alt=""></span><span>Vegas</span></button>
+  <button type="button" data-mobile-view="legacy"><span class="mn-icon"><img src="assets/icons-premium/trophy-room@1x.webp" alt=""></span><span>Legacy</span></button>
   <button type="button" data-mobile-view="storylines"><span class="mn-icon"><img src="assets/icons/coach.svg" alt=""></span><span>Coach Chronicles</span></button>
   <button type="button" data-mobile-more="1" aria-haspopup="dialog" aria-controls="hqMobileMoreSheet" onclick="return window.CDHQOpenMobileMore ? window.CDHQOpenMobileMore(event) : false"><span class="mn-icon"><img src="assets/icons/more.svg" alt=""></span><span>More</span></button>
 </nav>
@@ -11256,7 +11268,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
 (function(){
   'use strict';
 
-  const primary = new Set(['overview','schedule','vegas','conference']);
+  const primary = new Set(['overview','schedule','legacy','conference']);
   const icons = {conference:'assets/icons/conference.svg',
     storylines:'assets/icons/coach.svg',recap:'assets/icons/recap.svg',analytics:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cmVjdCB4PSIyNCIgeT0iNzQiIHdpZHRoPSIxNiIgaGVpZ2h0PSIzMCIgcng9IjMiIGZpbGw9InVybCgjZ29sZCkiLz4KPHJlY3QgeD0iNDgiIHk9IjU1IiB3aWR0aD0iMTYiIGhlaWdodD0iNDkiIHJ4PSIzIiBmaWxsPSJ1cmwoI2dvbGQpIi8+CjxyZWN0IHg9IjcyIiB5PSIzNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjY5IiByeD0iMyIgZmlsbD0idXJsKCNnb2xkKSIvPgo8cmVjdCB4PSI5NiIgeT0iMjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSI4NCIgcng9IjMiIGZpbGw9InVybCgjZ29sZCkiLz4KPC9nPgo8L3N2Zz4=',rivalries:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cG9seWdvbiBwb2ludHM9IjY0LjAsMTUuMCA3Ni4zLDQ3LjAgMTEwLjYsNDguOSA4NC4wLDcwLjUgOTIuOCwxMDMuNiA2NC4wLDg1LjAgMzUuMiwxMDMuNiA0NC4wLDcwLjUgMTcuNCw0OC45IDUxLjcsNDcuMCIgZmlsbD0idXJsKCNnb2xkKSIgc3Ryb2tlPSIjOGM1YTExIiBzdHJva2Utd2lkdGg9IjQiLz4KPHBhdGggZD0iTTY0IDE2IDY0IDY0IDEwMSA0Mk02NCA2NCA5MiAxMDAiIHN0cm9rZT0iI2ZmZjBhNiIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIuNDUiLz4KPC9nPgo8L3N2Zz4=',trophies:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNNDMgMjBoNDJ2MjJjMCAyMC04IDMyLTIxIDM2LTEzLTQtMjEtMTYtMjEtMzZWMjBaIiBmaWxsPSJ1cmwoI2dvbGQpIiBzdHJva2U9IiM4YzVhMTEiIHN0cm9rZS13aWR0aD0iMyIvPgo8cGF0aCBkPSJNNDMgMjhIMjdjMCAyMiA4IDMxIDI0IDMyTTg1IDI4aDE2YzAgMjItOCAzMS0yNCAzMiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjYiLz4KPHBhdGggZD0iTTY0IDc4djE4TTQ2IDEwOGgzNk01MSA5NmgyNiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjciLz4KPC9nPgo8L3N2Zz4=',records:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNMjQgMjJoMzVjMTAgMCAxOCA1IDE4IDE0djcyYy01LTUtMTItNy0yMC03SDI0VjIyWiIgZmlsbD0iIzA3MTExNiIgc3Ryb2tlPSJ1cmwoI2dvbGQpIiBzdHJva2Utd2lkdGg9IjUiLz4KPHBhdGggZD0iTTEwNCAyMkg2OWMtMTAgMC0xOCA1LTE4IDE0djcyYzUtNSAxMi03IDIwLTdoMzNWMjJaIiBmaWxsPSIjMDcxMTE2IiBzdHJva2U9InVybCgjZ29sZCkiIHN0cm9rZS13aWR0aD0iNSIvPgo8cGF0aCBkPSJNMzQgNDJoMjBNMzQgNTZoMjBNMzQgNzBoMTZNNzQgNDJoMjBNNzQgNTZoMjBNNzQgNzBoMTYiIHN0cm9rZT0idXJsKCNnb2xkKSIgc3Ryb2tlLXdpZHRoPSI0Ii8+CjwvZz4KPC9zdmc+',admin:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiBmaWxsPSJub25lIj4KCjxkZWZzPgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmMWE4Ii8+CiAgICA8c3RvcCBvZmZzZXQ9Ii40MiIgc3RvcC1jb2xvcj0iI2Y0YzU0MiIvPgogICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYTg2ZjE2Ii8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8bGluZWFyR3JhZGllbnQgaWQ9InN0ZWVsIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiNiOGMwYzciLz4KICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NzI3YSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj4KICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI0IiBzdGREZXZpYXRpb249IjMiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuNyIvPgogIDwvZmlsdGVyPgo8L2RlZnM+CjxnIGZpbHRlcj0idXJsKCNzaGFkb3cpIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPgo8cGF0aCBkPSJNNTYgMTJoMTZsNCAxNCAxMiA1IDEzLTcgMTEgMTEtNyAxMyA1IDEyIDE0IDR2MTZsLTE0IDQtNSAxMiA3IDEzLTExIDExLTEzLTctMTIgNS00IDE0SDU2bC00LTE0LTEyLTUtMTMgNy0xMS0xMSA3LTEzLTUtMTItMTQtNFY2NGwxNC00IDUtMTItNy0xMyAxMS0xMSAxMyA3IDEyLTUgNC0xNFoiIGZpbGw9InVybCgjZ29sZCkiIHN0cm9rZT0iIzhjNWExMSIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxjaXJjbGUgY3g9IjY0IiBjeT0iNzIiIHI9IjIwIiBmaWxsPSIjMDcxMTE2IiBzdHJva2U9IiNmYmUyOGIiIHN0cm9rZS13aWR0aD0iNSIvPgo8L2c+Cjwvc3ZnPg=='};
 
@@ -12193,7 +12205,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   const map={
     overview:'home',home:'home',schedule:'schedule',standings:'standings',conference:'conferences',
     analytics:'analytics',dynasty:'dynasty-pulse',pulse:'dynasty-pulse',storylines:'coach-chronicles',
-    vegas:'vegas',trophies:'trophy-room',trophy:'trophy-room',teams:'teams',recruiting:'recruiting',
+    vegas:'vegas',legacy:'trophy-room',trophies:'trophy-room',trophy:'trophy-room',teams:'teams',recruiting:'recruiting',
     records:'records',recap:'recap',rivalries:'rivalries',live:'live',media:'media',dynastyChooser:'dynasties',admin:'settings',
     settings:'settings',dynasties:'dynasties',more:'more'
   };
@@ -12533,7 +12545,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
  }
  function reorderDesktop(){
    const nav=document.getElementById('nav');if(!nav)return;
-   ['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
+   ['overview','schedule','legacy','conference','analytics','storylines','rivalries','records','recap','admin','vegas'].forEach(v=>{const b=nav.querySelector(`[data-view="${v}"]`);if(b)nav.appendChild(b)});
  }
  function setupMobile(){
    const nav=document.getElementById('hqMobileNav');if(!nav)return;
@@ -12546,7 +12558,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
    if(!grid.querySelector('[data-mobile-more-destination="storylines"]')){
      const b=document.createElement('button');b.type='button';b.dataset.mobileMoreDestination='storylines';b.innerHTML='<span class="hq-more-icon"><img src="assets/icons/coach.svg" alt=""></span><span>Coach Chronicles</span>';grid.prepend(b);
    }
-   const order=['analytics','storylines','rivalries','records','recap'];
+   const order=['vegas','analytics','storylines','rivalries','records','recap'];
    order.forEach(v=>{const b=grid.querySelector(`[data-mobile-more-destination="${v}"]`);if(b)grid.appendChild(b)});
    const dyn=grid.querySelector('[data-mobile-more-action="dynasties"]');if(dyn)grid.appendChild(dyn);
  }
@@ -12570,7 +12582,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.7'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.8'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12603,7 +12615,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.7'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.8'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13280,7 +13292,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.7";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.8";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14361,7 +14373,7 @@ html,body{max-width:100%;overflow-x:hidden}
 (function(){
   'use strict';
   const ANVIL='<span class="sf-control-anvil" title="User Controlled" aria-label="User Controlled"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 4h18c4 0 6-1 9-3v5c-2 3-5 5-9 6h-3v3h6v3H9v-3h5v-3H9C5 12 3 9 2 4Zm9 15h10l3 4H7l4-4Z"/></svg></span>';
-  const order=['overview','schedule','vegas','conference','analytics','storylines','rivalries','records','recap','admin'];
+  const order=['overview','schedule','legacy','conference','analytics','storylines','rivalries','records','recap','admin','vegas'];
   function normalizeNav(){
     const nav=document.getElementById('nav');
     if(nav) order.forEach(v=>{const b=nav.querySelector('[data-view="'+v+'"]');if(b)nav.appendChild(b)});
@@ -14391,7 +14403,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.7';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.8';
   }
   function boot(){
     build();
@@ -14401,7 +14413,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.7';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.8';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14808,7 +14820,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.7';
+    if(m)m.textContent='QA 9.9.8';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -15141,7 +15153,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
 
   /* Final premium nav authority — prevents legacy yellow inline icons from winning on iPad. */
   const iconBase='assets/icons-premium/';
-  const iconMap={overview:'home',schedule:'schedule',vegas:'vegas',conference:'conferences',analytics:'analytics',storylines:'coach-chronicles',rivalries:'rivalries',trophies:'trophy-room',records:'records',recap:'recap',admin:'settings'};
+  const iconMap={overview:'home',schedule:'schedule',vegas:'vegas',legacy:'trophy-room',conference:'conferences',analytics:'analytics',storylines:'coach-chronicles',rivalries:'rivalries',trophies:'trophy-room',records:'records',recap:'recap',admin:'settings'};
   function premiumNavV3(){
     const nav=document.querySelector('#nav.canonical-nav,#nav');if(!nav)return;
     nav.querySelectorAll('button[data-view]').forEach(btn=>{const key=iconMap[btn.dataset.view];if(!key)return;let well=btn.querySelector('.hq-nav-icon');if(!well){well=document.createElement('span');well.className='hq-nav-icon themed-nav-icon';btn.prepend(well)}well.innerHTML='';const img=document.createElement('img');img.src=`${iconBase}${key}@1x.webp`;img.alt='';img.setAttribute('aria-hidden','true');img.className='sf-premium-nav-icon sf-v3-premium-nav';well.appendChild(img);});
@@ -16651,84 +16663,84 @@ img.sf-logo-system-v2{
 </style>
 <style id="sf-dynasty-legacy-v1">
 /* QA 9.8.1 — Dynasty Insights: Legacy pillar. Scrapped the Intelligence rework.
-   Every selector is scoped under #analytics; this block is the single authority
+   Every selector is scoped under :is(#analytics,#legacy); this block is the single authority
    for the tab. Reuses the shared logo system (intelLogoHTML). */
-#analytics .legacy-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,#0d1b1e 0%,#0a1417 60%,#0c1a12 100%);border:1px solid #1d3237;margin-bottom:14px}
-#analytics .legacy-kicker{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase;margin-bottom:6px}
-#analytics .legacy-hero h2{font-family:'Teko',sans-serif;font-size:40px;line-height:1;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
-#analytics .legacy-hero p{font-size:12.5px;color:#8fa3ad;margin:0;max-width:52ch}
-#analytics .legacy-live{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;letter-spacing:.18em;color:#19d39a;white-space:nowrap;padding-top:6px}
-#analytics .legacy-live span{width:8px;height:8px;border-radius:50%;background:#19d39a;box-shadow:0 0 10px #19d39a;animation:legacyPulse 2s infinite}
+:is(#analytics,#legacy) .legacy-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-radius:16px;background:linear-gradient(135deg,#0d1b1e 0%,#0a1417 60%,#0c1a12 100%);border:1px solid #1d3237;margin-bottom:14px}
+:is(#analytics,#legacy) .legacy-kicker{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase;margin-bottom:6px}
+:is(#analytics,#legacy) .legacy-hero h2{font-family:'Teko',sans-serif;font-size:40px;line-height:1;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:0 0 6px}
+:is(#analytics,#legacy) .legacy-hero p{font-size:12.5px;color:#8fa3ad;margin:0;max-width:52ch}
+:is(#analytics,#legacy) .legacy-live{display:flex;align-items:center;gap:7px;font-size:9px;font-weight:800;letter-spacing:.18em;color:#19d39a;white-space:nowrap;padding-top:6px}
+:is(#analytics,#legacy) .legacy-live span{width:8px;height:8px;border-radius:50%;background:#19d39a;box-shadow:0 0 10px #19d39a;animation:legacyPulse 2s infinite}
 @keyframes legacyPulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-#analytics .legacy-throne{position:relative;overflow:hidden;text-align:center;padding:30px 22px 24px;border-radius:16px;margin-bottom:18px;border:1px solid #3a2f14;background:radial-gradient(ellipse at 50% -20%,#2b2310 0%,#10181b 55%,#0a1417 100%)}
-#analytics .legacy-throne.reign{border-color:#3a2f14}
-#analytics .legacy-throne.writing{border-color:#1d3237;background:radial-gradient(ellipse at 50% -20%,#14232a 0%,#0a1417 60%)}
-#analytics .legacy-throne-crown{font-size:34px;color:#f4c542;text-shadow:0 0 24px #f4c54288;margin-bottom:2px}
-#analytics .legacy-throne-num{font-family:'Teko',sans-serif;font-size:76px;line-height:1;color:#f4c542;text-shadow:0 0 34px #f4c54255}
-#analytics .legacy-throne.writing .legacy-throne-num{color:#19d39a;text-shadow:0 0 34px #19d39a55}
-#analytics .legacy-throne-label{font-size:10px;font-weight:800;letter-spacing:.24em;color:#c8b06a;margin:4px 0 12px}
-#analytics .legacy-throne p{font-size:13.5px;color:#c9d6db;max-width:56ch;margin:0 auto}
-#analytics .legacy-throne p b{color:#fff}
-#analytics .legacy-throne-sub{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
+:is(#analytics,#legacy) .legacy-throne{position:relative;overflow:hidden;text-align:center;padding:30px 22px 24px;border-radius:16px;margin-bottom:18px;border:1px solid #3a2f14;background:radial-gradient(ellipse at 50% -20%,#2b2310 0%,#10181b 55%,#0a1417 100%)}
+:is(#analytics,#legacy) .legacy-throne.reign{border-color:#3a2f14}
+:is(#analytics,#legacy) .legacy-throne.writing{border-color:#1d3237;background:radial-gradient(ellipse at 50% -20%,#14232a 0%,#0a1417 60%)}
+:is(#analytics,#legacy) .legacy-throne-crown{font-size:34px;color:#f4c542;text-shadow:0 0 24px #f4c54288;margin-bottom:2px}
+:is(#analytics,#legacy) .legacy-throne-num{font-family:'Teko',sans-serif;font-size:76px;line-height:1;color:#f4c542;text-shadow:0 0 34px #f4c54255}
+:is(#analytics,#legacy) .legacy-throne.writing .legacy-throne-num{color:#19d39a;text-shadow:0 0 34px #19d39a55}
+:is(#analytics,#legacy) .legacy-throne-label{font-size:10px;font-weight:800;letter-spacing:.24em;color:#c8b06a;margin:4px 0 12px}
+:is(#analytics,#legacy) .legacy-throne p{font-size:13.5px;color:#c9d6db;max-width:56ch;margin:0 auto}
+:is(#analytics,#legacy) .legacy-throne p b{color:#fff}
+:is(#analytics,#legacy) .legacy-throne-sub{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f4c542}
 
-#analytics .legacy-section{margin-bottom:20px}
-#analytics .legacy-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
-#analytics .legacy-section-head span{font-size:9px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase}
-#analytics .legacy-section-head h3{font-family:'Teko',sans-serif;font-size:26px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:2px 0 0}
-#analytics .legacy-section-head em{font-size:10.5px;color:#71858e;font-style:normal;text-align:right}
+:is(#analytics,#legacy) .legacy-section{margin-bottom:20px}
+:is(#analytics,#legacy) .legacy-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px}
+:is(#analytics,#legacy) .legacy-section-head span{font-size:9px;font-weight:800;letter-spacing:.22em;color:#f4c542;text-transform:uppercase}
+:is(#analytics,#legacy) .legacy-section-head h3{font-family:'Teko',sans-serif;font-size:26px;color:#fff;text-transform:uppercase;letter-spacing:.04em;margin:2px 0 0}
+:is(#analytics,#legacy) .legacy-section-head em{font-size:10.5px;color:#71858e;font-style:normal;text-align:right}
 
-#analytics .legacy-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-#analytics .legacy-tier-card{position:relative;background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px;overflow:hidden}
-#analytics .legacy-tier-card:first-child{border-color:#3a2f14;background:linear-gradient(160deg,#141b1e 0%,#0e181c 70%,#151207 100%)}
-#analytics .legacy-tier-rank{position:absolute;top:8px;right:12px;font-family:'Teko',sans-serif;font-size:44px;color:#ffffff12;line-height:1}
-#analytics .legacy-tier-main{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+:is(#analytics,#legacy) .legacy-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+:is(#analytics,#legacy) .legacy-tier-card{position:relative;background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px;overflow:hidden}
+:is(#analytics,#legacy) .legacy-tier-card:first-child{border-color:#3a2f14;background:linear-gradient(160deg,#141b1e 0%,#0e181c 70%,#151207 100%)}
+:is(#analytics,#legacy) .legacy-tier-rank{position:absolute;top:8px;right:12px;font-family:'Teko',sans-serif;font-size:44px;color:#ffffff12;line-height:1}
+:is(#analytics,#legacy) .legacy-tier-main{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 /* Legacy logos: transparent plate + gentle gold glow, matching the rest of the app.
    No white background anywhere, so a slow image never renders as a white box. */
-#analytics .legacy-team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 40px;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(244,197,66,.55)) drop-shadow(0 0 9px rgba(244,197,66,.28))!important}
-#analytics .legacy-team-logo-fb{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;background:#0b1c24;border:1px solid #29424c;border-radius:10px;font-family:"Barlow Condensed";font-size:17px;font-weight:800;color:#e8f1f4}
-#analytics .legacy-tier-id b{display:block;font-size:15px;color:#fff}
-#analytics .legacy-tier-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f4c542}
-#analytics .legacy-tier-label em{color:#71858e;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600}
-#analytics .legacy-tier-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-#analytics .legacy-tier-stats small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
-#analytics .legacy-tier-stats b{font-size:14px;color:#e8f1f4}
-#analytics .legacy-tier-stats b.pos{color:#74e4be}#analytics .legacy-tier-stats b.neg{color:#ff8080}
+:is(#analytics,#legacy) .legacy-team-logo{width:40px;height:40px;object-fit:contain;flex:0 0 40px;background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;filter:drop-shadow(0 0 3px rgba(244,197,66,.55)) drop-shadow(0 0 9px rgba(244,197,66,.28))!important}
+:is(#analytics,#legacy) .legacy-team-logo-fb{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;background:#0b1c24;border:1px solid #29424c;border-radius:10px;font-family:"Barlow Condensed";font-size:17px;font-weight:800;color:#e8f1f4}
+:is(#analytics,#legacy) .legacy-tier-id b{display:block;font-size:15px;color:#fff}
+:is(#analytics,#legacy) .legacy-tier-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f4c542}
+:is(#analytics,#legacy) .legacy-tier-label em{color:#71858e;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600}
+:is(#analytics,#legacy) .legacy-tier-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+:is(#analytics,#legacy) .legacy-tier-stats small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+:is(#analytics,#legacy) .legacy-tier-stats b{font-size:14px;color:#e8f1f4}
+:is(#analytics,#legacy) .legacy-tier-stats b.pos{color:#74e4be}:is(#analytics,#legacy) .legacy-tier-stats b.neg{color:#ff8080}
 
-#analytics .legacy-droughts{display:grid;gap:8px}
-#analytics .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
-#analytics .legacy-drought-row.league{border-color:#3a2f14;background:linear-gradient(120deg,#141b1e,#151207)}
-#analytics .legacy-drought-coach{display:flex;align-items:center;gap:9px}
-#analytics .legacy-drought-coach .legacy-team-logo,#analytics .legacy-drought-coach .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
-#analytics .legacy-drought-coach .legacy-team-logo-fb{font-size:14px}
-#analytics .legacy-drought-coach b{font-size:13.5px;color:#fff}
-#analytics .legacy-throne-mini{font-size:22px;color:#f4c542;text-shadow:0 0 12px #f4c54266}
-#analytics .legacy-drought-cells{display:flex;gap:18px}
-#analytics .legacy-drought-cells small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
-#analytics .legacy-drought-cells b{font-size:13px;color:#e8f1f4}
-#analytics .legacy-drought-cells b.neg{color:#ff9a9a}
+:is(#analytics,#legacy) .legacy-droughts{display:grid;gap:8px}
+:is(#analytics,#legacy) .legacy-drought-row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0e181c;border:1px solid #1d3237;border-radius:12px;padding:11px 14px}
+:is(#analytics,#legacy) .legacy-drought-row.league{border-color:#3a2f14;background:linear-gradient(120deg,#141b1e,#151207)}
+:is(#analytics,#legacy) .legacy-drought-coach{display:flex;align-items:center;gap:9px}
+:is(#analytics,#legacy) .legacy-drought-coach .legacy-team-logo,:is(#analytics,#legacy) .legacy-drought-coach .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+:is(#analytics,#legacy) .legacy-drought-coach .legacy-team-logo-fb{font-size:14px}
+:is(#analytics,#legacy) .legacy-drought-coach b{font-size:13.5px;color:#fff}
+:is(#analytics,#legacy) .legacy-throne-mini{font-size:22px;color:#f4c542;text-shadow:0 0 12px #f4c54266}
+:is(#analytics,#legacy) .legacy-drought-cells{display:flex;gap:18px}
+:is(#analytics,#legacy) .legacy-drought-cells small{display:block;font-size:8px;font-weight:800;letter-spacing:.12em;color:#71858e;margin-bottom:3px}
+:is(#analytics,#legacy) .legacy-drought-cells b{font-size:13px;color:#e8f1f4}
+:is(#analytics,#legacy) .legacy-drought-cells b.neg{color:#ff9a9a}
 
-#analytics .legacy-milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-#analytics .legacy-ms-card{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px}
-#analytics .legacy-ms-card.league{border-color:#3a2f14}
-#analytics .legacy-ms-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
-#analytics .legacy-ms-head .legacy-team-logo,#analytics .legacy-ms-head .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
-#analytics .legacy-ms-head .legacy-team-logo-fb{font-size:14px}
-#analytics .legacy-ms-head b{display:block;font-size:13px;color:#fff}
-#analytics .legacy-ms-head span{font-size:10.5px;color:#8fa3ad}
-#analytics .legacy-ms-head em{margin-left:auto;font-size:10px;font-weight:800;color:#f4c542;font-style:normal;white-space:nowrap}
-#analytics .legacy-ms-bar{height:7px;border-radius:4px;background:#16262b;overflow:hidden}
-#analytics .legacy-ms-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#f4c542,#ffe9a8)}
-#analytics .legacy-ms-foot{font-size:10px;color:#71858e;margin-top:7px;letter-spacing:.06em}
+:is(#analytics,#legacy) .legacy-milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+:is(#analytics,#legacy) .legacy-ms-card{background:#0e181c;border:1px solid #1d3237;border-radius:14px;padding:14px}
+:is(#analytics,#legacy) .legacy-ms-card.league{border-color:#3a2f14}
+:is(#analytics,#legacy) .legacy-ms-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+:is(#analytics,#legacy) .legacy-ms-head .legacy-team-logo,:is(#analytics,#legacy) .legacy-ms-head .legacy-team-logo-fb{width:32px;height:32px;flex-basis:32px}
+:is(#analytics,#legacy) .legacy-ms-head .legacy-team-logo-fb{font-size:14px}
+:is(#analytics,#legacy) .legacy-ms-head b{display:block;font-size:13px;color:#fff}
+:is(#analytics,#legacy) .legacy-ms-head span{font-size:10.5px;color:#8fa3ad}
+:is(#analytics,#legacy) .legacy-ms-head em{margin-left:auto;font-size:10px;font-weight:800;color:#f4c542;font-style:normal;white-space:nowrap}
+:is(#analytics,#legacy) .legacy-ms-bar{height:7px;border-radius:4px;background:#16262b;overflow:hidden}
+:is(#analytics,#legacy) .legacy-ms-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#f4c542,#ffe9a8)}
+:is(#analytics,#legacy) .legacy-ms-foot{font-size:10px;color:#71858e;margin-top:7px;letter-spacing:.06em}
 
-#analytics .legacy-empty{padding:22px;text-align:center;font-size:12px;color:#71858e;background:#0e181c;border:1px dashed #1d3237;border-radius:12px}
-#analytics .legacy-footnote{text-align:center;font-size:10.5px;color:#556b74;letter-spacing:.06em;margin:6px 0 14px}
-#analytics .intel-vegas-link{margin-top:2px}
+:is(#analytics,#legacy) .legacy-empty{padding:22px;text-align:center;font-size:12px;color:#71858e;background:#0e181c;border:1px dashed #1d3237;border-radius:12px}
+:is(#analytics,#legacy) .legacy-footnote{text-align:center;font-size:10.5px;color:#556b74;letter-spacing:.06em;margin:6px 0 14px}
+:is(#analytics,#legacy) .intel-vegas-link{margin-top:2px}
 @media(max-width:640px){
- #analytics .legacy-hero{flex-direction:column}
- #analytics .legacy-tier-stats{grid-template-columns:repeat(2,1fr)}
- #analytics .legacy-drought-row{flex-direction:column;align-items:stretch}
- #analytics .legacy-drought-cells{justify-content:space-between}
+ :is(#analytics,#legacy) .legacy-hero{flex-direction:column}
+ :is(#analytics,#legacy) .legacy-tier-stats{grid-template-columns:repeat(2,1fr)}
+ :is(#analytics,#legacy) .legacy-drought-row{flex-direction:column;align-items:stretch}
+ :is(#analytics,#legacy) .legacy-drought-cells{justify-content:space-between}
 }
 
 /* QA 9.9.4: Broadcast-style hero banner - full-bleed, no card */
@@ -16818,7 +16830,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.7';
+    if(m)m.textContent='QA 9.9.8';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16828,7 +16840,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.7';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.8';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
@@ -16903,4 +16915,26 @@ img.sf-logo-system-v2{
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.addEventListener('pageshow',update);
 })();
+</script>
+
+
+<script id="sf-legacy-navigation-9-9-8">
+(function(){
+ 'use strict';
+ const tabs=document.getElementById('legacyTabs');if(!tabs)return;
+ function selectPane(id,focus=false){
+  tabs.querySelectorAll('[data-legacy-pane]').forEach(b=>{const active=b.dataset.legacyPane===id;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;if(active&&focus)b.focus({preventScroll:true})});
+  document.querySelectorAll('#legacy .sf-legacy-pane').forEach(p=>{const active=p.id===id;p.classList.toggle('active',active);p.hidden=!active});
+  if(id==='paneTrophyCase'&&typeof renderTrophies==='function')renderTrophies();
+  if(id==='paneLegacy'&&typeof renderLegacyPillar==='function')renderLegacyPillar();
+ }
+ tabs.addEventListener('click',e=>{const b=e.target.closest('[data-legacy-pane]');if(b)selectPane(b.dataset.legacyPane)});
+ tabs.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;const buttons=[...tabs.querySelectorAll('[data-legacy-pane]')];const i=buttons.indexOf(document.activeElement);if(i<0)return;e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;selectPane(buttons[next].dataset.legacyPane,true)});
+ function syncMore(){const overflow=document.querySelector('.view.active')?.id==='vegas';document.getElementById('sfDesktopMore')?.classList.toggle('active',overflow);document.querySelector('#hqMobileNav [data-mobile-more]')?.classList.toggle('active',overflow)}
+ document.getElementById('nav')?.addEventListener('click',()=>requestAnimationFrame(syncMore));
+ const viewObserver=new MutationObserver(syncMore);document.querySelectorAll('.view').forEach(view=>viewObserver.observe(view,{attributes:true,attributeFilter:['class']}));
+ const more=document.getElementById('hqMobileMoreSheet');if(more){let opener=null;document.addEventListener('click',e=>{const button=e.target.closest('#sfDesktopMore,#hqMobileNav [data-mobile-more]');if(button)opener=button},true);new MutationObserver(()=>{if(!more.classList.contains('open')&&opener){opener.focus({preventScroll:true});opener=null}}).observe(more,{attributes:true,attributeFilter:['class']})}
+ syncMore();
+})();
+
 </script>
