@@ -5375,7 +5375,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* QA 9.9.19: league identity and rounded Legacy controls. */
+/* QA 9.9.20: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px system-ui;letter-spacing:.2em;color:#d8b76e}
@@ -5442,11 +5442,14 @@ img.sf-dark-logo{
 .sf-vault-metric-hint{font:500 10px/1.5 system-ui;color:#b4a17e;margin:0 0 18px}
 </style>
 
-<style id="sf-more-refresh-header-9-9-19">
-#hqMobileMoreSheet .sf-more-header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-#hqMobileMoreSheet #refreshDataBtn{width:auto!important;min-width:44px!important;height:44px!important;display:flex!important;gap:7px;padding:0 10px!important;flex:0 0 auto!important}
-#hqMobileMoreSheet #refreshDataBtn .utility-label{display:block!important;font:700 11px system-ui;color:#f4d17d!important}
-#hqMobileMoreSheet #refreshDataBtn .sf-refresh-glyph{font-size:22px!important;color:#f4d17d!important}
+<style id="sf-more-refresh-account-9-9-20">
+#hqMobileMoreSheet .hq-more-account{flex-wrap:wrap}
+#hqMobileMoreSheet .hq-more-account-meta{flex-basis:100%}
+#hqMobileMoreSheet .sf-more-account-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+#hqMobileMoreSheet .sf-more-account-actions #refreshDataBtn,#hqMobileMoreSheet .sf-more-account-actions .hq-more-logout{box-sizing:border-box;width:100%!important;min-width:0!important;height:46px!important;min-height:46px!important;padding:0 10px!important;display:flex!important;justify-content:center;align-items:center;gap:8px!important;border:1px solid rgba(216,170,77,.30)!important;border-radius:10px!important;background:linear-gradient(180deg,rgba(31,29,23,.96),rgba(12,13,12,.99))!important;color:#f4d17d!important;font:800 10px system-ui!important;letter-spacing:.06em!important;text-transform:uppercase}
+#hqMobileMoreSheet #refreshDataBtn .utility-label{display:block!important;font:inherit!important;color:inherit!important}
+#hqMobileMoreSheet #refreshDataBtn .sf-refresh-glyph,#hqMobileMoreSheet .hq-more-logout-icon{width:20px;height:20px;display:grid;place-items:center;font-size:20px!important;line-height:1!important;color:#f4d17d!important}
+#hqMobileMoreSheet #refreshDataBtn svg{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -12727,7 +12730,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.20'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12760,7 +12763,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.20'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13437,7 +13440,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.19";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="QA 9.9.20";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14548,7 +14551,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.20';
   }
   function boot(){
     build();
@@ -14558,7 +14561,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.19';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='QA 9.9.20';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -14965,7 +14968,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.19';
+    if(m)m.textContent='QA 9.9.20';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -14990,9 +14993,9 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   function setSyncStatus(text,kind=''){const el=byId('syncStatus');if(el){el.textContent=text;el.dataset.refreshState=kind||'';}const mobile=document.querySelector('.canonical-mobile-head .text-emerald-300');if(mobile)mobile.textContent=text;}
   function setRefreshControlsBusy(on){document.querySelectorAll('#refreshDataBtn,[data-mobile-more-action="refresh"]').forEach(b=>{b.disabled=!!on;b.classList.toggle('is-refreshing',!!on);b.setAttribute('aria-busy',on?'true':'false');});}
   function ensureDesktopRefresh(){
-    const head=document.querySelector('#hqMobileMoreSheet .hq-more-head');if(!head)return;
-    let actions=head.querySelector('.sf-more-header-actions');if(!actions){actions=document.createElement('div');actions.className='sf-more-header-actions';head.append(actions);const close=head.querySelector('.hq-more-close');if(close)actions.append(close);}
-    let btn=byId('refreshDataBtn');if(!btn){btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true">↻</span><span class="utility-label">Refresh Data</span>';}
+    const account=document.querySelector('#hqMobileMoreSheet .hq-more-account'),logout=account?.querySelector('[data-mobile-more-action="logout"]');if(!account||!logout)return;
+    let actions=account.querySelector('.sf-more-account-actions');if(!actions){actions=document.createElement('div');actions.className='sf-more-account-actions';account.append(actions);actions.append(logout);}
+    let btn=byId('refreshDataBtn');if(!btn){btn=document.createElement('button');btn.id='refreshDataBtn';btn.type='button';btn.title='Refresh dynasty data';btn.setAttribute('aria-label','Refresh dynasty data');btn.innerHTML='<span class="sf-refresh-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></svg></span><span class="utility-label">Refresh Data</span>';}
     if(btn.parentElement!==actions)actions.prepend(btn);
   }
   function ensureMobileRefresh(){document.querySelectorAll('[data-mobile-more-action="refresh"]').forEach(b=>b.remove());ensureDesktopRefresh();}
@@ -16980,7 +16983,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='QA 9.9.19';
+    if(m)m.textContent='QA 9.9.20';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -16990,7 +16993,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.19';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='QA 9.9.20';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
