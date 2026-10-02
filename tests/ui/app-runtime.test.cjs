@@ -54,6 +54,26 @@ test('full-app navigation and async failure regressions',async t=>{
   }
   assert.deepEqual(errors,[]);
  });
+ await t.test('removed overview and race summaries stay absent after rendering',()=>{
+  w.eval('renderAll()');
+  assert.equal(w.document.getElementById('hqNewsDesk'),null);
+  assert.equal(w.document.getElementById('confRaceSummary'),null);
+  assert(w.document.getElementById('confRaceSelect'));assert(w.document.getElementById('confRaceBoards'));
+  assert.match(w.document.querySelector('#nav [data-view="storylines"]').textContent,/Coach Chronicles/);
+ });
+ await t.test('Intelligence excludes phantom coaches and keeps real historical members',()=>{
+  w.eval(`window.savedIntelState=state;state={...state,
+   career:[{person_id:'corey',coach_name:'Corey'},{person_id:'retired',coach_name:'Pete'},{person_id:'ghost',coach_name:'Coach'}],
+   programs:[{person_id:'corey',coach_name:'Coach',team_name:'Texas State'},{person_id:'unknown',coach_name:'Unknown',team_name:'CPU team'}],
+   dynastyCoaches:[{person_id:'jared',coach_name:'Jared',current_team_name:'Georgia Tech'}],
+   games:[{person_id:'ghost',coach_name:'Coach'},{person_id:'unlinked',coach_name:'Coach'},{person_id:'unknown'},{person_id:'corey',team_name:'Texas State'},{person_id:'retired',team_name:'NDSU'},{person_id:'jared',team_name:'Georgia Tech'}]};`);
+  try{
+   const coaches=JSON.parse(JSON.stringify(w.sfChartCoaches()));assert.deepEqual(coaches.map(c=>c.name),['Corey','Pete','Jared']);
+   assert.equal(coaches[0].team,'Texas State');assert.equal(coaches[2].team,'Georgia Tech');
+   assert.deepEqual(JSON.parse(w.eval('JSON.stringify(legacyCareer().map(c=>c.coach_name))')),['Corey','Pete']);
+   for(const name of ['Coach','UNKNOWN','CPU','Unassigned','Apple Review',''])assert.equal(w.sfIsNamedDynastyCoach({person_id:'placeholder',coach_name:name}),false);
+  }finally{w.eval('state=window.savedIntelState;delete window.savedIntelState');}
+ });
  await t.test('local runtime styles, fonts and chart dependency are complete',()=>{
   for(const element of w.document.querySelectorAll('script[src],link[rel="stylesheet"][href]')){
    const value=element.getAttribute('src')||element.getAttribute('href');if(value.startsWith('assets/'))assert(fs.existsSync(path.join(root,value.split('?')[0])),value);
