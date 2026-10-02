@@ -1,0 +1,30 @@
+/* QA 9.9.24: shared Foundry typography, controls, spacing and accessibility. */
+:root{--sf-font-body:Inter,sans-serif;--sf-font-display:'Barlow Condensed',sans-serif;--sf-focus:#e8c476;--sf-control-radius:10px;--sf-control-height:40px}
+body,button,input,select,textarea{font-family:var(--sf-font-body)}
+:is(#app,#dynastyChooserScreen,#authScreen,#teamScreen) :is(h1,h2,h3,h4,h5){font-family:var(--sf-font-display)}
+.btn{min-height:var(--sf-control-height);border-radius:var(--sf-control-radius);line-height:1.3}
+.close-btn{width:44px;min-width:44px;height:44px;min-height:44px;display:grid;place-items:center;line-height:1}
+textarea{max-width:100%;background:#0b1213;color:#ede6d2;border:1px solid #554a33;border-radius:var(--sf-control-radius);padding:11px 12px;line-height:1.5;resize:vertical}
+:is(button,input,select,textarea,summary,a,[tabindex]):focus-visible{outline:2px solid var(--sf-focus)!important;outline-offset:3px}
+button:disabled{cursor:default}
+.btn:disabled{opacity:.55}
+button[aria-busy=true]{cursor:wait}
+input::placeholder,textarea::placeholder{color:#8c9a99;opacity:1}
+:is(#app,.view,.view .section,.view .card,.view .panel){min-width:0}
+.view .panel-head{gap:12px;flex-wrap:wrap}
+.view .panel-head h3{min-width:0;overflow-wrap:break-word}
+.view :is(.section h2,.panel-head h3){letter-spacing:.035em}
+:is(.notice,.game-edit-message,.dynasty-hub-message){overflow-wrap:anywhere;line-height:1.5}
+.notice.error{border-color:#70404a;color:#ffd4d9}
+.notice.success{border-color:#456b54;color:#c4f9dc}
+#sfConnectionNotice{max-width:1244px;margin:12px auto;padding:11px 14px;border:1px solid #8a6b32;background:#251f13;border-radius:10px;color:#ead3a0;font:500 12px/1.5 var(--sf-font-body)}
+.result-modal,.dynasty-hub-modal,#gameEditModal{overscroll-behavior:contain}
+@media(max-width:768px){
+ :root{--sf-control-height:44px}
+ #app.shell{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+ #sfConnectionNotice{margin:10px 14px}
+ .result-dialog,.dynasty-hub-dialog{scroll-padding-bottom:24px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
