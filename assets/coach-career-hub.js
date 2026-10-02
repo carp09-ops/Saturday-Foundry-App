@@ -6,8 +6,50 @@ function sfActiveDynasties(rows,edition){return (Array.isArray(rows)?rows:[]).fi
 function sfCareerRecord(row){return `${Number(row.wins||0)}–${Number(row.losses||0)}${Number(row.ties)?`–${Number(row.ties)}`:''}`;}
 function sfCareerMetric(value,label){return `<div class="sf-career-metric"><b>${esc(value)}</b><span>${esc(label)}</span></div>`;}
 function sfCareerBadge(chapter){return chapter.retired?'<span class="sf-career-retired">RETIRED</span>':chapter.status==='archived'?'<span class="sf-career-archive">ARCHIVE</span>':'';}
+// Each edition contains independent league rails; seasons never cross league boundaries.
+function sfCareerJourneyGroups(timeline,chapters=[]){
+ const editions=new Map();
+ for(const stop of timeline){
+  const edition=sfEditionYear(stop.game_edition_year)||0;
+  if(!editions.has(edition))editions.set(edition,new Map());
+  const leagues=editions.get(edition),key=String(stop.dynasty_id??stop.dynasty_name??'unknown');
+  if(!leagues.has(key)){
+   const chapter=chapters.find(c=>sfEditionYear(c.game_edition_year)===edition&&String(c.dynasty_id??c.dynasty_name??'unknown')===key);
+   leagues.set(key,{key:JSON.stringify([edition,key]),name:stop.dynasty_name||chapter?.dynasty_name||'Unnamed league',chapter,stops:[]});
+  }
+  leagues.get(key).stops.push(stop);
+ }
+ return [...editions].sort((a,b)=>b[0]-a[0]).map(([edition,leagues])=>({edition,leagues:[...leagues.values()].sort((a,b)=>a.name.localeCompare(b.name)).map(league=>({...league,stops:[...league.stops].sort((a,b)=>{
+  const ay=Number(a.year)||0,by=Number(b.year)||0;
+  // Undated seasons remain visible without inventing a year or a place in chronology.
+  return ay&&by?ay-by:ay?-1:by?1:0;
+ })}))}));
+}
+function sfCareerJourneyMarkup(timeline,chapters=[]){
+ const groups=sfCareerJourneyGroups(timeline,chapters);
+ if(!groups.length)return '<p class="sf-career-note">No assignments recorded.</p>';
+ return `<p class="sf-journey-guide">One timeline per league. Swipe to explore earlier seasons.</p>${groups.map(group=>`<section class="sf-journey-edition"><header class="sf-journey-edition-head"><h4>${group.edition?`College Football ${esc(group.edition)}`:'Game edition not recorded'}</h4><span>${group.leagues.length} league${group.leagues.length===1?'':'s'}</span></header>${group.leagues.map(league=>{
+  const totals=league.stops.reduce((t,s)=>({wins:t.wins+Number(s.wins||0),losses:t.losses+Number(s.losses||0),ties:t.ties+Number(s.ties||0)}),{wins:0,losses:0,ties:0});
+  const dated=league.stops.filter(s=>Number(s.year)>0),latest=Number(dated.at(-1)?.year)||0;
+  return `<section class="sf-journey-league"><header class="sf-journey-league-head"><div><h5>${esc(league.name)}</h5>${sfCareerBadge(league.chapter||{})}<p>${esc(sfCareerRecord(totals))} recorded · ${new Set(league.stops.map(s=>s.season_id??s.year??'undated')).size} seasons</p></div><nav aria-label="Timeline navigation for ${esc(league.name)}"><button type="button" data-journey-step="-1" aria-label="Earlier seasons in ${esc(league.name)}">←</button><button type="button" data-journey-step="1" aria-label="Later seasons in ${esc(league.name)}">→</button></nav></header><ol class="sf-journey-rail" data-journey-key="${esc(league.key)}" tabindex="0" aria-label="${esc(league.name)} · ${group.edition?`College Football ${esc(group.edition)}`:'Unknown edition'} season timeline">${league.stops.map((stop,i)=>{
+   const year=Number(stop.year)||0,previous=league.stops[i-1],teamKey=s=>String(s.team_id??s.team_name??'');
+   const moved=year&&Number(previous?.year)&&year>Number(previous.year)&&teamKey(stop)&&teamKey(previous)&&teamKey(stop)!==teamKey(previous);
+   return `<li class="sf-journey-stop${year&&year===latest?' is-latest':''}"><div class="sf-journey-year">${year?esc(year):'Year not recorded'}<span>${year&&year===latest?'Latest recorded':year?'Season':'Undated season'}</span></div><div class="sf-journey-node" aria-hidden="true"></div><article class="sf-journey-season">${stop.logo_url?`<img src="${esc(stop.logo_url)}" alt="" loading="lazy">`:'<span class="sf-journey-team-mark" aria-hidden="true">SF</span>'}<b>${esc(stop.team_name||'Team not recorded')}</b><strong>${esc(sfCareerRecord(stop))}</strong><span class="sf-journey-record-label">Recorded record</span>${moved?'<span class="sf-journey-move">New team</span>':''}</article></li>`;
+  }).join('')}</ol></section>`;
+ }).join('')}</section>`).join('')}`;
+}
+function sfSetupCareerJourney(host,positions=new Map()){
+ const rails=[...host.querySelectorAll('.sf-journey-rail')];
+ const initialize=()=>{for(const rail of rails){if(rail.clientWidth&&!rail.dataset.positioned){rail.scrollLeft=positions.has(rail.dataset.journeyKey)?positions.get(rail.dataset.journeyKey):rail.scrollWidth-rail.clientWidth;rail.dataset.positioned='true';}if(rail.clientWidth){const buttons=rail.closest('.sf-journey-league').querySelectorAll('[data-journey-step]');buttons[0].disabled=rail.scrollLeft<=1;buttons[1].disabled=rail.scrollLeft+rail.clientWidth>=rail.scrollWidth-1;}}};
+ for(const rail of rails)rail.addEventListener('scroll',initialize,{passive:true});
+ for(const button of host.querySelectorAll('[data-journey-step]'))button.addEventListener('click',()=>{const rail=button.closest('.sf-journey-league').querySelector('.sf-journey-rail');rail.scrollBy({left:Number(button.dataset.journeyStep)*Math.max(rail.clientWidth*.8,190),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
+ host.querySelector('#sfCareerProfile')?.addEventListener('toggle',initialize);
+ host.querySelector('#sfCareerJourney')?.addEventListener('toggle',initialize);
+ initialize();
+}
 function sfRenderCareerHub(hub){
  const host=document.getElementById('sfCareerHub');if(!host)return;
+ const journeyPositions=new Map([...host.querySelectorAll('.sf-journey-rail[data-positioned]')].map(rail=>[rail.dataset.journeyKey,rail.scrollLeft]));
  sfCareerHubData=hub;
  if(!hub?.coach){host.innerHTML='<div class="sf-career-panel"><h3>Your career starts here</h3><p>Join a dynasty and claim your coach to start building your legacy.</p></div>';return;}
  const coach=hub.coach,t=hub.totals||{},key=coachCardKey(coach.name),portrait=COACH_CARD_PORTRAITS[key]||coach.avatar_url||'assets/saturday-foundry-shield.webp';
@@ -23,18 +65,19 @@ function sfRenderCareerHub(hub){
  <details id="sfCareerProfile" class="sf-career-profile"><summary>Full career profile <span>Journey · Honors · Draft · Stats</span></summary><div class="sf-career-profile-body"><p class="sf-career-note">Totals include verified, completed user games. Seasons still in progress are included; missing scores are omitted from scoring averages. Awards reflect the honors recorded in each league.</p><div class="sf-career-metrics sf-career-extra">${sfCareerMetric(gp?`${((wins+ties/2)/gp*100).toFixed(1)}%`:'N/A','Win percentage')}${sfCareerMetric(t.draft_picks||0,'Draft picks')}${sfCareerMetric(t.awards||0,'Player / coach awards')}${sfCareerMetric(t.seasons||0,'Seasons')}${sfCareerMetric(`${t.bowl_wins||0}–${t.bowl_losses||0}`,'Bowl record')}${sfCareerMetric(`${t.playoff_wins||0}–${t.playoff_losses||0}`,'Playoff record')}${sfCareerMetric(t.scored_games?((t.points_for||0)/t.scored_games).toFixed(1):'N/A','Points per game')}${sfCareerMetric(t.scored_games?((t.points_against||0)/t.scored_games).toFixed(1):'N/A','Points allowed')}</div>
  <details open class="sf-career-team-records"><summary>Teams coached &amp; records (${coachedTeams.length})</summary><ul class="sf-career-journey">${coachedTeams.map(team=>`<li>${team.logo?`<img src="${esc(team.logo)}" alt="" loading="lazy">`:''}<div><b>${esc(team.name)}</b><span>${esc(team.seasons.size)} seasons · ${[...team.editions].sort((a,b)=>b-a).map(e=>`CFB ${esc(e)}`).join(' / ')}</span></div><strong>${esc(sfCareerRecord(team))}</strong></li>`).join('')||'<li>No teams recorded yet.</li>'}</ul></details>
  <h4>League chapters</h4><div class="sf-career-chapters">${chapters.map(c=>`<article><div><b>${esc(c.dynasty_name)}</b>${sfCareerBadge(c)}</div><p>CFB ${esc(c.game_edition_year)} · ${esc(sfCareerRecord(c))} · ${esc(c.national_titles)} national titles</p></article>`).join('')}</div>
- <details open><summary>Coaching journey</summary><ol class="sf-career-journey">${timeline.map(s=>`<li>${s.logo_url?`<img src="${esc(s.logo_url)}" alt="" loading="lazy">`:''}<div><b>${esc(s.team_name)}</b><span>${esc(s.dynasty_name)} · CFB ${esc(s.game_edition_year)} · ${esc(s.year)} season</span></div><strong>${esc(sfCareerRecord(s))}</strong></li>`).join('')||'<li>No assignments recorded.</li>'}</ol></details>
+ <details open id="sfCareerJourney"><summary>Coaching journey</summary><div class="sf-journey-timelines">${sfCareerJourneyMarkup(timeline,chapters)}</div></details>
  <details><summary>Honors &amp; championships (${honors.length})</summary><ul class="sf-career-facts">${honors.map(a=>`<li><b>${esc(a.name||String(a.type).replace(/_/g,' '))}</b><span>${esc(a.recipient_name||a.player_name||a.team_name||'')}</span><small>CFB ${esc(a.game_edition_year)} · ${esc(a.year)} season</small></li>`).join('')||'<li>No honors recorded yet.</li>'}</ul></details>
  <details><summary>Draft history (${facts.filter(f=>f.kind==='draft_pick').length})</summary><ul class="sf-career-facts">${factRows('draft_pick')||'<li>No draft picks recorded yet.</li>'}</ul></details>
  <details><summary>Statistical leaders (${facts.filter(f=>f.kind==='stat_leader').length})</summary><ul class="sf-career-facts">${factRows('stat_leader')||'<li>No statistical leaders recorded yet.</li>'}</ul></details></div></details>`;
  sfRenderCareerTrophyArchive(hub);
+ sfSetupCareerJourney(host,journeyPositions);
  host.querySelector('[data-career-expand]')?.addEventListener('click',e=>{e.preventDefault();const profile=host.querySelector('#sfCareerProfile');profile.open=true;profile.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});});
 }
 async function sfLoadCareerHub(silent=false){
  const request=++sfCareerRequest,host=document.getElementById('sfCareerHub');if(!host)return;
  if(!silent)host.innerHTML='<div class="sf-career-panel" role="status">Forging your career profile…</div>';
  try{const hub=await Data.careerHub();if(request===sfCareerRequest){if(JSON.stringify(hub)!==JSON.stringify(sfCareerHubData)||!host.querySelector('.sf-career-card')){const expanded=[...host.querySelectorAll('details')].map(d=>d.open);sfRenderCareerHub(hub);if(silent)host.querySelectorAll('details').forEach((d,i)=>{if(i<expanded.length)d.open=expanded[i];});}sfCareerSyncLabel(sfCareerSocket?.readyState===1?'Live updates connected':'Auto-refresh active');}}
- catch(error){if(request!==sfCareerRequest)return;if(silent){sfCareerSyncLabel('Connection interrupted · retrying automatically');return;}host.innerHTML='<div class="sf-career-panel" role="status"><p>Your career profile could not load. Your dynasties are still available below.</p><button class="dynasty-chooser-action" type="button">Retry career profile</button></div>';host.querySelector('button').onclick=sfLoadCareerHub;console.warn('Career profile unavailable:',error);}
+ catch(error){if(request!==sfCareerRequest)return;if(silent){sfCareerSyncLabel('Connection interrupted · retrying automatically');return;}host.innerHTML='<div class="sf-career-panel" role="status"><p>Your career profile could not load. Your dynasties are still available below.</p><button class="dynasty-chooser-action" type="button">Retry career profile</button></div>';host.querySelector('button').onclick=()=>sfLoadCareerHub();console.warn('Career profile unavailable:',error);}
 }
 // Private notifications contain no game/coach data; always re-read through the authenticated RPC.
 let sfCareerSocket=null,sfCareerHeartbeat=null,sfCareerFallback=null,sfCareerReconnect=null,sfCareerDebounce=null;

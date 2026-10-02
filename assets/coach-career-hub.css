@@ -1,25 +1,25 @@
 /* PROD 9.9.3: scoped career hub and persistent iOS focus zoom protection. */
-#dynastyChooserScreen #sfCareerHub{margin:18px 36px;color:#f0f4f5;min-width:0}
+#dynastyChooserScreen #sfCareerHub{font-family:Inter,sans-serif;margin:18px 36px;color:#f0f4f5;min-width:0}
 #dynastyChooserScreen .sf-career-card{display:grid;grid-template-columns:150px minmax(0,1fr);border:1px solid #9d793a;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at top right,#28302b,transparent 65%),#0b151a;box-shadow:0 12px 32px #0005}
 #dynastyChooserScreen .sf-career-portrait{min-height:230px;background:#111d22;overflow:hidden}
 #dynastyChooserScreen .sf-career-portrait img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
 #dynastyChooserScreen .sf-career-card-body{padding:22px 26px;min-width:0}
 #dynastyChooserScreen .sf-career-kicker{font-size:10px;font-weight:800;letter-spacing:.15em;color:#e8bd5c}
-#dynastyChooserScreen .sf-career-card h3{font:600 38px/1.15 'Teko',sans-serif;margin:6px 0;color:#fff}
+#dynastyChooserScreen .sf-career-card h3{font:600 38px/1.15 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.02em;margin:6px 0;color:#ede6d2}
 #dynastyChooserScreen .sf-career-card p{color:#a3b2b8;font-size:13px;margin:3px 0 16px}
 #dynastyChooserScreen .sf-career-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 #dynastyChooserScreen .sf-career-metric{min-width:0}
-#dynastyChooserScreen .sf-career-metric b{display:block;font:600 30px/1.1 'Teko',sans-serif;color:#f5d68f}
+#dynastyChooserScreen .sf-career-metric b{display:block;font:600 30px/1.1 'Barlow Condensed',sans-serif;color:#f5d68f}
 #dynastyChooserScreen .sf-career-metric span{display:block;font-size:11px;color:#a3b2b8;line-height:1.3}
 #dynastyChooserScreen .sf-career-profile-link{display:inline-block;margin-top:16px;color:#f5d68f;font-size:13px;min-height:32px}
 #dynastyChooserScreen .sf-career-edition-head{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:20px 0 10px}
-#dynastyChooserScreen .sf-career-edition-head h3{font:600 27px/1.2 'Teko',sans-serif;color:#fff;margin:0}
+#dynastyChooserScreen .sf-career-edition-head h3{font:600 27px/1.2 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#c5ad79;margin:0}
 #dynastyChooserScreen #sfActiveEditionTitle{font:600 clamp(18px,2vw,22px)/1.3 'Barlow Condensed',sans-serif;color:#c5ad79;letter-spacing:.04em;text-transform:uppercase;overflow-wrap:break-word}
 #dynastyChooserScreen .sf-career-edition-head span{font-size:11px;color:#9baeb6}
 #dynastyChooserScreen .sf-career-editions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
 #dynastyChooserScreen .sf-career-edition{border:1px solid #344239;padding:14px 18px;background:#0b151aed;border-radius:10px}
 #dynastyChooserScreen .sf-career-edition>span{font-size:10px;letter-spacing:.1em;color:#e8bd5c;font-weight:800}
-#dynastyChooserScreen .sf-career-edition>b{display:block;font:600 32px/1.2 'Teko',sans-serif;color:#fff;margin:5px 0}
+#dynastyChooserScreen .sf-career-edition>b{display:block;font:600 32px/1.2 'Barlow Condensed',sans-serif;color:#fff;margin:5px 0}
 #dynastyChooserScreen .sf-career-edition p{font-size:12px;color:#a3b2b8;margin:0}
 #dynastyChooserScreen .sf-career-profile,#dynastyChooserScreen .sf-career-panel{margin-top:12px;border:1px solid #344239;background:#0b151a;border-radius:10px;padding:14px 18px}
 #dynastyChooserScreen .sf-career-profile summary{cursor:pointer;color:#f5d68f;font-weight:700;font-size:14px;min-height:32px;line-height:1.5}
@@ -44,7 +44,7 @@
 #dynastyChooserScreen .sf-career-facts li{padding:10px 0;border-bottom:1px solid #24343c}
 #dynastyChooserScreen .sf-career-dynasty-title{margin:22px 36px 10px}
 @media(max-width:700px){
- #dynastyChooserScreen #sfCareerHub{margin:16px 14px}
+ #dynastyChooserScreen #sfCareerHub{font-family:Inter,sans-serif;margin:16px 14px}
  #dynastyChooserScreen .sf-career-dynasty-title{margin:22px 14px 10px}
  #dynastyChooserScreen .sf-career-card{grid-template-columns:1fr}
  #dynastyChooserScreen .sf-career-portrait{height:240px;min-height:0;display:flex;justify-content:center;background:radial-gradient(ellipse at center,#30372c,#111d22 75%);border-bottom:1px solid #9d793a}
@@ -89,3 +89,45 @@
 #sfCareerTrophyArchiveBody .sf-vault-detail-copy{padding:16px}
 #sfCareerTrophyArchiveBody .sf-vault-case-art img{max-width:100%;object-fit:contain}
 @media(max-width:760px){#sfCareerTrophyArchiveBody .sf-vault-summary{grid-template-columns:repeat(2,minmax(0,1fr))}#sfCareerTrophyArchiveBody .sf-vault-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* QA 9.9.22: horizontal coaching journey, separated by edition and league. */
+#dynastyChooserScreen .sf-journey-timelines{min-width:0}
+#dynastyChooserScreen .sf-journey-guide{font-size:11px;line-height:1.5;color:#9ba99f;margin:12px 0 18px}
+#dynastyChooserScreen .sf-journey-edition{margin:0 0 26px;min-width:0}
+#dynastyChooserScreen .sf-journey-edition-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #6a5530;padding-bottom:10px;margin-bottom:14px}
+#dynastyChooserScreen .sf-journey-edition-head h4{font:700 21px/1.2 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#e8c476;margin:0}
+#dynastyChooserScreen .sf-journey-edition-head>span{font-size:10px;color:#a7a69b;white-space:nowrap}
+#dynastyChooserScreen .sf-journey-league{min-width:0;margin:12px 0 18px;padding:16px 14px 10px;border:1px solid #50442e;border-radius:12px;background:linear-gradient(140deg,#191c18,#0a1214)}
+#dynastyChooserScreen .sf-journey-league-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+#dynastyChooserScreen .sf-journey-league-head>div{min-width:0}
+#dynastyChooserScreen .sf-journey-league-head h5{display:inline;font:700 19px/1.25 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#ede6d2;overflow-wrap:anywhere;margin:0 7px 0 0}
+#dynastyChooserScreen .sf-journey-league-head p{font-size:10px;color:#9ca89f;margin:6px 0 0;line-height:1.4}
+#dynastyChooserScreen .sf-journey-league-head nav{display:flex;gap:6px;flex-shrink:0}
+#dynastyChooserScreen .sf-journey-league-head button{width:36px;height:36px;border:1px solid #705b32;border-radius:8px;background:#1c211c;color:#e8c476;font-size:19px;cursor:pointer}
+#dynastyChooserScreen .sf-journey-league-head button:disabled{opacity:.3;cursor:default}
+#dynastyChooserScreen .sf-journey-rail{display:flex;gap:0;list-style:none;margin:0;padding:6px 0 12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#816739 #131a17;min-width:0}
+#dynastyChooserScreen .sf-journey-rail:focus-visible,#dynastyChooserScreen .sf-journey-league-head button:focus-visible{outline:2px solid #efc86d;outline-offset:3px}
+#dynastyChooserScreen .sf-journey-stop{flex:0 0 180px;min-width:0;position:relative;padding:0 12px 0 0;scroll-snap-align:start}
+#dynastyChooserScreen .sf-journey-year{min-height:47px;box-sizing:border-box;font:700 24px/1.2 'Barlow Condensed',sans-serif;color:#d7c9a6;padding:0 0 12px 10px}
+#dynastyChooserScreen .sf-journey-year>span{display:block;font:500 9px/1.4 Inter,sans-serif;letter-spacing:.03em;color:#8b9b93;margin-top:3px}
+#dynastyChooserScreen .sf-journey-node:after{content:'';position:absolute;left:8px;top:3px;width:170px;height:2px;background:#5d5134}
+#dynastyChooserScreen .sf-journey-stop:last-child .sf-journey-node:after{display:none}
+#dynastyChooserScreen .sf-journey-node{position:relative;width:10px;height:10px;border:2px solid #c3a260;border-radius:50%;background:#17221d;margin:0 0 14px 10px;box-sizing:border-box}
+#dynastyChooserScreen .sf-journey-season{min-height:156px;padding:14px 12px;box-sizing:border-box;border:1px solid #394138;border-radius:10px;background:linear-gradient(155deg,#202820,#0d171a);display:flex;flex-direction:column;align-items:flex-start}
+#dynastyChooserScreen .sf-journey-season img,#dynastyChooserScreen .sf-journey-team-mark{width:42px;height:42px;object-fit:contain;margin-bottom:10px}
+#dynastyChooserScreen .sf-journey-team-mark{display:grid;place-items:center;font:800 22px 'Barlow Condensed',sans-serif;color:#a99976}
+#dynastyChooserScreen .sf-journey-season>b{font:700 18px/1.25 'Barlow Condensed',sans-serif;color:#ede6d2;overflow-wrap:anywhere}
+#dynastyChooserScreen .sf-journey-season>strong{font:700 29px/1.2 'Barlow Condensed',sans-serif;color:#e8c476;margin-top:10px}
+#dynastyChooserScreen .sf-journey-record-label{font-size:9px;color:#8d9e94}
+#dynastyChooserScreen .sf-journey-move{font:700 9px/1.4 Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:#e8c476;border-top:1px solid #4d4932;padding-top:7px;margin-top:10px;align-self:stretch}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-node{background:#edc774;box-shadow:0 0 12px #e8c47644}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-year{color:#edc774}
+#dynastyChooserScreen .sf-journey-stop.is-latest .sf-journey-season{border-color:#aa8743}
+@media(max-width:700px){#dynastyChooserScreen .sf-journey-league{padding:12px 10px 8px}#dynastyChooserScreen .sf-journey-stop{flex-basis:164px}#dynastyChooserScreen .sf-journey-node:after{width:154px}#dynastyChooserScreen .sf-journey-league-head button{width:40px;height:40px}}
+
+/* Career headings use the same loaded display family as the rest of the app. */
+#dynastyChooserScreen .sf-career-profile summary{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:600;letter-spacing:.025em}
+#dynastyChooserScreen .sf-career-profile>summary span{font-family:Inter,sans-serif;letter-spacing:0}
+#dynastyChooserScreen .sf-career-profile h4{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#c5ad79}
+#dynastyChooserScreen .sf-career-profile-link{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:600;letter-spacing:.02em}
+#dynastyChooserScreen .sf-career-chapters b,#dynastyChooserScreen .sf-career-journey b,#dynastyChooserScreen .sf-career-facts b{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:600}
+#dynastyChooserScreen .sf-career-journey strong{font-family:'Barlow Condensed',sans-serif;font-size:22px}
