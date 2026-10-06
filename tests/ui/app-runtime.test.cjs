@@ -54,6 +54,36 @@ test('full-app navigation and async failure regressions',async t=>{
   }
   assert.deepEqual(errors,[]);
  });
+ await t.test('Dynasty Book routes every chapter through the existing views and keeps week zero',async()=>{
+  w.eval('loadDynasty(0)');await tick(w);
+  w.eval("D.role='commissioner';renderCommissioner()");
+  const views=[...w.document.querySelectorAll('#hqMobileNav [data-mobile-view]')].map(b=>b.dataset.mobileView);
+  assert.deepEqual(views,['overview','schedule','analytics','legacy']);
+  w.CDHQOpenMobileMore();
+  assert.equal(w.document.getElementById('hqMoreTitle').textContent,'Dynasty Book');
+  const chapters=[...w.document.querySelectorAll('#hqMobileMoreGrid [data-sf-chapter]')];
+  assert.equal(chapters[0].dataset.sfChapter,'conference');
+  assert(chapters.some(b=>b.dataset.sfChapter==='recap'));
+  for(const key of ['conference','storylines','rivalries','hardware','records','vegas','admin','recap']){
+   w.CDHQOpenMobileMore();w.document.querySelector('#hqMobileMoreGrid [data-sf-chapter="'+key+'"]').click();await tick(w);
+   assert.equal(w.document.querySelector('.view.active').id,key==='hardware'?'legacy':key);
+   assert.equal(w.document.getElementById('hqMobileMoreSheet').getAttribute('aria-hidden'),'true');
+   assert.equal(w.eval('state.activeWeek'),0);assert.equal(w.eval('S.season_number'),2);
+  }
+  assert.equal(w.document.getElementById('paneTrophyCase').hidden,false);
+  w.eval("D.role='member';renderCommissioner()");w.CDHQOpenMobileMore();
+  assert.equal(w.document.querySelector('#hqMobileMoreGrid [data-sf-chapter="admin"]'),null);w.CDHQCloseMobileMore();
+  assert.deepEqual(errors,[]);
+ });
+ await t.test('Overview episode opens its person and season, then remembers reading across refresh',async()=>{
+  w.eval(`state.coachMoves=[{person_id:'coach',coach_name:'Corey',season_number:2,from_team_name:'Army',to_team_name:'Texas State'}];renderAll();`);
+  const preview=w.document.querySelector('#sfChroniclePreview [data-sf-episode]');assert(preview);
+  preview.click();await tick(w);
+  assert.equal(w.document.querySelector('.view.active').id,'storylines');assert.equal(w.eval('storyCoachFilter'),'coach');assert.equal(w.document.getElementById('storySeasonSelect').value,'2');
+  w.eval('renderAll()');assert.equal(w.document.querySelector('#sfChroniclePreview').textContent.includes('UNREAD'),false);
+  assert.equal(w.document.querySelectorAll('#sfDynastyDiscovery').length,1);
+  w.eval('state.coachMoves=[]');
+ });
  await t.test('removed overview and race summaries stay absent after rendering',()=>{
   w.eval('renderAll()');
   assert.equal(w.document.getElementById('hqNewsDesk'),null);
