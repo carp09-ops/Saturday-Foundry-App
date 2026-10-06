@@ -112,6 +112,31 @@ test('full-app navigation and async failure regressions',async t=>{
    for(const name of ['Coach','UNKNOWN','CPU','Unassigned','Apple Review',''])assert.equal(w.sfIsNamedDynastyCoach({person_id:'placeholder',coach_name:name}),false);
   }finally{w.eval('state=window.savedIntelState;delete window.savedIntelState');}
  });
+ await t.test('Intelligence scope includes old seasons and moves without changing Overview',async()=>{
+  w.eval(`window.intelSaved={state,D,S,scope:sfIntelScope,history:sfIntelHistory};
+  const old={...state.games[0],id:'old-game',season_id:D.dynasty_id+'-old',season_number:1,week_number:0,team_name:'Army',opponent_team:'Old Pete School',opponent_person_id:'pete',result:'L',points_for:10,points_against:14};
+  state={...state,career:[...state.career,{person_id:'pete',coach_name:'Pete'}],allGames:[old,...state.games],games:[...state.games]};
+  sfIntelHistory={key:sfIntelKey(),game:[old,...state.games,{...old,id:'foreign-game',dynasty_id:'foreign'}],rank:[{season_number:1,week_number:0,team_name:'Army',rank:7},{season_number:2,week_number:0,team_name:'Texas State',rank:2}],vegas:[{game_id:'old-game',person_id:'coach',season_id:D.dynasty_id+'-old',season_number:1,spread_home:3,ats_result:'COVER'}],failed:0};sfIntelScope='season';`);
+  try{
+   assert.equal(w.eval('sfIntelWith(()=>sfI2Power("coach").n)'),1);
+   const season=w.eval('S.season_id'),week=w.eval('selectedWeek');w.document.querySelector('[data-intel-scope="all"]').click();
+   assert.equal(w.eval('sfIntelWith(()=>sfI2Power("coach").n)'),2);assert.equal(w.eval('sfIntelWith(()=>sfI2Power("coach").l)'),1);
+   assert.equal(w.eval('sfI2Power("coach").n'),1);assert.equal(w.eval('sfIntelWith(()=>sfI2H2H("coach","pete").l)'),1);
+   assert.equal(w.eval('sfIntelWith(()=>new Set(sfIntelRows("game").map(sfIntelPoint)).size)'),2);
+   assert.equal(w.eval('sfIntelWith(()=>sfRankAtOrBefore(null,"Army",1000))'),7);
+   assert.equal(w.eval('sfIntelWith(()=>sfRankAtOrBefore(null,"Army",2000))'),null);
+   assert.equal(w.eval('sfIntelWith(()=>sfI2Vegas("coach").n)'),1);
+   assert.equal(w.eval('S.season_id'),season);assert.equal(w.eval('selectedWeek'),week);
+   for(const pane of ['panePower','paneLuck','paneClutch','paneStreaks','paneVegas','paneCompare'])w.sfRenderInsightsPane(pane);
+   w.document.querySelector('[data-intel-scope="season"]').click();assert.equal(w.eval('sfIntelWith(()=>sfI2Power("coach").n)'),1);
+  }finally{w.eval('({state,D,S}=window.intelSaved);sfIntelScope=window.intelSaved.scope;sfIntelHistory=window.intelSaved.history;delete window.intelSaved;renderAnalytics()');}
+ });
+ await t.test('Intelligence history response cannot cross a dynasty switch',async()=>{
+  const games=w.CDHQ_RUNTIME.Data.games;let finish;w.CDHQ_RUNTIME.Data.games=()=>new Promise(resolve=>{finish=resolve;});
+  w.eval('window.intelSaved={D,gen:sfDataLoadGeneration,history:sfIntelHistory};sfIntelHistory=null');const pending=w.sfIntelEnsureHistory();await tick(w);
+  w.eval('D=window.fixtureDynasties[1];sfDataLoadGeneration++');finish([]);await pending;assert.equal(w.eval('sfIntelHistory'),null);
+  w.CDHQ_RUNTIME.Data.games=games;w.eval('D=window.intelSaved.D;sfDataLoadGeneration=window.intelSaved.gen;sfIntelHistory=window.intelSaved.history;delete window.intelSaved');
+ });
  await t.test('local runtime styles, fonts and chart dependency are complete',()=>{
   for(const element of w.document.querySelectorAll('script[src],link[rel="stylesheet"][href]')){
    const value=element.getAttribute('src')||element.getAttribute('href');if(value.startsWith('assets/'))assert(fs.existsSync(path.join(root,value.split('?')[0])),value);
