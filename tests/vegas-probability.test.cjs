@@ -14,3 +14,9 @@ test('rounding preserves 100 percent and even matchups have no favorite',()=>{
  const data=model({}, {teamWinProbability:.6349});assert.equal(data.left.pct+data.right.pct,100);
  assert.equal(model({}, {teamWinProbability:.5}).favorite,null);
 });
+
+test('Tennessee at SMU matches SMU favored odds from either game entry',()=>{
+ const home=model({team_name:'SMU',opponent_team:'Tennessee',home_away:'home'},{teamWinProbability:.55});
+ const away=model({team_name:'Tennessee',opponent_team:'SMU',home_away:'away'},{teamWinProbability:.45});
+ assert.deepEqual(home,away);assert.deepEqual(home.left,{name:'Tennessee',pct:45});assert.deepEqual(home.right,{name:'SMU',pct:55});assert.equal(home.favorite.name,'SMU');
+});
