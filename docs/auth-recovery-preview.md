@@ -1,0 +1,9 @@
+# Session recovery preview 9.10.3
+
+Built on the approved production 9.10.2. The reported `JWT issued at future` response is a token timing rejection, not evidence that the refresh token is revoked. PostgREST documents this symptom and upstream fixes in 14.18/16.3 (https://github.com/PostgREST/postgrest/blob/main/CHANGELOG.md). The deployed service version and this user's token cannot be established from the screenshot.
+
+The request controller retries an HTTP 401 future-issued JWT up to four times after 0.5, 1, 2 and 4 seconds using the same credentials, including REST writes rejected before execution. It never refreshes tokens for this error and does not retry arbitrary authorization failures or ambiguous write failures. Persistent errors remain errors; validation and RLS remain server-enforced.
+
+Startup and successful login handoff preserve saved authentication on downstream data/network failure, showing a reconnect screen instead of the password form. Online recovery and a manual reconnect retry the session and original dynasty entry. Temporary refresh errors propagate instead of returning a false signed-out state. Only an explicit invalid/revoked/missing/expired refresh-session response clears that saved session. A pending refresh cannot restore a logged-out session or overwrite newer authentication. Recovery makes no authenticated data available before successful server responses.
+
+Regression coverage includes bounded same-token retries, reconnect UI and successful recovery, login followed by a data failure, expired-token network failure, generic refresh 400 responses, logout races, and confirmed invalid refresh tokens, alongside existing league routing and async isolation checks. Native iOS and the user's authenticated server state need preview QA; client changes cannot repair an enduring service-side time mismatch.

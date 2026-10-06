@@ -187,6 +187,41 @@ test('full-app navigation and async failure regressions',async t=>{
   items.at(-1).focus();w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));assert.equal(w.document.activeElement,items[0]);
   modal.classList.add('hidden');await tick(w);assert.equal(w.document.activeElement,opener);
  });
+ await t.test('future JWT retries reuse the token and never refresh it',async()=>{
+  const timer=w.setTimeout;w.setTimeout=(fn,ms,...args)=>timer(fn,[500,1000,2000,4000].includes(ms)?0:ms,...args);
+  const calls=[];w.fetch=async(url,options)=>{calls.push({url,token:options.headers.Authorization});return calls.length===1?{ok:false,status:401,text:async()=>JSON.stringify({code:'PGRST303',message:'JWT issued at future'})}:{ok:true,status:200,text:async()=>'[]'};};
+  try{await w.eval("req('/rest/v1/v_my_dynasties',{token:session().access_token})");assert.equal(calls.length,2);assert(calls.every(c=>c.url.includes('/rest/v1/')));assert.equal(calls[0].token,calls[1].token);}
+  finally{w.setTimeout=timer;}
+ });
+ await t.test('persistent clock errors stop retrying and show recovery instead of login',async()=>{
+  const timer=w.setTimeout,original=w.CDHQ_RUNTIME.Data.dynasties;w.setTimeout=(fn,ms,...args)=>timer(fn,[500,1000,2000,4000].includes(ms)?0:ms,...args);
+  let requests=0;w.fetch=async url=>url.includes('/auth/v1/user')?{ok:true,status:200,text:async()=>JSON.stringify({id:'fixture-user'})}:(requests++,{ok:false,status:401,text:async()=>JSON.stringify({code:'PGRST303',message:'JWT issued at future'})});
+  w.eval("Data.dynasties=async()=>req('/rest/v1/v_my_dynasties',{token:session().access_token})");
+  const token=w.eval('session().access_token');
+  try{assert.equal(await w.eval('restoreFoundrySession()'),false);assert.equal(requests,5);assert.equal(w.eval('session().access_token'),token);assert(w.document.getElementById('authScreen').classList.contains('hidden'));assert(w.document.getElementById('sfSessionRecovery'));}
+  finally{w.setTimeout=timer;w.CDHQ_RUNTIME.Data.dynasties=original;}
+  assert.equal(await w.eval('restoreFoundrySession()'),true);assert.equal(w.document.getElementById('sfSessionRecovery'),null);
+ });
+ await t.test('a successful login followed by a data error keeps the sign-in',async()=>{
+  const signIn=w.CDHQ_RUNTIME.Data.signIn,dy=w.CDHQ_RUNTIME.Data.dynasties;
+  w.eval("Data.signIn=async()=>{const saved={access_token:'signed-in-token',refresh_token:'signed-in-refresh',user:{id:'fixture-user'}};save(saved);return saved;};Data.dynasties=async()=>{throw Error('JWT issued at future');}");
+  w.document.getElementById('loginEmail').value='fixture@example.test';w.document.getElementById('loginPassword').value='fixture-password';w.document.getElementById('signInBtn').click();await tick(w);
+  assert.equal(w.eval('session().access_token'),'signed-in-token');assert(w.document.getElementById('sfSessionRecovery'));assert(w.document.getElementById('authScreen').classList.contains('hidden'));
+  w.CDHQ_RUNTIME.Data.signIn=signIn;w.CDHQ_RUNTIME.Data.dynasties=dy;await w.eval('restoreFoundrySession()');
+ });
+ await t.test('expired-session refresh network failures propagate without erasing saved sign-in',async()=>{
+  const previous=w.eval('session()');const payload=Buffer.from(JSON.stringify({exp:1})).toString('base64url');
+  w.eval(`save({...session(),access_token:'header.${payload}.signature'})`);w.fetch=async()=>{throw new w.TypeError('Fixture offline');};
+  await assert.rejects(w.eval('refreshSession()'),/Fixture offline/);assert.equal(w.eval('session().refresh_token'),previous.refresh_token);w.eval(`save(${JSON.stringify(previous)})`);
+ });
+ await t.test('generic refresh 400s retain the session',async()=>{
+  w.fetch=async()=>({ok:false,status:400,text:async()=>JSON.stringify({message:'Temporary auth service failure'})});const token=w.eval('session().access_token');
+  await assert.rejects(w.eval('refreshAuthSingleFlight()'),/Temporary auth/);assert.equal(w.eval('session().access_token'),token);
+ });
+ await t.test('a pending refresh cannot resurrect a logged-out session',async()=>{
+  let finish;w.fetch=()=>new Promise(resolve=>{finish=resolve;});const saved=w.eval('session()'),pending=w.eval('refreshAuthSingleFlight()');await tick(w);w.eval('save(null)');
+  finish({ok:true,status:200,text:async()=>JSON.stringify({access_token:'new-token',refresh_token:'new-refresh'})});await assert.rejects(pending,/session expired/);assert.equal(w.eval('session()'),null);w.eval(`save(${JSON.stringify(saved)})`);
+ });
  await t.test('transient token refresh failures retain the existing session',async()=>{
   const previous=w.eval('session().refresh_token');w.fetch=async()=>{throw new w.TypeError('Fixture offline');};
   await assert.rejects(w.eval('refreshAuthSingleFlight()'),/Fixture offline/);assert.equal(w.eval('session().refresh_token'),previous);
