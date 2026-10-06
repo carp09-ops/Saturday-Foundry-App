@@ -62,3 +62,11 @@
 @media(max-width:360px){#hqMoreTitle{font-size:22px!important}#hqMobileMoreGrid .sf-book-copy strong{font-size:20px!important}.sf-book-brand{height:45px}}
 #hqMobileMoreSheet #hqMobileMoreGrid{display:block!important}
 .sf-book-scroll-hint{display:block;margin-top:8px;font:italic 10px Georgia,serif;color:#806542}
+/* Utility actions stay available without occupying the contents page. */
+.sf-book-tools{flex-shrink:0;border-top:1px solid #987a4860;margin-top:8px;color:#70542c}
+.sf-book-tools>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;cursor:pointer;min-height:44px;font:400 12px Georgia,serif}
+.sf-book-tools>summary::-webkit-details-marker{display:none}
+.sf-book-tools>summary>span{font:400 18px Georgia,serif;transition:transform .15s}
+.sf-book-tools[open]>summary>span{transform:rotate(45deg)}
+.sf-book-tools>summary:focus-visible{outline:2px solid #8b6837;outline-offset:2px}
+#hqMobileMoreSheet .sf-book-tools .hq-more-account{margin-top:0!important;max-height:190px;overflow-y:auto}

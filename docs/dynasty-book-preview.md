@@ -1,4 +1,4 @@
-# Dynasty Book / Chronicles preview 9.10.1
+# Dynasty Book / Chronicles preview 9.10.2
 
 Built from main 4d2c3ad (9.9.25). The mobile bar is Overview, Schedule, Intelligence, Legacy and Book. The book opens with Conference Race and preserves the existing feature routes, selected league, season and active week. Hardware opens the Trophy Case pane in Legacy; Season Recap and dynasty switching remain accessible. Commissioner visibility follows the existing role check. Refresh and logout retain their existing controller.
 
@@ -9,3 +9,5 @@ Chronicles selects career openings and meaningful developments from loaded leagu
 No new database schema or AI endpoint is introduced in this first preview. Editorial is generated locally from curated scenes, not a persistent AI-written novel. Read markers are local to the browser, scoped by signed-in user, league and edition. Career comparisons use the selected league's loaded history and career-stop rows; histories from independent leagues/editions are never conflated. Unavailable history cannot be invented.
 
 Validation: 32 automated checks covering application routing, async league/season isolation, roles, historical career context, event selection, spoiler avoidance, read state, Trophy Case routing, Week 0 and existing regressions. Chromium fixture checks at 320, 390, 768 and 1024 pixels found no JavaScript errors or horizontal overflow; the book stays within the viewport. Signed-in production data and native iOS Safari still need user QA.
+
+Account, version, refresh and logout now sit inside a collapsed Account & tools footer. The contents regain that vertical space by default; opening the book resets tools closed. Existing action controls and handlers are preserved.

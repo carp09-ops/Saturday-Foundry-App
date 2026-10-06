@@ -61,6 +61,10 @@ test('full-app navigation and async failure regressions',async t=>{
   assert.deepEqual(views,['overview','schedule','analytics','legacy']);
   w.CDHQOpenMobileMore();
   assert.equal(w.document.getElementById('hqMoreTitle').textContent,'Dynasty Book');
+  const tools=w.document.getElementById('sfBookTools');assert.equal(tools.open,false);
+  assert(tools.querySelector('#refreshDataBtn'));
+  assert(tools.querySelector('[data-mobile-more-action="logout"]'));
+  tools.open=true;w.CDHQCloseMobileMore();w.CDHQOpenMobileMore();assert.equal(tools.open,false);
   const chapters=[...w.document.querySelectorAll('#hqMobileMoreGrid [data-sf-chapter]')];
   assert.equal(chapters[0].dataset.sfChapter,'conference');
   assert(chapters.some(b=>b.dataset.sfChapter==='recap'));

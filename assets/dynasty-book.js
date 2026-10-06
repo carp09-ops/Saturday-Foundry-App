@@ -41,6 +41,7 @@
   const grid=$('hqMobileMoreGrid');if(!grid)return;
   currentModel=build(S?.season_number);
   $('hqMoreTitle').textContent='Dynasty Book';
+  if($('sfBookTools'))$('sfBookTools').open=false;
   const email=$('hqMobileMoreEmail');if(email)email.textContent=$('sessionEmail')?.textContent?.trim()||'Signed in';
   let intro=$('sfBookIntro');if(!intro){intro=document.createElement('div');intro.id='sfBookIntro';grid.before(intro);}
   intro.innerHTML=`<img class="sf-book-brand" src="assets/saturday-foundry-lockup-transparent.png" alt="Saturday Foundry"><span>TABLE OF CONTENTS</span><p>${escape(D?.short_name||D?.name||'Saturday Foundry')}${S?` · Season ${S.season_number} · Week ${currentWeek()}`:''}</p><small class="sf-book-scroll-hint">Scroll to explore every chapter ↓</small>`;
