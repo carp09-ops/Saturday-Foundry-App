@@ -20,3 +20,11 @@ test('Tennessee at SMU matches SMU favored odds from either game entry',()=>{
  const away=model({team_name:'Tennessee',opponent_team:'SMU',home_away:'away'},{teamWinProbability:.45});
  assert.deepEqual(home,away);assert.deepEqual(home.left,{name:'Tennessee',pct:45});assert.deepEqual(home.right,{name:'SMU',pct:55});assert.equal(home.favorite.name,'SMU');
 });
+
+test('helmet confidence position moves toward the favored side while segment odds stay intact',()=>{
+ const home=model({team_name:'Alabama',opponent_team:'Georgia Tech',home_away:'home'},{teamWinProbability:.9});
+ assert.equal(home.markerPct,90);assert.equal(home.left.pct,10);assert.equal(home.right.pct,90);
+ const away=model({team_name:'Alabama',opponent_team:'Georgia Tech',home_away:'away'},{teamWinProbability:.9});
+ assert.equal(away.markerPct,10);assert.equal(away.left.pct,90);assert.equal(away.right.pct,10);
+ assert.equal(model({}, {teamWinProbability:.5}).markerPct,50);
+});
