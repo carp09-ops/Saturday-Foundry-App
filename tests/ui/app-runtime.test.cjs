@@ -75,13 +75,17 @@ test('full-app navigation and async failure regressions',async t=>{
   assert.equal(w.document.querySelector('#hqMobileMoreGrid [data-sf-chapter="admin"]'),null);w.CDHQCloseMobileMore();
   assert.deepEqual(errors,[]);
  });
- await t.test('Overview episode opens its person and season, then remembers reading across refresh',async()=>{
+ await t.test('Coach story bell opens its person and season and retains reading across refresh',async()=>{
   w.eval(`state.coachMoves=[{person_id:'coach',coach_name:'Corey',season_number:2,from_team_name:'Army',to_team_name:'Texas State'}];renderAll();`);
-  const preview=w.document.querySelector('#sfChroniclePreview [data-sf-episode]');assert(preview);
+  const preview=w.document.querySelector('#coaches [data-sf-coach-person="coach"] .sf-coach-story-bell');assert(preview);
+  const count=Number(preview.querySelector('span').textContent);const episode=preview.dataset.sfEpisode;
   preview.click();await tick(w);
   assert.equal(w.document.querySelector('.view.active').id,'storylines');assert.equal(w.eval('storyCoachFilter'),'coach');assert.equal(w.document.getElementById('storySeasonSelect').value,'2');
-  w.eval('renderAll()');assert.equal(w.document.querySelector('#sfChroniclePreview').textContent.includes('UNREAD'),false);
-  assert.equal(w.document.querySelectorAll('#sfDynastyDiscovery').length,1);
+  w.eval('renderAll()');const bell=w.document.querySelector('#coaches .sf-coach-story-bell');
+  assert.equal(Number(bell.querySelector('span')?.textContent||0),count-1);
+  assert.notEqual(bell.dataset.sfEpisode,episode);
+  assert.equal(w.document.querySelectorAll('#coaches .sf-coach-story-bell').length,1);
+  assert.equal(w.document.querySelector('#sfDynastyDiscovery'),null);
   w.eval('state.coachMoves=[]');
  });
  await t.test('removed overview and race summaries stay absent after rendering',()=>{

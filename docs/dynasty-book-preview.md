@@ -1,8 +1,8 @@
-# Dynasty Book / Chronicles preview 9.10.0
+# Dynasty Book / Chronicles preview 9.10.1
 
 Built from main 4d2c3ad (9.9.25). The mobile bar is Overview, Schedule, Intelligence, Legacy and Book. The book opens with Conference Race and preserves the existing feature routes, selected league, season and active week. Hardware opens the Trophy Case pane in Legacy; Season Recap and dynasty switching remain accessible. Commissioner visibility follows the existing role check. Refresh and logout retain their existing controller.
 
-Overview places one Chronicle preview, a compact league-news inbox and six discovery entrances below Your Week. The existing Legacy Line is retained and links into Chronicles.
+Overview keeps the existing Legacy Line and its Chronicles link. Coach cards show a small bell with the count of unread current-season game/move stories; each opens the correct coach, season and latest unread episode. The large discovery section has been removed. The Book uses an AI-generated leather, gilded-edge and parchment background, branded with the existing Saturday Foundry lockup, with native Roman-numbered chapter controls and a scrolling table of contents. Conference Race remains first.
 
 Chronicles selects career openings and meaningful developments from loaded league data: program moves, preceding recorded-season results, revenge against an opposing person, top-ten wins, first losses after unbeaten starts, surpassing a prior win total, losing-streak turning points and postseason results. Routine games are condensed into factual season summaries. Fiction is labelled and separated from factual score/record lines. Deterministic scene rotation changes adjacent seasons and keeps earlier game episodes stable when later results arrive. Original character lore remains in a collapsed file.
 

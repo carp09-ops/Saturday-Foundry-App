@@ -23,7 +23,7 @@
  function readKey(){return `sf-chronicle-read-v1:${session()?.user?.id||'local'}:${D?.dynasty_id||''}:${D?.game_edition||''}`;}
  function readIds(){try{return new Set(JSON.parse(localStorage.getItem(readKey())||'[]'));}catch{return new Set();}}
  function markRead(id){const read=readIds();read.add(id);try{localStorage.setItem(readKey(),JSON.stringify([...read].slice(-250)));}catch{}renderDiscovery();}
- function news(){return currentModel.chapters.filter(x=>x.importance>=60).sort((a,b)=>b.week-a.week||b.importance-a.importance).slice(0,8);}
+ function news(){return currentModel.chapters.filter(x=>x.game||x.kind==='move').sort((a,b)=>b.week-a.week||b.importance-a.importance);}
  function unread(){const read=readIds();return news().filter(x=>!read.has(x.id));}
  function permitted(chapter){const target=chapter.key==='hardware'?'legacy':chapter.key;return !!$(`${target}`)&&!document.querySelector(`#nav [data-view="${target}"]`)?.classList.contains('hidden');}
  function teaser(chapter){
@@ -36,14 +36,14 @@
   if(chapter.key==='vegas')return `Week ${currentWeek()} · Explore this week’s lines`;
   return chapter.copy;
  }
- function chapterButton(c,i){return `<button type="button" class="sf-book-chapter" data-sf-chapter="${c.key}"><span class="sf-book-number">${String(i+1).padStart(2,'0')}</span><img src="assets/icons/${c.icon}.svg" alt=""><span class="sf-book-copy"><strong>${c.name}</strong><small>${c.feature}</small><em>${escape(teaser(c))}</em></span>${c.key==='storylines'&&unread().length?`<span class="sf-book-bookmark">${unread().length} unread</span>`:''}<span class="sf-book-arrow" aria-hidden="true">↗</span></button>`;}
+ function chapterButton(c,i){return `<button type="button" class="sf-book-chapter" data-sf-chapter="${c.key}"><span class="sf-book-number">${['I','II','III','IV','V','VI','VII','VIII'][i]}</span><img src="assets/icons/${c.icon}.svg" alt=""><span class="sf-book-copy"><strong>${c.name}</strong><small>${c.feature}</small><em>${escape(teaser(c))}</em></span>${c.key==='storylines'&&unread().length?`<span class="sf-book-bookmark">${unread().length} unread</span>`:''}<span class="sf-book-arrow" aria-hidden="true">${String(i+1).padStart(2,'0')}</span></button>`;}
  window.SFPopulateDynastyBook=function(){
   const grid=$('hqMobileMoreGrid');if(!grid)return;
   currentModel=build(S?.season_number);
   $('hqMoreTitle').textContent='Dynasty Book';
   const email=$('hqMobileMoreEmail');if(email)email.textContent=$('sessionEmail')?.textContent?.trim()||'Signed in';
   let intro=$('sfBookIntro');if(!intro){intro=document.createElement('div');intro.id='sfBookIntro';grid.before(intro);}
-  intro.innerHTML=`<span>YOUR DYNASTY, CHAPTER BY CHAPTER</span><p>${escape(D?.short_name||D?.name||'Saturday Foundry')}${S?` · Season ${S.season_number} · Week ${currentWeek()}`:''}</p>`;
+  intro.innerHTML=`<img class="sf-book-brand" src="assets/saturday-foundry-lockup-transparent.png" alt="Saturday Foundry"><span>TABLE OF CONTENTS</span><p>${escape(D?.short_name||D?.name||'Saturday Foundry')}${S?` · Season ${S.season_number} · Week ${currentWeek()}`:''}</p><small class="sf-book-scroll-hint">Scroll to explore every chapter ↓</small>`;
   grid.innerHTML=chapters.filter(permitted).map(chapterButton).join('');
   // Keep every existing non-core destination discoverable, even if new views are added later.
   const covered=new Set(['overview','schedule','analytics','legacy',...chapters.map(c=>c.key)]);
@@ -89,16 +89,24 @@
   renderDiscovery();
  };
  function renderDiscovery(){
-  const host=$('sfDynastyDiscovery');if(!host)return;
-  const featured=currentModel.chapters.find(x=>x.game||x.kind==='move');
-  const read=readIds(),items=news();
-  const preview=$('sfChroniclePreview');
-  preview.innerHTML=featured?`<span class="sf-discovery-kicker">FROM THE CHRONICLES · ${escape(featured.label)}${read.has(featured.id)?'':' · UNREAD'}</span><h3>${escape(featured.headline)}</h3><p>${escape(featured.fact)}</p><button type="button" data-sf-episode="${escape(featured.id)}" data-sf-person="${escape(featured.coach.person_id)}" data-sf-season="${featured.season}">Read the chapter →</button><small>Fictional storytelling · verified league results</small>`:'<span class="sf-discovery-kicker">FROM THE CHRONICLES</span><h3>The next chapter starts here.</h3><p>Explore the people and seasons behind your dynasty.</p><button type="button" data-sf-chapter="storylines">Open Coach Chronicles →</button>';
-  const grid=$('sfOverviewChapters');grid.innerHTML=chapters.slice(0,6).filter(permitted).map(c=>`<button type="button" data-sf-chapter="${c.key}"><img src="assets/icons/${c.icon}.svg" alt=""><span><strong>${c.feature}</strong><small>${escape(teaser(c))}</small></span><span aria-hidden="true">↗</span></button>`).join('');
-  const notice=$('sfChronicleNotices');notice.querySelector('summary').innerHTML=`League news <span>${unread().length?`${unread().length} unread`:'All caught up'}</span>`;
-  $('sfChronicleNoticeItems').innerHTML=items.map(x=>`<button type="button" data-sf-episode="${escape(x.id)}" data-sf-person="${escape(x.coach.person_id)}" data-sf-season="${x.season}"><span>${read.has(x.id)?'READ':'NEW'} · ${escape(x.label)}</span><strong>${escape(x.headline)}</strong><small>${escape(x.fact)}</small></button>`).join('')||'<p>No major developments yet. New milestones and program moves will appear here.</p>';
+  const read=readIds();
+  for(const card of document.querySelectorAll('#coaches [data-sf-coach-person]')){
+   card.querySelector('.sf-coach-story-bell')?.remove();
+   const episodes=currentModel.chapters.filter(x=>String(x.coach.person_id)===card.dataset.sfCoachPerson&&(x.game||x.kind==='move')).sort((a,b)=>b.week-a.week||b.importance-a.importance);
+   if(!episodes.length)continue;
+   const pending=episodes.filter(x=>!read.has(x.id)),latest=pending[0]||episodes[0];
+   const button=document.createElement('button');button.type='button';button.className='sf-coach-story-bell'+(pending.length?' has-unread':'');
+   button.dataset.sfEpisode=latest.id;button.dataset.sfPerson=String(latest.coach.person_id);button.dataset.sfSeason=String(latest.season);
+   const label=`${latest.coach.coach_name}: ${pending.length?`${pending.length} unread ${pending.length===1?'story':'stories'}`:'Read Coach Chronicles'}`;
+   button.setAttribute('aria-label',label);button.title=label;
+   button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4M12 2V0"/></svg>'+(pending.length?`<span aria-hidden="true">${pending.length}</span>`:'');
+   card.querySelector('.sf-coach-story-anchor')?.append(button);
+  }
+  if($('hqMobileMoreSheet')?.classList.contains('open'))window.SFPopulateDynastyBook();
   syncBookState();
  }
+ const originalRenderCoaches=renderCoaches;
+ renderCoaches=function(){originalRenderCoaches();currentModel=build(S?.season_number);renderDiscovery();};
  function syncBookState(){const active=document.querySelector('.view.active')?.id,overflow=!['overview','schedule','analytics','legacy'].includes(active);const button=document.querySelector('#hqMobileNav [data-mobile-more]');button?.classList.toggle('active',overflow);if(button){if(overflow)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');} $('sfDesktopMore')?.classList.toggle('active',overflow);}
  function boot(){
   const mobile=$('hqMobileNav');
@@ -107,8 +115,6 @@
   for(const view of ['overview','schedule','analytics','legacy']){const button=mobile?.querySelector(`[data-mobile-view="${view}"]`);if(button)mobile.append(button);}
   const book=mobile?.querySelector('[data-mobile-more]');if(book){mobile.append(book);book.querySelector('span:last-child').textContent='Book';book.setAttribute('aria-label','Open Dynasty Book');book.querySelector('img').src='assets/icons-premium/records@1x.webp';}
   if($('sfDesktopMore')){$('sfDesktopMore').setAttribute('aria-label','Open Dynasty Book');$('sfDesktopMore').querySelector('span:last-child').textContent='Book';}
-  const host=document.createElement('section');host.id='sfDynastyDiscovery';host.setAttribute('aria-label','Explore your dynasty');host.innerHTML='<header class="sf-discovery-head"><div><span class="sf-discovery-kicker">OPEN A NEW CHAPTER</span><h2>Explore your dynasty</h2></div><button type="button" data-sf-open-book>Open the book ↗</button></header><div id="sfChroniclePreview" class="sf-chronicle-preview"></div><details id="sfChronicleNotices" class="sf-chronicle-notices"><summary>League news</summary><div id="sfChronicleNoticeItems"></div></details><div id="sfOverviewChapters" class="sf-overview-chapters"></div>';
-  $('myWeekPanel')?.after(host);
   const legacyHead=$('legacyLinePanel')?.querySelector('.legacy-line-head');if(legacyHead){const link=document.createElement('button');link.type='button';link.dataset.sfChapter='storylines';link.className='sf-legacy-chronicle-link';link.textContent='Read the Chronicles →';legacyHead.append(link);}
   document.querySelector('#storylines .story-hero h2').textContent='A Career. A Continuing Story.';
   document.querySelector('#storylines .story-hero p').textContent='Real results anchor fictional scenes. Each season remembers what came before; each program move begins a new chapter.';
@@ -117,9 +123,7 @@
   document.addEventListener('click',event=>{
    const book=event.target.closest('[data-sf-open-book]');if(book){event.preventDefault();window.CDHQOpenMobileMore?.(event);return;}
    const button=event.target.closest('[data-sf-chapter],[data-sf-episode]');if(!button)return;
-   const fromNotice=!!button.closest('#sfChronicleNotices');
    event.preventDefault();navigate(button.dataset.sfEpisode?'storylines':button.dataset.sfChapter,{person:button.dataset.sfPerson,season:button.dataset.sfSeason,id:button.dataset.sfEpisode});
-   if(fromNotice)$('sfChronicleNotices').open=false;
   });
   const observer=new MutationObserver(()=>requestAnimationFrame(syncBookState));document.querySelectorAll('.view').forEach(v=>observer.observe(v,{attributes:true,attributeFilter:['class']}));
   renderStorylines();
