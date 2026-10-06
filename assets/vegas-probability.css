@@ -3,11 +3,9 @@
 #overview #gotw .sf-vegas-prob-meta>span{max-width:48%;min-width:0;overflow-wrap:anywhere}
 #overview #gotw .sf-vegas-prob-meta>span:last-child{text-align:right}
 #overview #gotw .sf-vegas-prob-meta b{display:block;margin-top:2px;font:700 20px/1 'Barlow Condensed',sans-serif;color:#f0e8d6}
-#overview #gotw .sf-vegas-prob-track{position:relative;padding:11px 0}
-#overview #gotw .sf-vegas-probability .sf-vegas-prob-bar{display:grid;grid-template-columns:var(--sf-prob-split) calc(100% - var(--sf-prob-split));height:10px;border-radius:99px;overflow:hidden;border:1px solid #ffffff25;box-shadow:0 2px 8px #0004}
-#overview #gotw .sf-vegas-probability .sf-vegas-segment-left{min-width:0;background:linear-gradient(180deg,#ffffff25,transparent),var(--sf-away-color)!important;box-shadow:inset -1px 0 #fff7}
-#overview #gotw .sf-vegas-probability .sf-vegas-segment-right{min-width:0;background:linear-gradient(180deg,#ffffff25,transparent),var(--sf-home-color)!important}
-#overview #gotw .sf-vegas-prob-marker{position:absolute;top:50%;left:clamp(24px,var(--sf-marker-position),calc(100% - 24px));transform:translate(-50%,-50%);width:48px;height:40px;pointer-events:none;filter:drop-shadow(0 2px 4px #000a)}
+#overview #gotw .sf-vegas-prob-track{position:relative;padding:11px 0 23px}
+#overview #gotw .sf-vegas-probability .sf-vegas-prob-bar{height:6px;border-radius:99px;background:linear-gradient(180deg,#35434a,#1b282f);border:1px solid #ffffff20;box-shadow:inset 0 1px 2px #0005}
+#overview #gotw .sf-vegas-prob-marker{position:absolute;top:14px;left:clamp(24px,var(--sf-marker-position),calc(100% - 24px));transform:translate(-50%,-50%);width:48px;height:40px;pointer-events:none;filter:drop-shadow(0 2px 4px #000a)}
 .sf-vegas-helmet{position:relative;display:block;width:48px;height:40px}
 .sf-vegas-helmet svg{width:100%;height:100%}.sf-helmet-shell{fill:var(--sf-helmet-color);stroke:#ddd5bb;stroke-width:1.2}.sf-helmet-shine{fill:none;stroke:#ffffff50;stroke-width:2.5;stroke-linecap:round}.sf-helmet-mask{fill:none;stroke:#b7bfc1;stroke-width:2;stroke-linejoin:round}
 #overview #gotw .sf-vegas-probability .gotw-prob-labels{margin-top:3px!important;font-size:8px!important;text-align:center;color:#80949e!important;letter-spacing:.08em!important}
@@ -15,3 +13,8 @@
 #overview #gotw .sf-vegas-probability .gotw-prob-labels{display:block!important}
 #overview #gotw .sf-vegas-probability .gotw-prob-labels small{display:block;margin-top:4px;font:600 10px/1.3 Inter,sans-serif;letter-spacing:0;color:#b1c1c7}
 #overview #gotw .sf-helmet-logo{position:absolute;display:block;left:9px;top:10px;width:20px;height:14px;background-position:center;background-size:contain;background-repeat:no-repeat;filter:drop-shadow(0 0 1px #ffe4a3) drop-shadow(0 0 3px #f4c542) drop-shadow(0 0 5px #f4c542b3);pointer-events:none}
+#overview #gotw .sf-vegas-even{position:absolute;left:50%;top:8px;transform:translateX(-50%);text-align:center;pointer-events:none}
+#overview #gotw .sf-vegas-even i{display:block;width:1px;height:12px;margin:auto;background:#b7b7a477}
+#overview #gotw .sf-vegas-even small{display:block;margin-top:7px;font:600 7px/1 Inter,sans-serif;letter-spacing:.12em;color:#778991}
+#overview #gotw .sf-vegas-prob-marker:before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:10px;border-radius:50%;background:var(--sf-favorite-color);filter:blur(7px);opacity:.65}
+#overview #gotw .sf-vegas-helmet{z-index:1}
