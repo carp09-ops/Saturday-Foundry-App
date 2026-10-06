@@ -1,0 +1,15 @@
+#overview #gotw .sf-vegas-probability{margin:15px 0 5px!important;padding:0 2px}
+#overview #gotw .sf-vegas-prob-meta{display:flex;justify-content:space-between;gap:18px;margin:0 0 8px;font:600 10px/1.3 Inter,sans-serif;color:#a8bbc3}
+#overview #gotw .sf-vegas-prob-meta>span{max-width:48%;min-width:0;overflow-wrap:anywhere}
+#overview #gotw .sf-vegas-prob-meta>span:last-child{text-align:right}
+#overview #gotw .sf-vegas-prob-meta b{display:block;margin-top:2px;font:700 20px/1 'Barlow Condensed',sans-serif;color:#f0e8d6}
+#overview #gotw .sf-vegas-prob-track{position:relative;padding:11px 0}
+#overview #gotw .sf-vegas-probability .gotw-prob-bar{height:10px!important;overflow:hidden;border:1px solid #ffffff25;box-shadow:0 2px 8px #0004}
+#overview #gotw .sf-vegas-probability .gotw-prob-away{background:linear-gradient(180deg,#ffffff25,transparent),var(--sf-away-color)!important;box-shadow:inset -1px 0 #fff7}
+#overview #gotw .sf-vegas-probability .gotw-prob-home{background:linear-gradient(180deg,#ffffff25,transparent),var(--sf-home-color)!important}
+#overview #gotw .sf-vegas-prob-marker{position:absolute;top:50%;left:clamp(24px,var(--sf-prob-split),calc(100% - 24px));transform:translate(-50%,-50%);width:48px;height:40px;pointer-events:none;filter:drop-shadow(0 2px 4px #000a)}
+.sf-vegas-helmet{position:relative;display:block;width:48px;height:40px}
+.sf-vegas-helmet svg{width:100%;height:100%}.sf-helmet-shell{fill:var(--sf-helmet-color);stroke:#ddd5bb;stroke-width:1.2}.sf-helmet-shine{fill:none;stroke:#ffffff50;stroke-width:2.5;stroke-linecap:round}.sf-helmet-mask{fill:none;stroke:#b7bfc1;stroke-width:2;stroke-linejoin:round}
+#overview #gotw .sf-vegas-helmet img{position:absolute!important;left:11px!important;top:11px!important;width:16px!important;height:15px!important;object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:drop-shadow(0 1px 1px #0005)!important}
+#overview #gotw .sf-vegas-probability .gotw-prob-labels{margin-top:3px!important;font-size:8px!important;text-align:center;color:#80949e!important;letter-spacing:.08em!important}
+#overview #gotw .sf-vegas-probability .gotw-prob-labels i{font-style:normal;padding:0 5px;color:#b89b63}
