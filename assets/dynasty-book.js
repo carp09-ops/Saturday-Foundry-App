@@ -16,10 +16,12 @@
  function build(sn){
   if(!D||!S)return {chapters:[],profiles:[]};
   const input={dynasty:D.dynasty_id,edition:D.game_edition,season:Number(sn),games:storyAllGames(),stops:state.careerStops||[],moves:state.coachMoves||[],coaches:storyCoachPool(Number(sn))};
-  const signature=JSON.stringify(input),key=String(sn);
+  const weekly=rootWeekly(sn);
+  const signature=JSON.stringify([input,weekly]),key=String(sn);
   if(cache.get(key)?.signature===signature)return cache.get(key).model;
-  const result=window.SFChronicleEngine.build(input);cache.set(key,{signature,model:result});if(cache.size>10)cache.delete(cache.keys().next().value);return result;
+  const result=window.SFChronicleEngine.build(input);result.chapters=[...weekly,...result.chapters];cache.set(key,{signature,model:result});if(cache.size>10)cache.delete(cache.keys().next().value);return result;
  }
+ function rootWeekly(sn){return window.SFWeeklyStories?.chapters(sn)||[];}
  function readKey(){return `sf-chronicle-read-v1:${session()?.user?.id||'local'}:${D?.dynasty_id||''}:${D?.game_edition||''}`;}
  function readIds(){try{return new Set(JSON.parse(localStorage.getItem(readKey())||'[]'));}catch{return new Set();}}
  function markRead(id){const read=readIds();read.add(id);try{localStorage.setItem(readKey(),JSON.stringify([...read].slice(-250)));}catch{}renderDiscovery();}
@@ -71,7 +73,7 @@
  }
  window.SFOpenBookChapter=navigate;
  function episodeMarkup(x){
-  return `<article class="sf-episode" data-sf-episode-id="${escape(x.id)}"><header><span>${escape(x.format)} · ${escape(x.label)}</span><small>${escape(x.coach.coach_name)} · ${escape(x.team)}</small></header><h3>${escape(x.headline)}</h3><p class="sf-episode-fact">${escape(x.fact)}</p><p class="sf-episode-fiction">${escape(x.scene)}</p><footer><span>FICTIONALIZED CHRONICLE</span><button type="button" data-sf-chapter="${x.link}" data-sf-person="${escape(x.coach.person_id)}" data-sf-season="${x.season}">${({hardware:'View earned hardware',rivalries:'Explore rivalry history',records:'Open Record Book',legacy:'Explore career history'})[x.link]} →</button></footer></article>`;
+  return `<article class="sf-episode" data-sf-episode-id="${escape(x.id)}"><header><span>${escape(x.format)} · ${escape(x.label)}</span><small>${escape(x.coach.coach_name)} · ${escape(x.team)}</small></header><h3>${escape(x.headline)}</h3><p class="sf-episode-fact">${escape(x.fact)}</p><p class="sf-episode-fiction">${escape(x.scene)}</p><footer><span>${x.kind==='weekly'?'FACTUAL WEEKLY COVERAGE':'FICTIONALIZED CHRONICLE'}</span><button type="button" data-sf-chapter="${x.link}" data-sf-person="${escape(x.coach.person_id)}" data-sf-season="${x.season}">${({hardware:'View earned hardware',rivalries:'Explore rivalry history',records:'Open Record Book',legacy:'Explore career history'})[x.link]} →</button></footer></article>`;
  }
  renderStorylines=function(){
   const select=$('storySeasonSelect'),old=select?.value;
@@ -131,3 +133,4 @@
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+

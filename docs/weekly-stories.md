@@ -1,0 +1,13 @@
+Weekly Stories — QA 9.10.9
+
+The Stories screen reads shared, saved editions from `weekly_story_editions`. Imports and score/ranking corrections refresh them through statement-level database triggers on games, game participants, weekly rankings, and dynasty settings. Readers never generate or write stories. No external AI service or recurring AI charge is required.
+
+Each edition includes a lead, every active user team's result or pending-result update, movements between complete Top 25 polls, and the recorded upcoming matchups. A poll-only edition carries the latest completed week's coverage with its own week label. Week 0 is supported. Records and streaks only use results through the covered week. Historical previews retain matchup details without importing later results. Existing career episodes and fictional character files remain available below the weekly edition.
+
+The app reloads saved editions after its data changes, when Stories becomes visible again, and every 60 seconds while Stories is open. Refresh stories provides an immediate retry. Week selection survives refresh; changing leagues or seasons resets the selection and prevents stale requests from painting another league's content. The existing season selector and team filters apply to weekly team coverage. Discovery bells also include weekly game coverage without duplicating carried-forward recaps.
+
+The table allows member-only reads with RLS. Clients have no INSERT, UPDATE, or DELETE grants. Internal SECURITY DEFINER functions are in the private schema, have an empty search path, check membership when an authenticated user initiates a change, and revoke public/anon/authenticated EXECUTE access. Repeating generation with unchanged facts does not change the edition revision.
+
+`weekly-stories.sql` records the final additive database setup already applied to the connected project; do not apply it twice. Rollback of the feature should remove the weekly_stories_* triggers before dropping the edition table/functions. Frontend rollback removes the two weekly-stories assets and their index includes, then restores the small discovery integration in dynasty-book.js.
+
+Validation: seven Node/jsdom tests cover archive selection including Week 0, team/season isolation, request races, refresh retention, duplicate discovery avoidance, escaping, incomplete polls, and error recovery. Database transaction tests verify import triggers, correction propagation, archive isolation, unchanged-input idempotency, and access restrictions. The transaction rolls back test score changes. All 69 inline scripts and both changed JavaScript assets pass syntax checks. Phone/tablet visual review remains part of preview QA.
