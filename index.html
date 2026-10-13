@@ -6751,6 +6751,7 @@ document.addEventListener('change',function(e){
 </section>
 
     <section id="admin" class="view">
+      <div id="cpuLoadTracker" class="admin-card" aria-live="polite"></div>
       <div class="admin-grid">
         <div class="stack">
           <div class="admin-card">
@@ -6931,6 +6932,7 @@ document.addEventListener('change',function(e){
 
 <script src="assets/coach-career-hub.js?v=9.10.10"></script>
 <script src="assets/vegas-probability.js?v=9.10.10"></script>
+<script src="assets/cpu-load-tracker.js?v=1"></script>
 <script>
 "use strict";
 const URL="https://byenidxnyuqzrcrbwihm.supabase.co";
@@ -8318,7 +8320,14 @@ async function saveMyScheduleGame(){
  }catch(e){msg($("myScheduleMessage"),e.message||String(e),"error")}
  finally{btn.disabled=false}
 }
+function renderCPULoadTracker(){
+ const el=$("cpuLoadTracker");if(!el||!window.SFCPULoadTracker)return;
+ const rows=window.SFCPULoadTracker.audit(state.scheduleGames||[],state.programs||[],currentWeek());
+ const overdue=rows.filter(w=>w.week<currentWeek()&&w.status==='missing');
+ el.innerHTML=`<div class="kicker">COMPUTER SIMULATED GAMES</div><h3>CPU Results to Load</h3><p>${overdue.length} past week${overdue.length===1?'':'s'} missing results · ${esc(D?.name||'Selected league')} · Season ${esc(S?.season_number||'')}</p><p>Checks Week 0 through the active week. Counts CPU vs CPU matchups only. Empty weeks need verification; games absent from the stored schedule cannot be detected.</p>`+rows.map(w=>`<details class="cpu-load-week"><summary><strong>${esc(w.label)}</strong><span>${w.status==='verify'?'Needs verification':w.status==='loaded'?`Loaded · ${w.loaded}/${w.total}`:`${w.week===currentWeek()?'Current week':'Load needed'} · ${w.missing.length} missing · ${w.loaded}/${w.total} loaded`}</span></summary>${w.status==='verify'?'<p>No CPU matchups stored. Check whether this week’s schedule and results were imported.</p>':w.missing.length?'<ul>'+w.missing.map(g=>`<li>${esc(g.team_name||'TBD')} vs ${esc(g.opponent_team||'TBD')} — missing final result</li>`).join('')+'</ul>':'<p>All stored CPU matchups have final scores.</p>'}</details>`).join('');
+}
 function renderSchedule(){
+ renderCPULoadTracker();
  const scheduleSource=(Array.isArray(state.scheduleGames)&&state.scheduleGames.length)?state.scheduleGames:(state.games||[]);
  const allSeasonGames=scheduleSource.filter(g=>Number.isFinite(Number(g.week_number)));
  const isDynastyScheduleGame=g=>!!(g&&(dynastyProgramForTeam(g,"team")?.person_id||dynastyProgramForTeam(g,"opponent")?.person_id));
@@ -17225,3 +17234,5 @@ body.sf-session-recovering #siteHeader .canonical-controls,body.sf-session-recov
 </style>
 
 <link rel="stylesheet" href="assets/vegas-probability.css?v=9.10.10">
+
+<style>#cpuLoadTracker{margin-bottom:16px}.cpu-load-week{border-top:1px solid #c7a45a30;padding:12px 0}.cpu-load-week summary{cursor:pointer;display:flex;justify-content:space-between;gap:12px;min-height:44px;align-items:center}.cpu-load-week summary span{font-size:12px;color:#e6c780}.cpu-load-week ul{padding-left:20px;font-size:13px;color:#b5c5cc}.cpu-load-week li{margin:8px 0}@media(max-width:600px){.cpu-load-week summary{align-items:flex-start;flex-direction:column;gap:5px}}</style>
