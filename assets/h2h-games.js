@@ -45,7 +45,7 @@ function controls(g){
 }
 function footer(g){return `<div class="h2h-validation-state ${esc(g.h2h_validation?.status||'')}"><span>${esc(label(g,g.h2h_validation))}</span>${controls(g)}</div>`;}
 const originalCard=root.gameDayCard;
-root.gameDayCard=function(g,logo){const card=originalCard(g,logo),p=isH2H(g);if(!p||g.is_bye)return card;return `<div class="h2h-frame"><div class="h2h-banner"><b>USER vs USER</b><span>${esc(p.a.coach_name||p.a.team_name)} vs ${esc(p.b.coach_name||p.b.team_name)}</span></div>${card}${footer(g)}</div>`;};
+root.gameDayCard=function(g,logo){const card=originalCard(g,logo),p=isH2H(g),owners=root.SFScorecards?.owners(g,rt.getState().programs||[])||[];if(!owners.length||g.is_bye)return card;const names=p?`${esc(p.a.coach_name||p.a.team_name)} vs ${esc(p.b.coach_name||p.b.team_name)}`:esc(owners[0].coach_name||owners[0].team_name);return `<div class="h2h-frame"><div class="h2h-banner">${root.SFScorecards.badge(!!p)}<span>${names}</span></div>${card}${p?footer(g):''}</div>`;};
 api.renderInbox=function(){
  const season=rt.getSeason();if(!season)return;
  const games=[...new Map((rt.getState().games||[]).filter(g=>isH2H(g)&&g.h2h_validation&&['pending','disputed'].includes(g.h2h_validation.status)).map(g=>[String(g.id),g])).values()];
