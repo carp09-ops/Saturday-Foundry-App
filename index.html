@@ -8322,9 +8322,7 @@ async function saveMyScheduleGame(){
 }
 function renderCPULoadTracker(){
  const el=$("cpuLoadTracker");if(!el||!window.SFCPULoadTracker)return;
- const rows=window.SFCPULoadTracker.audit(state.scheduleGames||[],state.programs||[],currentWeek());
- const overdue=rows.filter(w=>w.week<currentWeek()&&w.status==='missing');
- el.innerHTML=`<div class="kicker">COMPUTER SIMULATED GAMES</div><h3>CPU Results to Load</h3><p>${overdue.length} past week${overdue.length===1?'':'s'} missing results · ${esc(D?.name||'Selected league')} · Season ${esc(S?.season_number||'')}</p><p>Checks Week 0 through the active week. Counts CPU vs CPU matchups only. Empty weeks need verification; games absent from the stored schedule cannot be detected.</p>`+rows.map(w=>`<details class="cpu-load-week"><summary><strong>${esc(w.label)}</strong><span>${w.status==='verify'?'Needs verification':w.status==='loaded'?`Loaded · ${w.loaded}/${w.total}`:`${w.week===currentWeek()?'Current week':'Load needed'} · ${w.missing.length} missing · ${w.loaded}/${w.total} loaded`}</span></summary>${w.status==='verify'?'<p>No CPU matchups stored. Check whether this week’s schedule and results were imported.</p>':w.missing.length?'<ul>'+w.missing.map(g=>`<li>${esc(g.team_name||'TBD')} vs ${esc(g.opponent_team||'TBD')} — missing final result</li>`).join('')+'</ul>':'<p>All stored CPU matchups have final scores.</p>'}</details>`).join('');
+ window.SFCPULoadTracker.render(el,{rows:state.scheduleGames||[],programs:state.programs||[],week:currentWeek(),scope:`${D?.name||'Selected league'} · Season ${S?.season_number||''}`});
 }
 function renderSchedule(){
  renderCPULoadTracker();
