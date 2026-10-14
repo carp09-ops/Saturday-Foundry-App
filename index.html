@@ -5373,7 +5373,7 @@ img.sf-dark-logo{
 </style>
 
 <style id="sf-legacy-polish-9-9-9">
-/* PROD 9.10.13: league identity and rounded Legacy controls. */
+/* PREVIEW 9.10.14: league identity and rounded Legacy controls. */
 #legacy .sf-legacy-intro{display:flex;align-items:center;gap:16px}
 #sfLegacyLeagueLogo{width:64px;height:64px;object-fit:contain;flex:none}
 .sf-legacy-intro>div>span{font:800 10px Inter,sans-serif;letter-spacing:.2em;color:#d8b76e}
@@ -6738,7 +6738,7 @@ document.addEventListener('change',function(e){
     <section class="recap-section recap-foundry-honors-section" data-recap-fold="foundry"><div class="recap-section-head"><div><span>THE SEASON, FORGED</span><h3>Foundry Honors</h3></div><em>Season-ending distinctions earned from the Dynasty ledger</em></div><div id="recapFoundryHonors" class="recap-foundry-honors-grid"></div></section>
   </div>
 </section>
-<section id="rivalries" class="view"><div class="rivalry-hq-shell"><header class="rivalry-hq-hero"><div><span>HEAD-TO-HEAD INTELLIGENCE</span><h2>Rivalry Center</h2><p>Every user-vs-user meeting becomes part of the mythology — series control, streaks, ranked meetings, close finishes, Vegas performance and the games that changed the rivalry.</p></div><div id="rivalryHeroSummary" class="rivalry-hero-summary"></div></header><section id="rivalrySpotlight" class="rivalry-spotlight"></section><section><div class="rivalry-section-head"><div><span>ALL-TIME SERIES</span><h3>Rivalry Board</h3></div><em>Completed coach-vs-coach games</em></div><div id="rivalryBoard" class="rivalry-board"></div></section><section><div class="rivalry-section-head"><div><span>SIGNATURE MEETINGS</span><h3>Games That Built the Rivalries</h3></div><em>Closest, biggest and ranked clashes</em></div><div id="rivalryMoments" class="rivalry-moments"></div></section></div></section>
+<section id="rivalries" class="view"><div id="rivalryLeagueCenter"></div></section>
 
     <section id="records" class="view">
   <div class="coaches-card-shell">
@@ -9507,7 +9507,8 @@ $('storyCoachFilters')?.addEventListener('click',e=>{const b=e.target.closest('b
 function rivalryDetailedRecords(){
  const normTeam=v=>String(v||'').trim().toLowerCase();
  const grouped=new Map();recordBookGames().forEach(g=>{if(!g.id)return;if(!grouped.has(String(g.id)))grouped.set(String(g.id),[]);const a=grouped.get(String(g.id));if(!a.some(x=>String(x.person_id)===String(g.person_id)))a.push(g)});const ledgers=new Map(),seenMeetings=new Set();grouped.forEach(rows=>{if(rows.length<2)return;const x=rows[0],y=rows.find(z=>String(z.person_id)!==String(x.person_id)&&normTeam(z.team_name)===normTeam(x.opponent_team)&&normTeam(z.opponent_team)===normTeam(x.team_name));if(!y)return;const ids=[String(x.person_id),String(y.person_id)].sort(),key=ids.join('|');const meetingKey=[key,Number(x.season_number||0),Number(x.week_number||0),[normTeam(x.team_name),normTeam(y.team_name)].sort().join('~')].join('|');if(seenMeetings.has(meetingKey))return;seenMeetings.add(meetingKey);if(!ledgers.has(key))ledgers.set(key,{a:ids[0],b:ids[1],meetings:[],wins:{}});const r=ledgers.get(key),a=String(x.person_id)===r.a?x:y,b=a===x?y:x;r.meetings.push({a,b,season:Number(a.season_number||0),week:Number(a.week_number||0),margin:Math.abs(Number(a.points_for)-Number(a.points_against))});[a,b].forEach(g=>{if(g.result==='W')r.wins[String(g.person_id)]=(r.wins[String(g.person_id)]||0)+1})});return [...ledgers.values()].map(r=>{r.meetings.sort((x,y)=>x.season-y.season||x.week-y.week);r.games=r.meetings.length;r.aw=r.wins[r.a]||0;r.bw=r.wins[r.b]||0;r.ranked=r.meetings.filter(m=>m.a.team_rank||m.a.opponent_rank).length;r.close=r.meetings.filter(m=>m.margin<=7).length;const last=r.meetings.at(-1);r.streak=0;r.streakCoach=null;if(last){const w=last.a.result==='W'?r.a:r.b;r.streakCoach=w;for(let i=r.meetings.length-1;i>=0;i--){const m=r.meetings[i],mw=m.a.result==='W'?r.a:r.b;if(mw!==w)break;r.streak++}}const avg=id=>{const ds=[];r.meetings.forEach(m=>[m.a,m.b].forEach(g=>{if(String(g.person_id)!==String(id))return;const v=storyVegas(g),p=v?vegasPerspective(v,g):null;if(p?.teamSpread!=null)ds.push(Number(g.points_for)-Number(g.points_against)+Number(p.teamSpread))}));return ds.length?ds.reduce((a,b)=>a+b,0)/ds.length:null};r.avgDiffA=avg(r.a);r.avgDiffB=avg(r.b);return r}).sort((a,b)=>b.games-a.games)}
-function renderRivalries(){if(!$('rivalries'))return;const rs=rivalryDetailedRecords(),total=rs.reduce((n,r)=>n+r.games,0),ranked=rs.reduce((n,r)=>n+r.ranked,0);$('rivalryHeroSummary').innerHTML=`<div><b>${rs.length}</b><small>Series</small></div><div><b>${total}</b><small>Meetings</small></div><div><b>${ranked}</b><small>Ranked</small></div>`;const top=rs[0];$('rivalrySpotlight').innerHTML=top?`<article class="rivalry-feature"><small>FEATURED RIVALRY · ${top.games} MEETINGS</small><h3>${esc(coachNameFor(top.a))} vs ${esc(coachNameFor(top.b))}</h3><p>${top.aw===top.bw?'The series is tied.':top.aw>top.bw?`${esc(coachNameFor(top.a))} controls the series.`:`${esc(coachNameFor(top.b))} controls the series.`} ${top.streak?`${esc(coachNameFor(top.streakCoach))} has won ${top.streak} straight.`:''}</p><div class="rivalry-feature-score"><div><span>${esc(coachNameFor(top.a))}</span><b>${top.aw}</b></div><em>VS</em><div><span>${esc(coachNameFor(top.b))}</span><b>${top.bw}</b></div></div></article><aside class="rivalry-feature-side"><div><b>${top.ranked}</b><small>Ranked Meetings</small></div><div><b>${top.close}</b><small>One-Score Games</small></div><div><b>${top.meetings.at(-1)?`S${top.meetings.at(-1).season} W${top.meetings.at(-1).week}`:'—'}</b><small>Last Meeting</small></div><div><b>${top.streak||'—'}</b><small>Current Streak</small></div></aside>`:'<div class="rivalry-empty">No completed user-vs-user meetings yet.</div>';$('rivalryBoard').innerHTML=rs.map(r=>`<article class="rivalry-hq-card"><div class="rivalry-hq-card-top"><div class="rivalry-hq-card-coach"><small>${esc(coachNameFor(r.a))}</small><b>${r.aw}</b></div><div class="rivalry-hq-card-mid"><strong>${r.games}</strong><span>${r.aw===r.bw?'TIED':r.aw>r.bw?`${esc(coachNameFor(r.a))} LEADS`:`${esc(coachNameFor(r.b))} LEADS`}</span></div><div class="rivalry-hq-card-coach right"><small>${esc(coachNameFor(r.b))}</small><b>${r.bw}</b></div></div><div class="rivalry-hq-stats"><div><b>${r.close}</b><small>One Score</small></div><div><b>${r.ranked}</b><small>Ranked</small></div><div><b>${r.avgDiffA==null?'—':signed(r.avgDiffA.toFixed(1))}</b><small>Vegas Δ</small></div><div><b>${r.avgDiffB==null?'—':signed(r.avgDiffB.toFixed(1))}</b><small>Vegas Δ</small></div></div></article>`).join('')||'<div class="rivalry-empty">Rivalries appear after dynasty coaches meet.</div>';const all=[];rs.forEach(r=>r.meetings.forEach(m=>all.push({r,m})));const picks=[['CLOSEST CLASSIC',[...all].sort((a,b)=>a.m.margin-b.m.margin)[0]],['BIGGEST STATEMENT',[...all].sort((a,b)=>b.m.margin-a.m.margin)[0]],['RANKED SHOWDOWN',all.find(x=>x.m.a.team_rank||x.m.a.opponent_rank)]];$('rivalryMoments').innerHTML=picks.filter(x=>x[1]).map(([l,x])=>{const g=x.m.a,w=g.result==='W'?coachNameFor(g.person_id):coachNameFor(x.m.b.person_id);return `<article class="rivalry-moment"><span>${l}</span><h4>${esc(w)} · ${g.points_for}-${g.points_against}</h4><p>Season ${x.m.season}, Week ${x.m.week} · ${x.m.margin}-point margin</p></article>`}).join('')||'<div class="rivalry-empty">Signature meetings will emerge as the ledger grows.</div>'}
+function renderRivalries(){window.SFRivalryCenter?.render();}
+
 function renderTop25(){
  const root=$("top25Board");if(!root)return;
  const rows=state.rankings||[];if(!rows.length){root.innerHTML='<div class="empty">No Top 25 poll has been entered for this season.</div>';return}
@@ -12840,7 +12841,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
      rows.innerHTML=[...byWeek.entries()].sort((a,b)=>a[0]-b[0]).map(([w,gs])=>`<details class="v21-week-group" open><summary><div><strong>Week ${w}</strong><span>${gs.filter(g=>!g.is_bye).length} archived game${gs.filter(g=>!g.is_bye).length===1?'':'s'}</span></div><div>${gs.every(g=>g.status==='completed'||g.is_bye)?'COMPLETE':'VIEW'}</div></summary><div class="v21-week-list">${gs.filter(g=>!g.is_bye).map(g=>`<div class="v21-archive-game"><span class="v21-archive-coach">${ANVIL}${esc(g.coach_name||'Coach')}</span><span class="v21-archive-match">${esc(g.team_name)} ${g.home_away==='away'?'@':'vs'} ${esc(g.opponent_team||'TBD')}</span><span class="v21-archive-result ${g.result==='W'?'pos':g.result==='L'?'neg':''}">${g.status==='completed'?`${esc(g.result||'')} ${g.points_for??''}-${g.points_against??''}`:'UPCOMING'}</span><span class="v21-archive-broadcast"></span></div>`).join('')}</div></details>`).join('')||'<div class="empty">No player-controlled archived games for this season.</div>';
    });
  }
- function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.10.13'}
+ function updateBuild(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PREVIEW 9.10.14'}
  function run(root=document){replaceLegacyBrand(root);decorateControlled(root);reorderDesktop();setupMobile();fixMore();decoupleArchivePicker();updateBuild()}
  function boot(){
    // Structural navigation changes run exactly once. Re-running appendChild-based
@@ -12873,7 +12874,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 
 <!-- Saturday Foundry 9.7.3 — Exact finalized Coaches Card restoration -->
 <meta name="saturday-foundry-production-release" content="9.7.3-exact-coaches-card-restoration">
-<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.10.13'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
+<script id="sf-release-9-7-3-marker">(function(){function mark(){const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PREVIEW 9.10.14'}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();window.addEventListener('pageshow',mark)})();</script>
 
 <script id="sf-coach-card-portrait-fallback">
 (function(){
@@ -13550,7 +13551,7 @@ body.dynasty-chooser-active #siteHeader .canonical-header-row>div:first-child>.m
 .sf-game-type-help{display:block;margin-top:5px;color:#7f929d;font-size:9px;line-height:1.25}
 </style>
 <script id="sf-qa-9-7-9-step1-marker">(function(){
-function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PROD 9.10.13";}
+function mark(){var m=document.getElementById("sfBuildMarker");if(m)m.textContent="PREVIEW 9.10.14";}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mark,{once:true});else mark();
 window.addEventListener("pageshow",mark);
 })();</script>
@@ -14663,7 +14664,7 @@ html,body{max-width:100%;overflow-x:hidden}
     normalizeNav();
     guaranteeAnvils();
     scrubVisibleHQ();
-    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.10.13';
+    const m=document.getElementById('sfBuildMarker');if(m)m.textContent='PREVIEW 9.10.14';
   }
   function boot(){
     build();
@@ -14673,7 +14674,7 @@ html,body{max-width:100%;overflow-x:hidden}
       requestAnimationFrame(()=>{
         queued=false;
         ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){guaranteeAnvils(n);scrubVisibleHQ(n)}}));
-        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PROD 9.10.13';
+        const mark=document.getElementById('sfBuildMarker');if(mark)mark.textContent='PREVIEW 9.10.14';
       });
     });
     if(document.body)obs.observe(document.body,{childList:true,subtree:true});
@@ -15080,7 +15081,7 @@ body.dynasty-chooser-active .dynasty-chooser-empty{
   'use strict';
   function mark(){
     const m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.10.13';
+    if(m)m.textContent='PREVIEW 9.10.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -17108,7 +17109,7 @@ img.sf-logo-system-v2{
 (function(){
   function mark(){
     var m=document.getElementById('sfBuildMarker');
-    if(m)m.textContent='PROD 9.10.13';
+    if(m)m.textContent='PREVIEW 9.10.14';
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
@@ -17118,7 +17119,7 @@ img.sf-logo-system-v2{
 <meta name="saturday-foundry-production-release" content="9.7.9-game-metadata-rankings-overview-cleanup">
 <script id="sf-prod-9-7-9-authority">
 (function(){
-  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PROD 9.10.13';}
+  function mark(){var m=document.getElementById('sfBuildMarker');if(m)m.textContent='PREVIEW 9.10.14';}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark,{once:true});else mark();
   window.addEventListener('pageshow',mark);
 })();
@@ -17244,3 +17245,6 @@ body.sf-session-recovering #siteHeader .canonical-controls,body.sf-session-recov
 <link rel="stylesheet" href="assets/scorecard-identity.css?v=9.10.13">
 <script src="assets/scorecard-identity.js?v=9.10.13"></script>
 <script src="assets/h2h-games.js?v=9.10.13"></script>
+
+<link rel="stylesheet" href="assets/rivalry-center.css?v=9.10.14-preview">
+<script src="assets/rivalry-center.js?v=9.10.14-preview"></script>
