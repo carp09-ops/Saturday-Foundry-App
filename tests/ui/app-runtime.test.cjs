@@ -39,12 +39,30 @@ async function createApp(){
  return {dom,w,errors};
 }
 const tick=w=>new Promise(resolve=>w.setTimeout(resolve,25));
+test('isolated experience sample walks account, dynasty, program and every destination',async t=>{
+ const {dom,w,errors}=await createApp();t.after(()=>dom.window.close());
+ w.eval(fs.readFileSync(path.join(root,'assets/experience-tour.js'),'utf8'));await tick(w);
+ assert(!w.document.getElementById('authScreen').classList.contains('hidden'));
+ await w.document.getElementById('signInBtn').onclick();await tick(w);
+ assert(!w.document.getElementById('dynastyChooserScreen').classList.contains('hidden'));
+ await w.eval('loadDynasty(0)');await tick(w);
+ assert(!w.document.getElementById('teamScreen').classList.contains('hidden'));
+ w.document.querySelector('#teamGrid [data-team="sample-0"]').click();await tick(w);
+ await w.document.getElementById('confirmTeamBtn').onclick();await tick(w);
+ assert(!w.document.getElementById('app').classList.contains('hidden'));
+ assert.match(w.document.getElementById('sfHomeWelcome').textContent,/Texas State/);
+ for(const id of ['overview','schedule','conference','coachhub','legacy','analytics','rivalries','storylines','records','recap','vegas']){
+  w.SFExperience.navigate(id);await tick(w);assert.equal(w.document.querySelector('.view.active').id,id);
+ }
+ assert.match(w.document.querySelector('.sf-x-tour-badge').textContent,/NO DATABASE WRITES/);
+ assert.deepEqual(errors,[]);
+});
 test('full-app navigation and async failure regressions',async t=>{
  const {dom,w,errors}=await createApp();t.after(()=>dom.window.close());
  await t.test('all static element IDs are unique and startup is clean',()=>{
   const ids=[...w.document.querySelectorAll('[id]')].map(e=>e.id);assert.equal(new Set(ids).size,ids.length);assert.deepEqual(errors,[]);
  });
- await t.test('all 11 views render and navigate with week zero preserved',async()=>{
+ await t.test('all destination and detail views render and navigate with week zero preserved',async()=>{
   await w.eval('loadDynasty(0)');await tick(w);
   assert.equal(w.eval('state.activeWeek'),0);
   for(const view of [...w.document.querySelectorAll('.view')]){
@@ -54,11 +72,59 @@ test('full-app navigation and async failure regressions',async t=>{
   }
   assert.deepEqual(errors,[]);
  });
+ await t.test('experience has five identical destinations and visible entry labels',async()=>{
+  const desktop=[...w.document.querySelectorAll('#sfPrimaryNav [data-sf-route]')].map(b=>b.dataset.sfRoute);
+  const mobile=[...w.document.querySelectorAll('#hqMobileNav [data-mobile-view]')].map(b=>b.dataset.mobileView);
+  assert.deepEqual(desktop,['overview','schedule','conference','coachhub','legacy']);assert.deepEqual(desktop,mobile);
+  for(const id of ['loginEmail','loginPassword','signupName','signupEmail','signupPassword'])assert(w.document.querySelector('label[for="'+id+'"]'));
+  assert.equal(w.document.querySelectorAll('#seasonSelect').length,1);assert(w.document.querySelector('#sfContextSeason #seasonSelect'));
+  assert.match(w.document.getElementById('sfBuildMarker').textContent,/PREVIEW 9\.11/);
+ });
+ await t.test('experience exposes rankings and coaches in hubs and opens comparison directly',async()=>{
+  assert(w.document.querySelector('#coachhub #coaches'));assert(w.document.querySelector('#conference #top25Panel'));
+  w.SFExperience.navigate('coachhub');await tick(w);assert.equal(w.document.querySelector('.view.active').id,'coachhub');
+  w.document.querySelector('#coachhub [data-sf-pane="paneCompare"]').click();await tick(w);
+  assert.equal(w.document.querySelector('.view.active').id,'analytics');assert(w.document.getElementById('paneCompare').classList.contains('active'));
+  assert.equal(w.document.querySelector('#sfPrimaryNav [aria-current="page"]').dataset.sfRoute,'conference');
+  assert.equal(w.document.querySelector('#hqMobileNav [aria-current="page"]').dataset.mobileView,'conference');
+  w.document.querySelector('#analytics .sf-x-breadcrumb button').click();await tick(w);assert.equal(w.document.querySelector('.view.active').id,'conference');
+ });
+ await t.test('experience mobile routes preserve week zero and commissioner permissions',async()=>{
+  for(const id of ['overview','schedule','conference','coachhub','legacy']){
+   w.document.querySelector('#hqMobileNav [data-mobile-view="'+id+'"]').click();await tick(w);assert.equal(w.document.querySelector('.view.active').id,id);assert.equal(w.eval('currentWeek()'),0);
+  }
+  w.eval("D.role='member';renderCommissioner()");await tick(w);assert.equal(w.document.getElementById('sfOfficeAction').hidden,true);
+  w.SFExperience.navigate('admin');assert.notEqual(w.document.querySelector('.view.active').id,'admin');
+  w.eval("D.role='commissioner';renderCommissioner()");
+ });
+ await t.test('program selection is keyboard accessible and Back returns to the chooser without claiming',async()=>{
+  const original=w.CDHQ_RUNTIME.Data.teamSelection;
+  w.CDHQ_RUNTIME.Data.teamSelection=async()=>[{team_id:'available',team_name:'Available State',conference:'American',claimed:false},{team_id:'taken',team_name:'Taken State',conference:'American',claimed:true,claimed_by:'Another coach'}];
+  await w.eval('openTeamSelection()');await tick(w);
+  const available=w.document.querySelector('#teamGrid [data-team="available"]'),taken=w.document.querySelector('#teamGrid [data-team="taken"]');
+  assert.equal(available.tabIndex,0);assert.equal(taken.getAttribute('aria-disabled'),'true');assert.equal(taken.tabIndex,-1);
+  available.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));await tick(w);
+  assert.equal(w.eval('selectedTeamChoiceId'),'available');assert.equal(w.document.querySelector('#teamGrid [data-team="available"]').getAttribute('aria-pressed'),'true');
+  assert.match(w.document.getElementById('confirmTeamBtn').textContent,/AVAILABLE STATE/);
+  w.document.querySelector('#teamScreen [data-sf-action="dynasties"]').click();await tick(w);await tick(w);
+  assert.equal(w.document.getElementById('teamScreen').classList.contains('hidden'),true);assert.equal(w.document.getElementById('dynastyChooserScreen').classList.contains('hidden'),false);
+  assert.equal(w.document.body.classList.contains('sf-x-in-app'),false);
+  w.CDHQ_RUNTIME.Data.teamSelection=original;await w.eval('loadDynasty(0)');await tick(w);
+ });
+ await t.test('Home clears old-season headlines and handles missing matchup scores honestly',async()=>{
+  const old=w.eval('state'),savedStories=w.SFWeeklyStories.rows;
+  w.SFWeeklyStories.rows=()=>[];
+  w.eval("state={...state,games:[{...window.fixtureGame('d-a','d-a-current'),points_for:null,points_against:null,status:'scheduled'}]}");w.SFExperience.refresh();await tick(w);
+  assert.match(w.document.getElementById('sfHomeScoreboard').textContent,/SCHEDULED/);assert.match(w.document.getElementById('sfHomeScoreboard').textContent,/—/);
+  assert.match(w.document.getElementById('sfHomeEdition').textContent,/WEEK 0/);
+  w.fixtureSavedState=old;w.eval('state=window.fixtureSavedState;delete window.fixtureSavedState');w.SFWeeklyStories.rows=savedStories;w.SFExperience.refresh();await tick(w);
+  assert.deepEqual(errors,[]);
+ });
  await t.test('Dynasty Book routes every chapter through the existing views and keeps week zero',async()=>{
   w.eval('loadDynasty(0)');await tick(w);
   w.eval("D.role='commissioner';renderCommissioner()");
   const views=[...w.document.querySelectorAll('#hqMobileNav [data-mobile-view]')].map(b=>b.dataset.mobileView);
-  assert.deepEqual(views,['overview','schedule','analytics','legacy']);
+  assert.deepEqual(views,['overview','schedule','conference','coachhub','legacy']);
   w.CDHQOpenMobileMore();
   assert.equal(w.document.getElementById('hqMoreTitle').textContent,'Dynasty Book');
   const tools=w.document.getElementById('sfBookTools');assert.equal(tools.open,false);

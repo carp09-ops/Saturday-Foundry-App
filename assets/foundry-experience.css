@@ -1,0 +1,351 @@
+/* Saturday Foundry · Experience preview 9.11
+   Deliberately loaded last. Existing feature components retain their data and controls. */
+body.sf-experience{--x-bg:#101313;--x-surface:#191d1d;--x-ink:#f0ece2;--x-muted:#a8afaa;--x-gold:#d5b471;--x-line:#d5b47130;background:var(--x-bg)!important;color:var(--x-ink);font-family:Inter,sans-serif}
+body.sf-experience:before,body.sf-experience:after{display:none!important}
+body.sf-experience *{box-sizing:border-box}
+body.sf-experience button,body.sf-experience summary,body.sf-experience a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body.sf-experience :is(button,a,input,select,summary,[role=button]):focus-visible{outline:2px solid #f0ce87!important;outline-offset:4px!important}
+body.sf-experience button:not(:disabled),body.sf-experience summary{cursor:pointer}
+.sf-x-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sf-x-skip{position:fixed;top:-100px;left:16px;z-index:100000;background:#e1c485;color:#131615;padding:14px 18px;border-radius:4px}
+.sf-x-skip:focus{top:12px}
+body.sf-experience>.shell{max-width:1440px!important;padding:0 36px 60px!important;margin:0 auto!important}
+body.sf-experience #app{max-width:none!important;padding:0!important;margin:0!important;outline:none}
+body.sf-experience [hidden]{display:none!important}
+body.sf-experience .hidden{display:none!important}
+body.sf-experience .view{scroll-margin-top:164px}
+body.sf-experience #siteHeader{background:#101413f5!important;backdrop-filter:blur(18px);border-bottom:1px solid var(--x-line)!important;box-shadow:none!important;z-index:45!important;position:sticky!important;top:0!important}
+body.sf-experience #siteHeader .canonical-header-row{display:flex!important;max-width:1440px!important;min-height:82px!important;padding:14px 36px!important;gap:24px!important;flex-wrap:nowrap!important}
+body.sf-experience #siteHeader .canonical-header-row>div:first-child{display:flex!important;min-width:0!important;flex:1!important;gap:18px!important}
+body.sf-experience #siteHeader .hq-site-brand{width:208px!important;height:48px!important;min-width:0!important;flex:0 0 208px!important;background:none!important;padding:0!important;overflow:hidden!important}
+body.sf-experience #siteBrandLogo{width:208px!important;height:48px!important;max-width:none!important;max-height:none!important;object-fit:contain!important;transform:none!important;filter:none!important;position:static!important;margin:0!important}
+body.sf-experience #siteHeader .canonical-header-row>div:first-child>.min-w-0{border-left:1px solid var(--x-line);padding-left:18px;max-width:260px}
+body.sf-experience #siteHeader .canonical-header-row>div:first-child>.min-w-0>div{display:none!important}
+body.sf-experience #headerTitle{font:500 12px/1.5 Inter,sans-serif!important;text-transform:none!important;letter-spacing:0!important;color:var(--x-muted)!important}
+body.sf-experience #navWrap,body.sf-experience #sessionBar,body.sf-experience .canonical-mobile-head{display:none!important}
+body.sf-experience .canonical-controls{display:flex!important;gap:12px!important;flex:none!important;width:auto!important;margin:0!important}
+body.sf-experience #sfPrimaryNav{display:none;max-width:1368px;margin:auto;gap:36px;justify-content:flex-start;height:57px;align-items:stretch}
+body.sf-experience.sf-x-in-app #sfPrimaryNav{display:flex}
+#sfPrimaryNav button{display:flex;gap:9px;align-items:center;padding:0 6px;background:none;border:0;border-bottom:2px solid transparent;border-radius:0;color:#a7aea9;font-size:13px;font-weight:600}
+#sfPrimaryNav img{width:26px;height:26px;object-fit:contain;opacity:.75}
+#sfPrimaryNav button.active{border-bottom-color:var(--x-gold);color:var(--x-ink)}
+#sfPrimaryNav button.active img{opacity:1}
+#sfPrimaryNav button:hover{color:var(--x-gold)}
+#sfAccountMenu{position:relative;display:block}
+body.sf-experience[data-sf-screen=account] #sfAccountMenu{display:none}
+#sfAccountMenu summary{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#d9dbcF;border:1px solid #ffffff20;padding:11px 14px;border-radius:5px;min-height:44px;list-style:none}
+#sfAccountMenu summary::-webkit-details-marker{display:none}
+.sf-x-account-glyph{font-size:17px;color:var(--x-gold)}
+.sf-x-account-panel{position:absolute;top:calc(100% + 12px);right:0;width:280px;background:#202625;border:1px solid #d5b47160;box-shadow:0 24px 70px #0009;padding:22px;z-index:100;border-radius:6px}
+.sf-x-account-panel button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:45px;background:transparent;border:0;border-bottom:1px solid #ffffff12;border-radius:0;color:var(--x-ink);font-size:12px;text-align:left;padding:12px 0}
+.sf-x-account-panel button span{color:var(--x-gold)}
+.sf-x-account-panel small{display:block;font-size:10px;line-height:1.6;color:var(--x-muted);margin-top:16px}
+#sfContextBar{display:none;max-width:1440px;margin:0 auto;padding:15px 36px;min-height:67px;align-items:center;justify-content:space-between;gap:16px}
+.sf-x-in-app #sfContextBar{display:flex}
+#sfContextBar>div{display:flex;gap:12px;align-items:center;min-width:0}
+#sfContextBar span{font-size:11px;white-space:nowrap}
+#sfContextLeague{color:var(--x-muted);max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.sf-x-separator{color:#616961}
+#sfContextPage{color:var(--x-ink)}
+#sfContextWeek{color:var(--x-gold);border-left:1px solid var(--x-line);padding-left:12px}
+body.sf-experience #sfContextSeason #seasonSelect{width:auto!important;min-width:0!important;max-width:260px;background:#1b211f!important;border:1px solid #ffffff18!important;color:#dce0d7!important;padding:9px 30px 9px 12px!important;font:500 11px/1.2 Inter,sans-serif!important;border-radius:4px!important;min-height:38px}
+body.sf-experience #sfBuildMarker{position:static!important;display:inline-flex!important;align-items:center;max-width:100%;margin:0!important;font-size:9px!important;letter-spacing:.05em;white-space:nowrap;padding:5px 8px!important;background:#d5b47112!important;color:var(--x-gold)!important;border:1px solid var(--x-line)!important;border-radius:3px!important;box-shadow:none!important;pointer-events:none}
+/* Start to finish entry journey */
+body.sf-experience #authScreen.hq-auth-screen{display:grid!important;grid-template-columns:1.1fr 1fr!important;gap:0!important;max-width:1240px!important;margin:38px auto 60px!important;padding:0!important;background:#191f1d!important;border:1px solid var(--x-line);border-radius:10px;overflow:hidden;min-height:690px!important}
+body.sf-experience #authScreen.hidden{display:none!important}
+body.sf-experience #authScreen::before,body.sf-experience #authScreen::after{display:none!important}
+body.sf-experience #authScreen .hq-auth-hero{position:relative;display:flex!important;flex-direction:column;align-items:flex-start!important;justify-content:flex-start!important;padding:52px 48px 34px!important;text-align:left!important;margin:0!important;max-width:none!important;min-height:690px;background:linear-gradient(180deg,#11161270 0%,#10141110 55%,#111612d9 100%),url('experience/tunnel.webp') center 62%/cover!important;border:0!important;overflow:hidden}
+body.sf-experience #authScreen .hq-auth-hero:before{display:none!important}
+body.sf-experience #authScreen .hq-auth-logo{width:68px!important;height:68px!important;margin:0 0 22px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+body.sf-experience #authScreen .hq-auth-logo img{width:100%!important;height:100%!important;object-fit:contain!important;filter:none!important}
+body.sf-experience #authScreen .hq-auth-edition{border:0!important;padding:0!important;margin:0 0 16px!important;color:#d9c18a!important;font:600 10px/1 Inter,sans-serif!important;letter-spacing:.18em!important;background:none!important}
+body.sf-experience #authScreen .hq-auth-hero h1{font:600 clamp(48px,4.5vw,68px)/.98 'Barlow Condensed',sans-serif!important;letter-spacing:-.02em!important;text-transform:none!important;color:#f5efe1!important;text-shadow:none!important;margin:0 0 20px!important;max-width:500px!important}
+body.sf-experience #authScreen .hq-auth-hero h1 em{font-style:normal;color:#dac28d}
+body.sf-experience #authScreen .hq-auth-hero p{font:400 13px/1.85 Inter,sans-serif!important;color:#c7cec2!important;max-width:320px!important;margin:0!important;text-shadow:none!important}
+.sf-x-auth-foot{margin-top:auto;padding-top:130px;display:grid;gap:12px}
+.sf-x-auth-foot span{font-size:8px;letter-spacing:.15em;color:#c7cebd}
+.sf-x-auth-foot b{font:500 22px 'Barlow Condensed',sans-serif;color:#f1ead8}
+body.sf-experience #authScreen .hq-auth-shell{padding:42px 48px 36px!important;border:0!important;box-shadow:none!important;border-radius:0!important;background:transparent!important;margin:0!important;width:100%!important;max-width:none!important;align-self:center}
+.sf-x-steps{display:flex!important;gap:20px!important;align-items:center;list-style:none;margin:0 0 36px!important;padding:0!important}
+.sf-x-steps li{display:flex;gap:6px;align-items:center;color:#a2ada3;font-size:10px;white-space:nowrap}
+.sf-x-steps li span{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid #d5b47140;border-radius:50%;font-size:8px;color:#a7ac9f}
+.sf-x-steps li[aria-current]{color:#e8d6af}
+.sf-x-steps li[aria-current] span{color:#171c17;background:#d5b471;border-color:#d5b471}
+body.sf-experience .hq-auth-tabs{border:0!important;border-bottom:1px solid var(--x-line)!important;background:transparent!important;display:flex!important;gap:24px!important;padding:0!important;border-radius:0!important}
+body.sf-experience .hq-auth-tab{flex:none!important;border:0!important;border-bottom:2px solid transparent!important;background:none!important;border-radius:0!important;padding:0 0 14px!important;font-size:12px!important;color:var(--x-muted)!important}
+body.sf-experience .hq-auth-tab.active{color:var(--x-ink)!important;border-bottom-color:var(--x-gold)!important;box-shadow:none!important}
+body.sf-experience .hq-auth-pane{padding:30px 0 0!important}
+body.sf-experience .hq-auth-card-head{padding:0!important;margin-bottom:26px!important}
+body.sf-experience .hq-auth-card-head>span{display:none!important}
+body.sf-experience .hq-auth-card-head h2{font:600 38px/1.1 'Barlow Condensed',sans-serif!important;text-transform:none!important;color:var(--x-ink)!important;margin:0 0 10px!important}
+body.sf-experience .hq-auth-card-head p{font-size:12px!important;line-height:1.7!important;color:var(--x-muted)!important}
+body.sf-experience #authScreen .stack{gap:0!important}
+.sf-x-field-label{display:block;font:500 11px/1.5 Inter,sans-serif;color:#d6d9ce;margin:0 0 8px}
+body.sf-experience #authScreen input{height:48px!important;min-height:48px!important;border:1px solid #d5b47130!important;background:#111715!important;border-radius:4px!important;font-size:16px!important;color:#f0ece2!important;padding:12px 14px!important;margin-bottom:22px!important}
+body.sf-experience #authScreen .btn.primary{border:1px solid #e3c78c!important;background:#d5b471!important;color:#141a16!important;box-shadow:none!important;text-transform:none!important;font-size:12px!important;font-weight:700!important;min-height:49px!important;border-radius:4px!important;margin-top:4px}
+body.sf-experience #authScreen .hq-auth-live{margin:22px 0 0!important;border:0!important;padding:0!important;text-align:left!important;display:block!important;font-size:10px!important;color:#9ba798!important;letter-spacing:0!important;text-transform:none!important}
+body.sf-experience #authScreen .notice{margin:18px 0 0!important}
+body.sf-experience #dynastyChooserScreen,body.sf-experience.dynasty-chooser-active #dynastyChooserScreen{max-width:1240px!important;min-height:0!important;margin:32px auto 60px!important;padding:0!important;background:none!important}
+body.sf-experience .dynasty-chooser-shell{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+body.sf-experience .dynasty-chooser-head{position:relative!important;background:linear-gradient(90deg,#101613ed,#10161380 60%,#10161333),url('experience/stadium.webp') center/cover!important;padding:48px!important;border:1px solid var(--x-line)!important;border-radius:8px!important;min-height:240px!important;display:flex!important;align-items:center!important;margin-bottom:28px!important}
+body.sf-experience .dynasty-chooser-head:before,body.sf-experience .dynasty-chooser-head:after{display:none!important}
+body.sf-experience .sf-chooser-brand{display:none!important}
+body.sf-experience #dynastyChooserTitle{font:600 clamp(38px,4vw,58px)/1 'Barlow Condensed',sans-serif!important;max-width:570px!important;letter-spacing:-.02em!important;text-transform:none!important;color:var(--x-ink)!important;margin-bottom:16px!important}
+body.sf-experience #dynastyChooserSubtitle{max-width:470px!important;font:400 12px/1.8 Inter,sans-serif!important;color:#c4cbbf!important}
+body.sf-experience #sfActiveEditionTitle{font:600 26px/1.2 'Barlow Condensed',sans-serif!important;margin:26px 0 18px!important;padding:0!important;text-transform:none!important;color:var(--x-ink)!important}
+body.sf-experience #dynastyChooserGrid{padding:0!important;gap:16px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+body.sf-experience .dynasty-choice-card{background:#1b221f!important;border:1px solid #d5b47135!important;border-radius:7px!important;box-shadow:none!important;padding:24px!important;gap:18px!important;grid-template-columns:56px minmax(0,1fr)!important;min-height:150px;transition:border-color .18s,background .18s}
+body.sf-experience .dynasty-choice-card:hover{background:#242c26!important;border-color:#d5b48a!important;transform:none!important}
+body.sf-experience .dynasty-choice-name{font:600 28px/1.1 'Barlow Condensed',sans-serif!important;letter-spacing:0!important;text-transform:none!important}
+body.sf-experience .dynasty-choice-meta{font-size:11px!important;color:#afb9ac!important;margin-top:8px!important}
+body.sf-experience .dynasty-choice-enter{grid-column:2!important;font-size:10px!important;justify-self:start;color:var(--x-gold)!important;padding:0!important;background:none!important;border:0!important}
+body.sf-experience .dynasty-chooser-actions{margin:22px 0 30px!important;padding:0!important;gap:10px!important}
+body.sf-experience .dynasty-chooser-action{min-height:44px!important;padding:10px 16px!important;background:#242c22!important;border:1px solid #d5b47145!important;border-radius:4px!important;font-size:11px!important;box-shadow:none!important}
+body.sf-experience .dynasty-chooser-action.gold{color:#181d16!important;background:#d5b471!important}
+body.sf-experience #dynastyChooserScreen #sfCareerHub{margin:22px 0!important}
+body.sf-experience #sfCareerSync{margin:24px 0 0!important;font-size:10px!important;border-top:1px solid var(--x-line);padding-top:22px}
+body.sf-experience .sf-career-card{background:#191f1d!important;border-color:var(--x-line)!important;box-shadow:none!important}
+.sf-x-entry-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:28px 0}
+.sf-x-entry-top .sf-x-steps{margin:0!important}
+.sf-x-back{min-height:44px;color:var(--x-gold);font-size:11px;border:0;background:none;padding:0}
+body.sf-experience #teamScreen.team-select-wrap{max-width:1240px!important;margin:0 auto 60px!important;padding:0 0 100px!important}
+body.sf-experience #teamScreen .v25-team-hero{background:linear-gradient(90deg,#111813ed,#11181360),url('experience/stadium.webp') center 55%/cover!important;border:1px solid var(--x-line)!important;border-radius:8px!important;padding:38px!important;min-height:205px;box-shadow:none!important}
+body.sf-experience #teamScreen .v25-team-hero h1{font:600 clamp(38px,4vw,56px)/1 'Barlow Condensed',sans-serif!important;text-transform:none!important;letter-spacing:-.02em!important;color:var(--x-ink)!important;margin:14px 0!important}
+body.sf-experience #teamScreen .v25-team-hero p{font-size:12px!important;line-height:1.8!important;max-width:520px;color:#bac4b5!important}
+body.sf-experience .v25-team-season{background:#101813b3!important;border:1px solid #d5b47140!important;box-shadow:none!important;min-width:180px!important;padding:18px!important;border-radius:5px!important}
+body.sf-experience .v25-team-toolbar{margin:24px 0!important;gap:18px!important}
+body.sf-experience #teamSearch{background:#1b221e!important;border:1px solid #d5b47140!important;padding:14px!important;font-size:16px!important;border-radius:5px!important}
+body.sf-experience #teamGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
+body.sf-experience #teamGrid .team-choice{background:linear-gradient(155deg,#222c24,#161e19)!important;border:1px solid #d5b47130!important;border-radius:7px!important;box-shadow:none!important;padding:18px!important;transition:border-color .15s,background .15s}
+body.sf-experience #teamGrid .team-choice:before,body.sf-experience #teamGrid .team-choice:after{display:none!important}
+body.sf-experience #teamGrid .team-choice:hover:not(.claimed):not(.mine){border-color:#d5b47199!important;transform:none!important}
+body.sf-experience #teamGrid .team-choice.selected{border:2px solid #d5b471!important;background:#2a3225!important}
+body.sf-experience #teamGrid .team-choice.claimed{opacity:.48}
+body.sf-experience .v25-choice-name{font:600 26px/1 'Barlow Condensed',sans-serif!important}
+body.sf-experience .v25-choice-action{border-top:1px solid #d5b47125!important;background:none!important;font-size:10px!important;margin-top:18px!important;padding-top:14px!important;letter-spacing:.05em!important}
+body.sf-experience #teamSelectionDock{background:#222c22f5!important;backdrop-filter:blur(20px);border:1px solid #d5b47175!important;border-radius:8px!important;box-shadow:0 14px 60px #000a!important;max-width:860px!important;bottom:20px!important;gap:20px!important}
+body.sf-experience #confirmTeamBtn{font-size:12px!important;background:#d5b471!important;color:#141a16!important;border-radius:4px!important;box-shadow:none!important;min-height:48px}
+body.sf-experience #claimScreen{max-width:540px;margin:50px auto!important}
+body.sf-experience #claimScreen .card{padding:32px!important;background:#1b221e!important;border:1px solid var(--x-line)!important;border-radius:8px!important}
+body.sf-experience #claimScreen h2{font:600 40px 'Barlow Condensed',sans-serif;margin:20px 0 12px}
+body.sf-experience #claimScreen p{font-size:13px;line-height:1.7;margin-bottom:24px}
+/* Editorial dashboard */
+.sf-x-eyebrow{display:block;font:600 9px/1.5 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--x-gold)}
+.sf-x-home-hero{position:relative;min-height:408px;border:1px solid #d5b47130;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#111813e8,#11181370 55%,#11181310),url('experience/stadium.webp') center 58%/cover;padding:46px 48px!important;margin-bottom:0!important}
+.sf-x-home-copy{position:relative;z-index:1;max-width:560px}
+.sf-x-home-hero h2{font:600 clamp(58px,6.4vw,90px)/.88 'Barlow Condensed',sans-serif;color:#f3efe4;letter-spacing:-.025em;margin:24px 0 22px;text-transform:none;outline:none}
+.sf-x-home-hero h2 em{font-style:normal;color:#dec38a}
+.sf-x-home-hero p{font-size:12px;line-height:1.7;color:#c6cebd;margin:0 0 25px}
+.sf-x-hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.sf-x-primary,.sf-x-secondary{display:flex;gap:20px;align-items:center;justify-content:space-between;font-size:11px;font-weight:700;min-height:46px;padding:13px 18px;border-radius:4px;border:1px solid #d5b471}
+.sf-x-primary{background:#d5b471;color:#141a16}
+.sf-x-secondary{background:#121a1590;color:#ece4cf;border-color:#c3cebb50}
+.sf-x-hero-stamp{align-self:flex-end;text-align:right;color:#dcd3b7;margin-left:30px}
+.sf-x-hero-stamp span{font-size:7px;letter-spacing:.2em}
+.sf-x-hero-stamp b{display:block;font:500 25px/1 'Barlow Condensed',sans-serif;letter-spacing:.06em;margin-top:10px}
+body.sf-experience #overview .sf-hero-banner,body.sf-experience #legacyLineTicker{display:none!important}
+.sf-x-scoreboard{display:flex;gap:0;border:1px solid var(--x-line);border-top:0;background:#191f1b;border-radius:0 0 6px 6px;margin:0 12px 35px;overflow:auto;scrollbar-width:thin;scrollbar-color:#565e49 transparent}
+.sf-x-score-label{flex:0 0 150px;padding:20px 22px;align-self:center;border-right:1px solid var(--x-line)}
+.sf-x-score-label span{display:block;font-size:7px;color:#b4bba9;letter-spacing:.1em;line-height:1.6}
+.sf-x-score-label b{display:block;font:600 24px/1.3 'Barlow Condensed',sans-serif;color:var(--x-ink)}
+.sf-x-score{flex:1 0 165px;min-width:0;background:none;border:0;border-right:1px solid #d5b47120;padding:16px 20px;text-align:left;color:var(--x-ink);border-radius:0}
+.sf-x-score:hover{background:#ffffff06}
+.sf-x-score>span{font-size:8px;letter-spacing:.1em;color:var(--x-gold)}
+.sf-x-score>div{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:7px}
+.sf-x-score b{font:500 10px/1.3 Inter,sans-serif;max-width:140px}
+.sf-x-score strong{font:600 17px/1 'Barlow Condensed',sans-serif}
+.sf-x-score-empty{font-size:12px;color:var(--x-muted);padding:25px;align-self:center;line-height:1.8}
+.sf-x-section-title{display:flex;justify-content:space-between;align-items:center;gap:20px;margin:30px 0 18px}
+.sf-x-section-title h2{font:500 31px/1.1 'Barlow Condensed',sans-serif;color:var(--x-ink);margin:7px 0 0;letter-spacing:-.01em;text-transform:none}
+.sf-x-section-title>span{font-size:11px;color:var(--x-muted)}
+.sf-x-link{display:inline-flex;align-items:center;gap:18px;border:0;background:none;padding:10px 0;color:var(--x-gold);font:600 11px/1.5 Inter,sans-serif;min-height:44px;text-align:left}
+.sf-x-link:hover{color:#f3dba5}
+.sf-x-link span{font-size:15px}
+body.sf-experience #myWeekPanel{background:#1a211c!important;border:1px solid var(--x-line)!important;box-shadow:none!important;padding:22px!important;border-radius:6px!important;margin:0 0 30px!important}
+.sf-x-home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:24px;align-items:start;margin-top:28px}
+.sf-x-editorial,.sf-x-home-rail{min-width:0}
+.sf-x-story{padding:32px;border:1px solid var(--x-line);background:#1b211d;border-radius:6px}
+.sf-x-story h2{font:500 clamp(30px,3.1vw,44px)/1.02 'Barlow Condensed',sans-serif;margin:17px 0 16px;color:var(--x-ink);letter-spacing:-.015em;text-transform:none}
+.sf-x-story p{font-size:12px;line-height:1.85;color:#bac2b3;max-width:560px;margin:0 0 18px}
+.sf-x-feature-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+.sf-x-feature{display:flex;flex-direction:column;padding:26px 24px;border:1px solid var(--x-line);border-radius:6px;min-height:270px;background:#1a211c;overflow:hidden}
+.sf-x-feature h3{font:500 34px/.98 'Barlow Condensed',sans-serif;color:var(--x-ink);margin:22px 0 15px;max-width:200px;letter-spacing:-.015em}
+.sf-x-feature p{font-size:11px;line-height:1.8;color:#c2c9b8;max-width:220px;margin-bottom:20px}
+.sf-x-feature .sf-x-link{margin-top:auto}
+.sf-x-feature-race{background:linear-gradient(90deg,#141d16f5,#141d16aa),url('experience/stadium.webp') 72% center/cover}
+.sf-x-feature-legacy{background:linear-gradient(90deg,#171a15e8,#171a1550),url('experience/legacy.webp') 64% center/cover}
+.sf-x-coach-digest{border-top:1px solid var(--x-line);margin:30px 0;padding-top:26px}
+.sf-x-coach-digest h3{font:500 28px 'Barlow Condensed',sans-serif;color:var(--x-ink);margin:8px 0 18px}
+.sf-x-coach-digest>button:not(.sf-x-link){display:grid;grid-template-columns:minmax(80px,1fr) 2fr 40px;align-items:center;gap:15px;width:100%;text-align:left;padding:17px 0;border:0;border-bottom:1px solid #ffffff12;border-radius:0;background:none;color:#ececde;font-size:12px}
+.sf-x-coach-digest>button span{color:var(--x-muted);font-size:11px}
+.sf-x-coach-digest>button b{font:500 22px 'Barlow Condensed',sans-serif;color:var(--x-gold);text-align:right}
+.sf-x-rail-note{border:1px solid var(--x-line);border-radius:6px;padding:26px;margin-top:24px;background:#191f1b}
+.sf-x-rail-note h3{font:500 28px/1 'Barlow Condensed',sans-serif;margin:14px 0;color:var(--x-ink)}
+.sf-x-rail-note p{color:var(--x-muted);font-size:12px;line-height:1.85}
+body.sf-experience #sfHomeRail .sf-gotw-standalone-shell{margin:0!important;max-width:100%!important;padding:0!important}
+body.sf-experience #sfHomeRail #gotw{margin:0!important;width:100%!important;max-width:100%!important}
+/* Destination hubs and visible pathways */
+.sf-x-heading{margin:10px 0 25px;padding:16px 0 0}
+.sf-x-heading h2{font:500 clamp(38px,4vw,54px)/.98 'Barlow Condensed',sans-serif;letter-spacing:-.02em;text-transform:none;color:var(--x-ink);margin:17px 0 17px;outline:none}
+.sf-x-heading p{font-size:12px;line-height:1.85;max-width:600px;color:var(--x-muted)}
+.sf-x-section-links{display:flex;flex-wrap:wrap;gap:16px 28px;border-top:1px solid var(--x-line);border-bottom:1px solid var(--x-line);padding:5px 0;margin:25px 0}
+.sf-x-section-links>button{display:inline-flex;align-items:center;gap:20px;background:none;border:0;color:var(--x-gold);font-size:11px;font-weight:600;min-height:44px;padding:8px 0}
+.sf-x-destination-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:28px 0 38px}
+.sf-x-destination{position:relative;display:flex;align-items:flex-start;flex-direction:column;gap:9px;text-align:left;min-height:140px;padding:26px;background:linear-gradient(145deg,#242b23,#191f1c);border:1px solid var(--x-line);border-radius:6px;color:var(--x-ink)}
+.sf-x-destination b{font:500 29px/1 'Barlow Condensed',sans-serif}
+.sf-x-destination small{font-size:11px;line-height:1.8;color:var(--x-muted);max-width:230px}
+.sf-x-destination>span{position:absolute;right:22px;top:22px;color:var(--x-gold)}
+.sf-x-destination:hover{border-color:#d5b47180}
+body.sf-experience #coachhub #coaches{display:grid!important;gap:20px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;margin:0 0 34px!important}
+body.sf-experience #conference #top25Panel,body.sf-experience #conference #seasonPulsePanel{margin:32px 0!important;scroll-margin-top:160px}
+body.sf-experience #conference #confRaceBoards{scroll-margin-top:160px}
+body.sf-experience #conference .conf-race-hero{display:none!important}
+body.sf-experience #conference .conf-race-shell{padding-top:0!important}
+body.sf-experience #schedule .v21-schedule-topline{margin-top:20px!important}
+.sf-x-legacy-hero{background:linear-gradient(90deg,#141b16f5,#141b1690 60%,#141b1605),url('experience/legacy.webp') center 45%/cover;border:1px solid var(--x-line);border-radius:8px;padding:32px 40px;margin-bottom:26px;min-height:300px}
+.sf-x-legacy-hero .sf-x-heading{max-width:570px}
+.sf-x-legacy-hero .sf-x-heading p{color:#c3cbb9}
+.sf-x-legacy-hero .sf-x-section-links{border-bottom:0;max-width:500px;margin-bottom:0}
+.sf-x-breadcrumb{display:flex;align-items:center;gap:14px;margin:0 0 18px;font-size:11px;color:var(--x-muted);min-height:44px}
+body.sf-experience .sf-chapter-return{display:none!important}
+body.sf-experience #legacyTabs,body.sf-experience #insightsTabs{scrollbar-width:thin}
+body.sf-experience :is(.premium-card,.ref-panel,.intel-card,.story-shell,.dynasty-hub-dialog){border-color:var(--x-line)!important;box-shadow:none!important}
+body.sf-experience .dynasty-hub-dialog{background:#1b211d!important}
+body.sf-experience .dynasty-hub-head{background:#181f19!important}
+body.sf-experience .dynasty-hub-panel{background:#131b16!important;border-color:var(--x-line)!important}
+body.sf-experience #hqMobileNav{display:none!important}
+body.sf-experience #sfBackToTop{right:18px!important}
+@media(min-width:1600px){.sf-x-home-hero{min-height:440px}}
+@media(max-width:1100px){
+ body.sf-experience #siteHeader .canonical-header-row>div:first-child>.min-w-0{display:none!important}
+ body.sf-experience #sfPrimaryNav{margin:0 36px;gap:30px}
+ .sf-x-home-grid{grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:20px}
+ .sf-x-feature-pair{grid-template-columns:1fr}
+ .sf-x-feature{min-height:220px}
+ .sf-x-feature h3{max-width:none}
+ body.sf-experience #coachhub #coaches{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ body.sf-experience #teamGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ body.sf-experience #authScreen .hq-auth-shell{padding:36px!important}
+ body.sf-experience #authScreen .hq-auth-hero{padding:42px 36px!important}
+}
+@media(max-width:800px){
+ body.sf-experience>.shell{padding:0 18px 110px!important}
+ body.sf-experience #siteHeader .canonical-header-row{padding:10px 18px!important;min-height:70px!important;gap:12px!important}
+ body.sf-experience #siteHeader .hq-site-brand{width:170px!important;height:44px!important;flex-basis:170px!important}
+ body.sf-experience #siteBrandLogo{width:170px!important;height:44px!important}
+ body.sf-experience #sfPrimaryNav{display:none!important}
+ body.sf-experience #sfBuildMarker{display:none!important}
+ #sfAccountMenu summary{padding:9px 12px}
+ #sfAccountMenu summary>span:not(.sf-x-account-glyph){display:none}
+ .sf-x-account-panel{right:0;max-width:calc(100vw - 36px)}
+ #sfContextBar{padding:14px 18px;gap:10px;min-height:65px}
+ #sfContextBar>div{gap:8px}
+ #sfContextLeague{max-width:160px;font-size:10px!important}
+ #sfContextPage,.sf-x-separator{display:none}
+ body.sf-experience #sfContextSeason #seasonSelect{max-width:150px;font-size:10px!important;padding:8px 22px 8px 8px!important;min-height:36px}
+ #sfContextWeek{font-size:9px!important;padding-left:8px}
+ body.sf-experience.sf-x-in-app #hqMobileNav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:70!important;gap:0!important;margin:0!important;padding:6px 10px max(8px,env(safe-area-inset-bottom))!important;min-height:72px!important;height:auto!important;background:#141b17f5!important;border-top:1px solid #d5b47145!important;backdrop-filter:blur(20px);box-shadow:0 -6px 22px #0005!important}
+ body.sf-experience #hqMobileNav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;padding:5px 2px!important;min-height:51px!important;color:#acb4a6!important;background:none!important;border:0!important;font-size:9px!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;border-radius:4px!important;min-width:0}
+ body.sf-experience #hqMobileNav button.active{color:#eed4a0!important;background:#d5b4710c!important}
+ body.sf-experience #hqMobileNav button:before{display:none!important}
+ body.sf-experience #hqMobileNav img{width:26px!important;height:26px!important;object-fit:contain!important;transform:none!important;filter:none!important;margin:0!important}
+ body.sf-experience #authScreen.hq-auth-screen{margin:18px 0 30px!important;grid-template-columns:1fr!important;min-height:0!important;border-radius:7px!important}
+ body.sf-experience #authScreen .hq-auth-hero{min-height:270px!important;padding:30px!important;background-position:center 64%!important}
+ body.sf-experience #authScreen .hq-auth-logo{display:none!important}
+ body.sf-experience #authScreen .hq-auth-edition{font-size:8px!important;margin-bottom:15px!important}
+ body.sf-experience #authScreen .hq-auth-hero h1{font-size:50px!important;max-width:320px!important;margin-bottom:14px!important}
+ body.sf-experience #authScreen .hq-auth-hero p{font-size:11px!important;max-width:270px!important;line-height:1.8!important}
+ .sf-x-auth-foot{display:none}
+ body.sf-experience #authScreen .hq-auth-shell{padding:28px 30px 32px!important}
+ .sf-x-steps{gap:22px!important;margin-bottom:28px!important}
+ body.sf-experience .hq-auth-card-head h2{font-size:34px!important}
+ body.sf-experience .hq-auth-pane{padding-top:24px!important}
+ body.sf-experience .hq-auth-card-head{margin-bottom:22px!important}
+ body.sf-experience.dynasty-chooser-active #dynastyChooserScreen{padding:0!important;margin:24px 0!important;min-height:0!important}
+ body.sf-experience .dynasty-chooser-head{padding:30px!important;min-height:215px!important;background-position:66% center!important}
+ body.sf-experience #dynastyChooserTitle{font-size:44px!important;max-width:370px!important}
+ body.sf-experience #dynastyChooserGrid{grid-template-columns:1fr!important}
+ body.sf-experience .dynasty-choice-card{padding:22px!important;min-height:140px}
+ body.sf-experience #sfActiveEditionTitle{font-size:26px!important;margin-top:24px!important}
+ body.sf-experience .dynasty-chooser-actions{flex-wrap:wrap!important}
+ body.sf-experience .dynasty-chooser-actions-right{display:none!important}
+ .sf-x-entry-top{flex-wrap:wrap;margin:20px 0;gap:8px}
+ .sf-x-entry-top .sf-x-steps{margin-bottom:0!important}
+ body.sf-experience #teamScreen .v25-team-hero{padding:28px!important;display:block!important;min-height:200px}
+ body.sf-experience #teamScreen .v25-team-hero h1{font-size:44px!important}
+ body.sf-experience .v25-team-season{display:none!important}
+ body.sf-experience #teamGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+ body.sf-experience #teamGrid .team-choice{padding:14px!important}
+ body.sf-experience #teamScreen.team-select-wrap{padding-bottom:100px!important}
+ body.sf-experience .v25-choice-name{font-size:23px!important}
+ body.sf-experience #teamSelectionDock{left:12px!important;right:12px!important;width:auto!important;transform:none!important;bottom:max(12px,env(safe-area-inset-bottom))!important;padding:14px!important;gap:12px!important;flex-wrap:wrap!important}
+ body.sf-experience #teamSelectionDock .v25-dock-program{flex:1 1 160px}
+ body.sf-experience #teamSelectionDock .v25-confirm-team{flex:1 1 140px!important;font-size:10px!important}
+ .sf-x-home-hero{padding:32px 28px!important;min-height:350px;background-position:62% center}
+ .sf-x-home-hero h2{font-size:68px;margin:22px 0 18px}
+ .sf-x-home-hero .sf-x-eyebrow{font-size:8px;max-width:250px}
+ .sf-x-home-hero p{font-size:11px;max-width:270px;line-height:1.7}
+ .sf-x-hero-stamp{display:none}
+ .sf-x-primary,.sf-x-secondary{font-size:10px;padding:12px 13px;gap:16px}
+ .sf-x-scoreboard{margin:0 6px 26px}
+ .sf-x-score-label{flex-basis:105px;padding:16px 14px}
+ .sf-x-score-label span{font-size:6px}
+ .sf-x-score-label b{font-size:22px}
+ .sf-x-score{flex-basis:158px;padding:14px 16px}
+ .sf-x-section-title{gap:14px;margin:24px 0 16px}
+ .sf-x-section-title h2{font-size:28px}
+ .sf-x-section-title .sf-x-link{font-size:10px;gap:8px}
+ body.sf-experience #myWeekPanel{padding:16px!important}
+ .sf-x-home-grid{grid-template-columns:1fr;gap:24px}
+ .sf-x-story{padding:26px}
+ .sf-x-story h2{font-size:38px}
+ .sf-x-feature-pair{grid-template-columns:1fr 1fr;gap:12px}
+ .sf-x-feature{padding:24px 20px;min-height:260px}
+ .sf-x-feature h3{font-size:31px;max-width:170px}
+ .sf-x-feature .sf-x-eyebrow{font-size:7px}
+ .sf-x-feature p{font-size:10px}
+ .sf-x-home-rail{display:grid;grid-template-columns:1fr;gap:16px}
+ .sf-x-rail-note{margin-top:0}
+ .sf-x-heading{padding-top:8px}
+ .sf-x-heading h2{font-size:43px;max-width:500px}
+ .sf-x-heading p{font-size:11px;max-width:500px}
+ .sf-x-destination-grid{grid-template-columns:1fr;gap:12px;margin:24px 0}
+ .sf-x-destination{min-height:100px;padding:22px 24px;gap:9px}
+ .sf-x-destination b{font-size:26px}
+ .sf-x-destination small{max-width:none;font-size:11px}
+ body.sf-experience #coachhub #coaches{gap:14px!important}
+ .sf-x-legacy-hero{padding:26px;min-height:300px;background-position:63% center}
+ .sf-x-legacy-hero .sf-x-heading h2{max-width:300px}
+ .sf-x-legacy-hero .sf-x-heading p{max-width:270px}
+ .sf-x-breadcrumb{margin-bottom:10px;font-size:10px}
+ .sf-x-section-links{gap:10px 20px}
+ body.sf-experience #conference #top25Panel,body.sf-experience #conference #confRaceBoards{scroll-margin-top:85px}
+}
+@media(max-width:420px){
+ body.sf-experience>.shell{padding-left:12px!important;padding-right:12px!important}
+ #sfContextLeague{max-width:118px}
+ #sfContextBar{padding:12px}
+ #sfContextWeek{display:none}
+ .sf-x-home-hero{padding:30px 24px!important}
+ .sf-x-home-hero h2{font-size:64px}
+ .sf-x-home-hero p{max-width:240px}
+ .sf-x-feature-pair{grid-template-columns:1fr}
+ .sf-x-feature{min-height:225px}
+ .sf-x-feature h3{max-width:220px;font-size:35px}
+ body.sf-experience #coachhub #coaches{grid-template-columns:1fr!important}
+ body.sf-experience #authScreen .hq-auth-shell{padding:26px!important}
+ body.sf-experience #authScreen .hq-auth-hero{padding:28px 26px!important}
+ .sf-x-steps{gap:16px!important}
+}
+@media(prefers-reduced-motion:reduce){body.sf-experience *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+body.sf-experience #hqMobileNav [data-mobile-view="overview"] span:last-child{font-size:9px!important}body.sf-experience #hqMobileNav [data-mobile-view="overview"] span:last-child:after{display:none!important}
+body.sf-experience .dynasty-chooser-shell:before{display:none!important}
+/* Final cascade boundary for legacy header and entry width rules. */
+body.sf-experience #siteHeader{display:block!important}
+body.sf-experience #siteHeader::before,body.sf-experience #siteHeader::after,body.sf-experience #siteHeader .field-lines{display:none!important;content:none!important}
+body.sf-experience #siteHeader #navWrap,body.sf-experience #siteHeader #nav,body.sf-experience #siteHeader #sessionBar{display:none!important}
+body.sf-experience #siteHeader .canonical-header-row,body.sf-experience #siteHeader .hq-site-brand,body.sf-experience #siteHeader #siteBrandLogo{visibility:visible!important;opacity:1!important}
+body.sf-experience #siteHeader #siteBrandLogo{display:block!important}
+body.sf-experience #authScreen.hq-auth-screen{width:100%!important}
+body.sf-experience #authScreen .hq-auth-hero p{text-transform:none!important;letter-spacing:0!important}

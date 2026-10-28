@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Saturday Foundry · Experience Tour</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080d0a;color:#eee9dc;font:12px system-ui,sans-serif}header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 22px;border-bottom:1px solid #d5b47140;min-height:62px}header strong{font-size:13px;color:#e3c891}header small{display:block;color:#b4c0af;font-size:10px;margin-top:5px}nav{display:flex;gap:8px;flex-wrap:wrap}button,a{font:inherit;border:1px solid #d5b47150;background:#202a21;color:#e9e5d7;border-radius:4px;min-height:36px;padding:8px 12px;cursor:pointer;text-decoration:none}button[aria-pressed=true]{background:#d5b471;color:#172018}button:focus-visible,a:focus-visible{outline:2px solid #e3c891;outline-offset:3px}main{display:flex;justify-content:center;padding:0;height:calc(100svh - 67px)}iframe{border:0;width:100%;height:100%;background:#101313;box-shadow:0 0 60px #0008;transition:width .2s}#message{padding:40px;line-height:1.8}@media(max-width:640px){header{padding:10px 12px;gap:10px;flex-wrap:wrap}main{height:calc(100svh - 105px)}nav{gap:5px}button,a{font-size:10px;min-height:32px;padding:7px 9px}}@media(prefers-reduced-motion:reduce){iframe{transition:none}}
+</style></head><body>
+<header><div><strong>SATURDAY FOUNDRY / EXPERIENCE PREVIEW</strong><small>Interactive sample data · No account needed · No database writes</small></div><nav aria-label="Preview controls"><button type="button" data-size="100%" aria-pressed="true">Desktop</button><button type="button" data-size="390px" aria-pressed="false">Phone</button><button type="button" id="restart">Restart tour</button><a href="index.html">Open live-data preview ↗</a></nav></header>
+<main><p id="message" role="status">Preparing the experience…</p><iframe id="preview" title="Saturday Foundry interactive experience" hidden></iframe></main>
+<script>
+(async function(){
+ const frame=document.getElementById('preview'),message=document.getElementById('message');let source='';
+ // Separate entry point: the actual app never enables a demo authentication mode.
+ // Isolate browser storage and block all outbound network APIs inside this sample.
+ const guard=`<script>(function(){const store=new Map();Object.defineProperty(window,'localStorage',{value:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k),clear:()=>store.clear(),key:i=>[...store.keys()][i]??null,get length(){return store.size}}});Object.defineProperty(window,'sessionStorage',{value:window.localStorage});window.fetch=async()=>{throw Error('This sample tour cannot contact the database.')};window.WebSocket=class{constructor(){this.readyState=0}send(){}close(){}};XMLHttpRequest.prototype.send=function(){throw Error('Network writes are disabled in this sample.')};navigator.sendBeacon=()=>false;})();<\/script>`;
+ async function load(){
+  try{
+   if(!source){const r=await fetch('index.html');if(!r.ok)throw Error('Could not load the preview app.');source=await r.text();}
+   const base=new URL('.',location.href).href;
+   const markup=source.replace(/<head[^>]*>/i,match=>match+'<base href="'+base+'">'+guard)+'<script src="'+base+'assets/experience-tour.js"><\/script>';
+   frame.srcdoc=markup;frame.hidden=false;message.hidden=true;
+  }catch(e){message.textContent=e.message+' Open the live-data preview to continue.';}
+ }
+ for(const b of document.querySelectorAll('[data-size]'))b.onclick=()=>{frame.style.width=b.dataset.size;document.querySelectorAll('[data-size]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));};
+ document.getElementById('restart').onclick=load;await load();
+})();
+</script></body></html>
