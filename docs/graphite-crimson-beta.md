@@ -23,3 +23,7 @@ Run `python tools/build-site.py` from a checkout to regenerate `foundry.html` an
 Run `node --test tests/graphite-site.test.cjs` with `jsdom` installed (the existing repository development dependencies provide the test runtime). Fourteen isolated tests cover loader/navigation, score ownership and zero scores, review-before-write, double submissions, claim races, stale seasons, H2H validation, commissioner roles, pagination, escaped data, and refresh failures after a committed write.
 
 Browser checks covered desktop and 390px mobile login/home, navigation to coach profiles, trophies and details, schedule entry, account navigation, and sign-out. These authenticated browser layouts use isolated synthetic fixtures kept outside the published files. No real score, claim, invitation, league, or season mutation was performed during QA. A real-user authenticated acceptance pass remains necessary before promoting this beta to production.
+
+## Beta 2 — dynasty lines on score cards
+
+The new entry is now 10.0.0-beta.2. Stored dynasty lines load automatically for the selected season and appear on Home, Scores, and game details. Cards show the favorite and spread, O/U, and recorded projections/win probability when present. Missing lines remain explicitly unposted; request failures offer retry. The shared loader matches the live view `id`, paginates in stable order, guards stale season responses, and updates card strips without replacing an in-progress score form. Seventeen workflow tests pass.
