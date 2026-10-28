@@ -341,3 +341,11 @@ body.sf-experience #sfBackToTop{right:18px!important}
 
 body.sf-experience #hqMobileNav [data-mobile-view="overview"] span:last-child{font-size:9px!important}body.sf-experience #hqMobileNav [data-mobile-view="overview"] span:last-child:after{display:none!important}
 body.sf-experience .dynasty-chooser-shell:before{display:none!important}
+/* Final cascade boundary for legacy header and entry width rules. */
+body.sf-experience #siteHeader{display:block!important}
+body.sf-experience #siteHeader::before,body.sf-experience #siteHeader::after,body.sf-experience #siteHeader .field-lines{display:none!important;content:none!important}
+body.sf-experience #siteHeader #navWrap,body.sf-experience #siteHeader #nav,body.sf-experience #siteHeader #sessionBar{display:none!important}
+body.sf-experience #siteHeader .canonical-header-row,body.sf-experience #siteHeader .hq-site-brand,body.sf-experience #siteHeader #siteBrandLogo{visibility:visible!important;opacity:1!important}
+body.sf-experience #siteHeader #siteBrandLogo{display:block!important}
+body.sf-experience #authScreen.hq-auth-screen{width:100%!important}
+body.sf-experience #authScreen .hq-auth-hero p{text-transform:none!important;letter-spacing:0!important}
