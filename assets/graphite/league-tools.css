@@ -35,3 +35,4 @@ html.sf-tools-embedded:not(.sf-tools-ready) body #app,html.sf-tools-embedded bod
 #sfEmbeddedStatus{padding:28px;color:#69666a;font:14px/1.6 Inter,system-ui,sans-serif}
 
 html.sf-tools-embedded body>.shell{max-width:none!important;margin:0!important;padding:0!important}
+.sf-football-fallback{display:block!important;width:100%!important;height:100%!important;min-width:24px;min-height:24px;object-fit:cover!important;border-radius:inherit}
