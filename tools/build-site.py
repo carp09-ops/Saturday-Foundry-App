@@ -22,7 +22,7 @@ js=js.replace('__SF_VERSION__',version).replace('__SF_BADGE__',badge)
 js+='\nstart();'
 html='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#24262B"><meta name="description" content="Your teams, your people, your Saturday. The college football dynasty companion."><meta name="robots" content="noindex,nofollow"><meta name="sf-version" content="'''+version+'''"><link rel="icon" type="image/webp" href="assets/graphite/brand/foundry-shield.webp"><title>Saturday Foundry</title><style>'''+css+'''</style></head><body><a class="sr-only" href="#mainContent">Skip to content</a><div class="site-app" id="app"><main class="content"><h1>Saturday Foundry</h1><p>Loading your league…</p><noscript>Open Saturday Foundry in Safari or Chrome with JavaScript enabled.</noscript></main></div><dialog class="sheet" id="detailSheet" aria-labelledby="sheetTitle"></dialog><script>'''+js+'''</script></body></html>'''
 # Both entry points render the same native site; existing preview bookmarks keep working.
-base=base_bytes.decode('utf-8')
+base=base_bytes.decode('utf-8').replace('<html lang="en">','<html lang="en" class="sf-tools-theme">',1)
 base=base.replace('</head>',f'<meta name="sf-version" content="{version}"></head>',1)
 bridge=f'\n<link rel="stylesheet" href="assets/graphite/league-tools.css?v={version}">\n<script src="assets/graphite/league-tools.js?v={version}"></script>\n'
 outputs={'index.html':html,'foundry.html':html,'league-tools.html':base+bridge}
