@@ -37,3 +37,6 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 
 /* Editorial reports use relevant team marks, never repeated stock thumbnails. */
 .story-brand{display:flex;align-items:center;justify-content:center;flex:0 0 56px;width:56px;height:56px}.story-brand .team-logo{width:48px;height:48px;object-fit:contain}.report-lead{display:flex;align-items:center;text-align:left;border-top:3px solid var(--crimson,#bc2842)}.report-lead .story-copy{flex:1;min-width:0}.report-lead>.story-brand{margin-right:20px}.news-row>span:first-child{flex:1;min-width:0}.news-row>.story-brand{flex:0 0 56px}
+
+/* League cards identify the signed-in coach's active-season program. */
+.league-choice>.league-team-badge{width:62px;height:62px;flex:0 0 62px;object-fit:contain;background:transparent;border-radius:0}.league-choice>.league-brand-fallback{padding:4px}.league-choice .league-team-name{color:#3d4147;font-size:13px;font-weight:600;margin:7px 0 4px}.league-choice>span{min-width:0;flex:1}.league-choice>svg{flex-shrink:0}@media(max-width:700px){.league-choice>.league-team-badge{width:50px;height:50px;flex-basis:50px}.league-choice .league-team-name{font-size:12px;margin:6px 0 3px}}
