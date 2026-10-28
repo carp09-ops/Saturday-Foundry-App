@@ -23,6 +23,8 @@
 (function(){
  const src='assets/graphite/football-fallback.webp';
  const selector='.team-fallback,.v25-choice-logo-fallback,.legacy-team-logo-fb,.sf-match-logo-fallback,.wire-team-logo-fallback,.gotw2-fallback,.gd-logo-fb,.sf-archive-team-fallback,.story-coach-logo > span,#teamDockLogo > span';
- function repair(){if(!document?.body)return;document.querySelectorAll(selector).forEach(el=>{if(el.querySelector('img'))return;const img=document.createElement('img');img.src=src;img.alt='';img.className='sf-football-fallback';el.replaceChildren(img)})}
+ function repair(){if(!document?.body)return;
+ document.querySelectorAll('img[src*="saturday-foundry-lockup"],img[src*="saturday-foundry-shield"],link[rel~="icon"][href*="saturday-foundry"]').forEach(el=>{const attr=el.tagName==='LINK'?'href':'src',old=el.getAttribute(attr)||'';el.setAttribute(attr,'assets/graphite/brand/'+(old.includes('lockup')?'foundry-lockup.webp':'foundry-shield.webp'))});
+ document.querySelectorAll(selector).forEach(el=>{if(el.querySelector('img'))return;const img=document.createElement('img');img.src=src;img.alt='';img.className='sf-football-fallback';el.replaceChildren(img)})}
  let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;repair()})}).observe(document.body,{childList:true,subtree:true});repair();
 })();
