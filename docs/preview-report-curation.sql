@@ -25,7 +25,13 @@ returns jsonb language plpgsql security invoker set search_path='' as $$
 declare r public.preview_report_curation; d uuid;
 begin
  select dynasty_id into d from public.seasons where id=p_season_id;
- if auth.uid() is null or d is null or not private.can_manage_dynasty(d) then raise exception 'Commissioner access required'; end if;
+ -- Keep this RPC SECURITY INVOKER. The caller has no USAGE on private;
+ -- inspect the caller's own membership through its existing SELECT/RLS policy.
+ if auth.uid() is null or d is null or not exists (
+  select 1 from public.dynasty_members dm
+  where dm.dynasty_id=d and dm.user_id=(select auth.uid())
+   and dm.active=true and dm.role in ('commissioner','co_commissioner')
+ ) then raise exception 'Commissioner access required'; end if;
  if p_week is null or p_week not between 0 and 30 or p_action is null or p_action not in ('pin','hide','restore','auto') then raise exception 'Invalid report action'; end if;
  if p_action<>'auto' and (p_story_id is null or p_story_id !~ '^(game|preview|poll):[a-f0-9-]{36}(:[0-9]{1,2})?$') then raise exception 'Invalid story'; end if;
  insert into public.preview_report_curation(season_id,week_number,revision) values(p_season_id,p_week,1) on conflict do nothing;
