@@ -1,0 +1,6 @@
+{
+  "legacyRuntime": "legacy-runtime.html",
+  "legacyVersion": "9.10.16",
+  "legacySha256": "78950da8c5e7c186190af8d7e22b9f111ae6558092215481800492006193ce43",
+  "rollbackCommit": "015543681ab67db19cedd9a7777d82ae7f1e8235"
+}

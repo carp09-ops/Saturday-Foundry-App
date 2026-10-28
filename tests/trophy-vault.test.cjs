@@ -2,7 +2,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../legacy-runtime.html'),'utf8');
 const code=html.slice(html.indexOf('/* QA 9.9.4: live, per-dynasty trophy vault. */'),html.indexOf('\nfunction careerFor('));
 const context={state:{career:[{person_id:'c',coach_name:'Corey'}],programs:[{person_id:'c',coach_name:'Corey',team_name:'New Team'}],trophies:[{person_id:'c',coach_name:'Corey',season_number:1,type:'player_award',name:'Heisman Trophy'},{person_id:'c',coach_name:'Corey',season_number:1,type:'conference_championship',name:'Conference Championship'},{person_id:'c',coach_name:'Corey',season_number:2,type:'national_championship',name:'National Championship'}],heismans:[{person_id:'c',season_id:'s1',award_name:'Heisman Trophy',player_name:'Test Winner',player_position:'QB'},{person_id:'c',season_id:'s1',award_name:'Maxwell Award',player_name:'Another Winner'}],allGames:[{person_id:'c',season_number:1,team_name:'Old Team'},{person_id:'c',season_number:2,team_name:'New Team'}]},seasons:[{season_id:'s1',season_number:1,year:2026},{season_id:'s2',season_number:2,year:2027}]};
 vm.createContext(context);vm.runInContext(code,context);

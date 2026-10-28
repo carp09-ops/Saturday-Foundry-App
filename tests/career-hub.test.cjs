@@ -8,7 +8,7 @@ assert.equal(ctx.sfCareerBadge({retired:false,status:'active'}),'');
 assert.match(ctx.sfCareerBadge({retired:false,status:'archived'}),/ARCHIVE/);
 assert.equal(ctx.sfCareerRecord({wins:35,losses:22}),'35–22');
 assert.equal(ctx.sfCareerRecord({wins:0,losses:0,ties:1}),'0–0–1');
-const html=fs.readFileSync('index.html','utf8');let count=0;
+const html=fs.readFileSync('legacy-runtime.html','utf8');let count=0;
 for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)){if(/src=|application\/ld\+json/.test(m[1]))continue;new vm.Script(m[2],{filename:`inline-${count++}`});}
 assert(!html.includes('if(dynasties.length===1){hideDynastyChooser();'));
 assert(/(?:PROD|QA) 9\.9\.\d+/.test(html));

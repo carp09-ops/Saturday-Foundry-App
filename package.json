@@ -2,12 +2,16 @@
   "name": "saturday-foundry",
   "private": true,
   "scripts": {
-    "test": "node --test tests/*.test.cjs tests/ui/*.test.cjs",
-    "build:css": "tailwindcss -c tools/tailwind.config.cjs -i tools/foundry-utilities.input.css -o assets/foundry-utilities.css --minify"
+    "test": "node --test --test-concurrency=2 tests/*.test.cjs tests/ui/*.test.cjs",
+    "build:css": "tailwindcss -c tools/tailwind.config.cjs -i tools/foundry-utilities.input.css -o assets/foundry-utilities.css --minify",
+    "build": "python3 tools/build-site.py",
+    "check:build": "python3 tools/build-site.py --check",
+    "check:release": "npm run check:build && node tools/check-release.cjs && npm test"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.3.14",
     "jsdom": "26.1.0",
     "tailwindcss": "3.4.17"
-  }
+  },
+  "version": "10.0.0-rc.3"
 }

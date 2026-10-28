@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {JSDOM}=require('jsdom');
-const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+const html=fs.readFileSync(path.join(__dirname,'../legacy-runtime.html'),'utf8');
 const source=html.match(/<script id="conference-race-v79-runtime">([\s\S]*?)<\/script>/)[1];
 const game=(a,b,overrides={})=>({id:a+'-'+b,team_id:a,team_name:a,team_conference:'American',opponent_team_id:b,opponent_team:b,opponent_conference:'American',game_type:'regular_season',status:'completed',points_for:21,points_against:7,...overrides});
 function renderState(t,state){

@@ -1,0 +1,181 @@
+/* Shared palette for the preserved advanced tools. Original controls and permissions stay intact. */
+:root{--bg:#FAF9F6!important;--panel:#fff!important;--card:#fff!important;--text:#25262A!important;--muted:#69666A!important;--gold:#C72D40!important;--accent:#C72D40!important;--green:#237653!important;--ice:#A52333!important;--line:#dedbd6!important;color-scheme:light}
+html,body{background:#FAF9F6!important;color:#25262A!important;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+#sfNewSiteReturn{position:sticky;top:0;z-index:10010;display:flex;align-items:center;justify-content:space-between;padding:13px 22px;background:#24262B;color:#fff;border-bottom:3px solid #C72D40;font:600 12px/1.4 Inter,system-ui,sans-serif}
+#sfNewSiteReturn a{color:#fff!important;text-decoration:none!important;font-weight:700}#sfNewSiteReturn small{color:#d3cbd0;font-size:10px}
+body .canonical-header,body .site-header,body #siteHeader{background:#24262B!important;border-color:#4b454c!important;box-shadow:none!important}
+body #app .view,body #app .card,body #app .panel,body #app .subpanel,body #app .admin-card,body #app .admin-section,body #app .legacy-pane,body #app .analytics-pane{background:#fff!important;color:#25262A!important;border-color:#dedbd6!important;box-shadow:none!important}
+body #app h1,body #app h2,body #app h3,body #app h4,body #app label,body #app th,body #app td{color:#25262A!important;text-shadow:none!important}
+body #app p,body #app small,body #app .muted{color:#69666A!important}
+body #app input,body #app select,body #app textarea{background:#fff!important;border:1px solid #ccc6c0!important;color:#25262A!important;border-radius:5px!important;font-family:inherit!important}
+body #app .btn,body #app button{font-family:inherit!important;border-radius:5px!important}body #app .btn:not(.primary):not(.danger){background:#EFEDE9!important;color:#25262A!important;border-color:#dedbd6!important}body #app .btn.primary{background:#C72D40!important;border-color:#C72D40!important;color:white!important}
+body #app a{color:#A52333!important}body #app table{background:#fff!important}body #app tr{border-color:#dedbd6!important}body #app .active[data-pane],body #app .active[data-legacy-pane],body #app .subnav .active{background:#24262B!important;border-color:#24262B!important;color:white!important}
+@media(max-width:700px){#sfNewSiteReturn{padding:11px 15px;font-size:11px}#sfNewSiteReturn small{font-size:8px}body #app input,body #app select,body #app textarea{font-size:16px!important}}
+
+:root{--sf-black:#faf9f6!important;--sf-black-2:#f1efeb!important;--sf-graphite:#24262b!important;--sf-graphite-2:#35373d!important;--sf-gold:#c72d40!important;--sf-gold-bright:#a52333!important;--sf-gold-deep:#891a29!important;--sf-ivory:#25262a!important;--sf-muted:#69666a!important;--sf-line:#dedbd6!important;--sf-line-strong:#c5bfc0!important;--sf-shadow:0 5px 20px #24262b0a!important;--bg2:#f1efeb!important;--panel2:#f1efeb!important}
+body:before,body:after,body #authScreen:before,body #authScreen:after{display:none!important}
+body #sfBuildMarker{display:none!important}
+body #authScreen.hq-auth-screen{background:#faf9f6!important;max-width:760px!important}
+body #authScreen .hq-auth-shell{background:#fff!important;box-shadow:0 8px 30px #24262b0a!important;border-color:#dedbd6!important;border-top-color:#c72d40!important;border-radius:8px!important}
+body #authScreen input,body #authScreen textarea{background:#fff!important;color:#25262a!important;border-color:#ccc6c0!important}
+body #authScreen .hq-auth-tab.active{color:#25262a!important;background:#f1efeb!important;border-color:#c72d40!important}
+body #authScreen .hq-auth-tab,body #authScreen .hq-auth-hero p{color:#69666a!important}
+body #authScreen .hq-auth-hero h1,body #authScreen h2{color:#25262a!important;text-shadow:none!important}
+body #authScreen .btn.primary,body #authScreen #signUpBtn{background:#c72d40!important;border-color:#c72d40!important;color:#fff!important;box-shadow:none!important}
+body #authScreen .hq-auth-hero:before,body #authScreen .hq-auth-card-head span{color:#a52333!important}
+body #authScreen .hq-auth-edition{background:#f1efeb!important;border-color:#dedbd6!important;color:#69666a!important}
+body #nav.canonical-nav{background:#24262b!important;border-color:#4b454c!important}
+body #nav button{color:#e5e2de!important}body #nav button.active{background:#34363c!important;color:#fff!important;box-shadow:inset 0 -3px #c72d40!important}
+
+/* Embedded tools reuse working controls inside the new site's persistent navigation. */
+html.sf-tools-embedded body #siteHeader,html.sf-tools-embedded body #navWrap,html.sf-tools-embedded body #sfNewSiteReturn,html.sf-tools-embedded body #hqMobileNav,html.sf-tools-embedded body #hqMobileMoreSheet,html.sf-tools-embedded body #mobileMenuToggle,html.sf-tools-embedded body #sfMobileBackToTop{display:none!important}
+html.sf-tools-embedded body{padding:0!important;margin:0!important;min-height:100vh!important}
+html.sf-tools-embedded body #app{margin:0!important;padding:12px!important;max-width:none!important}
+html.sf-tools-embedded:not(.sf-tools-ready) body #app,html.sf-tools-embedded body #authScreen,html.sf-tools-embedded body #dynastyChooserScreen,html.sf-tools-embedded body #teamScreen{display:none!important}
+#sfEmbeddedStatus{padding:28px;color:#69666a;font:14px/1.6 Inter,system-ui,sans-serif}
+
+html.sf-tools-embedded body>.shell{max-width:none!important;margin:0!important;padding:0!important}
+.sf-football-fallback{display:block!important;width:100%!important;height:100%!important;min-width:24px;min-height:24px;object-fit:cover!important;border-radius:inherit}
+
+
+
+
+
+/* Every preserved tool uses the same editorial surfaces as the native app.
+   These selectors deliberately outrank the old per-screen styles. They do not
+   change visibility, handlers, permissions, artwork or chart data. */
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) {background:#faf9f6!important;color:#25262a!important;font:14px/1.5 Inter,system-ui,sans-serif!important;min-width:0!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(div,section,article,header,footer,aside,nav,details,summary,ul,li,dl,dt,dd,p,span,small,strong,b,em,label,h1,h2,h3,h4,h5,h6,table,th,td,button,a,input,select,textarea):where(:not(.coach-card-front):not(.coach-card-front *)) {font-family:Inter,system-ui,sans-serif!important;text-shadow:none!important;box-shadow:none!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(div,span,strong,b,em,h1,h2,h3,h4,h5,h6,a,p,small,label,dt,dd,th,td,summary,button):where(:not(.coach-card-front):not(.coach-card-front *)) {color:#25262a!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(h1,h2,h3,h4,h5,h6):not(.coach-card-front *) {text-transform:none!important;letter-spacing:-.025em!important;line-height:1.22!important;font-weight:800!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(h1,h2):not(.coach-card-front *) {font-size:28px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(h3):not(.coach-card-front *) {font-size:20px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(h4,h5,h6):not(.coach-card-front *) {font-size:16px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(p,label,small,dt,dd,em):not(.coach-card-front *) {font-size:12px!important;line-height:1.6!important;letter-spacing:0!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(p,small,dt,em):not(.coach-card-front *) {color:#69666a!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(label) {font-weight:650!important;text-transform:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(input:not([type=checkbox]):not([type=radio]),select,textarea) {box-sizing:border-box!important;width:100%;max-width:100%;min-width:0!important;min-height:44px!important;background:#fff!important;color:#25262a!important;border:1px solid #c4bdb8!important;border-radius:6px!important;font-size:16px!important;line-height:1.4!important;padding:11px 12px!important;accent-color:#c72d40;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(input[type=checkbox],input[type=radio]) {accent-color:#c72d40;width:18px!important;height:18px!important;min-height:18px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(input,textarea)::placeholder {color:#777378!important;opacity:1;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(button,a,input,select,textarea,summary):focus-visible {outline:3px solid #c72d40!important;outline-offset:3px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(button):not(.coach-card-front *) {font-size:12px!important;line-height:1.4!important;letter-spacing:0!important;text-transform:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(button,.btn,button[data-pane],button[data-legacy-pane],.sf-cfp-pill,.sf-vault-year,.rc-more,.rc-score button,.story-filter-chip,.recap-coach-pill) {min-height:44px!important;background:#fff!important;color:#25262a!important;border:1px solid #dedbd6!important;border-radius:6px!important;padding:10px 14px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.btn.primary,.game-edit-save,button.active,button[aria-selected=true],button[aria-pressed=true],.sf-cfp-pill.on,.sf-vault-year.is-selected) {background:#c72d40!important;color:#fff!important;border-color:#c72d40!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(button.active,button[aria-selected=true],button[aria-pressed=true]) :where(span,b,strong,small) {color:inherit!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(button.danger,.retire-team-btn) {background:#fff!important;color:#a52333!important;border:1px solid #c72d40!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(button:disabled,input:disabled,select:disabled) {opacity:.55!important;cursor:not-allowed!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(a) {color:#a52333!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(table) {background:#fff!important;border-collapse:collapse!important;font-size:12px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(th,td):not(.coach-card-front *) {font-size:12px!important;padding:12px 8px!important;border-color:#dedbd6!important;background:transparent!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(th) {color:#69666a!important;font-weight:650!important;text-transform:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(thead) {background:#f3f1ee!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.kicker,[class$='-kicker'],[class$='-eyebrow'],.legacy-section-head>div>span,.sf-vault-collection-head>span) {color:#a52333!important;font-size:10px!important;letter-spacing:.12em!important;font-weight:750!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where([class*='-shell'],[class*='-hero'],[class*='-banner'],[class*='-section'],[class*='-head'],[class*='-body'],[class*='-summary'],[class*='-pane'],[class*='-row'],[class*='-filters'],[class*='-tabs'],[class*='-empty'],[class*='-footer']):not(img):not(svg):not(.coach-trading-card):not(.coach-trading-inner):where(:not(.coach-card-front):not(.coach-card-front *)):not(.coach-card-back) {background-color:transparent!important;background-image:none!important;box-shadow:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.card,.panel,.subpanel,.admin-card,[class$='-panel'],[class$='-card'],[class$='-box'],.sf-vault-case,.sf-vault-detail,.sf-vault-plaque,.sf-vault-year,.rc-user,.rc-detail,.rc-next,.rc-next-empty,.recap-national-champion,.recap-foundry-award,.legacy-tier,.legacy-milestone,.legacy-drought):not(img):not(.coach-trading-card):where(:not(.coach-card-front):not(.coach-card-front *)) {background:#fff!important;border:1px solid #dedbd6!important;border-radius:8px!important;box-shadow:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.legacy-hero,.vegas-hero,.story-hero,.season-recap-hero,.sf-legacy-intro,.coaches-card-heading,.v21-schedule-hero,.rc-heading) {padding:8px 0 22px!important;border:0!important;border-bottom:1px solid #dedbd6!important;border-radius:0!important;margin:0 0 22px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.legacy-hero,.vegas-hero,.story-hero,.season-recap-hero,.sf-legacy-intro,.recap-national-champion,.recap-foundry-honors-section)::before,
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.legacy-hero,.vegas-hero,.story-hero,.season-recap-hero,.sf-legacy-intro,.recap-national-champion,.recap-foundry-honors-section)::after {display:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.analytics-tabs,.sf-legacy-tabs,.vegas-tabs,.story-tabs) {display:flex;gap:8px!important;padding:0 0 16px!important;margin:0 0 20px!important;border:0!important;border-bottom:1px solid #dedbd6!important;border-radius:0!important;overflow-x:auto!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.analytics-tabs,.sf-legacy-tabs,.vegas-tabs) button {flex:0 0 auto!important;white-space:nowrap!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.empty,.sf-vault-empty,.sf-vault-category-empty,.rc-empty,.rc-data-note) {background:#f3f1ee!important;border-color:#dedbd6!important;border-radius:8px!important;color:#69666a!important;line-height:1.6!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.notice,.sf-vault-results,.sf-vault-year-hint) {background:#f3f1ee!important;border-color:#dedbd6!important;color:#69666a!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.notice.error,.error,.disputed) {color:#a52333!important;background-color:#f8e9eb!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.notice.success,.success,.win,.positive,.confirmed) {color:#237653!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.loss,.negative) {color:#a52333!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(img):not(.coach-card-front img) {filter:none!important;}
+
+/* Trophy collection: real trophy artwork on quiet ivory shelves. */
+html.sf-tools-theme body #app #legacy #insightsTrophyRoom {--vault-gold:#a52333;--vault-muted:#69666a;background:#faf9f6!important;border:0!important;border-radius:0!important;padding:0!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-plaque) {padding:20px!important;gap:16px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-plaque)::before,html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-plaque)::after {display:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case-art,.sf-vault-detail-art) {background:#f3f1ee!important;border-color:#dedbd6!important;border-radius:6px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case-art)::after {display:none!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case-name) {font-size:17px!important;line-height:1.35!important;text-transform:none!important;font-weight:750!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case-action,.sf-vault-case-tag,.sf-vault-kicker) {color:#a52333!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-total b,.rc-record,.rc-score) {color:#25262a!important;font-weight:800!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-league-context>strong,.sf-vault-seal,.sf-vault-live,.sf-vault-retired,.sf-vault-empty button) {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app #legacy #trophyRoomSummary {background:#dedbd6!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app #legacy #trophyRoomSummary>button {background:#fff!important;}
+html.sf-tools-theme body #app #legacy #trophyRoomSummary>button.is-selected {background:#f8e9eb!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case,.sf-vault-year):hover {border-color:#c72d40!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-case.is-selected) {border-color:#c72d40!important;background:#fff!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-detail) {top:12px!important;}
+
+/* Commissioner forms use the same spacing and controls as the league office. */
+html.sf-tools-theme body #app #admin .admin-grid {gap:20px!important;}
+html.sf-tools-theme body #app #admin .stack {gap:20px!important;}
+html.sf-tools-theme body #app #admin .admin-card {padding:20px!important;margin-bottom:0!important;scroll-margin-top:16px;}
+html.sf-tools-theme body #app #admin .admin-card h3 {margin:8px 0!important;font-size:21px!important;}
+html.sf-tools-theme body #app #admin .admin-card p {margin:0 0 18px!important;font-size:13px!important;}
+html.sf-tools-theme body #app #admin .admin-card .kicker {font-size:10px!important;}
+html.sf-tools-theme body #app #admin :where(.form-row,.admin-row,.claim-actions) {gap:12px!important;}
+html.sf-tools-theme body #app #admin :where(.btn) {min-height:44px!important;}
+
+/* Preserve collectible portraits; make their statistics and actions readable. */
+html.sf-tools-theme body #app #records .coach-card-back {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app #records :where(.coach-card-back-scroll,.coach-card-back-head,.coach-card-profile-box,.coach-card-career-total) {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app #records :where(.coach-card-back p,.coach-card-back small,.coach-card-back td,.coach-card-back th,.coach-card-back li,.coach-card-back-bio) {font-size:11px!important;line-height:1.5!important;}
+html.sf-tools-theme body #app #records :where(.coach-card-front,.coach-card-face) {border-color:#c72d40!important;}
+
+/* Appended dialogs sit outside #app and need the same treatment. */
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) {font-family:Inter,system-ui,sans-serif!important;color:#25262a!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(.game-edit-shell,.result-box,.result-content,.modal-content,.dynasty-hub-panel,.simple-game-team,.game-edit-actions,.recap-shell,.sf-vault-detail-copy,.sf-vault-detail-art) {background:#faf9f6!important;color:#25262a!important;border-color:#dedbd6!important;box-shadow:none!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(h1,h2,h3,h4,p,span,small,b,strong,label,dt,dd,button,summary) {font-family:Inter,system-ui,sans-serif!important;color:#25262a!important;text-shadow:none!important;text-transform:none!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(h2,h3) {font-size:22px!important;line-height:1.25!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(p,label,small,dt,dd) {font-size:12px!important;line-height:1.6!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(input:not([type=checkbox]),select,textarea) {background:#fff!important;color:#25262a!important;border:1px solid #c4bdb8!important;border-radius:6px!important;font:16px/1.4 Inter,system-ui,sans-serif!important;min-height:44px!important;padding:11px!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(button) {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;border-radius:6px!important;min-height:44px!important;font-size:13px!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(.btn.primary,.game-edit-save) {background:#c72d40!important;color:#fff!important;border-color:#c72d40!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(.simple-check) {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :where(input[type=checkbox]) {accent-color:#c72d40!important;}
+html.sf-tools-theme body .sf-vault-dialog {background:#faf9f6!important;border-color:#dedbd6!important;color:#25262a!important;}
+html.sf-tools-theme body .sf-vault-dialog::backdrop {background:#24262b88!important;}
+html.sf-tools-theme body .sf-vault-close {background:#fff!important;color:#25262a!important;border-color:#dedbd6!important;}
+
+@media(max-width:700px){
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.analytics-grid,.metric-grid,.story-grid,.vegas-grid) {grid-template-columns:minmax(0,1fr)!important;}
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.admin-card,.metric-card,.chart-card,.sf-chart-card,.projection-card) {padding:16px!important;}
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-plaque) {flex-wrap:wrap!important;padding:16px!important;}
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-total) {border-left:0!important;padding-left:0!important;}
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-filters) {gap:12px!important;}
+ html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :where(.sf-vault-live,.legacy-live) {white-space:normal!important;}
+ html.sf-tools-theme body #app #admin .admin-card {padding:16px!important;}
+ html.sf-tools-theme body #app #admin .admin-card h3 {font-size:20px!important;}
+}
+
+/* Nested navigation and data summaries in the advanced screens. */
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.sf-intel-scope>div,.vegas-studio-nav,.sf-schedule-modes){background:#f3f1ee!important;border:1px solid #dedbd6!important;border-radius:8px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.vegas-accolade,.sf-season-chapter,.v21-season-archive,.recap-stats>div,.recap-coach-stats,.recap-coach-card>div,.schedule-scope-bar){background:#fff!important;border:1px solid #dedbd6!important;border-radius:8px!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.vegas-accolade)::before{background:#c72d40!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.recap-foundry-medallion){background:#f8e9eb!important;}
+html.sf-tools-embedded .sf-chapter-return{display:none!important;}
+
+/* Transient loading and game validation surfaces follow the same palette. */
+html.sf-tools-embedded body #cdhqLoader{display:none!important;}
+html.sf-tools-theme body #cdhqLoader{background:#faf9f6!important;color:#25262a!important;}
+html.sf-tools-theme body #cdhqLoader::before,html.sf-tools-theme body #cdhqLoader::after{display:none!important;}
+html.sf-tools-theme body #cdhqLoader .cdhq-loader-copy{color:#25262a!important;}
+html.sf-tools-theme body #cdhqLoader .cdhq-loader-badge{background:#24262b!important;border-color:#c72d40!important;box-shadow:none!important;}
+html.sf-tools-theme body #cdhqLoader .cdhq-loader-logo{content:url('brand/foundry-shield.webp');}
+html.sf-tools-theme body #h2hDialog{background:#faf9f6!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #h2hDialog::backdrop{background:#24262b88!important;}
+html.sf-tools-theme body :is(#gameEditModal,#resultModal,#resultRecapModal,#dynastyMenuModal,#h2hDialog,.sf-vault-dialog) :is(.result-dialog,.recap-dialog,.dynasty-hub-dialog,.game-edit-head,.game-edit-body,.game-edit-audit,.ge-conference-indicator){background:#faf9f6!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #app > :is(#analytics,#vegas,#storylines,#rivalries,#records,#recap,#legacy,#schedule,#admin,#conference) :is(.h2h-inbox,.h2h-banner,.h2h-validation-state){background:#f3f1ee!important;color:#25262a!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #gameEditModal .game-edit-shell{box-sizing:border-box!important;max-width:100%!important;overflow-x:hidden!important;}
+html.sf-tools-theme body #gameEditModal .game-edit-actions{background:#faf9f6!important;border-color:#dedbd6!important;}
+html.sf-tools-theme body #gameEditModal :is(input,select,textarea){box-sizing:border-box!important;max-width:100%!important;min-width:0!important;}
+html.sf-tools-theme body #gameEditModal .game-edit-close{flex:0 0 44px!important;width:44px!important;}
+@media(max-width:700px){
+ html.sf-tools-theme body #gameEditModal .simple-game-team .game-edit-row{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+ html.sf-tools-theme body #gameEditModal .simple-game-team .game-edit-row>div:first-child{grid-column:1/-1!important;}
+ html.sf-tools-theme body #gameEditModal .game-edit-body{min-width:0!important;}
+}
+
+/* Status tiles and action lists had their own fixed dark backgrounds. */
+html.sf-tools-theme body #app #admin :is(.cpu-week-tile,.vegas-admin-line){background:#f3f1ee!important;border:1px solid #dedbd6!important;color:#25262a!important;}
+html.sf-tools-theme body #app #admin .cpu-week-tile.loaded{background:#edf5ef!important;border-color:#237653!important;}
+html.sf-tools-theme body #app #admin .cpu-week-tile.missing{background:#f8e9eb!important;border-color:#c72d40!important;}
+html.sf-tools-theme body #app #admin .cpu-week-tile *{color:inherit!important;}
+html.sf-tools-theme ::-webkit-scrollbar-track{background:#f3f1ee!important;}
+html.sf-tools-theme ::-webkit-scrollbar-thumb{background:#a7a1a0!important;}
+html.sf-tools-theme{scrollbar-color:#a7a1a0 #f3f1ee;}
