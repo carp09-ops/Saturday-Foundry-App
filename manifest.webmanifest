@@ -1,0 +1,18 @@
+{
+  "name": "Saturday Foundry",
+  "short_name": "Foundry",
+  "description": "Your dynasty, forged on Saturdays.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#24262B",
+  "theme_color": "#24262B",
+  "icons": [
+    {
+      "src": "/assets/graphite/brand/foundry-shield.webp",
+      "sizes": "any",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}
