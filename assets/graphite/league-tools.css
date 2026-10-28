@@ -1,0 +1,28 @@
+/* Shared palette for the preserved advanced tools. Original controls and permissions stay intact. */
+:root{--bg:#FAF9F6!important;--panel:#fff!important;--card:#fff!important;--text:#25262A!important;--muted:#69666A!important;--gold:#C72D40!important;--accent:#C72D40!important;--green:#237653!important;--ice:#A52333!important;--line:#dedbd6!important;color-scheme:light}
+html,body{background:#FAF9F6!important;color:#25262A!important;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+#sfNewSiteReturn{position:sticky;top:0;z-index:10010;display:flex;align-items:center;justify-content:space-between;padding:13px 22px;background:#24262B;color:#fff;border-bottom:3px solid #C72D40;font:600 12px/1.4 Inter,system-ui,sans-serif}
+#sfNewSiteReturn a{color:#fff!important;text-decoration:none!important;font-weight:700}#sfNewSiteReturn small{color:#d3cbd0;font-size:10px}
+body .canonical-header,body .site-header,body #siteHeader{background:#24262B!important;border-color:#4b454c!important;box-shadow:none!important}
+body #app .view,body #app .card,body #app .panel,body #app .subpanel,body #app .admin-card,body #app .admin-section,body #app .legacy-pane,body #app .analytics-pane{background:#fff!important;color:#25262A!important;border-color:#dedbd6!important;box-shadow:none!important}
+body #app h1,body #app h2,body #app h3,body #app h4,body #app label,body #app th,body #app td{color:#25262A!important;text-shadow:none!important}
+body #app p,body #app small,body #app .muted{color:#69666A!important}
+body #app input,body #app select,body #app textarea{background:#fff!important;border:1px solid #ccc6c0!important;color:#25262A!important;border-radius:5px!important;font-family:inherit!important}
+body #app .btn,body #app button{font-family:inherit!important;border-radius:5px!important}body #app .btn:not(.primary):not(.danger){background:#EFEDE9!important;color:#25262A!important;border-color:#dedbd6!important}body #app .btn.primary{background:#C72D40!important;border-color:#C72D40!important;color:white!important}
+body #app a{color:#A52333!important}body #app table{background:#fff!important}body #app tr{border-color:#dedbd6!important}body #app .active[data-pane],body #app .active[data-legacy-pane],body #app .subnav .active{background:#24262B!important;border-color:#24262B!important;color:white!important}
+@media(max-width:700px){#sfNewSiteReturn{padding:11px 15px;font-size:11px}#sfNewSiteReturn small{font-size:8px}body #app input,body #app select,body #app textarea{font-size:16px!important}}
+
+:root{--sf-black:#faf9f6!important;--sf-black-2:#f1efeb!important;--sf-graphite:#24262b!important;--sf-graphite-2:#35373d!important;--sf-gold:#c72d40!important;--sf-gold-bright:#a52333!important;--sf-gold-deep:#891a29!important;--sf-ivory:#25262a!important;--sf-muted:#69666a!important;--sf-line:#dedbd6!important;--sf-line-strong:#c5bfc0!important;--sf-shadow:0 5px 20px #24262b0a!important;--bg2:#f1efeb!important;--panel2:#f1efeb!important}
+body:before,body:after,body #authScreen:before,body #authScreen:after{display:none!important}
+body #sfBuildMarker{display:none!important}
+body #authScreen.hq-auth-screen{background:#faf9f6!important;max-width:760px!important}
+body #authScreen .hq-auth-shell{background:#fff!important;box-shadow:0 8px 30px #24262b0a!important;border-color:#dedbd6!important;border-top-color:#c72d40!important;border-radius:8px!important}
+body #authScreen input,body #authScreen textarea{background:#fff!important;color:#25262a!important;border-color:#ccc6c0!important}
+body #authScreen .hq-auth-tab.active{color:#25262a!important;background:#f1efeb!important;border-color:#c72d40!important}
+body #authScreen .hq-auth-tab,body #authScreen .hq-auth-hero p{color:#69666a!important}
+body #authScreen .hq-auth-hero h1,body #authScreen h2{color:#25262a!important;text-shadow:none!important}
+body #authScreen .btn.primary,body #authScreen #signUpBtn{background:#c72d40!important;border-color:#c72d40!important;color:#fff!important;box-shadow:none!important}
+body #authScreen .hq-auth-hero:before,body #authScreen .hq-auth-card-head span{color:#a52333!important}
+body #authScreen .hq-auth-edition{background:#f1efeb!important;border-color:#dedbd6!important;color:#69666a!important}
+body #nav.canonical-nav{background:#24262b!important;border-color:#4b454c!important}
+body #nav button{color:#e5e2de!important}body #nav button.active{background:#34363c!important;color:#fff!important;box-shadow:inset 0 -3px #c72d40!important}
