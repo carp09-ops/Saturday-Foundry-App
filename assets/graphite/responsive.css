@@ -21,3 +21,5 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 .brand-context{display:block;font-size:9px;line-height:1.3;color:#d6d2ce;letter-spacing:.04em;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:-5px 0 7px 4px}
 .login-hero>img.login-brand-lockup{position:absolute;inset:28px auto auto 28px;width:300px;max-width:calc(100% - 56px);height:auto;object-fit:contain;z-index:2;opacity:1;filter:none}
 @media(max-width:760px){.mast{min-height:83px;gap:12px}.brand-home .brand-lockup{width:156px;height:62px}.brand-context{max-width:156px;font-size:8px;margin:-2px 0 6px 3px}.mast-actions{gap:9px}.build-badge{font-size:7px;padding:4px}.login-hero{height:300px}.login-hero>img.login-brand-lockup{width:215px;left:20px;top:17px;max-width:calc(100% - 40px)}}
+
+.page-advanced{max-width:1240px}.page-advanced>select{display:block;margin-bottom:20px}.advanced-frame{display:block;width:100%;height:calc(100dvh - 295px);min-height:500px;border:1px solid #dedbd6;border-radius:8px;background:#faf9f6}@media(max-width:700px){.advanced-frame{height:calc(100dvh - 310px);min-height:440px}.page-advanced{padding-inline:12px}}

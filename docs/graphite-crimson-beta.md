@@ -27,3 +27,7 @@ Browser checks covered desktop and 390px mobile login/home, navigation to coach 
 ## Beta 2 — dynasty lines on score cards
 
 The new entry is now 10.0.0-beta.2. Stored dynasty lines load automatically for the selected season and appear on Home, Scores, and game details. Cards show the favorite and spread, O/U, and recorded projections/win probability when present. Missing lines remain explicitly unposted; request failures offer retry. The shared loader matches the live view `id`, paginates in stable order, guards stale season responses, and updates card strips without replacing an in-progress score form. Seventeen workflow tests pass.
+
+## Beta 5 — integrated advanced-tool navigation
+
+Advanced tools now open as an embedded tool workspace inside the new header, back control, tool selector, and primary navigation. The existing backend and detailed tool forms are reused, not fully rewritten. The child hides duplicate app navigation and loads the authorized league and season. Returning to the new screens reloads league data to reflect changes. Background H2H refresh does not replace an open tool workspace. Nineteen tests cover workflows and context bridging. Authenticated browser acceptance of the embedded production tools remains outstanding.

@@ -50,7 +50,7 @@ async function loadSeason(id){const target=model.seasons.find(s=>s.season_id===i
 function historyReplace(){history.replaceState(null,'','#'+route)}
 function go(r){if(mutationPending||!routes.has(r))return;if(r==='trophies')trophyPerson=route==='coach'?selectedCoach:null;if(route!==r)trail.push({route,scroll:$('screenViewport')?.scrollTop||0});route=r;history.pushState(null,'','#'+r);render()}
 function back(){if(mutationPending)return;const prev=trail.pop();route=prev?.route||'home';historyReplace();render();if($('screenViewport'))$('screenViewport').scrollTop=prev?.scroll||0}
-window.addEventListener('popstate',()=>{if(mutationPending){historyReplace();return}route=routes.has(location.hash.slice(1))?location.hash.slice(1):'home';render()});
+window.addEventListener('popstate',()=>{if(mutationPending){historyReplace();return}const next=routes.has(location.hash.slice(1))?location.hash.slice(1):'home';if(route==='advanced'&&next!=='advanced'){returnFromTools(next);return}route=next;render()});
 function openTeam(id){if(mutationPending)return;selectedTeam=id;selectedCoach=program(id)?.person_id||selectedCoach;go('team')}
 function openCoach(id){if(mutationPending)return;selectedCoach=id;go('coach')}
 function openGame(id){if(mutationPending)return;selectedGame=id;go('game')}
