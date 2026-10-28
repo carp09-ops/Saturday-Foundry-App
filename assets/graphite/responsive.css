@@ -26,3 +26,6 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 
 /* Text-free, high-resolution fallback artwork; school logos remain authoritative. */
 .football-art{object-fit:cover!important;border-radius:8px}.avatar{padding:0;overflow:hidden}.account-art{width:100%;height:100%;object-fit:cover}.league-monogram{width:54px;height:54px;flex-shrink:0}.news-mark{width:58px;height:58px;object-fit:cover}.coach-placeholder{object-fit:cover;display:block}
+/* Persistent commissioner shortcut, with a full touch target on phones. */
+.commish-shortcut{min-height:44px;padding:0 13px;border:1px solid #da6576;border-radius:6px;background:#b9223d;color:#fff;font-size:12px;font-weight:750;white-space:nowrap}.commish-shortcut[aria-current="page"]{background:#fff;color:#a81e36}.mast-actions:has(.commish-shortcut){gap:10px}
+@media(max-width:700px){.mast-actions:has(.commish-shortcut) .build-badge{display:none}.commish-shortcut{padding:0 10px}.mast-actions:has(.commish-shortcut){gap:8px}}
