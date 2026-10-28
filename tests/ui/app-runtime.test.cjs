@@ -9,7 +9,7 @@ async function createApp(){
  const errors=[],virtualConsole=new VirtualConsole();
  virtualConsole.on('jsdomError',error=>{if(!/CSS stylesheet|Not implemented/.test(error.message))errors.push(error.message);});
  virtualConsole.on('error',(...args)=>errors.push(args.map(a=>a?.message||String(a)).join(' ').slice(0,220)));
- const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'https://foundry.test/index.html',runScripts:'dangerously',resources:new LocalResources(),pretendToBeVisual:true,virtualConsole,beforeParse(w){
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'legacy-runtime.html'),'utf8'),{url:'https://foundry.test/legacy-runtime.html',runScripts:'dangerously',resources:new LocalResources(),pretendToBeVisual:true,virtualConsole,beforeParse(w){
   w.matchMedia=query=>({matches:false,media:query,addEventListener(){},removeEventListener(){},addListener(){},removeListener(){}});
   w.scrollTo=()=>{};w.HTMLElement.prototype.scrollIntoView=()=>{};w.HTMLElement.prototype.scrollBy=()=>{};w.CSS={escape:value=>String(value)};
   w.ResizeObserver=class{observe(){}disconnect(){}};w.WebSocket=class{constructor(){this.readyState=0;}close(){}send(){}};
@@ -143,7 +143,7 @@ test('full-app navigation and async failure regressions',async t=>{
   }
   const fonts=fs.readFileSync(path.join(root,'assets/foundry-fonts.css'),'utf8');
   for(const match of fonts.matchAll(/url\('([^']+)'\)/g))assert(fs.existsSync(path.join(root,'assets',match[1])));
-  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');assert(!/fonts\.googleapis|cdn\.tailwindcss|cdn\.jsdelivr.*chart|\bTeko\b|\bOswald\b/.test(html));
+  const html=fs.readFileSync(path.join(root,'legacy-runtime.html'),'utf8');assert(!/fonts\.googleapis|cdn\.tailwindcss|cdn\.jsdelivr.*chart|\bTeko\b|\bOswald\b/.test(html));
  });
  await t.test('missing market numbers remain unknown rather than zero or 100 percent',()=>{
   const missing=w.eval("vegasPerspective({spread_home:null,home_win_probability:null,home_away:'away'})");assert.equal(missing.teamSpread,null);assert.equal(missing.teamWinProbability,null);
