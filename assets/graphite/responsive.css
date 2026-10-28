@@ -14,3 +14,10 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 .dynasty-line-values strong{font-size:13px;color:#25262a}.dynasty-line-values>span{white-space:nowrap;color:#69666a}
 .dynasty-line-detail{display:flex;flex-wrap:wrap;gap:3px 16px;margin-top:5px;font-size:10px;color:#69666a}
 .line-empty{color:#69666a;font-size:11px}.dynasty-line>.textlink{margin-left:10px}
+
+/* Preserve the original Foundry shield and wordmark, including their brand colors. */
+.mast{min-height:96px}.brand-home{flex-direction:column;align-items:flex-start;gap:0;flex-shrink:0}
+.brand-home .brand-lockup{display:block;width:190px;height:76px;object-fit:contain;object-position:left center}
+.brand-context{display:block;font-size:9px;line-height:1.3;color:#d6d2ce;letter-spacing:.04em;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:-5px 0 7px 4px}
+.login-hero>img.login-brand-lockup{position:absolute;inset:28px auto auto 28px;width:300px;max-width:calc(100% - 56px);height:auto;object-fit:contain;z-index:2;opacity:1;filter:none}
+@media(max-width:760px){.mast{min-height:83px;gap:12px}.brand-home .brand-lockup{width:156px;height:62px}.brand-context{max-width:156px;font-size:8px;margin:-2px 0 6px 3px}.mast-actions{gap:9px}.build-badge{font-size:7px;padding:4px}.login-hero{height:300px}.login-hero>img.login-brand-lockup{width:215px;left:20px;top:17px;max-width:calc(100% - 40px)}}
