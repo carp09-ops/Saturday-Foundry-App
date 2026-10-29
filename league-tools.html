@@ -9380,7 +9380,7 @@ async function renderCommissioner(){
    const assignmentsHost=$("nextSeasonAssignments");
    if(assignmentsHost){
      const coaches=state.dynastyCoaches||[];
-     assignmentsHost.innerHTML=coaches.map(c=>`<label class="form-row" style="display:block"><b>${esc(c.coach_name)}</b><small>Current: ${esc(c.current_team_name||"Unassigned")}</small><select class="rollover-program" data-person-id="${esc(c.person_id)}" aria-label="Next program for ${esc(c.coach_name)}"><option value="">Choose stay or change…</option>${teamChoices.map(t=>`<option value="${esc(t.team_id)}">${esc(t.team_name)}${t.team_name===c.current_team_name?" (Stay)":""}</option>`).join("")}</select></label>`).join("")||'<p>No active coaches found. Rollover is disabled.</p>';
+     assignmentsHost.innerHTML=coaches.map(c=>`<label class="form-row" style="display:block"><b>${esc(c.coach_name)}</b><small>Current: ${esc(c.current_team_name||"Unassigned")}</small><select class="rollover-program" data-person-id="${esc(c.person_id)}" aria-label="Next program for ${esc(c.coach_name)}"><option value="">Choose stay or change…</option>${teamChoices.filter(t=>!t.claimed||t.team_name===c.current_team_name).map(t=>`<option value="${esc(t.team_id)}">${esc(t.team_name)}${t.team_name===c.current_team_name?" (Stay)":""}</option>`).join("")}</select></label>`).join("")||'<p>No active coaches found. Rollover is disabled.</p>';
      if($("newSeasonBtn"))$("newSeasonBtn").disabled=!coaches.length;
    }
    if(coachSel)coachSel.innerHTML='<option value="">Select coach</option>'+(state.dynastyCoaches||[]).map(c=>`<option value="${c.person_id}">${esc(c.coach_name)}${c.current_team_name?` · ${esc(c.current_team_name)}`:""}</option>`).join("");
