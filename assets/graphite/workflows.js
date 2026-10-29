@@ -1,3 +1,6 @@
+/* Detect installed iPhone Home Screen web apps (Safari tabs have a separate viewport). */
+const sfStandaloneMode=(typeof navigator!=='undefined'&&navigator.standalone===true)||(typeof window!=='undefined'&&window.matchMedia?.('(display-mode: standalone)')?.matches===true);
+document.documentElement.classList.toggle('sf-standalone',sfStandaloneMode);
 /* Graphite & Crimson application. Existing server RPCs remain the authority for writes. */
 const SITE_VERSION='__SF_VERSION__',SITE_BADGE='__SF_BADGE__';
 const BRAND_ASSET='assets/graphite/brand/';
