@@ -98,4 +98,5 @@ test('standalone Foundry ribbon is above the dock, crimson on graphite and nonin
  assert(report.includes('foundry-shield.webp'), 'Ticker brand should use the site shield logo');
  assert(report.includes('function tickerFit()'), 'Ticker should scale long items to fit instead of clipping them');
  assert(report.includes('setInterval(tickerStep,5000)'), 'Ticker should dwell five seconds per item');
+ assert(report.includes('sf-tick-scroll')&&css.includes('@keyframes sfTickScroll'), 'Overflowing ticker items should scroll within their dwell instead of truncating');
 });
