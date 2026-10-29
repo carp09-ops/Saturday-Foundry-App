@@ -58,7 +58,7 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   ['unconfirmed choice',[choose(401,104,false),choose(402,105),choose(403,103)],/explicitly confirm/i],
   ['wrong coach',[choose(401,104),choose(402,105),choose(999,103)],/invalid coach/i],
   ['disabled school',[choose(401,104),choose(402,108),choose(403,103)],/invalid coach/i]
- ])await isolated(name,async()=>{const before=await counts();await assert.rejects(roll(choices),message);assert.deepEqual(await counts(),before)});
+ ])await t.test(name,async()=>{await actor(10);const before=await counts();await assert.rejects(roll(choices),message);assert.deepEqual(await counts(),before)});
  await t.test('regular league member cannot start a season',async()=>{
   await actor(11);const before=await counts();await assert.rejects(roll(valid),/commissioner/i);assert.deepEqual(await counts(),before);
  });
