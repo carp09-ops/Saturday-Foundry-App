@@ -1,5 +1,5 @@
 -- Apply only after isolated test; do not execute against live WSB yet.
-create or replace function public.create_next_season_with_assignments(p_dynasty_id uuid,p_year integer,p_assignments jsonb)
+create or replace function public.create_next_season_with_programs(p_dynasty_id uuid,p_year integer,p_assignments jsonb)
 returns uuid language plpgsql security definer set search_path='' as $$
 declare old_id uuid; new_id uuid; next_no integer; expected_count integer; item jsonb; new_program uuid;
 begin
@@ -39,5 +39,5 @@ begin
  on conflict(dynasty_id) do update set settings=coalesce(public.dynasty_settings.settings,'{}'::jsonb)||jsonb_build_object('active_week',1),updated_at=now();
  return new_id;
 end $$;
-revoke all on function public.create_next_season_with_assignments(uuid,integer,jsonb) from public,anon;
-grant execute on function public.create_next_season_with_assignments(uuid,integer,jsonb) to authenticated;
+revoke all on function public.create_next_season_with_programs(uuid,integer,jsonb) from public,anon;
+grant execute on function public.create_next_season_with_programs(uuid,integer,jsonb) to authenticated;
