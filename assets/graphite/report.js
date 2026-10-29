@@ -70,15 +70,21 @@ function tickerItems(){
 }
 const sfTicker={items:[],idx:0,timer:null,swap:null};
 function tickerCardHTML(it){return `<b>${esc(it.k)}</b><span>${esc(it.t)}</span>`}
+function tickerFit(){
+ const card=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');
+ if(!card||!card.parentElement)return;
+ let size=10;card.style.fontSize=size+'px';
+ while(card.scrollWidth>card.parentElement.clientWidth&&size>7.5){size-=0.5;card.style.fontSize=size+'px'}
+}
 function tickerStep(){
  const card=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');
  if(!card||sfTicker.items.length<2||document.hidden)return;
  sfTicker.idx=(sfTicker.idx+1)%sfTicker.items.length;
  const next=sfTicker.items[sfTicker.idx];
- if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){card.innerHTML=tickerCardHTML(next);return}
+ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){card.innerHTML=tickerCardHTML(next);tickerFit();return}
  card.classList.add('sf-tick-out');
  clearTimeout(sfTicker.swap);
- sfTicker.swap=setTimeout(()=>{const c=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');if(c){c.innerHTML=tickerCardHTML(next);c.classList.remove('sf-tick-out')}},290);
+ sfTicker.swap=setTimeout(()=>{const c=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');if(c){c.innerHTML=tickerCardHTML(next);c.classList.remove('sf-tick-out');tickerFit()}},290);
 }
 function tickerInner(){
  const tag='Your dynasty, forged on Saturdays';
@@ -90,5 +96,6 @@ function tickerInner(){
  if(sfTicker.idx>=items.length)sfTicker.idx=0;
  clearInterval(sfTicker.timer);
  sfTicker.timer=items.length>1?setInterval(tickerStep,5000):null;
- return `<span class="sf-ticker-brand" aria-hidden="true"><span class="sf-bottom-ribbon-mark">SF</span><span class="sf-ticker-brand-text">The Line</span></span><span class="sf-ticker-stage" aria-hidden="true"><span class="sf-ticker-card">${tickerCardHTML(items[sfTicker.idx])}</span></span>`;
+ setTimeout(()=>{try{tickerFit()}catch(e){}},60);
+ return `<span class="sf-ticker-brand" aria-hidden="true"><img class="sf-ticker-logo" src="${BRAND_ASSET}foundry-shield.webp" alt=""><span class="sf-ticker-brand-text">The Line</span></span><span class="sf-ticker-stage" aria-hidden="true"><span class="sf-ticker-card">${tickerCardHTML(items[sfTicker.idx])}</span></span>`;
 }

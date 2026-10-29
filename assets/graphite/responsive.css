@@ -127,7 +127,7 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:20px;top:-3px}
    z-index:59;pointer-events:none;
    padding:4px 14px;
    background:linear-gradient(90deg,#191A1D 0%,#2C2A27 50%,#191A1D 100%);
-   border-top:1px solid #A88E54;border-bottom:1px solid #76613A;
+   border-top:1px solid #C72D40;border-bottom:1px solid #7E1F2E;
    color:#E2CD97;
    box-shadow:0 -2px 9px #16161616
  }
@@ -142,22 +142,24 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:20px;top:-3px}
  }
  html.sf-standalone .sf-ticker-brand{
    display:flex;align-items:center;gap:7px;flex:none;
-   padding-right:10px;border-right:1px solid #76613A
+   padding-right:10px;border-right:1px solid #7E1F2E
  }
+ html.sf-standalone .sf-ticker-logo{width:24px;height:24px;object-fit:contain;flex:none}
  html.sf-standalone .sf-ticker-brand-text{
-   color:#EACD82;font-size:9px;font-weight:900;letter-spacing:.18em;
+   color:#fff;font-size:9px;font-weight:900;letter-spacing:.18em;
    text-transform:uppercase;white-space:nowrap
  }
  html.sf-standalone .sf-ticker-stage{
    flex:1;min-width:0;overflow:hidden;display:flex;align-items:center
  }
  html.sf-standalone .sf-ticker-card{
-   display:inline-flex;align-items:center;gap:6px;
-   color:#E2CD97;font-size:10px;font-weight:650;letter-spacing:.1em;
+   display:inline-flex;align-items:center;gap:6px;max-width:100%;
+   color:#EDEAE2;font-size:10px;font-weight:650;letter-spacing:.1em;
    text-transform:uppercase;white-space:nowrap;
    transition:opacity .28s ease,transform .28s ease
  }
- html.sf-standalone .sf-ticker-card b{color:#fff;font-weight:900;letter-spacing:.14em}
+ html.sf-standalone .sf-ticker-card b{color:#ED8292;font-weight:900;letter-spacing:.14em;flex:none}
+ html.sf-standalone .sf-ticker-card>span{overflow:hidden;text-overflow:ellipsis}
  html.sf-standalone .sf-ticker-card.sf-tick-out{opacity:0;transform:translateY(6px)}
  html.sf-standalone .viewport{
    padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))

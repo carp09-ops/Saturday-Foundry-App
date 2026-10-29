@@ -77,7 +77,7 @@ test('iOS installed app avoids deprecated black-translucent status bar geometry'
 });
 
 
-test('standalone Foundry ribbon is above the dock, gold on graphite and noninteractive',()=>{
+test('standalone Foundry ribbon is above the dock, crimson on graphite and noninteractive',()=>{
  const css=read('assets/graphite/responsive.css');
  const js=read('assets/graphite/workflows.js');
  const entry=read('index.html');
@@ -89,9 +89,13 @@ test('standalone Foundry ribbon is above the dock, gold on graphite and noninter
  assert(css.includes('html.sf-standalone .sf-bottom-ribbon{'), 'Only installed app should show it');
  assert(css.includes('bottom:calc(52px + var(--sf-dock-safe-bottom,0px))'), 'Place ribbon immediately above safe-area dock');
  assert(css.includes('pointer-events:none'), 'Ribbon must never obstruct navigation');
- assert(css.includes('border-top:1px solid #A88E54')&&css.includes('background:linear-gradient'), 'Use graphite and gold rather than white');
+ assert(css.includes('border-top:1px solid #C72D40')&&css.includes('background:linear-gradient'), 'Use graphite and crimson rather than white');
  assert(css.includes('html.sf-standalone body{background:#24262B!important}'), 'Paint available underlay in graphite');
  assert(css.includes('padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))'), 'Keep scrolling content clear of banner');
  assert(entry.includes('Your dynasty, forged on Saturdays'));
  assert(entry.includes(css),'Generated release must include banner source');
+ const report=read('assets/graphite/report.js');
+ assert(report.includes('foundry-shield.webp'), 'Ticker brand should use the site shield logo');
+ assert(report.includes('function tickerFit()'), 'Ticker should scale long items to fit instead of clipping them');
+ assert(report.includes('setInterval(tickerStep,5000)'), 'Ticker should dwell five seconds per item');
 });
