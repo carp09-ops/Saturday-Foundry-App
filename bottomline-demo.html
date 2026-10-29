@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Dynasty Bottom Line — Visual Preview</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#1b1d20;color:#ede7de;font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.preview-head{max-width:560px;margin:20px auto 12px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.preview-head h1{margin:0;font-size:18px;letter-spacing:-.03em}.preview-head small{display:block;font-size:11px;color:#c4b7a6}
+.modes{display:flex;background:#343438;border:1px solid #57524c;border-radius:9px;padding:3px;gap:2px}.modes button{background:transparent;border:0;border-radius:6px;padding:8px 10px;color:#d4cbd0;font-weight:750;font-size:11px;cursor:pointer}.modes button.active{background:#bf3146;color:#fff}
+.phone{width:min(430px,calc(100vw - 24px));height:min(740px,calc(100dvh - 112px));min-height:450px;max-height:800px;position:relative;margin:0 auto 16px;background:#faf9f6;border:1px solid #474147;border-radius:19px;overflow:hidden;box-shadow:0 22px 65px #0007}
+.mast{height:76px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;background:#24262b;color:#fff}.mark{display:grid;place-items:center;font-weight:900;font-size:18px;border:2px solid #b99b60;color:#ebd19a;width:37px;height:37px;border-radius:7px}.mast-brand{display:flex;align-items:center;gap:10px}.mast-brand b{font-size:16px;letter-spacing:.07em}.mast-brand small{display:block;font-size:10px;color:#cfc1bf}.avatar{display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:#b72d40;font-size:10px;font-weight:800}
+.content{padding:23px 19px;color:#26282c;height:calc(100% - 76px);overflow:auto;padding-bottom:125px}.eyebrow{font-weight:850;color:#b72b42;letter-spacing:.14em;font-size:10px}.content h2{font-size:26px;letter-spacing:-.04em;margin:5px 0 10px}.section{font-size:11px;color:#6c6368;border-top:1px solid #ddd9d5;padding-top:13px;margin:16px 0 8px}.score{border:1px solid #e3ddda;border-radius:10px;background:#fff;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 10px #33333306}.score-head{font-size:10px;color:#aa293e;font-weight:800;letter-spacing:.1em}.score-row{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:14px;margin-top:10px}.score-row em{font-style:normal;color:#8f888b;font-size:12px}.note{font-size:11px;color:#776e74;margin-top:12px}
+.ribbon,.ticker{position:absolute;left:0;right:0;bottom:66px;height:35px;background:linear-gradient(90deg,#191a1d,#2b2926,#191a1d);border-top:1px solid #af925b;border-bottom:1px solid #76613a;color:#f0e0bd;z-index:3}
+.ribbon{display:none;align-items:center;justify-content:center;font-size:10px;letter-spacing:.14em;font-weight:800}.ribbon .sf{color:#ebd096;border:1px solid #bd9b5f;border-radius:4px;padding:3px 5px;margin-right:8px}
+.ticker{display:flex;align-items:stretch;overflow:hidden}.ticker-label{display:flex;align-items:center;justify-content:center;gap:5px;background:#1c1c1f;border-right:1px solid #76613a;flex:0 0 106px;color:#e2c78a;font-size:9px;letter-spacing:.03em;font-weight:900;z-index:1}
+.ticker-label .sf{display:grid;place-items:center;border:1px solid #b89a5b;border-radius:4px;width:23px;height:23px;color:#eacb82;font-weight:900;font-size:10px}
+.ticker-window{min-width:0;flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(to right,transparent,#000 9px,#000 calc(100% - 13px),transparent);mask-image:linear-gradient(to right,transparent,#000 9px,#000 calc(100% - 13px),transparent)}
+.ticker-track{display:flex;align-items:center;width:max-content;height:100%;animation:roll 48s linear infinite}.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+.ticker-set{display:flex;align-items:center;gap:16px;padding-right:16px;flex-shrink:0;white-space:nowrap}.ticker-set span{font-size:10px;font-weight:650;color:#eee7d9}.ticker-set b{font-size:9px;letter-spacing:.05em;color:#dab967;margin-right:6px}
+@keyframes roll{to{transform:translateX(-50%)}}.bottomnav{position:absolute;bottom:0;left:0;right:0;height:66px;padding:5px 6px 8px;display:flex;align-items:flex-start;justify-content:space-around;background:#faf9f6;border-top:1px solid #ded9d5}
+.bottomnav div{font-size:10px;color:#777074;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;min-height:44px;font-weight:650}.bottomnav div.active{color:#bd2e42}.bottomnav svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sample{position:absolute;right:9px;top:6px;background:#f5e5e8;color:#a3263b;border:1px solid #d5bbc1;border-radius:5px;font-size:9px;font-weight:850;padding:3px 6px;letter-spacing:.05em;z-index:2}
+.original .ticker{display:none}.original .ribbon{display:flex}
+.preview-footer{text-align:center;font-size:11px;color:#bdb1a5;padding:0 10px 16px}
+@media(prefers-reduced-motion:reduce){.ticker-track{animation:none}.ticker-window{overflow-x:auto}.ticker-set[aria-hidden=true]{display:none}}
+@media(max-width:390px){.preview-head h1{font-size:16px}.modes button{padding:7px 8px}.phone{width:100%;border-radius:0;height:calc(100dvh - 104px)}}
+</style></head>
+<body>
+<div class="preview-head"><div><h1>Dynasty Bottom Line</h1><small>Design comparison · mobile preview</small></div><div class="modes"><button id="tickerMode" class="active" aria-pressed="true">Ticker</button><button id="ribbonMode" aria-pressed="false">Ribbon</button></div></div>
+<div class="phone" id="phone">
+<div class="sample">SAMPLE DATA</div>
+<header class="mast"><div class="mast-brand"><span class="mark">SF</span><div><b>SATURDAY FOUNDRY</b><small>Your dynasty, forged on Saturdays</small></div></div><span class="avatar">SF</span></header>
+<main class="content"><div class="eyebrow">FOR YOU</div><h2>Your league, your Saturday.</h2><p class="note">WSB · Season 7 · Week 2</p>
+<div class="score"><div class="score-head">THIS WEEK · USER MATCHUP</div><div class="score-row"><span>Florida</span><em>vs</em><span>West Virginia</span></div><p class="note">Next game · Preview illustration</p></div>
+<div class="section">AROUND THE LEAGUE</div>
+<div class="score"><div class="score-head">LAST WEEK · FINAL</div><div class="score-row"><span>Georgia Tech</span><span>35 – 24</span><span>UConn</span></div></div>
+<div class="score"><div class="score-head">SATURDAY REPORT</div><p class="note">Conference races tighten as the playoff picture takes shape.</p></div>
+</main>
+<div class="ribbon"><span class="sf">SF</span>YOUR DYNASTY, FORGED ON SATURDAYS</div>
+<div class="ticker" aria-label="Dynasty Bottom Line visual sample"><div class="ticker-label"><span class="sf">SF</span>BOTTOM LINE</div><div class="ticker-window"><div class="ticker-track"><div class="ticker-set" id="sampleSet"><span><b>WSB</b> SEASON 7 · WEEK 2</span><span><b>FINAL</b> GEORGIA TECH 35 · UCONN 24</span><span><b>NEXT UP</b> FLORIDA AT WEST VIRGINIA</span><span><b>TOP 25</b> #3 FLORIDA · #10 GEORGIA TECH</span><span><b>REPORT</b> CONFERENCE RACES HEAT UP</span></div></div></div></div>
+<nav class="bottomnav" aria-label="Visual sample navigation"><div class="active"><svg viewBox="0 0 24 24"><path d="M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9"/></svg>Home</div><div><svg viewBox="0 0 24 24"><path d="M4 5h16v15H4zM4 10h16M8 14h2m4 0h2"/></svg>Scores</div><div><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/></svg>Teams</div><div><svg viewBox="0 0 24 24"><path d="M4 20V10h4v10m2 0V4h4v16m2 0v-7h4v7"/></svg>Standings</div><div><svg viewBox="0 0 24 24"><path d="M8 3h8v7a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v5m-4 2h8"/></svg>Legacy</div></nav>
+</div>
+<p class="preview-footer">Illustrative results only. The connected app uses the selected league's actual saved scores, polls and reports.</p>
+<script>
+const set=document.getElementById('sampleSet');
+const copy=set.cloneNode(true);copy.id='';copy.setAttribute('aria-hidden','true');copy.inert=true;set.parentElement.append(copy);
+const phone=document.getElementById('phone'),ticker=document.getElementById('tickerMode'),ribbon=document.getElementById('ribbonMode');
+function show(original){phone.classList.toggle('original',original);ticker.classList.toggle('active',!original);ribbon.classList.toggle('active',original);ticker.setAttribute('aria-pressed',String(!original));ribbon.setAttribute('aria-pressed',String(original))}
+ticker.addEventListener('click',()=>show(false));ribbon.addEventListener('click',()=>show(true));
+</script>
+</body></html>
