@@ -403,7 +403,7 @@ function program(id=selectedTeam){return model.programs.find(p=>p.team_id===id)}
 function teamGames(id=selectedTeam){return games().filter(g=>g.homeId===id||g.awayId===id)}
 function record(id){const s=model.standings.find(s=>s.team_id===id);if(s)return {w:num(s.wins),l:num(s.losses),pf:num(s.points_for),pa:num(s.points_against),gp:num(s.games_played)};const gs=teamGames(id).filter(g=>g.final);return gs.reduce((r,g)=>{const a=g.awayId===id,ours=num(a?g.a:g.h),theirs=num(a?g.h:g.a);r[ours>theirs?'w':'l']++;r.pf+=ours;r.pa+=theirs;r.gp++;return r},{w:0,l:0,pf:0,pa:0,gp:0})}
 function kickoff(g){if(g.final)return g.overtime?'FINAL · OT':'FINAL';if(!g.kickoff_time)return 'UPCOMING';const d=new Date(g.kickoff_time);return isNaN(d)?'UPCOMING':d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'}
-function safeStreamUrl(value){try{const url=new URL(String(value||'').trim());return url.protocol==='https:'&&!url.username&&!url.password?url.href:''}catch{return ''}}
+function safeStreamUrl(value){try{const url=new window.URL(String(value||'').trim());return url.protocol==='https:'&&!url.username&&!url.password?url.href:''}catch{return ''}}
 function homeGameStreams(g){
  if(route!=='home'||!season?.is_active||!Array.isArray(model.coachStreams))return '';
  const seen=new Set(),links=[];
