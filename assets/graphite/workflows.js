@@ -60,7 +60,20 @@ function advancedPage(){
  const options=advancedViews.filter(([id])=>id!=='admin'||canManage());
  if(!options.some(([id])=>id===advancedView))advancedView='analytics';
  const params=new URLSearchParams({embedded:'1',view:advancedView,dynasty:dynasty.dynasty_id,season:season.season_id});if(advancedFocus)params.set('focus',advancedFocus);
- return title(dynasty.name,options.find(([id])=>id===advancedView)[1],'Season '+season.season_number)+`<label for="advancedView">Choose a tool</label><select id="advancedView" onchange="openAdvanced(this.value)">${options.map(([id,label])=>`<option value="${id}" ${id===advancedView?'selected':''}>${label}</option>`).join('')}</select><iframe class="advanced-frame" title="${esc(options.find(([id])=>id===advancedView)[1])}" src="league-tools.html?${esc(params.toString())}"></iframe>`;
+ return title(dynasty.name,options.find(([id])=>id===advancedView)[1],'Season '+season.season_number)+`<label for="advancedView">Choose a tool</label><select id="advancedView" onchange="openAdvanced(this.value)">${options.map(([id,label])=>`<option value="${id}" ${id===advancedView?'selected':''}>${label}</option>`).join('')}</select><iframe class="advanced-frame" title="${esc(options.find(([id])=>id===advancedView)[1])}" src="league-tools.html?${esc(params.toString())}" onload="sizeToolsFrame(this)"></iframe>`;
+}
+function sizeToolsFrame(frame){
+ try{
+  const doc=frame.contentDocument;if(!doc||!doc.body)return;
+  const fit=()=>{try{const app=doc.getElementById('app');const h=app?Math.ceil(app.offsetTop+app.offsetHeight+24):doc.body.scrollHeight;if(h>0&&Math.abs(h-parseInt(frame.style.height||'0',10))>2)frame.style.height=h+'px'}catch(e){}};
+  fit();
+  if(frame._sfObs)frame._sfObs.disconnect();
+  const obs=new MutationObserver(()=>fit());
+  obs.observe(doc.documentElement,{childList:true,subtree:true,attributes:true});
+  frame._sfObs=obs;
+  if(frame.contentWindow)frame.contentWindow.addEventListener('resize',fit);
+  [400,1200,2500].forEach(ms=>setTimeout(fit,ms));
+ }catch(e){}
 }
 const nativeGo=go,nativeBack=back;
 async function returnFromTools(target){if(mutationPending)return;const id=dynasty?.dynasty_id;if(!id)return nativeGo(target);await loadDynasty(id);if(!loadError&&dynasty?.dynasty_id===id){await refreshLeagueCards();if(dynasty?.dynasty_id!==id)return;route=target;historyReplace();render()}}
