@@ -3,7 +3,7 @@ const ASSET='https://raw.githack.com/carp09-ops/Saturday-Foundry-App/b8fe1f26898
 const PREFERENCE='sf_graphite_context_v1';
 let model={dynasties:[],seasons:[],programs:[],standings:[],scheduleGames:[],career:[],stops:[],trophies:[],myPrograms:[],leaguePrograms:[],leagueProgramsReady:false,history:[],stories:[],rankings:[],teams:[],coachStreams:[],warnings:[]};
 let dynasty=null,season=null,route='home',trail=[],selectedTeam=null,selectedCoach=null,selectedGame=null,week=0,scope='all',conference='',busy=true,loadError='',loadSerial=0,updatedAt=null,selectedStory=null,trophyPerson=null;
-const routes=new Set(['home','scores','teams','team','coach','standings','legacy','trophies','stories','article','game','account','leagues','seasons','seasonarchive','rankings','analysis','rivalries','career']);
+const routes=new Set(['home','scores','teams','team','coach','standings','legacy','trophies','stories','article','game','account','leagues','seasons','seasonarchive','rankings','analysis','rivalries','career','records']);
 const uid=x=>/^[a-f0-9-]{36}$/i.test(String(x||''))?String(x):'';
 const safeImage=x=>/^https:\/\//i.test(String(x||''))?esc(x):'';
 const num=x=>Number.isFinite(Number(x))?Number(x):0;
@@ -181,8 +181,61 @@ function milestonesHTML(){
 function legacy(){return title(dynasty.name,'Legacy')+`<img class="legacy-hero" src="${THEME_ART}legacy-room.webp" alt="The Foundry trophy collection">${throneHTML()}${section('The trophy room','trophies','All honors')}${trophyGrid(model.trophies,3)}${section('Career leaders')}${table(['COACH','WINS','LOSSES'],model.career.slice(0,6).map(c=>[`<button class="textlink" onclick="openCoach('${uid(c.person_id)}')">${esc(c.coach_name)}</button>`,esc(c.wins),esc(c.losses)]))}${tiersHTML()}${droughtsHTML()}${milestonesHTML()}${section('Every season leaves a story','seasons','Season archive')}${model.seasons.map(s=>row('Season '+s.season_number,s.status,`onclick="loadSeason('${uid(s.season_id)}')"`)).join('')}<p class="sport-note">Honors and career records belong to the selected dynasty.</p>`}
 function gamePage(){const g=games().find(g=>g.id===selectedGame);if(!g)return empty('Choose a game from Scores.');const win=g.a>g.h?g.away:g.home;return title(g.week_label||'Week '+g.week_number,g.away+' at '+g.home)+`<div class="game-scorehero"><div>${logo(g.awayId,g.away)}<strong>${esc(g.away)}</strong><b>${esc(g.final?g.a:'—')}</b><small>Away</small></div><div class="game-status">${g.final?'Final'+(g.overtime?' · OT':''):'Upcoming'}</div><div>${logo(g.homeId,g.home)}<strong>${esc(g.home)}</strong><b>${esc(g.final?g.h:'—')}</b><small>Home</small></div></div><div class="info-strip">${esc(g.final?win+' wins by '+Math.abs(g.a-g.h):kickoff(g))}</div>${section(g.final?'Game summary':'Before kickoff')}<p class="article-inline">${esc(g.final?win+' finishes on top, '+Math.max(g.a,g.h)+'–'+Math.min(g.a,g.h)+'.':'The final result has not been recorded.')}</p>${POST_TYPES[String(g.game_type||'')]?`<div class="postseason-banner">${esc(g.event_name||POST_TYPES[String(g.game_type||'')])}</div>`:g.event_name?`<p class="muted">${esc(g.event_name)}</p>`:''}${row(g.away,'Team overview, schedule and coach',`onclick="openTeam('${uid(g.awayId)}')"`)}${row(g.home,'Team overview, schedule and coach',`onclick="openTeam('${uid(g.homeId)}')"`)}${row('Week '+g.week_number+' scoreboard','Other results and upcoming games',`onclick="week=${num(g.week_number)};go('scores')"`)}<p class="sport-note">Score entry is available in the main app. This preview is read-only.</p>`}
 function analysis(){return title(dynasty.name,'Season analysis','Scoring and records from completed games.')+table(['TEAM','W–L','PPG','ALLOWED'],model.standings.map(s=>[`<button class="textlink" onclick="openTeam('${uid(s.team_id)}')">${esc(s.team_name)}</button>`,esc(s.wins+'–'+s.losses),num(s.games_played)?fmt(s.points_for/s.games_played):'—',num(s.games_played)?fmt(s.points_against/s.games_played):'—']))+section('Go deeper')+row('Conference picture','League records and the current race',`onclick="go('standings')"`)+row('Published Top 25','Latest recorded national poll',`onclick="go('rankings')"`)}
+function recordBookGames(){
+ const quality=g=>{const m=String(g.result_method||g.source||'').toLowerCase();return /manual|hq|user|player/.test(m)?3:/sim|import|cpu/.test(m)?1:2};
+ const eligible=(model.history||[]).filter(g=>g&&g.status==='completed'&&!g.is_bye&&g.person_id&&Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against)));
+ const byKey=new Map();
+ eligible.forEach(g=>{
+  const key=[g.person_id,g.season_id||g.season_number||'',g.week_number??'',String(g.team_name||'').toLowerCase(),String(g.opponent_team||'').toLowerCase()].join('|');
+  const prev=byKey.get(key);if(!prev||quality(g)>quality(prev))byKey.set(key,g);
+ });
+ return [...byKey.values()];
+}
+function recordCoachName(personId){return model.career.find(c=>c.person_id===personId)?.coach_name||model.programs.find(p=>p.person_id===personId)?.coach_name||'Coach'}
+function longestWinStreak(personId,games){
+ const mine=games.filter(g=>g.person_id===personId).sort((a,b)=>Number(a.season_number||0)-Number(b.season_number||0)||Number(a.week_number||0)-Number(b.week_number||0));
+ let best=0,run=0;
+ mine.forEach(g=>{if(g.result==='W'){run++;best=Math.max(best,run)}else if(g.result==='L')run=0});
+ return best;
+}
+function bestSeason(personId,games){
+ const completed=new Set(model.seasons.filter(s=>{const st=String(s?.status||'').toLowerCase();return !s?.is_active&&st!=='active'&&st!=='setup'&&Number(s?.season_number)!==Number(season?.season_number)}).map(s=>Number(s.season_number)));
+ const by=new Map();
+ games.filter(g=>g.person_id===personId&&completed.has(Number(g.season_number))).forEach(g=>{
+  const n=Number(g.season_number||0);if(!by.has(n))by.set(n,{season:n,wins:0,losses:0,pf:0});
+  const r=by.get(n);if(g.result==='W')r.wins++;if(g.result==='L')r.losses++;r.pf+=Number(g.points_for||0);
+ });
+ return [...by.values()].sort((a,b)=>{const ap=a.wins/Math.max(1,a.wins+a.losses),bp=b.wins/Math.max(1,b.wins+b.losses);return bp-ap||b.wins-a.wins||b.pf-a.pf})[0]||null;
+}
+function leagueExtremes(games){
+ const mov=g=>Number(g.points_for)-Number(g.points_against);
+ const pick=cmp=>games.reduce((b,g)=>!b||cmp(g,b)?g:b,null);
+ return {
+  blowout:pick((g,b)=>mov(g)>mov(b)),
+  worstLoss:pick((g,b)=>mov(g)<mov(b)),
+  shootout:pick((g,b)=>(Number(g.points_for)+Number(g.points_against))>(Number(b.points_for)+Number(b.points_against))),
+  mostPoints:pick((g,b)=>Number(g.points_for)>Number(b.points_for)),
+  nailbiter:pick((g,b)=>Math.abs(mov(g))<Math.abs(mov(b)))
+ };
+}
+function recordsPage(){
+ const games=recordBookGames();
+ const head=title(dynasty.name,'Record book','All-time marks from completed coach games.');
+ if(!games.length)return head+empty('No completed coach games yet — the book opens with the first final.');
+ const ex=leagueExtremes(games);
+ const line=(label,g,stat)=>g?`<div class="office-list-row"><div><b>${label}</b><div class="muted">${esc(recordCoachName(g.person_id))} · ${esc(g.team_name)} ${esc(g.points_for)}–${esc(g.points_against)} ${esc(g.opponent_team)} · Season ${esc(g.season_number)}, Week ${esc(g.week_number)}</div></div><strong>${stat}</strong></div>`:'';
+ const coaches=[...new Set(games.map(g=>g.person_id))].map(pid=>({pid,streak:longestWinStreak(pid,games),best:bestSeason(pid,games)})).sort((a,b)=>b.streak-a.streak);
+ return head+section('League extremes')+'<div class="office-list">'
+  +line('Biggest blowout',ex.blowout,'+'+(Number(ex.blowout.points_for)-Number(ex.blowout.points_against)))
+  +line('Worst loss',ex.worstLoss,String(Number(ex.worstLoss.points_for)-Number(ex.worstLoss.points_against)))
+  +line('Highest-scoring game',ex.shootout,(Number(ex.shootout.points_for)+Number(ex.shootout.points_against))+' pts')
+  +line('Most points in a game',ex.mostPoints,ex.mostPoints.points_for+' pts')
+  +line('Closest game',ex.nailbiter,Math.abs(Number(ex.nailbiter.points_for)-Number(ex.nailbiter.points_against))+' pt margin')
+  +'</div>'+section('Coach records')
+  +coaches.map(c=>`<div class="office-list-row"><div><b>${esc(recordCoachName(c.pid))}</b><div class="muted">${c.best?`Best season · S${c.best.season} at ${c.best.wins}–${c.best.losses} (${c.best.pf} pts)`:'Best season · —'}</div></div><strong>${c.streak} straight wins</strong></div>`).join('');
+}
 function account(){return title('Your Foundry','Account & league')+`<p class="muted">${esc(session()?.user?.email||'Signed in')}</p>${row('Change league',dynasty?.name||'Choose a league',`onclick="go('leagues')"`)}${row('Change season',season?'Season '+season.season_number:'Choose a season',`onclick="go('seasons')"`)}${row('Refresh league data',updatedAt?'Last loaded '+updatedAt.toLocaleTimeString():'',`onclick="start()"`)}<div class="notice">Live data preview · Read-only</div><button class="secondary" onclick="logout()">Sign out</button>`}
-function content(){switch(route){case'home':return home();case'scores':return scores();case'teams':return teams();case'team':return team();case'coach':return coach();case'standings':return standings();case'legacy':return legacy();case'game':return gamePage();case'rankings':return rankings();case'analysis':return analysis();case'career':return title(coachInfo().coach_name,'Career journey')+careerRows(model.stops.filter(s=>s.person_id===selectedCoach));case'rivalries':return title(coachInfo().coach_name,'Head-to-head','Career meetings in this dynasty.')+(rivalryRows().join('')||empty('No recorded games against other Foundry coaches.'));case'trophies':return title(dynasty.name,'The trophy room')+`<label for="honorCoach">Collection</label><select id="honorCoach" onchange="trophyPerson=this.value||null;render()"><option value="">All coaches</option>${model.career.map(c=>`<option value="${uid(c.person_id)}" ${c.person_id===trophyPerson?'selected':''}>${esc(c.coach_name)}</option>`).join('')}</select>`+trophyGrid(honors(trophyPerson));case'stories':return title(dynasty.name,'The Saturday report',latestEdition()?'Published edition · Week '+latestEdition().week_number:'')+newsStories();case'article':{const s=storyItems()[selectedStory];return s?title('The Saturday report',s.headline)+`${storyBrand(s)}<p class="article-inline">${esc(s.fact||'')}</p><p class="article-inline">${esc(s.body||'')}</p>`+(s.game_id&&games().some(g=>g.id===s.game_id)?row('View game','Score and matchup details',`onclick="openGame('${uid(s.game_id)}')"`):''):empty('Choose a published story.')}case'account':return account();case'leagues':return title('Your memberships','Choose your league')+(model.dynasties.map(d=>row(d.name,d.active_season_number?'Season '+d.active_season_number:d.status,`onclick="loadDynasty('${uid(d.dynasty_id)}')"`)).join('')||empty('No league memberships are attached to this account. Join or create a league in the main app.'))+button('Account','account','secondary');case'seasonarchive':return seasonArchivePage();case'seasons':return title(dynasty?.name||'League','Season archive')+(model.seasons.map(s=>row('Season '+s.season_number,s.status,`onclick="loadSeason('${uid(s.season_id)}')"`)).join('')||empty('No seasons have been created.'));default:return home()}}
+function content(){switch(route){case'home':return home();case'scores':return scores();case'teams':return teams();case'team':return team();case'coach':return coach();case'standings':return standings();case'legacy':return legacy();case'game':return gamePage();case'rankings':return rankings();case'analysis':return analysis();case'records':return recordsPage();case'career':return title(coachInfo().coach_name,'Career journey')+careerRows(model.stops.filter(s=>s.person_id===selectedCoach));case'rivalries':return title(coachInfo().coach_name,'Head-to-head','Career meetings in this dynasty.')+(rivalryRows().join('')||empty('No recorded games against other Foundry coaches.'));case'trophies':return title(dynasty.name,'The trophy room')+`<label for="honorCoach">Collection</label><select id="honorCoach" onchange="trophyPerson=this.value||null;render()"><option value="">All coaches</option>${model.career.map(c=>`<option value="${uid(c.person_id)}" ${c.person_id===trophyPerson?'selected':''}>${esc(c.coach_name)}</option>`).join('')}</select>`+trophyGrid(honors(trophyPerson));case'stories':return title(dynasty.name,'The Saturday report',latestEdition()?'Published edition · Week '+latestEdition().week_number:'')+newsStories();case'article':{const s=storyItems()[selectedStory];return s?title('The Saturday report',s.headline)+`${storyBrand(s)}<p class="article-inline">${esc(s.fact||'')}</p><p class="article-inline">${esc(s.body||'')}</p>`+(s.game_id&&games().some(g=>g.id===s.game_id)?row('View game','Score and matchup details',`onclick="openGame('${uid(s.game_id)}')"`):''):empty('Choose a published story.')}case'account':return account();case'leagues':return title('Your memberships','Choose your league')+(model.dynasties.map(d=>row(d.name,d.active_season_number?'Season '+d.active_season_number:d.status,`onclick="loadDynasty('${uid(d.dynasty_id)}')"`)).join('')||empty('No league memberships are attached to this account. Join or create a league in the main app.'))+button('Account','account','secondary');case'seasonarchive':return seasonArchivePage();case'seasons':return title(dynasty?.name||'League','Season archive')+(model.seasons.map(s=>row('Season '+s.season_number,s.status,`onclick="loadSeason('${uid(s.season_id)}')"`)).join('')||empty('No seasons have been created.'));default:return home()}}
 function seasonArchivePage(){
  const finals=games().filter(g=>g.final),honors=model.trophies.filter(t=>t.season_id===season.season_id||(!t.season_id&&num(t.season_number)===num(season.season_number)));
  return title(dynasty.name,'Season '+season.season_number+' archive',[season.year,season.status].filter(Boolean).join(' · '))+
