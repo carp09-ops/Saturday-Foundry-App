@@ -251,7 +251,7 @@ test('Home shows configured coach streams for both sides, without unsafe or miss
  assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata: '+JSON.stringify(a.calls.map(c=>c.name))+'; loadError='+a.w.eval('loadError')+'; route='+a.w.eval('route')+'; errors='+JSON.stringify(a.errors));
  const cards=[...a.w.document.querySelectorAll('.sports-card')];
  const links=[...a.w.document.querySelectorAll('.game-stream-link')];
- assert(links.some(l=>l.textContent.includes('Corey')),'featured home card needs Corey stream');
+ assert(links.some(l=>l.textContent.includes('Corey')),'featured home card needs Corey stream; state='+JSON.stringify(a.w.eval('({route,season:season?.season_id,isActive:season?.is_active,streamCount:model.coachStreams?.length,streamIds:model.coachStreams?.map(c=>c.current_team_id),games:games().map(g=>[g.awayId,g.homeId])})'))+'; html='+a.w.document.querySelector('#mainContent')?.innerHTML.slice(0,900));
  assert(links.some(l=>l.textContent.includes('Pete')),'opponent player stream should appear');
  assert(links.every(l=>l.protocol==='https:'),'only HTTPS stream links may render');
  assert(links.every(l=>l.getAttribute('rel').includes('noopener')),'external links must be isolated');
