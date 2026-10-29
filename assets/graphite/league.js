@@ -293,10 +293,10 @@ function recordsPage(){
   +'</div>'+section('Coach records')
   +coaches.map(c=>`<div class="office-list-row"><div><b>${esc(recordCoachName(c.pid))}</b><div class="muted">${c.best?`Best season · S${c.best.season} at ${c.best.wins}–${c.best.losses} (${c.best.pf} pts)`:'Best season · —'}</div></div><strong>${c.streak} straight wins</strong></div>`).join('');
 }
-function intelTeamRecs(){
+function intelTeamRecs(rows){
  const rec={};
  const credit=(name,w)=>{const k=String(name||'').toLowerCase();if(!k)return;if(!rec[k])rec[k]={w:0,l:0,t:0};rec[k][w]++};
- (model.history||[]).forEach(g=>{
+ (rows||model.history||[]).forEach(g=>{
   if(!g||g.status!=='completed'||g.is_bye)return;
   const pf=Number(g.points_for),pa=Number(g.points_against);
   if(!Number.isFinite(pf)||!Number.isFinite(pa))return;
@@ -334,16 +334,34 @@ function coachLuck(personId,games){
  const expW=expP*n;
  return {w,l,n,expW,expL:n-expW,luck:w-expW,pf,pa};
 }
+function seasonPowerRankings(){
+ if(!season)return null;
+ const all=recordBookGames().filter(g=>g.season_id===season.season_id);
+ if(!all.length)return null;
+ const rank=(gameSet,recs)=>[...new Set(gameSet.map(g=>g.person_id))].map(pid=>({pid,...coachPower(pid,gameSet,recs)})).sort((a,b)=>b.score-a.score);
+ const seasonRows=(model.history||[]).filter(g=>g.season_id===season.season_id);
+ const now=rank(all,intelTeamRecs(seasonRows));
+ const maxWk=Math.max(...all.map(g=>Number(g.week_number)||0));
+ const prevRank=new Map();
+ if(all.some(g=>Number(g.week_number)<maxWk)){
+  const prevGames=all.filter(g=>Number(g.week_number)<maxWk);
+  rank(prevGames,intelTeamRecs(seasonRows.filter(g=>Number(g.week_number)<maxWk))).forEach((p,idx)=>prevRank.set(p.pid,idx+1));
+ }
+ return now.map((p,idx)=>({...p,rank:idx+1,move:prevRank.has(p.pid)?prevRank.get(p.pid)-(idx+1):null}));
+}
 function intelligencePage(){
  const games=recordBookGames();
  const head=title(dynasty.name,'League intelligence','Career power and luck from completed coach games.');
  if(!games.length)return head+empty('No completed coach games yet — intelligence opens with the first final.');
  const recs=intelTeamRecs();
+ const spr=seasonPowerRankings();
  const teamOf=pid=>model.programs.find(p=>p.person_id===pid)?.team_name||games.find(g=>g.person_id===pid)?.team_name||'';
  const power=[...new Set(games.map(g=>g.person_id))].map(pid=>({pid,...coachPower(pid,games,recs)})).sort((a,b)=>b.score-a.score);
  const luck=[...new Set(games.map(g=>g.person_id))].map(pid=>({pid,...coachLuck(pid,games)})).sort((a,b)=>b.luck-a.luck);
  const f1=x=>(Math.round(x*10)/10).toFixed(1),pct=x=>Math.round(x*100)+'%',signed=x=>(x>0?'+':'')+f1(x);
- return head+section('Power index')
+ const trendChip=m=>m==null?'<span class="trend new">NEW</span>':m>0?`<span class="trend up">▲${m}</span>`:m<0?`<span class="trend down">▼${-m}</span>`:'<span class="trend flat">—</span>';
+ const rankingsSection=spr?section('Power Rankings · Season '+season.season_number)+spr.map(p=>`<div class="office-list-row"><div><b>${p.rank}. ${esc(recordCoachName(p.pid))}</b><div class="muted">${esc(teamOf(p.pid))} · ${p.w}–${p.l} this season</div></div><span>${trendChip(p.move)} <strong>${f1(p.score)}</strong></span></div>`).join('')+'<p class="muted">Season power index with movement versus last week.</p>':'';
+ return head+rankingsSection+section('Career power index')
   +power.map((p,i)=>`<div class="office-list-row"><div><b>${i+1}. ${esc(recordCoachName(p.pid))}</b><div class="muted">${esc(teamOf(p.pid))} · ${p.w}–${p.l} · ${pct(p.pct)} win rate · ${signed(p.mov)} avg margin · ${pct(p.sos)} schedule</div></div><strong>${f1(p.score)}</strong></div>`).join('')
   +'<p class="muted">Power = 50% win rate + 30% scoring margin (scaled at ±30) + 20% strength of schedule.</p>'
   +section('Luck index')
