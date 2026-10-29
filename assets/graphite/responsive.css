@@ -183,3 +183,15 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
 .office-list-row .muted{font-size:12px}
 .week-progress{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;margin:0 0 14px;border:1px solid var(--line,#2b3038);border-radius:12px;font-size:12px}
 .week-progress span{color:var(--muted,#9aa7b4);text-align:right}
+.postseason-chip{font-size:9px;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:999px;background:#C72D40;color:#FFF4E0;white-space:nowrap}
+.postseason-banner{margin:0 0 12px;padding:10px 14px;border:1px solid #C72D40;border-radius:12px;color:#ED8292;font-weight:700;letter-spacing:.04em;text-align:center}
+.bracket{margin:0 0 18px}
+.bracket-pills{margin:0 0 12px}
+.bracket-game{border:1px solid var(--line,#2b3038);border-radius:12px;padding:10px 12px;margin:0 0 10px}
+.bracket-game.champ{border-color:#C72D40}
+.bracket-game-head{display:flex;justify-content:space-between;gap:8px;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#9aa7b4);margin-bottom:8px}
+.bracket-team{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:14px}
+.bracket-team>b{margin-left:auto}
+.bracket-team.winner{font-weight:800}
+.bracket-rank{color:#ED8292;margin-right:4px}
+.bracket-open{display:block;width:100%;text-align:left;background:none;border:0;padding:0;color:inherit;cursor:pointer}

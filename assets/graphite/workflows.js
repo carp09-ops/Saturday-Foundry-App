@@ -48,7 +48,7 @@ async function writeAction(name,body,form,after){
 }
 function clearNotice(){notice='';const n=$('globalNotice');if(n)n.remove()}
 async function afterSeasonLoaded(){
- const key=context(),serial=loadSerial;h2hMeta={ready:false,results:[]};marketRows=[];marketStatus='idle';marketContext='';teamChoice=null;resultDraft=null;officeData=null;officeLoadedFor='';
+ const key=context(),serial=loadSerial;h2hMeta={ready:false,results:[]};marketRows=[];marketStatus='idle';marketContext='';teamChoice=null;resultDraft=null;officeData=null;officeLoadedFor='';bracketRound=null;
  loadMarketLines().then(async()=>{await maybeAutoAdvanceWeek();maybeAutoGenerateLines()});
  try{const meta=await readRpc('get_h2h_results',{p_dynasty_id:dynasty.dynasty_id,p_season_id:season.season_id});if(serial!==loadSerial||key!==context())return;h2hMeta=meta?.ready?meta:{ready:false,results:[]};if(route==='advanced'||mutationPending||document.querySelector('#mainContent form')||$('detailSheet')?.open)return;const top=$('screenViewport')?.scrollTop;render();if($('screenViewport'))$('screenViewport').scrollTop=top||0}catch{}
 }
@@ -259,6 +259,69 @@ async function maybeAutoAdvanceWeek(){
   notice='All coach games were in — advanced to Week '+week+'.';
   if(!document.querySelector('#mainContent form')&&!$('detailSheet')?.open)render();
  }catch{/* The week can still be advanced manually in the League Office. */}
+}
+let bracketRound=null;
+function bracketData(){
+ const isCfp=g=>{const t=String(g.game_type||'').toLowerCase();return t==='playoff'||t==='cfp'};
+ const post=games().filter(g=>!g.is_bye&&(isCfp(g)||String(g.game_type||'').toLowerCase()==='national_championship'));
+ const byeTeams=model.scheduleGames.filter(g=>{if(!g?.is_bye)return false;const en=String(g?.event_name||''),gt=String(g?.game_type||'').toLowerCase(),wk=Number(g?.week_number||0);return /CFP|playoff|first round bye/i.test(en)||/cfp|playoff/.test(gt)||wk>=16});
+ if(!post.length&&!byeTeams.length)return null;
+ const natty=post.filter(g=>String(g.game_type||'').toLowerCase()==='national_championship');
+ const cfpGames=post.filter(isCfp);
+ const weeks=[...new Set(cfpGames.map(g=>Number(g.week_number||0)).filter(w=>w>0&&w<900))].sort((a,b)=>a-b);
+ const sizes=[4,4,2,1];
+ const tbd=(r,i)=>({id:`cfp-tbd-r${r}-${i}`,synthetic:true,away:'TBD',home:'TBD',awayId:null,homeId:null,final:false});
+ const shortName=n=>{n=String(n||'').trim();return n&&n.toUpperCase()!=='TBD'?n:''};
+ const winnerOf=(g1,g2)=>{const m1=[shortName(g1?.away),shortName(g1?.home)].filter(Boolean).join('/'),m2=[shortName(g2?.away),shortName(g2?.home)].filter(Boolean).join('/');if(m1&&m2)return[`Winner of ${m1}`,`Winner of ${m2}`];if(m1)return[`Winner of ${m1}`,'TBD'];if(m2)return['TBD',`Winner of ${m2}`];return['TBD','TBD']};
+ const rounds=[];
+ for(let r=0;r<4;r++){
+  let roundGames=[];
+  if(r===3&&natty.length)roundGames=natty.slice(0,1);
+  else if(r<weeks.length)roundGames=cfpGames.filter(g=>Number(g.week_number||0)===weeks[r]);
+  if(r===1&&byeTeams.length){
+   const slots=sizes[r]-roundGames.length,r1=rounds[0]||[];
+   for(let i=0;i<Math.min(byeTeams.length,slots);i++){
+    const bt=byeTeams[i];let opp='TBD';const r1g=r1[i];
+    if(r1g){const m=[shortName(r1g.away),shortName(r1g.home)].filter(Boolean).join('/');if(m)opp='Winner of '+m}
+    roundGames.push({id:'cfp-bye-'+(bt.id||i),synthetic:true,away:opp,home:bt.team_name||'TBD',awayId:null,homeId:bt.team_id||null,final:false,event_name:'CFP Quarterfinal — First Round Bye'});
+   }
+  }
+  if(r===1&&rounds.length){
+   const prev=rounds[0]||[];
+   for(let i=roundGames.length;i<sizes[r];i++){
+    const[w1,w2]=winnerOf(prev[(i*2)%prev.length],prev[(i*2+1)%prev.length]);
+    roundGames.push({id:`cfp-tbd-r${r}-${i}`,synthetic:true,away:w2,home:w1,awayId:null,homeId:null,final:false});
+   }
+  }else{
+   while(roundGames.length<sizes[r])roundGames.push(tbd(r,roundGames.length));
+  }
+  rounds.push(roundGames.slice(0,sizes[r]));
+ }
+ return {rounds,weeks,natty};
+}
+function bracketActiveRound(data){
+ if(bracketRound!=null)return Math.max(0,Math.min(3,bracketRound));
+ const roundWeeks=data.rounds.map((_,r)=>r===3&&data.natty.length?Number(data.natty[0].week_number||0):(r<data.weeks.length?data.weeks[r]:0));
+ let best=0;for(let i=0;i<roundWeeks.length;i++)if(roundWeeks[i]&&Number(week)>=roundWeeks[i])best=i;
+ const hasContent=rs=>rs.some(g=>{const a=String(g.away||'').toUpperCase(),h=String(g.home||'').toUpperCase();return (a&&a!=='TBD'&&!a.startsWith('WINNER OF'))||(h&&h!=='TBD'&&!h.startsWith('WINNER OF'))});
+ if(!hasContent(data.rounds[best]))for(let i=data.rounds.length-1;i>best;i--)if(hasContent(data.rounds[i])){best=i;break}
+ return best;
+}
+function setBracketRound(i){bracketRound=i;render()}
+function bracketGameHTML(g,isChamp){
+ const decided=g.final&&g.a!=null&&g.h!=null&&g.a!==g.h;
+ const homeEntry=String(g.team_id)===String(g.homeId),homeRank=homeEntry?g.team_rank:g.opponent_rank,awayRank=homeEntry?g.opponent_rank:g.team_rank;
+ const row=(name,id,score,rank,winner)=>`<div class="bracket-team${winner?' winner':''}">${logo(id,name)}<span>${rank?`<b class="bracket-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><b>${score??''}</b></div>`;
+ const label=g.event_name||(isChamp?'National Championship':'College Football Playoff');
+ const inner=`<div class="bracket-game-head"><span>${esc(label)}</span><strong>${g.final?'FINAL':'UPCOMING'}</strong></div>${row(g.away,g.awayId,g.final?g.a:'',awayRank,decided&&g.a>g.h)}${row(g.home,g.homeId,g.final?g.h:'',homeRank,decided&&g.h>g.a)}`;
+ return g.synthetic?`<article class="bracket-game${isChamp?' champ':''}">${inner}</article>`:`<article class="bracket-game${isChamp?' champ':''}"><button class="bracket-open" onclick="openGame('${uid(g.id)}')">${inner}</button></article>`;
+}
+function bracketSection(){
+ if(scope!=='all')return '';
+ const data=bracketData();if(!data)return '';
+ const labels=['Round 1','Round 2','Semifinals','Championship'];
+ const active=bracketActiveRound(data);
+ return `<section class="bracket">${section('College Football Playoff')}<div class="filterbar bracket-pills">${labels.map((l,i)=>`<button class="${i===active?'sel':''}" aria-pressed="${i===active}" onclick="setBracketRound(${i})">${l}</button>`).join('')}</div>${data.rounds[active].map(g=>bracketGameHTML(g,active===3)).join('')}</section>`;
 }
 async function openMarket(){go('market');await loadMarketLines()}
 
