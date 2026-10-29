@@ -23,3 +23,72 @@ async function refreshReport(force=false){if(!season||!session()?.access_token||
 setInterval(()=>refreshReport(),60000);
 window.addEventListener('focus',()=>refreshReport());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshReport()});
+
+/* Bottom Line ticker: league-wide scores, headlines, coach carousel and
+   standings snapshots for the standalone ribbon. Every section is guarded:
+   a ticker failure must never break rendering, so any error falls back to
+   the static brand line. */
+function tickerItems(){
+ const items=[];
+ try{ /* Latest finals across the whole league, user and CPU teams alike. */
+  const gs=(typeof games==='function'?games():[])||[];
+  const finals=gs.filter(g=>g&&!g.is_bye&&g.final&&Number.isFinite(Number(g.a))&&Number.isFinite(Number(g.h)));
+  if(finals.length){
+   const wk=Math.max(...finals.map(g=>Number(g.week_number)||0));
+   const users=new Set((model.programs||[]).filter(p=>p.person_id).map(p=>String(p.team_id)));
+   const heat=g=>((users.has(String(g.awayId))||users.has(String(g.homeId)))?2:0)+(['national_championship','conference_championship','playoff','cfp'].includes(g.game_type)?1:0);
+   const rows=finals.filter(g=>Number(g.week_number)===wk).sort((x,y)=>heat(y)-heat(x));
+   for(const g of rows.slice(0,10))items.push({k:'Final',t:`${g.away} ${g.a}, ${g.home} ${g.h}${g.overtime?' · OT':''}`});
+  }
+ }catch(e){}
+ try{ /* Saturday Report headlines and next matchups. */
+  const r=reportSelection();
+  for(const s of (r.available||[]).filter(s=>s.type!=='preview').slice(0,5))items.push({k:s.kicker,t:s.headline});
+  for(const s of (r.next||[]).slice(0,2)){const g=s.game;if(g)items.push({k:'Next up',t:`${g.away} at ${g.home} · Week ${g.week_number}`})}
+ }catch(e){}
+ try{ /* Coach carousel: a current assignment that follows a different program. */
+  const byCoach=new Map();
+  for(const s of (model.stops||[])){if(!s||!s.person_id)continue;if(!byCoach.has(s.person_id))byCoach.set(s.person_id,[]);byCoach.get(s.person_id).push(s)}
+  const names=new Map((model.programs||[]).filter(p=>p.person_id).map(p=>[String(p.person_id),p.coach_name]));
+  for(const [pid,stops] of byCoach){
+   const sorted=[...stops].sort((a,b)=>Number(b.season_number)-Number(a.season_number));
+   const cur=sorted.find(s=>s.current_assignment)||sorted[0];
+   if(!cur||!names.get(String(pid)))continue;
+   const prev=sorted.find(s=>String(s.team_id)!==String(cur.team_id));
+   if(prev&&Number(cur.season_number)>Number(prev.season_number))items.push({k:'Coach carousel',t:`${names.get(String(pid))} takes over at ${cur.team_name}`});
+  }
+ }catch(e){}
+ try{ /* Conference leaders snapshot. */
+  const cm=conferenceModel(model),byConf=new Map();
+  for(const t of (cm.teams||[])){if(!t||!t.conf)continue;if(!byConf.has(t.conf))byConf.set(t.conf,[]);byConf.get(t.conf).push(t)}
+  for(const conf of [...byConf.keys()].sort()){
+   const lead=[...byConf.get(conf)].sort(cm.sortRows||((a,b)=>b.w-a.w||b.cw-a.cw))[0];
+   if(lead&&(lead.w>0||lead.l>0))items.push({k:conf,t:`${lead.name} ${lead.w}–${lead.l} leads the way`});
+  }
+ }catch(e){}
+ return items.slice(0,22);
+}
+const sfTicker={items:[],idx:0,timer:null,swap:null};
+function tickerCardHTML(it){return `<b>${esc(it.k)}</b><span>${esc(it.t)}</span>`}
+function tickerStep(){
+ const card=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');
+ if(!card||sfTicker.items.length<2||document.hidden)return;
+ sfTicker.idx=(sfTicker.idx+1)%sfTicker.items.length;
+ const next=sfTicker.items[sfTicker.idx];
+ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){card.innerHTML=tickerCardHTML(next);return}
+ card.classList.add('sf-tick-out');
+ clearTimeout(sfTicker.swap);
+ sfTicker.swap=setTimeout(()=>{const c=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');if(c){c.innerHTML=tickerCardHTML(next);c.classList.remove('sf-tick-out')}},290);
+}
+function tickerInner(){
+ const tag='Your dynasty, forged on Saturdays';
+ let items=[];
+ try{items=tickerItems()}catch(e){items=[]}
+ if(!items.length)return `<span class="sf-bottom-ribbon-mark" aria-hidden="true">SF</span><span class="sf-bottom-ribbon-text">${tag}</span>`;
+ items.push({k:'Saturday Foundry',t:tag});
+ sfTicker.items=items;
+ if(sfTicker.idx>=items.length)sfTicker.idx=0;
+ clearInterval(sfTicker.timer);
+ sfTicker.timer=items.length>1?setInterval(tickerStep,5000):null;
+ return `<span class="sf-ticker-brand" aria-hidden="true"><span class="sf-bottom-ribbon-mark">SF</span><span class="sf-ticker-brand-text">The Line</span></span><span class="sf-ticker-stage" aria-hidden="true"><span class="sf-ticker-card">${tickerCardHTML(items[sfTicker.idx])}</span></span>`;
+}
