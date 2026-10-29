@@ -36,3 +36,21 @@ test('standalone Home Screen dock is pinned to the viewport and remains compact'
  assert.match(workflows,/navigator\.standalone===true/);
  assert.match(entry,/html\.sf-standalone \.bottomnav/);
 });
+
+
+test('standalone bottom inset is capped so the Home Screen menu cannot become oversized',()=>{
+ const css=read('assets/graphite/responsive.css');
+ const index=read('index.html');
+ assert.match(css,/--sf-dock-safe-bottom:clamp\(0px,env\(safe-area-inset-bottom,0px\),30px\)/);
+ assert.match(css,/height:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)!important/);
+ assert.match(css,/max-height:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)!important/);
+ assert.match(css,/min-height:0!important/);
+ assert.match(css,/padding-bottom:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)/);
+ assert.match(css,/html\.sf-standalone \.bottomnav button\{[\s\S]*?min-height:44px;max-height:44px;height:44px/);
+ assert(index.includes(css),'Generated Home Screen app must retain capped safe area rules');
+ // A falsely reported 100px inset must collapse to a 30px inset (82px dock).
+ const dockHeight=inset=>52+Math.max(0,Math.min(inset,30));
+ assert.equal(dockHeight(100),82);
+ assert.equal(dockHeight(20),72);
+ assert.equal(dockHeight(0),52);
+});
