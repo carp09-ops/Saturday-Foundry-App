@@ -39,7 +39,7 @@ test('installed iPhone dock matches compact Safari dimensions and retains 44px t
   assert(html.includes('sfStandaloneMode'),'Bundled app must detect Home Screen mode');
   assert(html.includes('html.sf-standalone .bottomnav button'),'Bundled CSS must include dock override');
   assert.equal(html,compatibility,'Both entry points must match');
-  assert.match(html,/<meta name="sf-version" content="10\.1\.2">/);
+  assert(html.includes(`<meta name="sf-version" content="${JSON.parse(read("package.json")).version}">`),"Expected bundle version");
 });
 
 test('PWA entry points, root launch and manifest are explicitly non-cacheable',()=>{

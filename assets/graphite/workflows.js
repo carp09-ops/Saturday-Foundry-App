@@ -5,7 +5,7 @@ document.documentElement.classList.toggle('sf-standalone',sfStandaloneMode);
 const SITE_VERSION='__SF_VERSION__',SITE_BADGE='__SF_BADGE__';
 const BRAND_ASSET='assets/graphite/brand/';
 const WRITE_RPC=new Set(['claim_team','submit_game_result','claim_dynasty_invite','create_dynasty','create_my_schedule_game','create_my_schedule_bye','validate_h2h_result','set_dynasty_active_week','create_dynasty_invite']);
-const ALLOWED_RPC=new Set([...WRITE_RPC,'get_dynasty_active_week','get_coach_career_stops','get_team_selection','get_schedule_team_options','get_h2h_results','get_dynasty_vegas']);
+const ALLOWED_RPC=new Set([...WRITE_RPC,'get_dynasty_coaches','get_dynasty_active_week','get_coach_career_stops','get_team_selection','get_schedule_team_options','get_h2h_results','get_dynasty_vegas']);
 let mutationPending=false,authMode='login',notice='',teamChoices=[],teamChoice=null,choiceQuery='',choiceConference='',choiceAvailable=true,resultDraft=null,gameOptions=[],h2hMeta={ready:false,results:[]},marketRows=[],marketStatus='idle',marketContext='',marketRequest=null,entryError='';
 for(const r of ['joinleague','createleague','selectteam','claimreview','result','resultreview','addgame','office','market','explore','advanced'])routes.add(r);
 const nativeReadingContent=content;
