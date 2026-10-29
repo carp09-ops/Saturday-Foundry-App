@@ -9987,7 +9987,7 @@ $("newSeasonBtn").onclick=async()=>{
  const summary=assignments.map(a=>{const c=coaches.find(x=>String(x.person_id)===a.person_id),t=teamChoices.find(x=>String(x.team_id)===a.team_id);return (c?.coach_name||"Coach")+" → "+(t?.team_name||"Team")}).join("\\n");
  if(!confirm("Confirm Season "+(Number(S.season_number||0)+1)+" assignments:\\n"+summary+"\\n\\nThis will complete the current season and create the next season."))return;
  try{btn.disabled=true;msg($("seasonAdminMessage"),"Creating next season with confirmed programs…");
- const sessionData=session();await req("/rest/v1/rpc/create_next_season_with_assignments",{method:"POST",token:sessionData.access_token,body:{p_dynasty_id:D.dynasty_id,p_year:year,p_assignments:assignments}});
+ const sessionData=session();await req("/rest/v1/rpc/create_next_season_with_programs",{method:"POST",token:sessionData.access_token,body:{p_dynasty_id:D.dynasty_id,p_year:year,p_assignments:assignments}});
  msg($("seasonAdminMessage"),"Next season created with confirmed programs.","success");dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)))}catch(e){msg($("seasonAdminMessage"),e.message||String(e),"error")}finally{btn.disabled=false}
 };
 $("setWeekBtn").onclick=async()=>{
