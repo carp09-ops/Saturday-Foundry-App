@@ -11,7 +11,7 @@ test('Compact mobile navigation remains in the source and both generated app pag
   const compatibility = read('foundry.html');
   const workflows = read('assets/graphite/workflows.js');
   const version = JSON.parse(read('package.json')).version;
-  assert.match(version, /^10\.1\.\d+$/);
+  assert.match(version, /^10\.1\.\d+(?:-beta\.\d+)?$/);
   assert(index.includes(`<meta name="sf-version" content="${version}">`), 'Generated build version must match package.json');
   assert.equal(index, compatibility, 'Both entry points must stay in sync.');
   assert(index.includes(css), 'Generated page must include source CSS so builds cannot erase the fix.');
@@ -61,7 +61,7 @@ test('iOS installed app avoids deprecated black-translucent status bar geometry'
  const index=read('index.html');
  const compatibility=read('foundry.html');
  const version=JSON.parse(read('package.json')).version;
- assert.equal(version,'10.1.5');
+ assert.match(version,/^10\.1\.\d+(?:-beta\.\d+)?$/);
  assert.equal(index,compatibility,'Both installed app entry points must use the same metadata');
  for(const source of [builder,index,compatibility]){
    assert.doesNotMatch(source,/apple-mobile-web-app-status-bar-style/);
@@ -70,8 +70,28 @@ test('iOS installed app avoids deprecated black-translucent status bar geometry'
    assert.match(source,/viewport-fit=cover/);
  }
  assert.match(index,/<meta name="theme-color" content="#24262B">/);
- assert.match(index,/<meta name="sf-version" content="10\.1\.5">/);
- assert.match(index,/const SITE_VERSION='10\.1\.5'/);
+ assert(index.includes(`<meta name="sf-version" content="${version}">`));
+ assert(index.includes(`const SITE_VERSION='${version}'`));
  assert.match(index,/html\.sf-standalone \.bottomnav/);
  assert.match(read('manifest.webmanifest'),/"display": "standalone"/);
+});
+
+
+test('standalone Foundry ribbon is above the dock, gold on graphite and noninteractive',()=>{
+ const css=read('assets/graphite/responsive.css');
+ const js=read('assets/graphite/workflows.js');
+ const entry=read('index.html');
+ const compatibility=read('foundry.html');
+ assert.equal(entry,compatibility);
+ assert(js.includes('class="sf-bottom-ribbon" role="note"'), 'Ribbon should render with the five-tab navigation');
+ assert(js.indexOf('class="sf-bottom-ribbon"')<js.indexOf('class="bottomnav"'), 'Ribbon must precede dock in markup');
+ assert(css.includes('.sf-bottom-ribbon{display:none}'), 'Normal Safari and desktop should not show ribbon');
+ assert(css.includes('html.sf-standalone .sf-bottom-ribbon{'), 'Only installed app should show it');
+ assert(css.includes('bottom:calc(52px + var(--sf-dock-safe-bottom,0px))'), 'Place ribbon immediately above safe-area dock');
+ assert(css.includes('pointer-events:none'), 'Ribbon must never obstruct navigation');
+ assert(css.includes('border-top:1px solid #A88E54')&&css.includes('background:linear-gradient'), 'Use graphite and gold rather than white');
+ assert(css.includes('html.sf-standalone body{background:#24262B!important}'), 'Paint available underlay in graphite');
+ assert(css.includes('padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))'), 'Keep scrolling content clear of banner');
+ assert(entry.includes('Your dynasty, forged on Saturdays'));
+ assert(entry.includes(css),'Generated release must include banner source');
 });
