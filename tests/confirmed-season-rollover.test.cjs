@@ -18,6 +18,7 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   'create table public.season_programs(id uuid primary key default gen_random_uuid(),dynasty_id uuid,season_id uuid references public.seasons(id),team_id uuid references public.teams(id),active boolean default true,conference_override text,unique(season_id,team_id));',
   'create table public.program_memberships(id uuid primary key default gen_random_uuid(),season_program_id uuid references public.season_programs(id),person_id uuid,role text,dynasty_id uuid,season_id uuid,unique(season_program_id,person_id));',
   'create table public.dynasty_settings(dynasty_id uuid primary key,settings jsonb,updated_at timestamptz);',
+  'create table public.coach_program_moves(id uuid primary key default gen_random_uuid(),dynasty_id uuid,season_id uuid,person_id uuid,from_season_program_id uuid,from_team_id uuid,to_season_program_id uuid,to_team_id uuid,reason text,moved_by uuid,moved_at timestamptz default now());',
   'create function public.create_next_season(uuid,integer,boolean) returns uuid language sql as $$select null::uuid$$;',
   'grant execute on function public.create_next_season(uuid,integer,boolean) to authenticated;'
  ].join('\n'));
@@ -51,6 +52,12 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   assert.equal(conference,'American');
   assert.equal((await db.query('select status from seasons where id=$1',[id(106)])).rows[0].status,'completed');
   assert.equal((await db.query('select status from seasons where id=$1',[id(203)])).rows[0].status,'active');
+  const moves=(await db.query('select person_id,from_team_id,to_team_id from coach_program_moves where season_id=$1 order by person_id',[next])).rows;
+  assert.deepEqual(moves,[
+    {person_id:id(401),from_team_id:id(101),to_team_id:id(104)},
+    {person_id:id(402),from_team_id:id(102),to_team_id:id(105)}
+  ],'Both coach transfers must be recorded; staying with a program must not create a move');
+
   assert.equal((await db.query('select count(*)::int n from program_memberships where season_id=$1',[id(106)])).rows[0].n,3);
   const settings=(await db.query('select settings from dynasty_settings where dynasty_id=$1',[id(1)])).rows[0].settings;
   assert.equal(settings.active_week,1);assert.equal(settings.keep,'yes');

@@ -92,6 +92,18 @@ begin
   if (select count(*) from public.program_memberships where season_id=v_new)<>v_coaches then
     raise exception 'Incomplete coach assignments; season change cancelled';
   end if;
+  -- Record program transfers in the existing coaching carousel / career ledger.
+  -- Staying with the same school does not create a transfer event.
+  insert into public.coach_program_moves(
+    dynasty_id,season_id,person_id,from_season_program_id,from_team_id,
+    to_season_program_id,to_team_id,reason,moved_by)
+    select p_dynasty_id,v_new,a.person_id,oldsp.id,oldsp.team_id,
+      newsp.id,a.team_id,'Season rollover',auth.uid()
+    from jsonb_to_recordset(p_assignments) as a(person_id uuid,team_id uuid)
+    join public.program_memberships oldpm on oldpm.person_id=a.person_id and oldpm.season_id=v_old
+    join public.season_programs oldsp on oldsp.id=oldpm.season_program_id and oldsp.active
+    join public.season_programs newsp on newsp.season_id=v_new and newsp.team_id=a.team_id
+    where oldsp.team_id is distinct from a.team_id;
   insert into public.dynasty_settings(dynasty_id,settings,updated_at)
     values(p_dynasty_id,jsonb_build_object('active_week',1),now())
     on conflict(dynasty_id) do update
