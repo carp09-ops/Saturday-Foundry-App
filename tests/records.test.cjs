@@ -8,7 +8,7 @@ const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 
 test('record book is routed and linked from explore', () => {
   const league = read('assets/graphite/league.js');
-  assert(league.includes("'records']"), 'Records route should be registered');
+  assert(league.includes("'records',"), 'Records route should be registered');
   assert(league.includes("case'records':return recordsPage();"), 'Content should route to the record book');
   assert(league.includes('function recordBookGames('), 'Eligibility/dedupe builder should exist');
   const wf = read('assets/graphite/workflows.js');
