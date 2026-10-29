@@ -54,3 +54,24 @@ test('standalone bottom inset is capped so the Home Screen menu cannot become ov
  assert.equal(dockHeight(20),72);
  assert.equal(dockHeight(0),52);
 });
+
+
+test('iOS installed app avoids deprecated black-translucent status bar geometry',()=>{
+ const builder=read('tools/build-site.py');
+ const index=read('index.html');
+ const compatibility=read('foundry.html');
+ const version=JSON.parse(read('package.json')).version;
+ assert.equal(version,'10.1.5');
+ assert.equal(index,compatibility,'Both installed app entry points must use the same metadata');
+ for(const source of [builder,index,compatibility]){
+   assert.doesNotMatch(source,/apple-mobile-web-app-status-bar-style/);
+   assert.doesNotMatch(source,/black-translucent/);
+   assert.match(source,/apple-mobile-web-app-capable/);
+   assert.match(source,/viewport-fit=cover/);
+ }
+ assert.match(index,/<meta name="theme-color" content="#24262B">/);
+ assert.match(index,/<meta name="sf-version" content="10\.1\.5">/);
+ assert.match(index,/const SITE_VERSION='10\.1\.5'/);
+ assert.match(index,/html\.sf-standalone \.bottomnav/);
+ assert.match(read('manifest.webmanifest'),/"display": "standalone"/);
+});
