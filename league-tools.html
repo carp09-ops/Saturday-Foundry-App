@@ -5451,7 +5451,7 @@ img.sf-dark-logo{
 </style>
 <link rel="stylesheet" href="assets/foundry-utilities.css?v=9.10.16">
 <link rel="stylesheet" href="assets/app-consistency.css?v=9.10.16">
-<meta name="sf-version" content="10.1.10"></head>
+<meta name="sf-version" content="10.1.11"></head>
 <body>
 <div id="cdhqLoader" role="status" aria-live="polite" aria-label="Saturday Foundry is loading">
   <div class="cdhq-loader-stage">
@@ -9202,7 +9202,17 @@ window.sfLogoFallback=function(img){
  }catch(e){}
 };
 function intelProgramFor(c){
- return (state.programs||[]).find(x=>String(x.person_id)===String(c.person_id))||(state.myPrograms||[]).find(x=>String(x.person_id)===String(c.person_id))||null;
+ const rows=[...(state.programs||[]),...(state.myPrograms||[])].filter(x=>String(x.person_id)===String(c.person_id));
+ if(!rows.length)return null;
+ try{
+  const sid=(typeof S!=='undefined'&&S)?S.season_id:null;
+  if(sid){const cur=rows.find(x=>String(x.season_id)===String(sid));if(cur)return cur}
+  const numbered=rows.filter(x=>x.season_number!=null);
+  if(numbered.length)return numbered.reduce((a,b)=>Number(b.season_number)>Number(a.season_number)?b:a);
+  const act=rows.find(x=>x.active);
+  if(act)return act;
+ }catch(e){}
+ return rows[0];
 }
 function intelLogoHTML(c,team){
  const p=intelProgramFor(c);
@@ -17293,5 +17303,5 @@ body.sf-session-recovering #siteHeader .canonical-controls,body.sf-session-recov
 <link rel="stylesheet" href="assets/rivalry-center.css?v=9.10.16">
 <script src="assets/rivalry-center.js?v=9.10.16"></script>
 
-<link rel="stylesheet" href="assets/graphite/league-tools.css?v=10.1.10">
-<script src="assets/graphite/league-tools.js?v=10.1.10"></script>
+<link rel="stylesheet" href="assets/graphite/league-tools.css?v=10.1.11">
+<script src="assets/graphite/league-tools.js?v=10.1.11"></script>
