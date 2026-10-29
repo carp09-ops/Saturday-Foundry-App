@@ -6,7 +6,7 @@ const SITE_VERSION='__SF_VERSION__',SITE_BADGE='__SF_BADGE__';
 const BRAND_ASSET='assets/graphite/brand/';
 const WRITE_RPC=new Set(['claim_team','submit_game_result','claim_dynasty_invite','create_dynasty','create_my_schedule_game','create_my_schedule_bye','validate_h2h_result','set_dynasty_active_week','create_dynasty_invite','revoke_dynasty_invite','set_coach_stream','commissioner_change_coach_program','create_next_season_with_programs','release_team','create_heisman_award','delete_heisman_award','generate_dynasty_vegas_week','generate_dynasty_vegas_line']);
 const ALLOWED_RPC=new Set([...WRITE_RPC,'get_dynasty_coaches','get_dynasty_active_week','get_coach_career_stops','get_team_selection','get_schedule_team_options','get_h2h_results','get_dynasty_vegas','list_dynasty_invites','list_heisman_awards','get_coach_program_moves']);
-let mutationPending=false,authMode='login',notice='',teamChoices=[],teamChoice=null,choiceQuery='',choiceConference='',choiceAvailable=true,resultDraft=null,gameOptions=[],h2hMeta={ready:false,results:[]},marketRows=[],marketStatus='idle',marketContext='',marketRequest=null,entryError='';
+let mutationPending=false,authMode='login',notice='',teamChoices=[],teamChoice=null,choiceQuery='',choiceConference='',choiceAvailable=true,resultDraft=null,gameOptions=[],h2hMeta={ready:false,results:[]},marketRows=[],marketStatus='idle',marketContext='',marketRequest=null,entryError='',marketAutoGenFor='';
 for(const r of ['joinleague','createleague','selectteam','claimreview','result','resultreview','addgame','office','market','explore','advanced'])routes.add(r);
 const nativeReadingContent=content;
 const nativeTeam=team;
@@ -49,7 +49,7 @@ async function writeAction(name,body,form,after){
 function clearNotice(){notice='';const n=$('globalNotice');if(n)n.remove()}
 async function afterSeasonLoaded(){
  const key=context(),serial=loadSerial;h2hMeta={ready:false,results:[]};marketRows=[];marketStatus='idle';marketContext='';teamChoice=null;resultDraft=null;officeData=null;officeLoadedFor='';
- loadMarketLines();
+ loadMarketLines().then(()=>maybeAutoGenerateLines());
  try{const meta=await readRpc('get_h2h_results',{p_dynasty_id:dynasty.dynasty_id,p_season_id:season.season_id});if(serial!==loadSerial||key!==context())return;h2hMeta=meta?.ready?meta:{ready:false,results:[]};if(route==='advanced'||mutationPending||document.querySelector('#mainContent form')||$('detailSheet')?.open)return;const top=$('screenViewport')?.scrollTop;render();if($('screenViewport'))$('screenViewport').scrollTop=top||0}catch{}
 }
 async function refreshCurrent(target='home',gameId=null){const d=dynasty?.dynasty_id;if(!d)return;await loadDynasty(d);if(loadError){notice='Saved successfully. Reload the league to see the updated data.';render();return}if(gameId)selectedGame=gameId;route=target;historyReplace();render()}
@@ -214,6 +214,19 @@ async function loadMarketLines(){
  finally{if(marketRequest===request)marketRequest=null}
  if(key===context()&&serial===loadSerial){refreshLineCards();if(route==='market')render()}
  })();return request.promise;
+}
+async function maybeAutoGenerateLines(){
+ if(!canManage()||!season?.is_active||mutationPending||marketStatus!=='loaded')return;
+ const key=context()+':w'+week;
+ if(marketAutoGenFor===key)return;marketAutoGenFor=key;
+ const missing=games().filter(g=>{if(g.is_bye||Number(g.week_number)!==Number(week))return false;const v=marketLineFor(g);return !v||(lineNumber(v.spread_home)===null&&lineNumber(v.total_line)===null)});
+ if(!missing.length)return;
+ try{
+  await req('/rest/v1/rpc/generate_dynasty_vegas_week',{method:'POST',token:session()?.access_token,body:{p_dynasty_id:dynasty.dynasty_id,p_season_id:season.season_id,p_week_number:Number(week)},retry:0});
+  if(key!==context()+':w'+week)return;
+  marketStatus='idle';marketContext='';marketRequest=null;
+  await loadMarketLines();
+ }catch{/* Lines can still be generated manually from the Market Desk. */}
 }
 async function openMarket(){go('market');await loadMarketLines()}
 

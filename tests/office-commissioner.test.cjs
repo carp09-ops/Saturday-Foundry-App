@@ -30,8 +30,7 @@ test('commissioner desk is native: allowlists, handlers, no admin embed callers'
   assert(wf.includes('A school can only be assigned to one coach'), 'Rollover should reject duplicate schools');
 });
 
-test('fillOfficeData renders invites, moves and rollover selectors', () => {
-  const wf = read('assets/graphite/workflows.js');
+test('fillOfficeData renders invites, moves and rollover selectors', () => {  const wf = read('assets/graphite/workflows.js');
   const src = wf.slice(wf.indexOf('let officeData='), wf.indexOf('async function revokeInvite'));
   const dom = new JSDOM('<!doctype html><body><div id="officeInvites"></div><div id="officeHeismans"></div><div id="officeMoves"></div><select id="moveTeam"></select><div id="rolloverPanel"></div></body>', { runScripts: 'outside-only' });
   const w = dom.window;
@@ -61,4 +60,42 @@ test('fillOfficeData renders invites, moves and rollover selectors', () => {
   assert(roll, 'Rollover selector should render for the active coach');
   assert([...roll.options].some(o => o.text.startsWith('Stay · Florida')), 'Rollover should offer Stay for the current program');
   assert([...roll.options].some(o => o.text.startsWith('Change · Georgia')), 'Rollover should offer Change for other programs');
+});
+
+test('auto-generation fills missing active-week lines once, commissioners only', async () => {
+  const wf = read('assets/graphite/workflows.js');
+  const src = wf.slice(wf.indexOf('async function maybeAutoGenerateLines'), wf.indexOf('async function openMarket'));  
+  const dom = new JSDOM('<!doctype html><body></body>', { runScripts: 'outside-only' });
+  const w = dom.window;
+  w.__calls = [];
+  const calls = w.__calls;
+  w.eval(`
+    var marketStatus='loaded', marketAutoGenFor='', marketContext='x', marketRequest={};
+    var mutationPending=false, week=9;
+    var dynasty={dynasty_id:'d1'}, season={season_id:'s1', is_active:true};
+    var commissioner=true, lined=new Set(['g1']);
+    var canManage=()=>commissioner;
+    var context=()=>'d1:s1';
+    var session=()=>({access_token:'t'});
+    var games=()=>[{id:'g1',week_number:9,is_bye:false},{id:'g2',week_number:9,is_bye:false},{id:'g3',week_number:8,is_bye:false},{id:'g4',week_number:9,is_bye:true}];
+    var marketLineFor=g=>lined.has(g.id)?{spread_home:-3,total_line:45}:null;
+    var lineNumber=v=>v===null||v===undefined||v===''||!Number.isFinite(Number(v))?null:Number(v);
+    var req=async(url,opts)=>{window.__calls.push({url,body:opts.body});return {}};
+    var loadMarketLines=async()=>{};
+    ${src}
+  `);
+  await w.maybeAutoGenerateLines();
+  assert.equal(calls.length, 1, 'One generation call for the week with a missing line');
+  assert(calls[0].url.includes('generate_dynasty_vegas_week'), 'Uses the weekly generation RPC');
+  assert.equal(calls[0].body.p_week_number, 9, 'Generates the active week');
+  await w.maybeAutoGenerateLines();
+  assert.equal(calls.length, 1, 'Does not generate twice for the same week');
+  // All lines present: no generation.
+  w.eval(`lined=new Set(['g1','g2']); marketAutoGenFor='';`);
+  await w.maybeAutoGenerateLines();
+  assert.equal(calls.length, 1, 'No generation when every active-week game has a line');
+  // Members never trigger generation.
+  w.eval(`lined=new Set(['g1']); marketAutoGenFor=''; commissioner=false;`);
+  await w.maybeAutoGenerateLines();
+  assert.equal(calls.length, 1, 'No generation for non-commissioners');
 });
