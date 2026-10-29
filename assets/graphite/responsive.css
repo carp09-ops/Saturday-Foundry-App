@@ -178,3 +178,6 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
 @media (prefers-reduced-motion: reduce){
  html.sf-standalone .sf-ticker-card{transition:none}
 }
+.office-list{display:grid}
+.office-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line,#2b3038)}
+.office-list-row .muted{font-size:12px}
