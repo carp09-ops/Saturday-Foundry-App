@@ -31,7 +31,7 @@ begin
  where pm.id is null or sp.id is null or a.team_id is null
  ) then raise exception 'Assignments must match active coaches'; end if;
  if exists(select 1 from jsonb_to_recordset(p_assignments) as a(person_id uuid,team_id uuid)
- left join public.teams t on t.id=a.team_id where t.id is null) then raise exception 'Unknown destination team'; end if;
+ left join public.teams t on t.id=a.team_id and t.active=true and coalesce(t.selectable,true)=true where t.id is null) then raise exception 'Unknown destination team'; end if;
  v_next:=v_next+1;
  update public.seasons set status='completed',completed_at=coalesce(completed_at,now()) where id=v_old;
  insert into public.seasons(dynasty_id,season_number,year,name,status,started_at)
