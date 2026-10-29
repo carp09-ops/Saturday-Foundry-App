@@ -248,7 +248,7 @@ test('Home shows configured coach streams for both sides, without unsafe or miss
  }];
  const a=await app({coachStreams:streaming,extraGames:extra});t.after(()=>a.w.close());
  await a.w.loadDynasty(D);await tick();
- assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata');
+ assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata: '+JSON.stringify(a.calls.map(c=>c.name))+'; loadError='+a.w.eval('loadError')+'; route='+a.w.eval('route')+'; errors='+JSON.stringify(a.errors));
  const cards=[...a.w.document.querySelectorAll('.sports-card')];
  const links=[...a.w.document.querySelectorAll('.game-stream-link')];
  assert(links.some(l=>l.textContent.includes('Corey')),'featured home card needs Corey stream');
