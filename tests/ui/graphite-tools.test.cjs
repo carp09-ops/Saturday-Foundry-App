@@ -50,22 +50,55 @@ test('real embedded application selects the requested league and archived season
  assert.deepEqual(errors,[]);
 });
 
-test('commissioner shortcut opens the real rollover form and requires confirmation before carrying programs',async t=>{
+test('commissioner rollover requires every active coach to choose a unique program',async t=>{
  const {w,errors}=await createApp('embedded=1&dynasty=d-a&season=d-a-current&view=admin&focus=season');t.after(()=>w.close());
  const scrolls=[];w.HTMLElement.prototype.scrollIntoView=function(){scrolls.push(this)};
+ const oldWrites=[],rpcWrites=[];
+ w.CDHQ_RUNTIME.Data.nextSeason=async(...args)=>{oldWrites.push(args);throw Error('Legacy rollover must never run');};
+ w.CDHQ_RUNTIME.Data.dynastyCoaches=async()=>[
+  {person_id:'corey',coach_name:'Corey',current_season_id:'d-a-current',current_team_id:'texas',current_team_name:'Texas State'},
+  {person_id:'saif',coach_name:'Saif',current_season_id:'d-a-current',current_team_id:'marshall',current_team_name:'Marshall'},
+  {person_id:'retired',coach_name:'Retired coach',current_season_id:'d-a-old',current_team_id:'uconn',current_team_name:'UConn'}
+ ];
+ w.CDHQ_RUNTIME.Data.teamSelection=async()=>[
+  {team_id:'texas',team_name:'Texas State',claimed:true,claimed_by:'Corey'},
+  {team_id:'marshall',team_name:'Marshall',claimed:true,claimed_by:'Saif'},
+  {team_id:'florida',team_name:'Florida',claimed:false},
+  {team_id:'wvu',team_name:'West Virginia',claimed:false}
+ ];
+ w.fetch=async(url,opts)=>{
+  if(String(url).includes('/rpc/create_next_season_with_programs')){
+    rpcWrites.push(JSON.parse(opts.body));return {ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify('new-season')};
+  }
+  throw Error('Unexpected network request: '+url);
+ };
  await w.loadDynastyById('d-a');
  for(let i=0;i<30&&!w.document.documentElement.classList.contains('sf-tools-ready');i++)await tick(w);
  assert.equal(w.document.querySelector('.view.active')?.id,'admin');
  assert(scrolls.includes(w.document.querySelector('#newSeasonBtn').closest('.admin-card')));
- assert.equal(w.document.querySelector('#carryPrograms').checked,true);
- const calls=[];w.CDHQ_RUNTIME.Data.nextSeason=async(...args)=>{calls.push(args);w.eval(`const previous=window.fixtureSeasons;window.fixtureSeasons=d=>d==='d-a'?[{season_id:'d-a-next',season_number:3,status:'active',is_active:true},...previous(d).map(s=>({...s,is_active:false,status:'completed'}))]:previous(d)`);return 'd-a-next'};
  const button=w.document.querySelector('#newSeasonBtn');
- w.confirm=()=>false;await button.onclick();assert.equal(calls.length,0);
- w.confirm=()=>true;w.document.querySelector('#nextSeasonYear').value='1900';await button.onclick();assert.equal(calls.length,0);
- w.document.querySelector('#nextSeasonYear').value='2028';await button.onclick();
- assert.deepEqual(calls,[['d-a',2028,true]]);assert.equal(w.eval('S.season_id'),'d-a-next');
- assert.equal(w.fixtureSeasons('d-b')[0].season_id,'d-b-current');
- assert.equal(w.fixtureSeasons('d-a').find(s=>s.season_id==='d-a-current').status,'completed');
+ assert.match(button.textContent,/Choose next-season teams/);
+ assert(w.document.querySelector('#carryPrograms').closest('label').classList.contains('hidden'));
+ button.click();for(let i=0;i<20&&!w.document.querySelector('#sfProgramRollover');i++)await tick(w);
+ const panel=w.document.querySelector('#sfProgramRollover');
+ assert(panel,'Coach selection panel should open');
+ const selects=[...panel.querySelectorAll('select')];
+ assert.equal(selects.length,2,'historical/retired coach must not be selected');
+ const submit=[...panel.querySelectorAll('button')].find(b=>/Review and start season/.test(b.textContent));
+ submit.click();await tick(w);assert.equal(rpcWrites.length,0,'missing choices block submission');
+ selects[0].value='florida';selects[1].value='florida';
+ submit.click();await tick(w);assert.equal(rpcWrites.length,0,'duplicate selections block submission');
+ selects[1].value='wvu';
+ w.confirm=()=>true;submit.click();
+ for(let i=0;i<30&&!rpcWrites.length;i++)await tick(w);
+ assert.equal(oldWrites.length,0,'legacy auto-carry handler must never run');
+ assert.equal(rpcWrites.length,1);
+ assert.equal(rpcWrites[0].p_dynasty_id,'d-a');
+ assert.equal(rpcWrites[0].p_expected_season_id,'d-a-current');
+ assert.deepEqual(rpcWrites[0].p_assignments,[
+   {person_id:'corey',team_id:'florida',confirmed:true},
+   {person_id:'saif',team_id:'wvu',confirmed:true}
+ ]);
  assert.deepEqual(errors,[]);
 });
 
