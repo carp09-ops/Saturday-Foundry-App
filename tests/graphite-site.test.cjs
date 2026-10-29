@@ -247,6 +247,7 @@ test('Home shows configured coach streams for both sides, without unsafe or miss
   opponent_person_id:PETER,primary_side:'away',home_away:'away',points_for:null,points_against:null
  }];
  const a=await app({coachStreams:streaming,extraGames:extra});t.after(()=>a.w.close());
+ await a.w.loadDynasty(D);await tick();
  assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata');
  const cards=[...a.w.document.querySelectorAll('.sports-card')];
  const links=[...a.w.document.querySelectorAll('.game-stream-link')];
