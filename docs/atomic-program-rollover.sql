@@ -18,7 +18,7 @@ begin
  select count(*) into v_actual from jsonb_array_elements(p_assignments) a;
  if v_actual<>v_expected or exists(
    select 1 from jsonb_array_elements(p_assignments) a
-   where not (a ? 'person_id' and a ? 'team_id')
+   where not (a ? 'person_id' and a ? 'team_id' and a->>'confirmed' = 'true')
  ) then raise exception 'Every active coach must confirm a program'; end if;
  if exists(select 1 from jsonb_to_recordset(p_assignments) as a(person_id uuid,team_id uuid)
  group by person_id having count(*)>1) or exists(
