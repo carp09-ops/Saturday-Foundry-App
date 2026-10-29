@@ -1,4 +1,14 @@
+# Home Screen web apps launch at /, not necessarily /index.html.
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/foundry.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.webmanifest
   Cache-Control: no-cache, no-store, must-revalidate
 
 /assets/*

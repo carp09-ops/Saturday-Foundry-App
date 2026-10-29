@@ -61,10 +61,22 @@ html,body{max-width:100%;overflow-x:hidden}
  .entry-actions button{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere}
 }
 
-/* 10.1.1: compact five-tab iPhone navigation; preserve accessible touch targets. */
+/* 10.1.2: compact five-tab iPhone navigation; preserve accessible touch targets. */
 @media(max-width:700px){
  .bottomnav{box-sizing:border-box;width:100%;max-width:100%;padding:2px max(8px,env(safe-area-inset-right,0px)) max(5px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:0}
  .bottomnav button{min-width:0;min-height:44px;gap:2px;padding:5px 1px 2px;font-size:10px;line-height:1.1}
  .bottomnav .icon{width:18px;height:18px}
  .bottomnav button.on:before{height:2px;width:20px;top:-3px}
 }
+
+/* 10.1.2: installed iOS Home Screen apps must use the same compact dock as Safari. */
+html.sf-standalone .bottomnav{
+  box-sizing:border-box;width:100%;max-width:100%;flex-shrink:0;
+  padding:2px max(8px,env(safe-area-inset-right,0px)) max(5px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:0;
+}
+html.sf-standalone .bottomnav button{
+  box-sizing:border-box;flex:1 1 0;min-width:0;min-height:44px;height:44px;max-height:44px;
+  padding:5px 1px 2px;gap:2px;font-size:10px;line-height:1.1;
+}
+html.sf-standalone .bottomnav .icon{width:18px;height:18px}
+html.sf-standalone .bottomnav button.on:before{height:2px;width:20px;top:-3px}
