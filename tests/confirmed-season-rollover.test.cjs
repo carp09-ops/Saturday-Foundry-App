@@ -18,7 +18,7 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   'create table public.season_programs(id uuid primary key default gen_random_uuid(),dynasty_id uuid,season_id uuid references public.seasons(id),team_id uuid references public.teams(id),active boolean default true,conference_override text,unique(season_id,team_id));',
   'create table public.program_memberships(id uuid primary key default gen_random_uuid(),season_program_id uuid references public.season_programs(id),person_id uuid,role text,dynasty_id uuid,season_id uuid,unique(season_program_id,person_id));',
   'create table public.dynasty_settings(dynasty_id uuid primary key,settings jsonb,updated_at timestamptz);',
-  'create function public.create_next_season(uuid,integer,boolean) returns uuid language sql as $select null::uuid$;',
+  'create function public.create_next_season(uuid,integer,boolean) returns uuid language sql as $$select null::uuid$$;',
   'grant execute on function public.create_next_season(uuid,integer,boolean) to authenticated;'
  ].join('\n'));
  await db.exec(migration);
