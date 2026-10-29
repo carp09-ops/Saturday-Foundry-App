@@ -61,7 +61,7 @@ html,body{max-width:100%;overflow-x:hidden}
  .entry-actions button{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere}
 }
 
-/* 10.1.1: compact five-tab iPhone navigation; preserve accessible touch targets. */
+/* 10.1.2: compact five-tab iPhone navigation; preserve accessible touch targets. */
 @media(max-width:700px){
  .bottomnav{box-sizing:border-box;width:100%;max-width:100%;padding:2px max(8px,env(safe-area-inset-right,0px)) max(5px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));gap:0}
  .bottomnav button{min-width:0;min-height:44px;gap:2px;padding:5px 1px 2px;font-size:10px;line-height:1.1}
