@@ -22,3 +22,17 @@ test('Compact mobile navigation remains in the source and both generated app pag
   assert.match(css, /env\(safe-area-inset-bottom,0px\)/);
   assert.match(workflows, /\['Home','home'\],\['Scores','scores'\],\['Teams','teams'\],\['Standings','standings'\],\['Legacy','legacy'\]/);
 });
+
+
+test('standalone Home Screen dock is pinned to the viewport and remains compact',()=>{
+ const css=read('assets/graphite/responsive.css');
+ const entry=read('index.html');
+ const workflows=read('assets/graphite/workflows.js');
+ assert.match(css,/html\.sf-standalone \.site-app\{position:fixed;inset:0;/);
+ assert.match(css,/html\.sf-standalone \.bottomnav\{position:fixed!important;/);
+ assert.match(css,/bottom:0;z-index:60;/);
+ assert.match(css,/html\.sf-standalone \.bottomnav button\{flex:1 1 0;max-width:110px;min-width:0;min-height:44px;height:44px;/);
+ assert.match(css,/padding-bottom:calc\(56px \+ env\(safe-area-inset-bottom,0px\)\)/);
+ assert.match(workflows,/navigator\.standalone===true/);
+ assert.match(entry,/html\.sf-standalone \.bottomnav/);
+});
