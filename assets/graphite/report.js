@@ -72,17 +72,16 @@ const sfTicker={items:[],idx:0,timer:null,swap:null};
 function tickerCardHTML(it){return `<b>${esc(it.k)}</b><span class="sf-tk-view"><span class="sf-tk-inner">${esc(it.t)}</span></span>`}
 function tickerFit(){
  const card=document.querySelector('.sf-bottom-ribbon .sf-ticker-card');
- if(!card||!card.parentElement)return;
- const stage=card.parentElement;
+ if(!card)return;
+ const view=card.querySelector('.sf-tk-view'),inner=card.querySelector('.sf-tk-inner');
+ if(!view||!inner)return;
  card.classList.remove('sf-tick-scroll');
  card.style.removeProperty('--sf-tick-shift');
  card.style.removeProperty('--sf-tick-dur');
  let size=10;card.style.fontSize=size+'px';
- while(card.scrollWidth>stage.clientWidth&&size>8){size-=0.5;card.style.fontSize=size+'px'}
- if(card.scrollWidth<=stage.clientWidth)return;
+ while(inner.scrollWidth>view.clientWidth&&size>8){size-=0.5;card.style.fontSize=size+'px'}
+ if(inner.scrollWidth<=view.clientWidth)return;
  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const view=card.querySelector('.sf-tk-view'),inner=card.querySelector('.sf-tk-inner');
- if(!view||!inner)return;
  card.style.fontSize='9px';
  card.classList.add('sf-tick-scroll');
  const shift=inner.scrollWidth-view.clientWidth+6;

@@ -16,9 +16,9 @@ test('Compact mobile navigation remains in the source and both generated app pag
   assert.equal(index, compatibility, 'Both entry points must stay in sync.');
   assert(index.includes(css), 'Generated page must include source CSS so builds cannot erase the fix.');
   assert.match(css, /@media\(max-width:700px\)\{\s*\.bottomnav\{box-sizing:border-box;width:100%/);
-  assert.match(css, /\.bottomnav button\{min-width:0;min-height:44px;/);
-  assert.match(css, /\.bottomnav \.icon\{width:18px;height:18px\}/);
-  assert.match(css, /\.bottomnav button\.on:before\{height:2px;width:20px;/);
+  assert.match(css, /\.bottomnav button\{min-width:0;min-height:52px;/);
+  assert.match(css, /\.bottomnav \.icon\{width:24px;height:24px\}/);
+  assert.match(css, /\.bottomnav button\.on:before\{height:2px;width:26px;/);
   assert.match(css, /env\(safe-area-inset-bottom,0px\)/);
   assert.match(workflows, /\['Home','home'\],\['Scores','scores'\],\['Teams','teams'\],\['Standings','standings'\],\['Legacy','legacy'\]/);
 });
@@ -31,7 +31,7 @@ test('standalone Home Screen dock is pinned to the viewport and remains compact'
  assert.match(css,/html\.sf-standalone \.site-app\{position:fixed;inset:0;/);
  assert.match(css,/html\.sf-standalone \.bottomnav\{position:fixed!important;/);
  assert.match(css,/bottom:0;z-index:60;/);
- assert.match(css,/html\.sf-standalone \.bottomnav button\{flex:1 1 0;max-width:110px;min-width:0;min-height:44px;height:44px;/);
+ assert.match(css,/html\.sf-standalone \.bottomnav button\{flex:1 1 0;max-width:110px;min-width:0;min-height:52px;height:52px;/);
  assert.match(css,/padding-bottom:calc\(56px \+ env\(safe-area-inset-bottom,0px\)\)/);
  assert.match(workflows,/navigator\.standalone===true/);
  assert.match(entry,/html\.sf-standalone \.bottomnav/);
@@ -42,11 +42,11 @@ test('standalone bottom inset is capped so the Home Screen menu cannot become ov
  const css=read('assets/graphite/responsive.css');
  const index=read('index.html');
  assert.match(css,/--sf-dock-safe-bottom:clamp\(0px,env\(safe-area-inset-bottom,0px\),30px\)/);
- assert.match(css,/height:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)!important/);
- assert.match(css,/max-height:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)!important/);
+ assert.match(css,/height:calc\(60px \+ var\(--sf-dock-safe-bottom\)\)!important/);
+ assert.match(css,/max-height:calc\(60px \+ var\(--sf-dock-safe-bottom\)\)!important/);
  assert.match(css,/min-height:0!important/);
- assert.match(css,/padding-bottom:calc\(52px \+ var\(--sf-dock-safe-bottom\)\)/);
- assert.match(css,/html\.sf-standalone \.bottomnav button\{[\s\S]*?min-height:44px;max-height:44px;height:44px/);
+ assert.match(css,/padding-bottom:calc\(60px \+ var\(--sf-dock-safe-bottom\)\)/);
+ assert.match(css,/html\.sf-standalone \.bottomnav button\{[\s\S]*?min-height:52px;max-height:52px;height:52px/);
  assert(index.includes(css),'Generated Home Screen app must retain capped safe area rules');
  // A falsely reported 100px inset must collapse to a 30px inset (82px dock).
  const dockHeight=inset=>52+Math.max(0,Math.min(inset,30));
@@ -87,11 +87,11 @@ test('standalone Foundry ribbon is above the dock, crimson on graphite and nonin
  assert(js.indexOf('class="sf-bottom-ribbon"')<js.indexOf('class="bottomnav"'), 'Ribbon must precede dock in markup');
  assert(css.includes('.sf-bottom-ribbon{display:none}'), 'Normal Safari and desktop should not show ribbon');
  assert(css.includes('html.sf-standalone .sf-bottom-ribbon{'), 'Only installed app should show it');
- assert(css.includes('bottom:calc(52px + var(--sf-dock-safe-bottom,0px))'), 'Place ribbon immediately above safe-area dock');
+ assert(css.includes('bottom:calc(60px + var(--sf-dock-safe-bottom,0px))'), 'Place ribbon immediately above safe-area dock');
  assert(css.includes('pointer-events:none'), 'Ribbon must never obstruct navigation');
  assert(css.includes('border-top:1px solid #C72D40')&&css.includes('background:linear-gradient'), 'Use graphite and crimson rather than white');
  assert(css.includes('html.sf-standalone body{background:#24262B!important}'), 'Paint available underlay in graphite');
- assert(css.includes('padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))'), 'Keep scrolling content clear of banner');
+ assert(css.includes('padding-bottom:calc(94px + var(--sf-dock-safe-bottom,0px))'), 'Keep scrolling content clear of banner');
  assert(entry.includes('Your dynasty, forged on Saturdays'));
  assert(entry.includes(css),'Generated release must include banner source');
  const report=read('assets/graphite/report.js');

@@ -27,14 +27,14 @@ test('Safari and installed iOS standalone modes are identified separately',()=>{
   }
 });
 
-test('installed iPhone dock matches compact Safari dimensions and retains 44px touch targets',()=>{
+test('installed iPhone dock matches compact Safari dimensions and retains 52px touch targets',()=>{
   const css=read('assets/graphite/responsive.css');
   const html=read('index.html');
   const compatibility=read('foundry.html');
   assert.match(css,/html\.sf-standalone \.bottomnav\{/);
-  assert.match(css,/html\.sf-standalone \.bottomnav button\{[^}]*min-height:44px;height:44px;max-height:44px/);
-  assert.match(css,/html\.sf-standalone \.bottomnav \.icon\{width:18px;height:18px\}/);
-  assert.match(css,/html\.sf-standalone \.bottomnav button\.on:before\{height:2px;width:20px/);
+  assert.match(css,/html\.sf-standalone \.bottomnav button\{[^}]*min-height:52px;height:52px;max-height:52px/);
+  assert.match(css,/html\.sf-standalone \.bottomnav \.icon\{width:24px;height:24px\}/);
+  assert.match(css,/html\.sf-standalone \.bottomnav button\.on:before\{height:2px;width:26px/);
   assert.match(css,/safe-area-inset-bottom/);
   assert(html.includes('sfStandaloneMode'),'Bundled app must detect Home Screen mode');
   assert(html.includes('html.sf-standalone .bottomnav button'),'Bundled CSS must include dock override');
