@@ -1,6 +1,6 @@
 -- Saturday Foundry: atomic rollover with explicitly confirmed coach programs.
 -- Stage/test this in a disposable database before applying to production.
--- Existing create_next_season RPC is preserved for backward compatibility.
+-- The old carry-forward RPC is disabled for browser users to prevent bypassing confirmation.
 create or replace function public.create_next_season_with_programs(
   p_dynasty_id uuid,
   p_expected_season_id uuid,
@@ -103,3 +103,6 @@ $rollover$;
 
 revoke all on function public.create_next_season_with_programs(uuid,uuid,integer,jsonb) from public,anon;
 grant execute on function public.create_next_season_with_programs(uuid,uuid,integer,jsonb) to authenticated;
+
+-- Block the old auto-carry endpoint for signed-in clients. Cached legacy UI fails safely.
+revoke execute on function public.create_next_season(uuid,integer,boolean) from public,anon,authenticated;
