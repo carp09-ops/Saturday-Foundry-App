@@ -28,6 +28,15 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshRep
    standings snapshots for the standalone ribbon. Every section is guarded:
    a ticker failure must never break rendering, so any error falls back to
    the static brand line. */
+function upsetLine(g){
+ const rankOf=id=>{const r=id===g.team_id?g.team_rank:id===g.opponent_team_id?g.opponent_rank:null;const n=Number(r);return Number.isFinite(n)&&n>=1&&n<=25?n:null};
+ const awayWon=Number(g.a)>Number(g.h);
+ const winner=awayWon?g.away:g.home,loser=awayWon?g.home:g.away;
+ const wScore=awayWon?g.a:g.h,lScore=awayWon?g.h:g.a;
+ const lr=rankOf(awayWon?g.homeId:g.awayId),wr=rankOf(awayWon?g.awayId:g.homeId);
+ if(lr==null||(wr!=null&&wr<lr))return null;
+ return `${winner} ${wScore}, #${lr} ${loser} ${lScore}`;
+}
 function tickerItems(){
  const items=[];
  try{ /* Latest finals across the whole league, user and CPU teams alike. */
@@ -38,7 +47,7 @@ function tickerItems(){
    const users=new Set((model.programs||[]).filter(p=>p.person_id).map(p=>String(p.team_id)));
    const heat=g=>((users.has(String(g.awayId))||users.has(String(g.homeId)))?2:0)+(['national_championship','conference_championship','playoff','cfp'].includes(g.game_type)?1:0);
    const rows=finals.filter(g=>Number(g.week_number)===wk).sort((x,y)=>heat(y)-heat(x));
-   for(const g of rows.slice(0,10))items.push({k:'Final',t:`${g.away} ${g.a}, ${g.home} ${g.h}${g.overtime?' · OT':''}`});
+   const upsets=[],plain=[];for(const g of rows){const u=upsetLine(g);if(u)upsets.push({k:'Upset alert',t:u});else plain.push(g)}for(const u of upsets)items.push(u);for(const g of plain.slice(0,Math.max(0,10-upsets.length)))items.push({k:'Final',t:`${g.away} ${g.a}, ${g.home} ${g.h}${g.overtime?' · OT':''}`});
   }
  }catch(e){}
  try{ /* Saturday Report headlines and next matchups. */
