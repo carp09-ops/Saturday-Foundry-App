@@ -6843,9 +6843,9 @@ document.addEventListener('change',function(e){
             <p>Completes the current active season and creates the next one.</p>
             <div class="new-season-row">
               <input id="nextSeasonYear" type="number" placeholder="Year (optional)">
-              <button id="newSeasonBtn" class="btn primary">Start</button>
+              <button id="newSeasonBtn" class="btn primary">Choose coach programs</button>
             </div>
-            <label class="check-row" style="margin-top:8px"><input id="carryPrograms" type="checkbox" checked> Carry current team assignments forward</label>
+            <div id="seasonProgramWizard" class="hidden" style="margin-top:14px"><p><strong>Confirm every coach's program for the next season.</strong> Staying is a choice, not an automatic rollover.</p><div id="seasonProgramRows"></div><button id="confirmSeasonProgramsBtn" class="btn primary" type="button">Review & create season</button><button id="cancelSeasonProgramsBtn" class="btn" type="button">Cancel</button></div>
             <div id="seasonAdminMessage" class="notice hidden"></div>
           </div>
           <div class="admin-card">
@@ -9971,11 +9971,43 @@ $("adminClaims").onclick=async e=>{
    await loadSeason(S.season_id)
  }catch(err){msg($("claimsAdminMessage"),err.message,"error")}finally{b.disabled=false}
 };
-$("newSeasonBtn").onclick=async()=>{
- const btn=$("newSeasonBtn"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null;
+$("newSeasonBtn").onclick=()=>{
+ const coaches=state.dynastyCoaches||[],out=$("seasonAdminMessage");
+ if(!coaches.length){msg(out,"No active coaches were found. Rollover is blocked.","error");return}
+ const rows=$("seasonProgramRows");
+ rows.innerHTML=coaches.map((c,i)=>{
+  const options=teamChoices.map(t=>'<option value="'+esc(t.team_id)+'">'+esc(t.team_name)+'</option>').join('');
+  return '<label style="display:block;margin:12px 0"><strong>'+esc(c.coach_name)+'</strong> · '+esc(c.current_team_name||'Current program')+'<select class="season-program-choice" data-person="'+esc(c.person_id)+'" style="display:block;width:100%;margin-top:6px"><option value="">Choose stay or change…</option><option value="stay">Stay at '+esc(c.current_team_name||'current program')+'</option>'+options+'</select></label>';
+ }).join('');
+ $("seasonProgramWizard").classList.remove("hidden");
+ msg(out,"Choose a program for every coach, including those staying.");
+};
+$("cancelSeasonProgramsBtn").onclick=()=>{$("seasonProgramWizard").classList.add("hidden");hide($("seasonAdminMessage"))};
+$("confirmSeasonProgramsBtn").onclick=async()=>{
+ const btn=$("confirmSeasonProgramsBtn"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null;
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg($("seasonAdminMessage"),"Enter a valid four-digit season year.","error");return}
- if(!confirm(`Start Season ${Number(S.season_number||0)+1}? The current active season will be marked complete.`))return;
- try{btn.disabled=true;msg($("seasonAdminMessage"),"Creating next season…");await Data.nextSeason(D.dynasty_id,year,$("carryPrograms").checked);msg($("seasonAdminMessage"),"Next season created.","success");dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)))}catch(e){msg($("seasonAdminMessage"),e.message,"error")}finally{btn.disabled=false}
+ const coaches=state.dynastyCoaches||[];
+ const selections=[...document.querySelectorAll(".season-program-choice")];
+ if(selections.length!==coaches.length||selections.some(el=>!el.value)){msg($("seasonAdminMessage"),"Confirm a program for every active coach.","error");return}
+ const assignments=selections.map(el=>{
+  const c=coaches.find(x=>String(x.person_id)===el.dataset.person);
+  const current=teamChoices.find(t=>String(t.team_name)===String(c?.current_team_name));
+  return {person_id:el.dataset.person,team_id:el.value==="stay"?current?.team_id:el.value};
+ });
+ if(assignments.some(a=>!a.team_id)||new Set(assignments.map(a=>a.team_id)).size!==assignments.length){msg($("seasonAdminMessage"),"Resolve missing or duplicate program selections.","error");return}
+ const summary=assignments.map(a=>{
+  const c=coaches.find(x=>String(x.person_id)===String(a.person_id));
+  const t=teamChoices.find(x=>String(x.team_id)===String(a.team_id));
+  return (c?.coach_name||"Coach")+" → "+(t?.team_name||"Unknown");
+ }).join("\\n");
+ if(!confirm("Create Season "+(Number(S.season_number||0)+1)+" with these confirmed assignments?\\n\\n"+summary+"\\n\\nThis completes the current season."))return;
+ try{
+  btn.disabled=true;msg($("seasonAdminMessage"),"Creating next season with confirmed programs…");
+  const sess=session();
+  await req("/rest/v1/rpc/create_next_season_with_programs",{method:"POST",token:sess.access_token,body:{p_dynasty_id:D.dynasty_id,p_year:year,p_assignments:assignments}});
+  msg($("seasonAdminMessage"),"New season and programs created.","success");
+  dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)));
+ }catch(e){msg($("seasonAdminMessage"),e.message||String(e),"error")}finally{btn.disabled=false}
 };
 $("setWeekBtn").onclick=async()=>{
  const btn=$("setWeekBtn"),raw=$("activeWeekInput").value.trim(),w=Number(raw);if(!raw||!Number.isInteger(w)||w<0){msg($("weekAdminMessage"),"Enter a valid week.","error");return}
