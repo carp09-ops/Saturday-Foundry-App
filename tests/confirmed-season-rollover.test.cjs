@@ -17,9 +17,13 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   'create table public.seasons(id uuid primary key default gen_random_uuid(),dynasty_id uuid not null,season_number int not null,year int,name text,status text not null,started_at timestamptz,completed_at timestamptz,unique(dynasty_id,season_number));',
   'create table public.season_programs(id uuid primary key default gen_random_uuid(),dynasty_id uuid,season_id uuid references public.seasons(id),team_id uuid references public.teams(id),active boolean default true,conference_override text,unique(season_id,team_id));',
   'create table public.program_memberships(id uuid primary key default gen_random_uuid(),season_program_id uuid references public.season_programs(id),person_id uuid,role text,dynasty_id uuid,season_id uuid,unique(season_program_id,person_id));',
-  'create table public.dynasty_settings(dynasty_id uuid primary key,settings jsonb,updated_at timestamptz);'
+  'create table public.dynasty_settings(dynasty_id uuid primary key,settings jsonb,updated_at timestamptz);',
+  'create function public.create_next_season(uuid,integer,boolean) returns uuid language sql as $select null::uuid$;',
+  'grant execute on function public.create_next_season(uuid,integer,boolean) to authenticated;'
  ].join('\n'));
  await db.exec(migration);
+ assert.equal((await db.query("select has_function_privilege('anon','public.create_next_season(uuid,integer,boolean)','EXECUTE') as allowed")).rows[0].allowed,false);
+ assert.equal((await db.query("select has_function_privilege('authenticated','public.create_next_season(uuid,integer,boolean)','EXECUTE') as allowed")).rows[0].allowed,false,'legacy auto-carry API must not be callable by signed-in users');
  await db.query("insert into dynasty_members values($1,$2,true,'commissioner'),($1,$3,true,'member'),($4,$5,true,'commissioner')",[id(1),id(10),id(11),id(2),id(20)]);
  for(let n=101;n<=108;n++)await db.query('insert into teams(id,active,selectable,conference) values($1,$2,$2,$3)',[id(n),n!==108,n===103?'Independent':'SEC']);
  for(const [s,d,num,status] of [[105,1,5,'completed'],[106,1,6,'active'],[203,2,3,'active']])
