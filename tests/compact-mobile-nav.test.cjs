@@ -77,21 +77,24 @@ test('iOS installed app avoids deprecated black-translucent status bar geometry'
 });
 
 
-test('standalone Foundry ribbon is above the dock, gold on graphite and noninteractive',()=>{
+test('Dynasty Bottom Line replaces the standalone ribbon and preserves navigation',()=>{
  const css=read('assets/graphite/responsive.css');
  const js=read('assets/graphite/workflows.js');
  const entry=read('index.html');
- const compatibility=read('foundry.html');
- assert.equal(entry,compatibility);
- assert(js.includes('class="sf-bottom-ribbon" role="note"'), 'Ribbon should render with the five-tab navigation');
- assert(js.indexOf('class="sf-bottom-ribbon"')<js.indexOf('class="bottomnav"'), 'Ribbon must precede dock in markup');
- assert(css.includes('.sf-bottom-ribbon{display:none}'), 'Normal Safari and desktop should not show ribbon');
- assert(css.includes('html.sf-standalone .sf-bottom-ribbon{'), 'Only installed app should show it');
- assert(css.includes('bottom:calc(52px + var(--sf-dock-safe-bottom,0px))'), 'Place ribbon immediately above safe-area dock');
- assert(css.includes('pointer-events:none'), 'Ribbon must never obstruct navigation');
- assert(css.includes('border-top:1px solid #A88E54')&&css.includes('background:linear-gradient'), 'Use graphite and gold rather than white');
- assert(css.includes('html.sf-standalone body{background:#24262B!important}'), 'Paint available underlay in graphite');
- assert(css.includes('padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))'), 'Keep scrolling content clear of banner');
- assert(entry.includes('Your dynasty, forged on Saturdays'));
- assert(entry.includes(css),'Generated release must include banner source');
+ assert.equal(entry,read('foundry.html'),'Both app entry points stay identical');
+ assert(js.includes('function dynastyBottomLine()'));
+ assert(js.includes('role="region" aria-label="Dynasty Bottom Line"'));
+ assert(js.includes('aria-hidden="true" inert'), 'Visual duplicate must be inert to keyboard users');
+ assert(js.indexOf('${dynastyBottomLine()}')<js.indexOf('class="bottomnav"'), 'Ticker must be immediately above navigation');
+ assert(css.includes('.sf-bottomline{display:none}'), 'Desktop and Safari layout should be unchanged');
+ assert(css.includes('html.sf-standalone .sf-bottomline{'), 'Ticker is visible in installed iPhone app');
+ assert(css.includes('bottom:calc(52px + var(--sf-dock-safe-bottom,0px))'));
+ assert(css.includes('border-top:1px solid #A88E54')&&css.includes('background:linear-gradient'));
+ assert(css.includes('html.sf-standalone body{background:#24262B!important}'));
+ assert(css.includes('padding-bottom:calc(86px + var(--sf-dock-safe-bottom,0px))'));
+ assert(css.includes('animation:sf-bottomline-scroll'));
+ assert(css.includes('animation-play-state:paused'));
+ assert(css.includes('@media(prefers-reduced-motion:reduce)'));
+ assert(entry.includes('BOTTOM LINE')&&entry.includes('function dynastyBottomLine()'));
+ assert(entry.includes(css),'Generated app must include the ticker styling');
 });
