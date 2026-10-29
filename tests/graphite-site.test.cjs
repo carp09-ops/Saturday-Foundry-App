@@ -8,11 +8,11 @@ const fixture={dynasties:[{dynasty_id:D,name:'Fixture League',role:'member',stat
 fixture.artworks=[{team_id:OWN,image_url:'https://art.foundry.test/uconn.webp',alt_text:'UConn helmet editorial artwork',accent_color:'#173656'}];
 fixture.careerHub={active_game_edition_year:2027,coach:{person_id:ME,name:'Corey'},totals:{wins:20,losses:10,ties:1,seasons:3,national_titles:1,conference_titles:1,heismans:0,draft_picks:1,awards:1,bowl_wins:2,bowl_losses:1,playoff_wins:1,playoff_losses:1,scored_games:30,points_for:900,points_against:600},editions:[{game_edition_year:2027,wins:12,losses:4},{game_edition_year:2026,wins:8,losses:6,ties:1}],chapters:[{dynasty_id:D,game_edition_year:2027,dynasty_name:'Fixture League',wins:12,losses:4,status:'active'},{dynasty_id:id(70),game_edition_year:2026,dynasty_name:'Old League',wins:8,losses:6,ties:1,status:'archived',retired:true}],timeline:[{dynasty_id:D,dynasty_name:'Fixture League',season_id:OLD,game_edition_year:2027,edition_season_number:0,year:2027,team_id:CPU,team_name:'Navy',wins:4,losses:2},{dynasty_id:D,dynasty_name:'Fixture League',season_id:S,game_edition_year:2027,edition_season_number:1,year:2028,team_id:OWN,team_name:'UConn',wins:8,losses:2},{dynasty_id:id(70),dynasty_name:'Old League',season_id:id(71),game_edition_year:2026,edition_season_number:1,year:2026,team_id:CPU,team_name:'Navy',wins:8,losses:6,ties:1}],honors:[{id:id(75),dynasty_id:D,game_edition_year:2027,name:'Conference Championship',type:'conference_championship',team_name:'UConn',edition_season_number:1,year:2028},{id:id(76),dynasty_id:id(70),game_edition_year:2026,name:'National Championship',type:'national_championship',team_name:'Navy',edition_season_number:1,year:2026,points_for:31,points_against:24,opponent_team:'Army'},{id:id(77),dynasty_id:id(70),game_edition_year:2026,name:'Heisman',type:'player_award',recipient_name:'Corey',metadata:{historical_count_import:true}}],facts:[{kind:'draft_pick',dynasty_id:D,game_edition_year:2027,edition_season_number:1,year:2028,recipient_name:'Test Player',label:'NFL Draft',value:1,metadata:{pick:10}},{kind:'stat_leader',dynasty_id:id(70),game_edition_year:2026,edition_season_number:1,year:2026,recipient_name:'Test Quarterback',label:'Passing touchdowns',value:35}]};
 const tick=()=>new Promise(r=>setTimeout(r,15));
-async function app(options={}){const calls=[],errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>{if(!/CSS stylesheet|Not implemented/.test(e.message))errors.push(e.message)});const f=structuredClone(fixture);if(options.noTeam)f.myPrograms=[];if(options.commissioner)f.dynasties[0].role='commissioner';let interceptor=options.intercept;
+async function app(options={}){const calls=[],errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>{if(!/CSS stylesheet|Not implemented/.test(e.message))errors.push(e.message)});const f=structuredClone(fixture);if(options.noTeam)f.myPrograms=[];if(options.commissioner)f.dynasties[0].role='commissioner';if(options.coachStreams)f.coachStreams=options.coachStreams;if(options.extraGames)f.scheduleGames.push(...options.extraGames);let interceptor=options.intercept;
  const dom=new JSDOM(html,{url:'https://foundry.test/index.html',runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){w.matchMedia=()=>({matches:true});w.HTMLElement.prototype.scrollIntoView=function(){};w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};w.AbortController=AbortController;w.WebSocket=class{constructor(){this.readyState=0;w.testCareerSocket=this;this.sent=[]}send(v){this.sent.push(JSON.parse(v))}close(){this.closed=true;this.readyState=3;this.onclose?.()}};
  if(!options.signedOut){w.localStorage.setItem('cdhq_supabase_session_v1',JSON.stringify({access_token:'fixture-access-token',user:{id:id(99),email:'fixture@example.invalid'}}));w.localStorage.setItem('sf_graphite_context_v1',JSON.stringify(options.preference||{dynasty:D}));}
  w.fetch=async(url,opts)=>{const u=new URL(url),name=u.pathname.split('/').at(-1),body=opts.body?JSON.parse(opts.body):undefined;calls.push({name,path:u.pathname,method:opts.method,body});if(interceptor){const r=await interceptor({name,body,opts,url});if(r)return r}
- const map={v_my_dynasties:f.dynasties,v_dynasty_seasons:f.seasons,v_season_programs:f.programs,v_program_standings:f.standings,v_schedule_entries:f.scheduleGames,v_coach_career_stats:f.career,v_trophy_room:f.trophies,v_my_programs:f.myPrograms,v_game_entries:[],team_artwork_catalog:f.artworks,teams:f.teams,weekly_story_editions:[],weekly_rankings:[],get_coach_career_stops:[],get_my_coach_career_hub:f.careerHub,get_dynasty_active_week:0,get_h2h_results:{ready:true,results:[]},get_team_selection:[{team_id:OWN,team_name:'UConn',conference:'American',claimed:true,claimed_by:'Corey'},{team_id:CPU,team_name:'Navy',conference:'American',claimed:false}],get_schedule_team_options:[{team_id:CPU,team_name:'Navy',conference:'American'}]};let data=name==='user'?{id:id(99),email:'fixture@example.invalid'}:map[name]||[];if(Array.isArray(data)){const offset=Number(u.searchParams.get('offset')||0);data=data.slice(offset,offset+Number(u.searchParams.get('limit')||500))}return {ok:true,text:async()=>JSON.stringify(data)}}}});
+ const map={v_my_dynasties:f.dynasties,v_dynasty_seasons:f.seasons,v_season_programs:f.programs,v_program_standings:f.standings,v_schedule_entries:f.scheduleGames,v_coach_career_stats:f.career,v_trophy_room:f.trophies,v_my_programs:f.myPrograms,v_game_entries:[],team_artwork_catalog:f.artworks,teams:f.teams,weekly_story_editions:[],weekly_rankings:[],get_coach_career_stops:[],get_my_coach_career_hub:f.careerHub,get_dynasty_active_week:0,get_dynasty_coaches:f.coachStreams||[],get_h2h_results:{ready:true,results:[]},get_team_selection:[{team_id:OWN,team_name:'UConn',conference:'American',claimed:true,claimed_by:'Corey'},{team_id:CPU,team_name:'Navy',conference:'American',claimed:false}],get_schedule_team_options:[{team_id:CPU,team_name:'Navy',conference:'American'}]};let data=name==='user'?{id:id(99),email:'fixture@example.invalid'}:map[name]||[];if(Array.isArray(data)){const offset=Number(u.searchParams.get('offset')||0);data=data.slice(offset,offset+Number(u.searchParams.get('limit')||500))}return {ok:true,text:async()=>JSON.stringify(data)}}}});
  for(let i=0;i<80&&dom.window.eval('busy');i++)await tick();await tick();return {w:dom.window,dom,calls,errors,f,setInterceptor(fn){interceptor=fn}};
 }
 function fill(w,name,value){w.document.querySelector(`[name="${name}"]`).value=value}
@@ -231,4 +231,33 @@ test('an old Home history entry cannot restore a previous season after rollover'
  a.w.history.replaceState(oldHome,'','#home');a.w.dispatchEvent(new a.w.PopStateEvent('popstate',{state:oldHome}));await waitForLeague(a);
  assert.equal(a.w.eval('route'),'home');assert.equal(a.w.eval('season.season_id'),S);assert.equal(a.w.eval('week'),7);assert.equal(a.w.eval('selectedTeam'),OWN);
  assert.match(a.w.document.querySelector('.welcome-line').textContent,/Season 2 · Week 7/);assert.deepEqual(a.errors,[]);
+});
+
+test('Home shows configured coach streams for both sides, without unsafe or missing links',async t=>{
+ const PETER=id(5);
+ const streaming=[
+  {person_id:ME,coach_name:'Corey',current_team_id:OWN,current_season_id:S,stream_platform:'YouTube',stream_url:'https://www.youtube.com/@corey/live'},
+  {person_id:PETER,coach_name:'Pete',current_team_id:OPP,current_season_id:S,stream_platform:'Twitch',stream_url:'https://www.twitch.tv/pete'},
+  {person_id:id(90),coach_name:'Old Coach',current_team_id:CPU,current_season_id:OLD,stream_platform:'Other',stream_url:'https://example.org/old'},
+  {person_id:id(91),coach_name:'Unsafe',current_team_id:CPU,current_season_id:S,stream_platform:'Other',stream_url:'javascript:alert(1)'}
+ ];
+ const extra=[{
+  id:id(81),dynasty_id:D,season_id:S,week_number:0,status:'scheduled',game_type:'conference',
+  team_id:OWN,team_name:'UConn',person_id:ME,opponent_team_id:OPP,opponent_team:'Army',
+  opponent_person_id:PETER,primary_side:'away',home_away:'away',points_for:null,points_against:null
+ }];
+ const a=await app({coachStreams:streaming,extraGames:extra});t.after(()=>a.w.close());
+ assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata');
+ const cards=[...a.w.document.querySelectorAll('.sports-card')];
+ const links=[...a.w.document.querySelectorAll('.game-stream-link')];
+ assert(links.some(l=>l.textContent.includes('Corey')),'featured home card needs Corey stream');
+ assert(links.some(l=>l.textContent.includes('Pete')),'opponent player stream should appear');
+ assert(links.every(l=>l.protocol==='https:'),'only HTTPS stream links may render');
+ assert(links.every(l=>l.getAttribute('rel').includes('noopener')),'external links must be isolated');
+ assert.equal(links.filter(l=>l.textContent.includes('Old Coach')).length,0);
+ assert.equal(links.filter(l=>l.textContent.includes('Unsafe')).length,0);
+ assert.equal(cards.filter(c=>c.querySelectorAll('.game-stream-link').length===2).length,1,'head-to-head card should show both coach links');
+ a.w.go('scores');assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'stream actions are Home-only');
+ await a.w.loadSeason(OLD);assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'archives must not reuse current coach stream links');
+ assert.deepEqual(a.errors,[]);
 });
