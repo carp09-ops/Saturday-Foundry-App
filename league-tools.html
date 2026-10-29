@@ -6840,12 +6840,12 @@ document.addEventListener('change',function(e){
           <div class="admin-card">
             <div class="kicker">🗓️ SEASONS</div>
             <h3>Start Next Season</h3>
-            <p>Choose and confirm each coach's next-season team before the season is created. No automatic carry-forward.</p>
+            <p>Completes the current active season and creates the next one.</p>
             <div class="new-season-row">
               <input id="nextSeasonYear" type="number" placeholder="Year (optional)">
-              <button id="newSeasonBtn" class="btn primary">Choose programs</button>
+              <button id="newSeasonBtn" class="btn primary">Start</button>
             </div>
-            <div id="rolloverCoachPicker" class="hidden" aria-live="polite"></div>
+            <div id="seasonCoachAssignments" class="hidden"></div>
             <div id="seasonAdminMessage" class="notice hidden"></div>
           </div>
           <div class="admin-card">
@@ -7085,7 +7085,7 @@ const Data={
  async listInvites(dynastyId){const s=session();return req("/rest/v1/rpc/list_dynasty_invites",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId}})||[]},
  async revokeInvite(inviteId){const s=session();return req("/rest/v1/rpc/revoke_dynasty_invite",{method:"POST",token:s.access_token,body:{p_invite_id:inviteId}})},
  async createDynasty(name,shortName,edition){const s=session();return req("/rest/v1/rpc/create_dynasty",{method:"POST",token:s.access_token,body:{p_name:name,p_short_name:shortName||null,p_game_edition:edition||"27",p_year:null}})},
- async nextSeasonConfirmed(dynastyId,year,assignments){const s=session();return req("/rest/v1/rpc/create_next_season_with_assignments",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_year:year||null,p_assignments:assignments}})},
+ async nextSeasonConfirmed(dynastyId,year,assignments){const s=session();return req("/rest/v1/rpc/create_next_season_confirmed",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_year:year||null,p_assignments:assignments}})},
  async nextSeason(dynastyId,year,carry){const s=session();return req("/rest/v1/rpc/create_next_season",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_year:year||null,p_carry_programs:carry}})},
  async releaseTeam(seasonId,teamId){const s=session();return req("/rest/v1/rpc/release_team",{method:"POST",token:s.access_token,body:{p_season_id:seasonId,p_team_id:teamId}})},
  async createHeisman(dynastyId,seasonId,personId,playerName,playerPosition,awardName){const s=session();return req("/rest/v1/rpc/create_heisman_award",{method:"POST",token:s.access_token,body:{p_dynasty_id:dynastyId,p_season_id:seasonId,p_person_id:personId,p_player_name:playerName||null,p_position:playerPosition||null,p_award_name:awardName||"Heisman Trophy"}})},
@@ -9972,43 +9972,25 @@ $("adminClaims").onclick=async e=>{
    await loadSeason(S.season_id)
  }catch(err){msg($("claimsAdminMessage"),err.message,"error")}finally{b.disabled=false}
 };
-let sfRolloverPending=false;
 $("newSeasonBtn").onclick=async()=>{
- const btn=$("newSeasonBtn"),panel=$("rolloverCoachPicker"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null;
- const out=$("seasonAdminMessage");
+ const btn=$("newSeasonBtn"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null,out=$("seasonAdminMessage"),host=$("seasonCoachAssignments");
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg(out,"Enter a valid four-digit season year.","error");return}
- if(sfRolloverPending)return;
- if(panel.classList.contains("hidden")){
-   try{
-     btn.disabled=true;
-     const coaches=await Data.dynastyCoaches(D.dynasty_id);
-     const choices=await Data.teamSelection(S.season_id);
-     const roster=coaches.filter(c=>c.person_id&&c.current_team_name);
-     if(!roster.length)throw Error("No active coaches found; rollover is blocked.");
-     panel.innerHTML='<h4>Confirm each coach\'s next-season program</h4><p>Choose Stay or select a new program for every coach. No selection is assumed.</p>'+roster.map((c,i)=>{
-       const current=choices.find(t=>t.team_name===c.current_team_name);
-       const options=choices.map(t=>'<option value="'+esc(t.team_id)+'">'+esc(t.team_name)+'</option>').join("");
-       return '<div class="form-row" style="margin:12px 0;padding:12px;border:1px solid #ccc;border-radius:8px"><label for="rolloverTeam'+i+'"><b>'+esc(c.coach_name||c.display_name||"Coach")+'</b> · Current: '+esc(c.current_team_name)+'</label><select class="rollover-team" id="rolloverTeam'+i+'" data-person="'+esc(c.person_id)+'" required><option value="">Confirm stay or select a program</option>'+(current?'<option value="'+esc(current.team_id)+'">Stay · '+esc(c.current_team_name)+'</option>':'')+options+'</select></div>';
-     }).join("")+'<button id="confirmRolloverBtn" class="btn primary" type="button">Review and create next season</button>';
-     panel.classList.remove("hidden");btn.textContent="Refresh program choices";
-     $("confirmRolloverBtn").onclick=async()=>{
-       const selects=[...panel.querySelectorAll(".rollover-team")];
-       const assignments=selects.map(el=>({person_id:el.dataset.person,team_id:el.value}));
-       if(assignments.some(x=>!x.team_id)||new Set(assignments.map(x=>x.team_id)).size!==assignments.length){
-         msg(out,"Every coach must select a different program, including coaches staying put.","error");return;
-       }
-       const names=assignments.map(x=>{const c=roster.find(c=>String(c.person_id)===x.person_id),t=choices.find(t=>String(t.team_id)===x.team_id);return (c?.coach_name||"Coach")+" → "+(t?.team_name||"Unknown");}).join("\n");
-       if(!confirm("Create Season "+(Number(S.season_number||0)+1)+" with these confirmed assignments?\n\n"+names+"\n\nThis completes the current season."))return;
-       try{sfRolloverPending=true;btn.disabled=true;$("confirmRolloverBtn").disabled=true;msg(out,"Creating season with confirmed programs…");
-         await Data.nextSeasonConfirmed(D.dynasty_id,year,assignments);
-         msg(out,"Next season and coach assignments saved together.","success");
-         dynasties=await Data.dynasties();
-         await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)));
-       }catch(e){msg(out,e.message||String(e),"error");$("confirmRolloverBtn").disabled=false}
-       finally{sfRolloverPending=false;btn.disabled=false}
-     };
-   }catch(e){msg(out,e.message||String(e),"error")}finally{btn.disabled=false}
- }else{panel.classList.add("hidden");panel.innerHTML="";btn.textContent="Choose programs";}
+ const coaches=state.dynastyCoaches||[];
+ if(!coaches.length){msg(out,"No active coaches found. Rollover blocked.","error");return}
+ if(host.classList.contains("hidden")){
+   const options=teamChoices.map(t=>'<option value="'+esc(t.team_id)+'">'+esc(t.team_name)+'</option>').join("");
+   host.innerHTML='<p><b>Confirm each coach\'s next-season team</b></p>'+coaches.map((c,i)=>{
+     const current=teamChoices.find(t=>String(t.team_id)===String(c.current_team_id))||teamChoices.find(t=>t.team_name===c.current_team_name);
+     return '<label style="display:block;margin:12px 0">'+esc(c.coach_name)+'<select class="next-season-coach-team" data-person="'+esc(c.person_id)+'" style="display:block;width:100%;max-width:100%;padding:10px"><option value="">Choose program</option>'+options+'</select></label>';
+   }).join("")+'<p>Review every assignment. Nothing changes until final confirmation.</p>';
+   coaches.forEach(c=>{const select=[...host.querySelectorAll(".next-season-coach-team")].find(el=>el.dataset.person===String(c.person_id));const current=teamChoices.find(t=>t.team_name===c.current_team_name);if(select&&current)select.value=String(current.team_id)});
+   host.classList.remove("hidden");btn.textContent="Review & confirm assignments";return;
+ }
+ const assignments=[...host.querySelectorAll(".next-season-coach-team")].map(el=>({person_id:el.dataset.person,team_id:el.value}));
+ if(assignments.length!==coaches.length||assignments.some(x=>!x.team_id)||new Set(assignments.map(x=>x.team_id)).size!==assignments.length){msg(out,"Select a different valid program for every coach.","error");return}
+ const summary=assignments.map(x=>{const c=coaches.find(c=>String(c.person_id)===x.person_id),t=teamChoices.find(t=>String(t.team_id)===x.team_id);return (c?.coach_name||"Coach")+" → "+(t?.team_name||"Unknown")}).join("\n");
+ if(!confirm("Start Season "+(Number(S.season_number||0)+1)+" with these programs?\n\n"+summary+"\n\nThis will archive the current season."))return;
+ try{btn.disabled=true;msg(out,"Creating next season with confirmed assignments…");await Data.nextSeasonConfirmed(D.dynasty_id,year,assignments);msg(out,"Next season created with confirmed teams.","success");dynasties=await Data.dynasties();await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)))}catch(e){msg(out,e.message||String(e),"error")}finally{btn.disabled=false}
 };
 $("setWeekBtn").onclick=async()=>{
  const btn=$("setWeekBtn"),raw=$("activeWeekInput").value.trim(),w=Number(raw);if(!raw||!Number.isInteger(w)||w<0){msg($("weekAdminMessage"),"Enter a valid week.","error");return}
