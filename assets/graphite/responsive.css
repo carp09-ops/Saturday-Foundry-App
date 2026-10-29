@@ -40,3 +40,23 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 
 /* League cards identify the signed-in coach's active-season program. */
 .league-choice>.league-team-badge{width:62px;height:62px;flex:0 0 62px;object-fit:contain;background:transparent;border-radius:0}.league-choice>.league-brand-fallback{padding:4px}.league-choice .league-team-name{color:#3d4147;font-size:13px;font-weight:600;margin:7px 0 4px}.league-choice>span{min-width:0;flex:1}.league-choice>svg{flex-shrink:0}@media(max-width:700px){.league-choice>.league-team-badge{width:50px;height:50px;flex-basis:50px}.league-choice .league-team-name{font-size:12px;margin:6px 0 3px}}
+
+/* 10.0.1 mobile viewport containment: account for iOS safe areas and flex intrinsic sizes. */
+html,body{max-width:100%;overflow-x:hidden}
+.site-app,.viewport,.content{min-width:0;max-width:100%;box-sizing:border-box}
+.league-cards,.entry-actions{min-width:0;max-width:100%}
+.league-choice{min-width:0;max-width:100%;box-sizing:border-box}
+.league-choice>span:not(.icon),.league-choice>div{min-width:0}
+.league-choice strong,.league-choice small{overflow-wrap:anywhere}
+@media(max-width:700px){
+ .mast{box-sizing:border-box;width:100%;min-width:0;padding-top:calc(11px + env(safe-area-inset-top,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+ .mast .brand-home{min-width:0;flex:1;overflow:hidden}
+ .mast .word{min-width:0;overflow:hidden}
+ .mast-actions{flex-shrink:0}
+ .content{width:100%;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+ .league-cards{grid-template-columns:minmax(0,1fr)}
+ .league-choice{width:100%;gap:12px;padding:16px}
+ .league-choice>.icon{flex-shrink:0}
+ .entry-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .entry-actions button{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere}
+}

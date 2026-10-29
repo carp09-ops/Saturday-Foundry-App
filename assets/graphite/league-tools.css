@@ -179,3 +179,30 @@ html.sf-tools-theme body #app #admin .cpu-week-tile *{color:inherit!important;}
 html.sf-tools-theme ::-webkit-scrollbar-track{background:#f3f1ee!important;}
 html.sf-tools-theme ::-webkit-scrollbar-thumb{background:#a7a1a0!important;}
 html.sf-tools-theme{scrollbar-color:#a7a1a0 #f3f1ee;}
+
+
+/* Guided next-season team selection: compact and usable on iPhone. */
+html.sf-tools-theme #admin .sf-rollover{
+ display:grid;gap:12px;width:100%;min-width:0;box-sizing:border-box;
+ margin:14px 0 4px;padding:16px;border:1px solid #dedbd6;border-radius:12px;
+ background:#f3f1ee;color:#25262a;
+}
+html.sf-tools-theme #admin .sf-rollover h4{margin:0;font-size:18px;font-weight:800;line-height:1.25;color:#25262a}
+html.sf-tools-theme #admin .sf-rollover p{margin:0;color:#69666a;font-size:13px;line-height:1.45}
+html.sf-tools-theme #admin .sf-rollover-coach{
+ display:flex;flex-direction:column;gap:5px;min-width:0;max-width:100%;padding:12px;
+ background:#fff;border:1px solid #dedbd6;border-radius:8px;
+}
+html.sf-tools-theme #admin .sf-rollover-coach strong{font-size:14px;color:#25262a}
+html.sf-tools-theme #admin .sf-rollover-coach small{font-size:12px;color:#69666a}
+html.sf-tools-theme #admin .sf-rollover-coach select{
+ display:block;width:100%;min-width:0;max-width:100%;min-height:44px;box-sizing:border-box;
+ border:1px solid #c4bdb8;border-radius:7px;padding:9px 12px;background:#fff;color:#25262a;font-size:14px;
+}
+html.sf-tools-theme #admin .sf-rollover-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+html.sf-tools-theme #admin .sf-rollover-actions button{min-height:44px;flex:1 1 150px;max-width:100%}
+@media(max-width:700px){
+ html.sf-tools-theme #admin .sf-rollover{padding:12px;gap:10px}
+ html.sf-tools-theme #admin .sf-rollover-actions{flex-direction:column}
+ html.sf-tools-theme #admin .sf-rollover-actions button{flex:0 0 auto;width:100%}
+}
