@@ -21,7 +21,7 @@ function visible(w){return w.document.querySelector('#app').textContent}
 
 test('season shortcuts require a commissioner and direct active-season tools to the correct section',async t=>{
  const a=await app();t.after(()=>a.w.close());a.w.go('office');assert.doesNotMatch(visible(a.w),/Start next season/);
- a.w.openAdvanced('admin','season');assert.equal(a.w.eval('route'),'office');
+ assert.equal(a.w.eval('route'),'office');
  a.f.dynasties[0].role='commissioner';a.w.eval("dynasty.role='commissioner';render()");
  assert.match(visible(a.w),/Start next season/);assert.match(visible(a.w),/Change programs/);
  assert(a.w.document.querySelector('#officeRollover'),'Rollover should render as a native office section');
@@ -34,7 +34,7 @@ test('season shortcuts require a commissioner and direct active-season tools to 
 test('returning from rollover follows the new active season and archive visits never become the Home preference',async t=>{
  const a=await app({commissioner:true});t.after(()=>a.w.close());const NEXT=id(130),FL=id(131);
  assert.equal(JSON.parse(a.w.localStorage.getItem('sf_graphite_context_v1')).followActiveSeason,true);
- a.w.openAdvanced('admin','season');
+ a.w.go('office');
  a.f.seasons.find(s=>s.season_id===S).is_active=false;a.f.seasons.find(s=>s.season_id===S).status='completed';
  a.f.seasons.unshift({dynasty_id:D,season_id:NEXT,season_number:3,status:'active',is_active:true});
  a.f.dynasties[0].active_season_id=NEXT;a.f.dynasties[0].active_season_number=3;
@@ -45,7 +45,7 @@ test('returning from rollover follows the new active season and archive visits n
   if(name==='v_season_programs')return {ok:true,text:async()=>JSON.stringify([{...fixture.programs[0],season_id:sid,team_id:sid===NEXT?FL:OWN,team_name:sid===NEXT?'Florida':'UConn'}])};
   if(name==='v_schedule_entries')return {ok:true,text:async()=>JSON.stringify(sid===NEXT?[]:[{...fixture.scheduleGames[0],season_id:sid,status:'completed',points_for:28,points_against:7}])};
  });
- await a.w.go('home');assert.equal(a.w.eval('season.season_id'),NEXT);assert.equal(a.w.eval('myTeam()'),FL);
+ await a.w.loadDynasty(D);assert.equal(a.w.eval('season.season_id'),NEXT);assert.equal(a.w.eval('myTeam()'),FL);
  a.w.go('leagues');await a.w.refreshLeagueCards();assert.match(a.w.document.querySelector('.league-team-name').textContent,/Florida/);assert.match(a.w.document.querySelector('.league-team-badge').src,/\/57\.png$/);
  await a.w.loadSeason(S);assert.equal(a.w.eval('myTeam()'),OWN);assert.equal(JSON.parse(a.w.localStorage.getItem('sf_graphite_context_v1')).followActiveSeason,true);assert.equal(a.w.eval('route'),'seasonarchive');
  await a.w.loadDynasty(D);assert.equal(a.w.eval('season.season_id'),NEXT);assert.equal(a.w.eval('myTeam()'),FL);
@@ -76,8 +76,6 @@ test('dynasty lines distinguish home favorites, pick em, and missing values',asy
 test('late line responses preserve score drafts and cannot leak into another season',async t=>{let finish;const a=await app({intercept:({name})=>name==='get_dynasty_vegas'?new Promise(r=>finish=()=>r({ok:true,text:async()=>JSON.stringify([{id:GAME,spread_home:-3,total_line:45}])})):null});t.after(()=>a.w.close());a.w.beginResult(GAME);fill(a.w,'awayScore','17');const form=a.w.document.querySelector('form');finish();await tick();assert.equal(a.w.document.querySelector('form'),form);assert.equal(form.elements.awayScore.value,'17');a.w.eval(`season.season_id='${OLD}'`);assert.equal(a.w.eval('marketLineFor(games()[0])'),null)});
 
 
-test('advanced tools retain the new shell and selected league without navigating away',async t=>{const a=await app();t.after(()=>a.w.close());const pathname=a.w.location.pathname;a.w.openAdvanced('analytics');assert.equal(a.w.location.pathname,pathname);assert.equal(a.w.eval('route'),'advanced');const frame=a.w.document.querySelector('.advanced-frame');assert(frame);const src=new URL(frame.src);assert.equal(src.searchParams.get('dynasty'),D);assert.equal(src.searchParams.get('season'),S);assert.equal(src.searchParams.get('embedded'),'1');assert(a.w.document.querySelector('nav[aria-label="Main navigation"]'));assert(!a.w.document.querySelector('option[value="admin"]'));a.w.openAdvanced('admin');assert.equal(a.w.eval('advancedView'),'analytics');await a.w.go('home');assert.equal(a.w.eval('route'),'home');assert(!a.w.document.querySelector('iframe'))});
-test('embedded tool bridge selects the permitted context and hides duplicate navigation',async t=>{let switched;const dom=new JSDOM('<html><body><main id="app"></main></body></html>',{url:'https://foundry.test/league-tools.html?embedded=1&dynasty='+D+'&season='+S+'&view=analytics',runScripts:'dangerously'});t.after(()=>dom.window.close());const w=dom.window;w.dynasties=[{dynasty_id:D}];w.seasons=[{season_id:S}];w.D={dynasty_id:D,role:'member'};w.S={season_id:S};w.CDHQ_RUNTIME={session:()=>({access_token:'test'})};w.switchView=v=>switched=v;w.eval(fs.readFileSync(path.join(__dirname,'../assets/graphite/league-tools.js'),'utf8'));await tick();assert.equal(switched,'analytics');assert(w.document.documentElement.classList.contains('sf-tools-embedded'));assert(w.document.documentElement.classList.contains('sf-tools-ready'));assert(!w.document.querySelector('#sfNewSiteReturn'));assert(!w.document.querySelector('#sfEmbeddedStatus'))});
 
 test('late validation responses do not replace an in-progress matchup form',async t=>{let finish;const a=await app({intercept:({name})=>name==='get_h2h_results'?new Promise(r=>finish=()=>r({ok:true,text:async()=>JSON.stringify({ready:true,results:[]})})):null});t.after(()=>a.w.close());await a.w.openAddGame();const form=a.w.document.querySelector('form');fill(a.w,'gameEvent','Rivalry night');finish();await tick();assert.equal(a.w.document.querySelector('form'),form);assert.equal(form.elements.gameEvent.value,'Rivalry night')});
 test('slow schedule options preserve typed matchup fields',async t=>{const a=await app();t.after(()=>a.w.close());let finish;a.setInterceptor(({name})=>name==='get_schedule_team_options'?new Promise(r=>finish=()=>r({ok:true,text:async()=>JSON.stringify([{team_id:CPU,team_name:'Navy'}])})):null);const p=a.w.openAddGame();fill(a.w,'gameEvent','Opening night');fill(a.w,'gameWeek','7');finish();await p;assert.equal(a.w.document.querySelector('[name="gameEvent"]').value,'Opening night');assert.equal(a.w.document.querySelector('[name="gameWeek"]').value,'7')});
@@ -94,7 +92,6 @@ test('archived seasons expose no score entry or schedule mutation actions',async
 test('logout clears private screens and delayed responses cannot restore them',async t=>{const a=await app();t.after(()=>a.w.close());let finish;a.setInterceptor(({name})=>name==='v_season_programs'?new Promise(r=>finish=()=>r({ok:true,text:async()=> '[]'})):null);const p=a.w.loadSeason(S);await a.w.logout();finish();await p;assert.equal(a.w.eval('session()'),null);assert.match(visible(a.w),/Welcome back/);assert(!a.w.document.querySelector('.sports-card'))});
 test('missing or broken team and coach images never fall back to initials',async t=>{const a=await app();t.after(()=>a.w.close());const div=a.w.document.createElement('div');div.innerHTML=a.w.logo(id(999),'Unknown College')+a.w.coachArt('New Coach','coach-art');assert.equal(div.textContent.trim(),'');assert.equal(div.querySelectorAll('img').length,2);div.innerHTML=a.w.logo(OWN,'UConn');const img=div.querySelector('img');img.dispatchEvent(new a.w.Event('error'));assert.match(img.src,/football-fallback/);assert.equal(div.textContent.trim(),'');assert.equal(a.w.document.querySelector('.avatar').textContent.trim(),'')});
 
-test('embedded fallback repair leaves real school logos and labels intact',async t=>{const dom=new JSDOM('<div class="team-fallback">UC</div><div class="story-coach-logo"><span>NC</span></div><img class="team-logo" src="school.png"><strong>UConn</strong>',{url:'https://foundry.test/league-tools.html',runScripts:'dangerously'});t.after(()=>dom.window.close());dom.window.eval(fs.readFileSync(path.join(__dirname,'../assets/graphite/league-tools.js'),'utf8'));await tick();assert.equal(dom.window.document.querySelector('.team-fallback').textContent,'');assert(dom.window.document.querySelector('.story-coach-logo img'));assert.match(dom.window.document.querySelector('.team-logo').src,/school.png/);assert.equal(dom.window.document.querySelector('strong').textContent,'UConn')});
 test('a rejected login stays usable and exposes no private data',async t=>{const a=await app({signedOut:true,intercept:({name})=>name==='token'?{ok:false,status:400,text:async()=>JSON.stringify({message:'Invalid login credentials'})}:null});t.after(()=>a.w.close());fill(a.w,'email','test@example.invalid');fill(a.w,'password','not-a-real-password');await a.w.login(a.w.document.querySelector('form'));assert.match(visible(a.w),/Invalid login credentials/);assert.equal(a.w.document.querySelector('button[type=submit]').disabled,false);assert.equal(a.w.eval('session()'),null)});
 test('signup confirmation never pretends a user is signed in',async t=>{const a=await app({signedOut:true,intercept:({name})=>name==='signup'?{ok:true,text:async()=>JSON.stringify({user:{id:id(99)}})}:null});t.after(()=>a.w.close());a.w.toggleAuth('signup');fill(a.w,'displayName','Coach');fill(a.w,'email','test@example.invalid');fill(a.w,'password','not-a-real-password');await a.w.signup(a.w.document.querySelector('form'));assert.match(visible(a.w),/Check your email/);assert.equal(a.w.eval('session()'),null);assert.equal(a.w.document.querySelector('[name=password]').value,'')});
 test('session refresh is single flight and never restores a logged-out session',async t=>{const a=await app();t.after(()=>a.w.close());a.w.eval("save({...session(),refresh_token:'old-refresh'})");let finish;a.setInterceptor(({name})=>name==='token'?new Promise(r=>finish=()=>r({ok:true,text:async()=>JSON.stringify({access_token:'new-access',refresh_token:'new-refresh'})})):null);const p=a.w.refreshAuthSingleFlight(),q=a.w.refreshAuthSingleFlight();await tick();assert.equal(a.calls.filter(c=>c.name==='token').length,1);a.w.eval('save(null)');finish();await assert.rejects(()=>p,/expired/);await assert.rejects(()=>q,/expired/);assert.equal(a.w.eval('session()'),null)});
@@ -219,13 +216,6 @@ test('a failed return to the current season shows a retry instead of historical 
  await a.w.go('home');assert.match(visible(a.w),/Connection interrupted/);assert(!a.w.document.querySelector('.welcome-line'));
  a.setInterceptor(archiveResponses);await a.w.start();assert.equal(a.w.eval('season.season_id'),S);assert.equal(a.w.eval('route'),'home');
 });
-test('historical recap tools use the archive but their Home exit restores the current season',async t=>{
- const a=await app({intercept:archiveResponses});t.after(()=>a.w.close());await a.w.loadSeason(OLD);a.w.openAdvanced('recap');
- assert.equal(new URL(a.w.document.querySelector('iframe').src).searchParams.get('season'),OLD);
- await a.w.go('home');assert.equal(a.w.eval('route'),'home');assert.equal(a.w.eval('season.season_id'),S);assert.equal(a.w.eval('week'),7);
- assert.equal(JSON.parse(a.w.localStorage.getItem('sf_graphite_context_v1')).season,S);assert.deepEqual(a.errors,[]);
-});
-
 test('an old Home history entry cannot restore a previous season after rollover',async t=>{
  const a=await app({intercept:archiveResponses});t.after(()=>a.w.close());
  const oldHome={...a.w.history.state,seasonId:OLD,week:20,team:CPU};

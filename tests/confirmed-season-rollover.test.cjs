@@ -80,11 +80,3 @@ test('WSB coach-confirmed rollover is atomic and preserves history',async t=>{
   await actor(null);const before=await counts();await assert.rejects(roll(valid),/authentication/i);assert.deepEqual(await counts(),before);
  });
 });
-test('UI explicitly selects active coaches and intercepts legacy rollover',()=>{
- const js=fs.readFileSync(path.join(__dirname,'../assets/graphite/league-tools.js'),'utf8');
- assert.match(js,/String\(c.current_season_id\)===String\(S.season_id\)/);
- assert.match(js,/stopImmediatePropagation/);
- assert.match(js,/\},true\);/);
- assert.match(js,/p_expected_season_id:S.season_id/);
- assert.match(js,/Select Stay or Change for every active coach/);
-});

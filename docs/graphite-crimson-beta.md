@@ -8,7 +8,7 @@ Five persistent destinations: Home, Scores, Teams, Standings, and Legacy. The ap
 
 Native workflows include sign-in and account creation, invitation acceptance, league creation, program selection with confirmation, schedule entry, score review and submission, coach-vs-coach validation, active-week updates, and invitation creation. All mutations use the existing authenticated RPCs and database permissions. No database migrations are included.
 
-The advanced league tools remain available through a themed `league-tools.html` copy of the original application. These retain their established layout and complete commissioner features, including imports, corrections, awards, rankings, disputes, and rollover. The return link restores the new app; both entries use the existing same-origin session store. The context bridge selects the requested dynasty and season only from the user's memberships.
+The advanced league tools were originally available through a themed `league-tools.html` copy of the original application. As of 10.1.21 the rebuild is complete: every tool is native, the embed and the preserved legacy runtime are removed, and this document is kept as a record of the beta period.
 
 ## Data and behavior
 
@@ -18,7 +18,7 @@ National conference standings reuse main's ledger and American tiebreak implemen
 
 ## Build and validate
 
-Run `python tools/build-site.py` from a checkout to regenerate `foundry.html` and `league-tools.html`. Source files are in `assets/graphite/`.
+Run `python tools/build-site.py` from a checkout to regenerate `index.html` and `foundry.html`. Source files are in `assets/graphite/`.
 
 Run `node --test tests/graphite-site.test.cjs` with `jsdom` installed (the existing repository development dependencies provide the test runtime). Fourteen isolated tests cover loader/navigation, score ownership and zero scores, review-before-write, double submissions, claim races, stale seasons, H2H validation, commissioner roles, pagination, escaped data, and refresh failures after a committed write.
 

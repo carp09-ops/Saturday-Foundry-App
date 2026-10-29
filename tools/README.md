@@ -4,10 +4,10 @@ The Graphite & Crimson app runs directly from `index.html`. `foundry.html` is an
 identical compatibility entry point for existing preview bookmarks. The native
 source lives in `assets/graphite/`; edit those files rather than generated HTML.
 
-`league-tools.html` embeds the preserved 9.10.16 application for advanced workflows.
-Its source is `legacy-runtime.html`, not `index.html`. `release.json` records the
-original runtime checksum and recovery commit. The build verifies this baseline
-before generating the themed tools page and its context bridge.
+The preserved legacy application and its `league-tools.html` embed were removed
+in 10.1.21 when the native rebuild completed; every workflow is native now. The
+legacy runtime remains available in git history (recovery baseline commit
+015543681ab67db19cedd9a7777d82ae7f1e8235).
 
 The release version comes from `package.json`; update the matching lockfile version
 and run the build to update metadata, the visible badge and bridge cache versions.

@@ -22,7 +22,6 @@ html,body{margin:0;height:100%;width:100%;overflow:hidden}body{font-family:Inter
 .login-hero>img.login-brand-lockup{position:absolute;inset:28px auto auto 28px;width:300px;max-width:calc(100% - 56px);height:auto;object-fit:contain;z-index:2;opacity:1;filter:none}
 @media(max-width:760px){.mast{min-height:83px;gap:12px}.brand-home .brand-lockup{width:156px;height:62px}.brand-context{max-width:156px;font-size:8px;margin:-2px 0 6px 3px}.mast-actions{gap:9px}.build-badge{font-size:7px;padding:4px}.login-hero{height:300px}.login-hero>img.login-brand-lockup{width:215px;left:20px;top:17px;max-width:calc(100% - 40px)}}
 
-.page-advanced{max-width:1240px}.page-advanced>select{display:block;margin-bottom:20px}.advanced-frame{display:block;width:100%;min-height:72vh;border:0;background:transparent}@media(max-width:700px){.page-advanced{padding-inline:12px}}
 
 /* Text-free, high-resolution fallback artwork; school logos remain authoritative. */
 .football-art{object-fit:cover!important;border-radius:8px}.avatar{padding:0;overflow:hidden}.account-art{width:100%;height:100%;object-fit:cover}.league-monogram{width:54px;height:54px;flex-shrink:0}.news-mark{width:58px;height:58px;object-fit:cover}.coach-placeholder{object-fit:cover;display:block}

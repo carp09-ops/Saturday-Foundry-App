@@ -300,7 +300,6 @@ function seasonArchivePage(){
  row('Scores & schedule','Browse every recorded week',`onclick="go('scores')"`)+
  row('Teams & coaches','The programs from this season',`onclick="go('teams')"`)+
  row('Conference standings','The recorded conference race',`onclick="go('standings')"`)+
- row('Season recap','Results, leaders and season highlights',`onclick="openAdvanced('recap')"`)+
  (honors.length?section('Season honors')+trophyGrid(honors):'');
 }
 function archiveBanner(){return browsingArchive()?`<div class="archive-banner" role="note" aria-label="Archive browsing"><div><strong>Season ${esc(season.season_number)} archive</strong><span>You’re browsing history. Home returns to the current season.</span></div><button class="secondary" onclick="go('home')">Return to current season</button></div>`:''}
