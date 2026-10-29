@@ -99,3 +99,65 @@ test('auto-generation fills missing active-week lines once, commissioners only',
   await w.maybeAutoGenerateLines();
   assert.equal(calls.length, 1, 'No generation for non-commissioners');
 });
+
+test('week progress counts coach games only; auto-advance fires once when all are in', async () => {
+  const wf = read('assets/graphite/workflows.js');
+  const src = wf.slice(wf.indexOf('function weekProgress('), wf.indexOf('async function openMarket'));
+  const dom = new JSDOM('<!doctype html><body></body>', { runScripts: 'outside-only' });
+  const w = dom.window;
+  w.__calls = [];
+  w.eval(`
+    var $=()=>null;
+    var esc=s=>String(s??'');
+    var notice='';
+    var render=()=>{};
+    var mutationPending=false, week=9, storedWeek=9, commissioner=true, autoAdvanceFor='';
+    var dynasty={dynasty_id:'d1'}, season={season_id:'s1', is_active:true};
+    var model={programs:[
+      {team_id:'T1',person_id:'p1',coach_name:'Corey'},
+      {team_id:'T2',person_id:'p2',coach_name:'Saif'},
+      {team_id:'T3',person_id:null,coach_name:null}]};
+    var slate=[
+      {id:'a',week_number:9,team_id:'T1',opponent_team_id:'T3',final:true,is_bye:false,status:'completed'},
+      {id:'b',week_number:9,team_id:'T2',opponent_team_id:'T3',final:false,is_bye:false,status:'scheduled'},
+      {id:'c',week_number:9,team_id:'T3',opponent_team_id:'T3',final:false,is_bye:false,status:'scheduled'},
+      {id:'d',week_number:9,team_id:'T1',opponent_team_id:'T3',final:false,is_bye:true,status:'scheduled'},
+      {id:'e',week_number:10,team_id:'T3',opponent_team_id:'T3',final:false,is_bye:false,status:'scheduled'}];
+    var games=()=>slate;
+    var canManage=()=>commissioner;
+    var context=()=>'d1:s1';
+    var session=()=>({access_token:'t'});
+    var readRpc=async()=>storedWeek;
+    var req=async(url,opts)=>{window.__calls.push({url,body:opts.body});return {}};
+    ${src}
+  `);
+  const progress = w.weekProgress(9);
+  assert.equal(progress.total, 2, 'Only coach-involved, non-bye games count');
+  assert.equal(progress.done, 1);
+  assert.deepEqual([...progress.waiting], ['Saif'], 'Waiting list names the outstanding coach');
+  assert(w.weekProgressStrip().includes('1 of 2 coach games in'), 'Strip shows progress');
+  assert(w.weekProgressStrip().includes('Waiting on Saif'), 'Strip shows who is outstanding');
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 0, 'No advance while a coach game is pending');
+  // All coach games in: advance exactly once, to week+1.
+  w.eval(`slate[1].final=true; slate[1].status='completed'; autoAdvanceFor='';`);
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 1, 'Advance fires when the week completes');
+  assert(w.__calls[0].url.includes('set_dynasty_active_week'));
+  assert.equal(w.__calls[0].body.p_week, 10);
+  assert.equal(w.eval('week'), 10, 'Local week follows the advance');
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 1, 'No double advance for the same week');
+  // Final scheduled week: never advance past the end of the schedule.
+  w.eval(`slate[4].team_id='T1'; slate[4].final=true; slate[4].status='completed'; autoAdvanceFor='';`);
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 1, 'No advance past the last scheduled week');
+  // Members never advance.
+  w.eval(`week=9; storedWeek=9; commissioner=false; autoAdvanceFor='';`);
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 1, 'No advance for non-commissioners');
+  // Stored week moved by someone else: stand down.
+  w.eval(`commissioner=true; storedWeek=7; autoAdvanceFor='';`);
+  await w.maybeAutoAdvanceWeek();
+  assert.equal(w.__calls.length, 1, 'No advance when the stored week no longer matches');
+});

@@ -6,7 +6,7 @@ const SITE_VERSION='__SF_VERSION__',SITE_BADGE='__SF_BADGE__';
 const BRAND_ASSET='assets/graphite/brand/';
 const WRITE_RPC=new Set(['claim_team','submit_game_result','claim_dynasty_invite','create_dynasty','create_my_schedule_game','create_my_schedule_bye','validate_h2h_result','set_dynasty_active_week','create_dynasty_invite','revoke_dynasty_invite','set_coach_stream','commissioner_change_coach_program','create_next_season_with_programs','release_team','create_heisman_award','delete_heisman_award','generate_dynasty_vegas_week','generate_dynasty_vegas_line']);
 const ALLOWED_RPC=new Set([...WRITE_RPC,'get_dynasty_coaches','get_dynasty_active_week','get_coach_career_stops','get_team_selection','get_schedule_team_options','get_h2h_results','get_dynasty_vegas','list_dynasty_invites','list_heisman_awards','get_coach_program_moves']);
-let mutationPending=false,authMode='login',notice='',teamChoices=[],teamChoice=null,choiceQuery='',choiceConference='',choiceAvailable=true,resultDraft=null,gameOptions=[],h2hMeta={ready:false,results:[]},marketRows=[],marketStatus='idle',marketContext='',marketRequest=null,entryError='',marketAutoGenFor='';
+let mutationPending=false,authMode='login',notice='',teamChoices=[],teamChoice=null,choiceQuery='',choiceConference='',choiceAvailable=true,resultDraft=null,gameOptions=[],h2hMeta={ready:false,results:[]},marketRows=[],marketStatus='idle',marketContext='',marketRequest=null,entryError='',marketAutoGenFor='',autoAdvanceFor='';
 for(const r of ['joinleague','createleague','selectteam','claimreview','result','resultreview','addgame','office','market','explore','advanced'])routes.add(r);
 const nativeReadingContent=content;
 const nativeTeam=team;
@@ -49,7 +49,7 @@ async function writeAction(name,body,form,after){
 function clearNotice(){notice='';const n=$('globalNotice');if(n)n.remove()}
 async function afterSeasonLoaded(){
  const key=context(),serial=loadSerial;h2hMeta={ready:false,results:[]};marketRows=[];marketStatus='idle';marketContext='';teamChoice=null;resultDraft=null;officeData=null;officeLoadedFor='';
- loadMarketLines().then(()=>maybeAutoGenerateLines());
+ loadMarketLines().then(async()=>{await maybeAutoAdvanceWeek();maybeAutoGenerateLines()});
  try{const meta=await readRpc('get_h2h_results',{p_dynasty_id:dynasty.dynasty_id,p_season_id:season.season_id});if(serial!==loadSerial||key!==context())return;h2hMeta=meta?.ready?meta:{ready:false,results:[]};if(route==='advanced'||mutationPending||document.querySelector('#mainContent form')||$('detailSheet')?.open)return;const top=$('screenViewport')?.scrollTop;render();if($('screenViewport'))$('screenViewport').scrollTop=top||0}catch{}
 }
 async function refreshCurrent(target='home',gameId=null){const d=dynasty?.dynasty_id;if(!d)return;await loadDynasty(d);if(loadError){notice='Saved successfully. Reload the league to see the updated data.';render();return}if(gameId)selectedGame=gameId;route=target;historyReplace();render()}
@@ -228,6 +228,38 @@ async function maybeAutoGenerateLines(){
   await loadMarketLines();
  }catch{/* Lines can still be generated manually from the Market Desk. */}
 }
+function weekProgress(w){
+ const human=new Set(model.programs.filter(p=>p.person_id).map(p=>String(p.team_id)));
+ const slate=games().filter(g=>Number(g.week_number)===Number(w)&&!g.is_bye&&g.status!=='cancelled'&&(human.has(String(g.team_id))||human.has(String(g.opponent_team_id))||g.person_id||g.opponent_person_id));
+ const pending=slate.filter(g=>!g.final);
+ const waiting=[...new Set(pending.flatMap(g=>[g.team_id,g.opponent_team_id]).filter(id=>human.has(String(id))).map(id=>model.programs.find(p=>String(p.team_id)===String(id))?.coach_name).filter(Boolean))];
+ return {total:slate.length,done:slate.length-pending.length,pending,waiting};
+}
+function weekProgressStrip(){
+ if(!season?.is_active)return '';
+ const p=weekProgress(week);if(!p.total)return '';
+ const maxWeek=Math.max(0,...games().map(g=>Number(g.week_number)||0));
+ const sub=p.pending.length?('Waiting on '+p.waiting.join(', ')):(Number(week)>=maxWeek?'All in — the season is complete':'All in — the week advances automatically');
+ return `<div class="week-progress"><strong>Week ${esc(week)} · ${p.done} of ${p.total} coach games in</strong><span>${esc(sub)}</span></div>`;
+}
+async function maybeAutoAdvanceWeek(){
+ if(!canManage()||!season?.is_active||mutationPending)return;
+ const key=context()+':w'+week;
+ if(autoAdvanceFor===key)return;autoAdvanceFor=key;
+ const p=weekProgress(week);
+ if(!p.total||p.pending.length)return;
+ const maxWeek=Math.max(0,...games().map(g=>Number(g.week_number)||0));
+ if(Number(week)>=maxWeek)return;
+ try{
+  const stored=await readRpc('get_dynasty_active_week',{p_dynasty_id:dynasty.dynasty_id});
+  if(stored!=null&&Number(stored)!==Number(week))return;
+  await req('/rest/v1/rpc/set_dynasty_active_week',{method:'POST',token:session()?.access_token,body:{p_dynasty_id:dynasty.dynasty_id,p_week:Number(week)+1},retry:0});
+  if(context()+':w'+week!==key)return;
+  week=Number(week)+1;
+  notice='All coach games were in — advanced to Week '+week+'.';
+  if(!document.querySelector('#mainContent form')&&!$('detailSheet')?.open)render();
+ }catch{/* The week can still be advanced manually in the League Office. */}
+}
 async function openMarket(){go('market');await loadMarketLines()}
 
 function marketPage(){const all=games().filter(g=>g.week_number===week),rows=all.map(g=>({g,v:marketLineFor(g)})).filter(x=>x.v);return title(dynasty.name,'Lines & predictions','Recorded model estimates · Week '+week)+`<p class="sport-note">Model estimates are forecasts, not game results.</p>`+(marketStatus==='loading'?empty('Loading the market…'):marketStatus==='error'?empty(entryError)+`<button class="secondary" onclick="openMarket()">Retry</button>`:rows.map(({g,v})=>`<article class="market-card">${card(g)}${statline([[v.spread_home==null?'—':String(v.spread_home),'Home spread'],[v.total_line??'—','Total'],[v.home_win_probability==null?'—':Math.round(v.home_win_probability*100)+'%','Home win chance']])}</article>`).join('')||empty('No market lines are recorded for this week.'))}
@@ -236,6 +268,8 @@ account=function(){return title('Your Foundry','Account & league')+`<p class="mu
 home=function(){const mine=myTeam(),gs=mine?teamGames(mine):games(),featured=gs.find(g=>num(g.week_number)===week)||gs.filter(g=>!g.final)[0]||gs.filter(g=>g.final).at(-1),lead=storyItems()[0];const waiting=(h2hMeta.results||[]).filter(v=>v.status==='pending'&&v.opponent_person===myCoach());return `<div class="welcome-line"><button class="leaguepick" onclick="go('leagues')">${esc(dynasty.name)} ${ico('down')}</button><button onclick="go('seasons')">Season ${esc(season.season_number)} · Week ${week}</button></div>${title('For you','Your league, your Saturday')}<div class="home-layout"><div class="home-main">${!mine&&activeSeason()?`<div class="join-callout"><span class="eyebrow">A PROGRAM IS WAITING</span><h2>Make your mark.</h2><p>Choose a team and start your next chapter.</p><button class="primary" onclick="openTeamSelection()">Choose your program</button></div>`:''}${featured?card(featured,!!mine):empty('The schedule is ready for its first matchup.')}${featured&&scoreEntryAllowed(featured)?`<button class="primary result-cta" onclick="beginResult('${uid(featured.id)}')">Enter final score</button>`:''}${waiting.length?row('Finals to validate',waiting.length+' '+(waiting.length===1?'game needs':'games need')+' your confirmation',`onclick="openGame('${uid(waiting[0].game_id)}')"`):''}<section class="league-week" aria-label="This week in your league">${section('This week in your league','scores','All scores')}<p class="sport-note">Week ${week} · User matchups</p>${games().filter(g=>num(g.week_number)===week&&g.id!==featured?.id&&model.programs.some(p=>p.person_id&&(p.team_id===g.awayId||p.team_id===g.homeId))).map(g=>card(g)).join('')||empty('No other user matchups are scheduled for this week.')}</section><div class="quicklinks">${button('All scores','scores','chip')}${mine?`<button onclick="openTeam('${uid(mine)}')">My team</button>`:''}${myCoach()?`<button onclick="openCoach('${uid(myCoach())}')">My coach</button>`:''}</div>${homeReport()}</div><aside class="home-rail">${section('The league picture')}${row('Conference standings','Follow the current race',`onclick="go('standings')"`)}${row('Top 25','Latest recorded poll',`onclick="go('rankings')"`)}${row('Explore the Foundry','Analysis, market, history and league tools',`onclick="go('explore')"`)}</aside></div>`};
 scores=function(){const body=nativeScores();return body+(myTeam()&&activeSeason()?`<button class="secondary" onclick="openAddGame()">Add a matchup</button>`:'')};
 team=function(){return nativeTeam()+(selectedTeam===myTeam()&&activeSeason()?`<button class="secondary" onclick="openAddGame()">Add a matchup</button>`:'')};
+const nativeHome=home;
+home=function(){const base=nativeHome(),strip=weekProgressStrip();if(!strip)return base;const marker='<div class="quicklinks">';return base.includes(marker)?base.replace(marker,strip+marker):base};
 gamePage=function(){const g=games().find(g=>g.id===selectedGame);if(!g)return nativeGame();const base=nativeGame().replace('<p class="sport-note">Score entry is available in the main app. This preview is read-only.</p>','');return base+dynastyLine(g)+h2hStatus(g)+(scoreEntryAllowed(g)?`<button class="primary" onclick="beginResult('${uid(g.id)}')">Enter final score</button>`:g.final&&myGame(g)?`<p class="sport-note">Completed-result corrections require commissioner review.</p>${canManage()?`<button class="secondary" onclick="beginCorrection('${uid(g.id)}')">Review completed result</button>`:''}`:isH2H(g)&&!h2hMeta.ready?'<p class="sport-note">Validation must be available before recording a coach-vs-coach final. Refresh the league to try again.</p>':'')};
 content=function(){if(dynasty&&!season&&!['seasons','leagues','joinleague','createleague','account'].includes(route))return title(dynasty.name,'Your season is not ready yet.')+empty('Your commissioner can create a season in league management.')+button('Account','account','secondary');if(!dynasty&&!['leagues','joinleague','createleague','account'].includes(route))return leagueChooser();switch(route){case'leagues':return leagueChooser();case'joinleague':return joinLeague();case'createleague':return createLeague();case'selectteam':return selectionPage();case'claimreview':return claimReview();case'result':return resultPage();case'resultreview':return resultReview();case'addgame':return addGamePage();case'office':return officePage();case'market':return marketPage();case'explore':return explorePage();case'advanced':return advancedPage();default:return nativeReadingContent()}};
 const navigation=()=>[['Home','home'],['Scores','scores'],['Teams','teams'],['Standings','standings'],['Legacy','legacy']].map(([n,r])=>`<button class="${navSection()===r?'on':''}" ${navSection()===r?'aria-current="page"':''} onclick="go('${r}')">${ico(r)}<span>${n}</span></button>`).join('');
