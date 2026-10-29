@@ -91,3 +91,23 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:20px;top:-3px}
  html.sf-standalone .bottomnav .icon{width:18px;height:18px}
  html.sf-standalone .bottomnav button.on:before{height:2px;width:20px;top:-5px}
 }
+
+/* 10.1.4: iOS can report an oversized standalone bottom safe area.
+   Cap only the dock's effective inset so the blank area cannot stretch the menu. */
+@media(max-width:700px){
+ html.sf-standalone{--sf-dock-safe-bottom:clamp(0px,env(safe-area-inset-bottom,0px),30px)}
+ html.sf-standalone .bottomnav{
+   position:fixed!important;left:0;right:0;bottom:0!important;
+   box-sizing:border-box;display:flex!important;align-items:flex-start;
+   height:calc(52px + var(--sf-dock-safe-bottom))!important;
+   min-height:0!important;max-height:calc(52px + var(--sf-dock-safe-bottom))!important;
+   padding:4px max(12px,env(safe-area-inset-right,0px)) var(--sf-dock-safe-bottom) max(12px,env(safe-area-inset-left,0px));
+ }
+ html.sf-standalone .bottomnav button{
+   min-height:44px;max-height:44px;height:44px;
+   padding:5px 1px 2px;gap:2px;
+ }
+ html.sf-standalone .viewport{
+   padding-bottom:calc(52px + var(--sf-dock-safe-bottom));
+ }
+}
