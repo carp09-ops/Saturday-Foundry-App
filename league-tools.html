@@ -9982,7 +9982,7 @@ $("newSeasonBtn").onclick=async()=>{
  const coaches=state.dynastyCoaches||[],selects=[...document.querySelectorAll("#nextSeasonAssignments .rollover-program")];
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg($("seasonAdminMessage"),"Enter a valid four-digit season year.","error");return}
  if(!coaches.length||selects.length!==coaches.length||selects.some(x=>!x.value)){msg($("seasonAdminMessage"),"Select a next-season program for every coach, including coaches staying.","error");return}
- const assignments=selects.map(x=>({person_id:x.dataset.personId,team_id:x.value}));
+ const assignments=selects.map(x=>({person_id:x.dataset.personId,team_id:x.value,confirmed:true}));
  if(new Set(assignments.map(x=>x.person_id)).size!==assignments.length||new Set(assignments.map(x=>x.team_id)).size!==assignments.length){msg($("seasonAdminMessage"),"Each coach must have a unique team.","error");return}
  const summary=assignments.map(a=>{const c=coaches.find(x=>String(x.person_id)===a.person_id),t=teamChoices.find(x=>String(x.team_id)===a.team_id);return (c?.coach_name||"Coach")+" → "+(t?.team_name||"Team")}).join("\\n");
  if(!confirm("Confirm Season "+(Number(S.season_number||0)+1)+" assignments:\\n"+summary+"\\n\\nThis will complete the current season and create the next season."))return;
