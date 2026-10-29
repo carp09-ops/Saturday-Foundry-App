@@ -61,14 +61,14 @@
     select.add(new Option('Choose stay or a new team',''));
     const current=teams.find(t=>t.team_name===coach.current_team_name);
     if(current)select.add(new Option('Stay · '+current.team_name,current.team_id));
-    for(const team of teams)if(!current||team.team_id!==current.team_id)select.add(new Option(team.team_name,team.team_id));
+    for(const team of teams)if((!team.claimed)&&(!current||team.team_id!==current.team_id))select.add(new Option(team.team_name,team.team_id));
     wrapper.append(select);panel.append(wrapper);selectors.push({coach,select});
    }
    const submit=document.createElement('button');submit.type='button';submit.className='btn primary';submit.textContent='Review and create next season';panel.append(submit);
    button.closest('.admin-card').append(panel);
    document.getElementById('carryPrograms')?.closest('label')?.classList.add('hidden');
    submit.onclick=async()=>{
-    const assignments=selectors.map(({coach,select})=>({person_id:coach.person_id,team_id:select.value}));
+    const assignments=selectors.map(({coach,select})=>({person_id:coach.person_id,team_id:select.value,confirmed:true}));
     if(assignments.some(a=>!a.team_id)||new Set(assignments.map(a=>a.team_id)).size!==assignments.length)return note('Confirm a unique program for every coach.');
     const review=selectors.map(({coach,select})=>(coach.coach_name||coach.display_name)+' → '+select.selectedOptions[0].text).join('\n');
     if(!confirm('Start Season '+(Number(S.season_number)+1)+' with these programs?\n\n'+review))return;
@@ -76,7 +76,7 @@
     try{
      note('Creating season and program assignments together…');
      const auth=session();
-     await req('/rest/v1/rpc/create_next_season_with_assignments',{method:'POST',token:auth.access_token,body:{p_dynasty_id:D.dynasty_id,p_year:year,p_assignments:assignments}});
+     await req('/rest/v1/rpc/create_next_season_with_programs',{method:'POST',token:auth.access_token,body:{p_dynasty_id:D.dynasty_id,p_year:year,p_assignments:assignments}});
      note('Season and assignments saved.');
      dynasties=await Data.dynasties();
      await loadDynasty(Math.max(0,dynasties.findIndex(x=>x.dynasty_id===D.dynasty_id)));
