@@ -9974,9 +9974,9 @@ $("adminClaims").onclick=async e=>{
 $("newSeasonBtn").onclick=async()=>{
  const raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null,out=$("seasonAdminMessage"),host=$("seasonAssignmentWizard");
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg(out,"Enter a valid four-digit season year.","error");return}
- const coaches=(state.dynastyCoaches||[]).filter(c=>c.person_id&&c.current_team_id);
+ const coaches=(state.dynastyCoaches||[]).filter(c=>c.person_id&&c.current_team_id&&String(c.current_season_id)===String(S.season_id));
  if(!coaches.length){msg(out,"No active coach assignments were loaded. Refresh the league before rollover.","error");return}
- const choices=Array.from(new Map((state.teamChoices||state.teams||[]).map(t=>[String(t.team_id||t.id),{id:String(t.team_id||t.id),name:t.team_name||t.name}])).values()).filter(t=>t.id&&t.name);
+ const choices=Array.from(new Map((teamChoices||[]).map(t=>[String(t.team_id||t.id),{id:String(t.team_id||t.id),name:t.team_name||t.name}])).values()).filter(t=>t.id&&t.name);
  for(const c of coaches){if(!choices.some(t=>t.id===String(c.current_team_id)))choices.push({id:String(c.current_team_id),name:c.current_team_name||"Current program"})}
  if(!choices.length){msg(out,"Team catalog unavailable. Rollover stopped.","error");return}
  host.classList.remove("hidden");host.innerHTML='<h4>Confirm all next-season programs</h4><p>Choose Stay or Change for each coach. Confirm every row before continuing.</p>'+coaches.map((c,i)=>'<div class="form-row" style="display:grid;gap:8px;margin:12px 0;padding:12px;border:1px solid #8b8580;border-radius:8px"><strong>'+esc(c.coach_name||"Coach")+'</strong><small>Current: '+esc(c.current_team_name||"Unknown")+'</small><select class="rollover-team" data-coach="'+esc(c.person_id)+'" aria-label="Next team for '+esc(c.coach_name||"coach")+'">'+choices.map(t=>'<option value="'+esc(t.id)+'" '+(t.id===String(c.current_team_id)?'selected':'')+'>'+esc(t.name)+'</option>').join('')+'</select><label><input type="checkbox" class="rollover-confirm"> I confirm this coach\'s next-season program</label></div>').join('')+'<button type="button" class="btn primary" id="confirmRollover">Confirm assignments and start Season '+(Number(S.season_number||0)+1)+'</button><button type="button" class="btn" id="cancelRollover">Cancel</button>';
