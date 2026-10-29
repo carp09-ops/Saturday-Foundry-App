@@ -9972,7 +9972,7 @@ $("adminClaims").onclick=async e=>{
  }catch(err){msg($("claimsAdminMessage"),err.message,"error")}finally{b.disabled=false}
 };
 $("newSeasonBtn").onclick=()=>{
- const coaches=state.dynastyCoaches||[],out=$("seasonAdminMessage");
+ const coaches=(state.dynastyCoaches||[]).filter(c=>String(c.current_season_id)===String(S.season_id)),out=$("seasonAdminMessage");
  if(!coaches.length){msg(out,"No active coaches were found. Rollover is blocked.","error");return}
  const rows=$("seasonProgramRows");
  rows.innerHTML=coaches.map((c,i)=>{
@@ -9986,12 +9986,12 @@ $("cancelSeasonProgramsBtn").onclick=()=>{$("seasonProgramWizard").classList.add
 $("confirmSeasonProgramsBtn").onclick=async()=>{
  const btn=$("confirmSeasonProgramsBtn"),raw=$("nextSeasonYear").value.trim(),year=raw?Number(raw):null;
  if(year!==null&&(!Number.isInteger(year)||year<2020||year>2100)){msg($("seasonAdminMessage"),"Enter a valid four-digit season year.","error");return}
- const coaches=state.dynastyCoaches||[];
+ const coaches=(state.dynastyCoaches||[]).filter(c=>String(c.current_season_id)===String(S.season_id));
  const selections=[...document.querySelectorAll(".season-program-choice")];
  if(selections.length!==coaches.length||selections.some(el=>!el.value)){msg($("seasonAdminMessage"),"Confirm a program for every active coach.","error");return}
  const assignments=selections.map(el=>{
   const c=coaches.find(x=>String(x.person_id)===el.dataset.person);
-  const current=teamChoices.find(t=>String(t.team_name)===String(c?.current_team_name));
+  const current=teamChoices.find(t=>String(t.team_id)===String(c?.current_team_id));
   return {person_id:el.dataset.person,team_id:el.value==="stay"?current?.team_id:el.value};
  });
  if(assignments.some(a=>!a.team_id)||new Set(assignments.map(a=>a.team_id)).size!==assignments.length){msg($("seasonAdminMessage"),"Resolve missing or duplicate program selections.","error");return}
