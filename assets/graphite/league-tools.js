@@ -15,7 +15,8 @@
    if(D?.dynasty_id===id&&(!sid||S?.season_id===sid)){applied=true;document.documentElement.classList.add('sf-tools-ready');document.getElementById('sfEmbeddedStatus')?.remove();if(known.has(view)&&(view!=='admin'||['commissioner','co_commissioner'].includes(D?.role)))window.switchView(view);if(view==='admin'&&['commissioner','co_commissioner'].includes(D?.role)){const control=document.getElementById(focus==='season'?'newSeasonBtn':focus==='program'?'careerMoveCoach':'');control?.closest('.admin-card')?.scrollIntoView({block:'start'});if(focus==='program')control?.focus({preventScroll:true})}}
   }catch(error){console.warn('League context could not be selected automatically.');const status=document.getElementById('sfEmbeddedStatus');if(status)status.textContent='The league tools could not load. Return to Home and refresh your league to try again.';}finally{pending=false}
  }
- const observer=new MutationObserver(()=>{if(applied)return observer.disconnect();if(!timer)timer=setTimeout(()=>{timer=null;align()},120)});observer.observe(document.body,{childList:true,subtree:true});align();
+ const observer=new MutationObserver(()=>{if(applied)return observer.disconnect();if(!timer)timer=setTimeout(()=>{timer=null;align()},120)});observer.observe(document.body,{childList:true,subtree:true});
+ window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});align();
  if(embedded)setTimeout(()=>{const status=document.getElementById('sfEmbeddedStatus');if(!applied&&status)status.textContent='Still waiting for your league. Return to Home and refresh if this does not finish.'},25000);
 })();
 
@@ -33,7 +34,7 @@
 /* Confirmed program assignments: intercept legacy rollover before its onclick fires. */
 (function(){
  let busy=false;
- const byId=id=>document.getElementById(id);
+ const byId=id=>window.document?.getElementById?.(id);
  const announce=message=>{
    const node=byId('seasonAdminMessage');
    if(node){node.textContent=message;node.classList.remove('hidden');node.setAttribute('role','status')}
