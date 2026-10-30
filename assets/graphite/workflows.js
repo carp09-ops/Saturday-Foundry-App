@@ -173,8 +173,26 @@ function dynastyLineBody(g){
 function winProbMeter(g){
  const v=marketLineFor(g),prob=lineNumber(v?.home_win_probability);
  if(prob===null)return '';
- const homePct=Math.round(prob*100),awayPct=100-homePct;
- return `<div class="winprob" role="img" aria-label="Win probability: ${esc(g.away)} ${awayPct} percent, ${esc(g.home)} ${homePct} percent"><div class="winprob-head"><span>WIN PROBABILITY</span><span>${esc(g.away)} ${awayPct}% · ${esc(g.home)} ${homePct}%</span></div><div class="winprob-bar"><span class="winprob-away" style="width:${awayPct}%"></span><span class="winprob-home" style="width:${homePct}%"></span></div></div>`;
+ const homePct=(prob*100).toFixed(1),awayPct=((1-prob)*100).toFixed(1);
+ const C=2*Math.PI*52,homeLen=(prob*C).toFixed(1);
+ return `<div class="winprob" role="img" aria-label="Matchup predictor: ${esc(g.away)} ${awayPct} percent, ${esc(g.home)} ${homePct} percent"><div class="winprob-head"><span>MATCHUP PREDICTOR</span><span>Foundry model</span></div><div class="winprob-body"><div class="winprob-side"><strong>${awayPct}%</strong><span>${esc(g.away)}</span></div><svg class="winprob-donut" viewBox="0 0 120 120" aria-hidden="true"><circle class="donut-away" cx="60" cy="60" r="52"></circle><circle class="donut-home" cx="60" cy="60" r="52" stroke-dasharray="${homeLen} ${C.toFixed(1)}" transform="rotate(-90 60 60)"></circle></svg><div class="winprob-side"><strong>${homePct}%</strong><span>${esc(g.home)}</span></div></div></div>`;
+}
+function lastFiveRows(name){
+ const seen=new Set(),out=[];
+ [...(model.history||[])].filter(g=>g.team_name===name&&!g.is_bye&&Number.isFinite(Number(g.points_for))&&Number.isFinite(Number(g.points_against))).sort((a,b)=>Number(b.season_number)-Number(a.season_number)||Number(b.week_number)-Number(a.week_number)).forEach(g=>{
+  const k=g.season_id+'|'+g.week_number+'|'+g.opponent_team_id;
+  if(seen.has(k))return;seen.add(k);out.push(g);
+ });
+ return out.slice(0,5);
+}
+function lastFiveSection(g){
+ const block=(name,id)=>{
+  const rows=lastFiveRows(name);
+  if(!rows.length)return '';
+  return `<div class="last5-team"><div class="last5-head">${logo(id,name)}<b>${esc(name)}</b></div>${rows.map(r=>{const win=Number(r.points_for)>Number(r.points_against);const when=(season&&Number(r.season_number)!==Number(season.season_number)?'S'+r.season_number+' · ':'')+(r.week_label||'Week '+r.week_number);return `<div class="last5-row"><span>${esc(when)}</span><span>${r.home_away==='away'?'@':'vs'} ${esc(r.opponent_team)}</span><b class="${win?'trend up':'trend down'}">${win?'W':'L'} ${esc(r.points_for)}–${esc(r.points_against)}</b></div>`}).join('')}</div>`;
+ };
+ const a=block(g.away,g.awayId),h=block(g.home,g.homeId);
+ return a||h?section('Last five games')+a+h:'';
 }
 function dynastyLine(g){return `<div class="dynasty-line" data-dynasty-line="${uid(g.id)}">${dynastyLineBody(g)}</div>`}
 function refreshLineCards(){document.querySelectorAll('[data-dynasty-line]').forEach(el=>{const g=games().find(g=>g.id===el.dataset.dynastyLine);if(g)el.innerHTML=dynastyLineBody(g)})}
@@ -299,9 +317,14 @@ function bracketGameHTML(g,isChamp){
 function bracketSection(){
  if(scope!=='all')return '';
  const data=bracketData();if(!data)return '';
- const labels=['Round 1','Round 2','Semifinals','Championship'];
+ const labels=['First Round','Quarterfinals','Semifinals','National Championship'];
  const active=bracketActiveRound(data);
- return `<section class="bracket">${section('College Football Playoff')}<div class="filterbar bracket-pills">${labels.map((l,i)=>`<button class="${i===active?'sel':''}" aria-pressed="${i===active}" onclick="setBracketRound(${i})">${l}</button>`).join('')}</div>${data.rounds[active].map(g=>bracketGameHTML(g,active===3)).join('')}</section>`;
+ return `<section class="bracket">${section('College Football Playoff')}<div class="filterbar bracket-pills">${labels.map((l,i)=>`<button class="${i===active?'sel':''}" aria-pressed="${i===active}" onclick="setBracketRound(${i})">${l}</button>`).join('')}</div>${data.rounds[active].map(g=>bracketGameHTML(g,active===3)).join('')}${active===3?champBanner(data.rounds[3][0]):''}</section>`;
+}
+function champBanner(g){
+ if(!g||!g.final||g.a===g.h)return '';
+ const homeWon=g.h>g.a,winner=homeWon?g.home:g.away,winnerId=homeWon?g.homeId:g.awayId;
+ return `<div class="champ-banner"><span class="champ-year">${esc(season?.year||'')}</span>${logo(winnerId,winner)}<strong>NATIONAL CHAMPION</strong><span class="champ-team">${esc(winner)}</span></div>`;
 }
 function playoffPicture(){
  if(scope!=='all')return '';
@@ -333,7 +356,7 @@ scores=function(){const body=nativeScores();return body+(myTeam()&&activeSeason(
 team=function(){return nativeTeam()+(selectedTeam===myTeam()&&activeSeason()?`<button class="secondary" onclick="openAddGame()">Add a matchup</button>`:'')};
 const nativeHome=home;
 home=function(){const base=nativeHome(),strip=weekProgressStrip();if(!strip)return base;const marker='<div class="quicklinks">';return base.includes(marker)?base.replace(marker,strip+marker):base};
-gamePage=function(){const g=games().find(g=>g.id===selectedGame);if(!g)return nativeGame();const base=nativeGame().replace('<p class="sport-note">Score entry is available in the main app. This preview is read-only.</p>','');return base+dynastyLine(g)+winProbMeter(g)+h2hStatus(g)+(scoreEntryAllowed(g)?`<button class="primary" onclick="beginResult('${uid(g.id)}')">Enter final score</button>`:g.final&&myGame(g)?`<p class="sport-note">Completed-result corrections require commissioner review.</p>${canManage()?`<button class="secondary" onclick="beginCorrection('${uid(g.id)}')">Review completed result</button>`:''}`:isH2H(g)&&!h2hMeta.ready?'<p class="sport-note">Validation must be available before recording a coach-vs-coach final. Refresh the league to try again.</p>':'')};
+gamePage=function(){const g=games().find(g=>g.id===selectedGame);if(!g)return nativeGame();const base=nativeGame().replace('<p class="sport-note">Score entry is available in the main app. This preview is read-only.</p>','');return base+dynastyLine(g)+winProbMeter(g)+lastFiveSection(g)+h2hStatus(g)+(scoreEntryAllowed(g)?`<button class="primary" onclick="beginResult('${uid(g.id)}')">Enter final score</button>`:g.final&&myGame(g)?`<p class="sport-note">Completed-result corrections require commissioner review.</p>${canManage()?`<button class="secondary" onclick="beginCorrection('${uid(g.id)}')">Review completed result</button>`:''}`:isH2H(g)&&!h2hMeta.ready?'<p class="sport-note">Validation must be available before recording a coach-vs-coach final. Refresh the league to try again.</p>':'')};
 content=function(){if(dynasty&&!season&&!['seasons','leagues','joinleague','createleague','account'].includes(route))return title(dynasty.name,'Your season is not ready yet.')+empty('Your commissioner can create a season in league management.')+button('Account','account','secondary');if(!dynasty&&!['leagues','joinleague','createleague','account'].includes(route))return leagueChooser();switch(route){case'leagues':return leagueChooser();case'joinleague':return joinLeague();case'createleague':return createLeague();case'selectteam':return selectionPage();case'claimreview':return claimReview();case'result':return resultPage();case'resultreview':return resultReview();case'addgame':return addGamePage();case'office':return officePage();case'market':return marketPage();case'explore':return explorePage();default:return nativeReadingContent()}};
 const navigation=()=>[['Home','home'],['Scores','scores'],['Teams','teams'],['Standings','standings'],['Legacy','legacy']].map(([n,r])=>`<button class="${navSection()===r?'on':''}" ${navSection()===r?'aria-current="page"':''} onclick="go('${r}')">${ico(r)}<span>${n}</span></button>`).join('');
 render=function(){const signedIn=!!session()?.access_token,ready=signedIn&&!busy&&!loadError,hasSeason=!!season;let body;try{body=busy?`<div class="loading" role="status"><img class="loading-logo" src="${BRAND_ASSET}foundry-shield.webp" alt="" aria-hidden="true">${title('Saturday Foundry','Loading your league…','Your latest scores, coaches and history are on their way.')}</div>`:loadError?title('Connection interrupted','Let’s try that again.',loadError)+`<button class="primary" onclick="start()">Retry</button>${signedIn?'<button class="secondary" onclick="logout()">Sign out</button>':''}`:!signedIn?loginPage():content()}catch(e){body=title('Something went wrong','This screen could not load.',e.message)+button('Home','home')}

@@ -43,5 +43,5 @@ test('standings compute current streaks per team from finals', () => {
   assert.equal(streaks.get('a'), 'W3', 'Team A won its last three');
   assert.equal(streaks.get('b'), 'W2', 'Team B won its last two (non-final game ignored)');
   assert.equal(streaks.get('x'), 'L2', 'Team X lost its last two');
-  assert(league.includes("'PCT','STREAK'"), 'Standings table carries the streak column');
+  assert(league.includes("'PCT','PF','PA','STREAK'"), 'Standings table carries PF/PA and the streak column');
 });
