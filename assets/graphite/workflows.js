@@ -350,9 +350,18 @@ function champBanner(g){
  const homeWon=g.h>g.a,winner=homeWon?g.home:g.away,winnerId=homeWon?g.homeId:g.awayId;
  return `<div class="champ-banner"><span class="champ-year">${esc(season?.year||'')}</span>${logo(winnerId,winner)}<strong>NATIONAL CHAMPION</strong><span class="champ-team">${esc(winner)}</span></div>`;
 }
+function playoffPictureOpen(){
+ const isPost=g=>{const t=String(g.game_type||'').toLowerCase();return t==='playoff'||t==='cfp'||t==='bowl'||t==='conference_championship'||t==='national_championship'};
+ const reg=games().filter(g=>!g.is_bye&&!isPost(g));
+ const lastReg=Math.max(0,...reg.map(g=>Number(g.week_number)||0));
+ if(!lastReg)return false;
+ const progress=Math.max(0,...reg.filter(g=>g.final).map(g=>Number(g.week_number)||0));
+ return progress>=Math.ceil(lastReg/2);
+}
 function playoffPicture(){
  if(scope!=='all')return '';
  if(bracketData())return '';
+ if(!playoffPictureOpen())return '';
  const cm=conferenceModel(model);
  const played=cm.teams.filter(t=>t.w+t.l>0);
  if(played.length<4)return '';

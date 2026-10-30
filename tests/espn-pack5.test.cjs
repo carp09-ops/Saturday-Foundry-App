@@ -8,7 +8,7 @@ const read = p => fs.readFileSync(path.join(root, p), 'utf8');
 
 test('playoff picture seeds champions to byes and pairs the first round', () => {
   const wf = read('assets/graphite/workflows.js');
-  const src = wf.slice(wf.indexOf('function playoffPicture('), wf.indexOf('async function openMarket('));
+  const src = wf.slice(wf.indexOf('function playoffPictureOpen('), wf.indexOf('async function openMarket('));
   const dom = new JSDOM('<!doctype html><body></body>', { runScripts: 'outside-only' });
   const w = dom.window;
   const team = (id, name, conf, wins, losses) => ({ id, name, conf, w: wins, l: losses, cw: wins, cl: losses });
@@ -19,7 +19,7 @@ test('playoff picture seeds champions to byes and pairs the first round', () => 
     var scope = 'all';
     var model = {};
     var bracketData = () => null;
-    var games = () => [];
+    var games = () => Array.from({length: 8}, (_, i) => ({ week_number: i + 1, is_bye: false, game_type: '', final: true, awayId: 'x', homeId: 'y', a: 30, h: 20 }));
     var conferenceModel = () => ({
       sortRows: (a, b) => (b.w / (b.w + b.l)) - (a.w / (a.w + a.l)) || b.w - a.w,
       teams: [
@@ -54,6 +54,11 @@ test('playoff picture seeds champions to byes and pairs the first round', () => 
   assert(html.includes('Conference champion'), 'Champions are tagged');
   assert.equal((html.match(/team-logo/g) || []).length, 12, 'Every seed row carries its school logo');
   assert(html.includes('picture-team') && html.includes('pic-rec'), 'Rows use the no-wrap record layout');
+  const slate = finalThrough => Array.from({ length: 14 }, (_, i) => ({ week_number: i + 1, is_bye: false, game_type: '', final: i < finalThrough, awayId: 'x', homeId: 'y', a: 30, h: 20 }));
+  w.eval('games = () => ' + JSON.stringify(slate(3)) + ';');
+  assert.equal(w.playoffPicture(), '', 'Picture stays hidden before midseason (finals through week 3 of 14)');
+  w.eval('games = () => ' + JSON.stringify(slate(7)) + ';');
+  assert(w.playoffPicture().includes('Playoff picture'), 'Picture opens at midseason (finals through week 7 of 14)');
   w.eval('bracketData = () => ({ rounds: [] });');
   assert.equal(w.playoffPicture(), '', 'The real bracket replaces the picture once playoff games exist');
   w.eval('bracketData = () => null; scope = "mine";');
