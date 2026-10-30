@@ -11,8 +11,8 @@ test('standings print PF/PA and cards carry team records', () => {
   assert(league.includes("'CONF','OVERALL','PCT','PF','PA','STREAK'"), 'Standings gain PF/PA columns');
   assert(league.includes("'—',t.pf,t.pa,streaks.get(t.id)"), 'Standings rows print the model PF/PA');
   assert(league.includes('function teamRecordMap(') && league.includes('function recordChip('), 'Card record helpers exist');
-  assert(league.includes('<span>${esc(g.away)}</span>${recordChip(g.awayId)}'), 'Away row carries its record');
-  assert(league.includes('<span>${esc(g.home)}</span>${recordChip(g.homeId)}'), 'Home row carries its record');
+  assert(league.includes('<span>${esc(g.away)}${recordChip(g.awayId)}</span>'), 'Away row carries its record inside the name cell (grid stays three columns)');
+  assert(league.includes('<span>${esc(g.home)}${recordChip(g.homeId)}</span>'), 'Home row carries its record inside the name cell');
 });
 
 test('card records count finals only, from the loaded season', () => {
