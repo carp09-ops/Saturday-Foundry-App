@@ -19,8 +19,13 @@ test('active tab is a crimson pill, tick removed',()=>{
   assert.match(block,/\.bottomnav button\.on:before\{display:none\}/);
 });
 
-test('standalone geometry: dock floats off the safe area, ribbon above it, content clears both',()=>{
-  assert.match(block,/html\.sf-standalone \.bottomnav\{left:10px;right:10px;bottom:calc\(var\(--sf-dock-safe-bottom\) \+ 8px\);height:60px!important/);
-  assert.match(block,/html\.sf-standalone \.sf-bottom-ribbon\{bottom:calc\(74px \+ var\(--sf-dock-safe-bottom,0px\)\)\}/);
-  assert.match(block,/html\.sf-standalone \.viewport\{padding-bottom:calc\(108px \+ var\(--sf-dock-safe-bottom,0px\)\)\}/);
+test('standalone geometry: THE LINE grounds the bottom edge, capsule floats above it, content clears both',()=>{
+  // 10.1.38: Corey asked for the ticker below the menu. The standalone dock
+  // override must carry the glass background itself: html.sf-standalone rules
+  // outrank the generic .bottomnav rule, which is how 10.1.36 shipped a cream
+  // bar pinned by an older bottom:0!important.
+  assert.match(block,/html\.sf-standalone \.bottomnav\{left:10px;right:10px;bottom:calc\(42px \+ var\(--sf-dock-safe-bottom\)\)!important;height:60px!important/);
+  assert.match(block,/html\.sf-standalone \.bottomnav\{[^}]*background:rgba\(26,27,31,\.93\)/);
+  assert.match(block,/html\.sf-standalone \.sf-bottom-ribbon\{bottom:0;height:calc\(34px \+ var\(--sf-dock-safe-bottom\)\);align-items:flex-start\}/);
+  assert.match(block,/html\.sf-standalone \.viewport\{padding-bottom:calc\(112px \+ var\(--sf-dock-safe-bottom,0px\)\)\}/);
 });
