@@ -25,3 +25,7 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .game-stream-link .icon{width:14px;height:14px;flex:none;stroke-width:2}
 .game-stream-link small{font-size:10px;font-weight:650;color:#6b6265}
 @media(max-width:700px){.game-stream-links{padding:9px 11px 12px;gap:7px}.game-stream-link{min-height:42px;flex:1 1 145px}}
+.weekstrip button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.weekstrip button small{font-size:9px;font-weight:700;letter-spacing:.07em;opacity:.72;white-space:nowrap}
+.gameday-head{font-size:15px;font-weight:800;letter-spacing:-.01em;color:var(--ink);margin:20px 0 4px}
+.team-rank{color:var(--muted);font-size:11px;font-weight:800;margin-right:5px}
