@@ -204,6 +204,6 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
  .bottomnav button.on:before{display:none}
  .viewport{padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
  html.sf-standalone .bottomnav{left:10px;right:10px;bottom:calc(42px + var(--sf-dock-safe-bottom))!important;height:60px!important;min-height:60px!important;max-height:60px!important;padding:4px 6px;background:rgba(26,27,31,.93);border:1px solid rgba(255,255,255,.14);border-radius:999px;box-shadow:0 12px 32px rgba(10,10,12,.38);-webkit-backdrop-filter:blur(14px) saturate(1.25);backdrop-filter:blur(14px) saturate(1.25)}
- html.sf-standalone .sf-bottom-ribbon{bottom:0;height:calc(34px + var(--sf-dock-safe-bottom));align-items:flex-start}
+ html.sf-standalone .sf-bottom-ribbon{bottom:var(--sf-dock-safe-bottom);height:34px;align-items:center}
  html.sf-standalone .viewport{padding-bottom:calc(112px + var(--sf-dock-safe-bottom,0px))}
 }
