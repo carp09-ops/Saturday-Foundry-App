@@ -14,6 +14,7 @@ test('playoff picture seeds champions to byes and pairs the first round', () => 
   const team = (id, name, conf, wins, losses) => ({ id, name, conf, w: wins, l: losses, cw: wins, cl: losses });
   w.eval(`
     var esc = s => String(s);
+    var logo = () => '<img class="team-logo">';
     var section = t => '<h2>' + t + '</h2>';
     var scope = 'all';
     var model = {};
@@ -51,6 +52,8 @@ test('playoff picture seeds champions to byes and pairs the first round', () => 
   assert(html.includes('At-large · First round: hosts #12'), 'Seed 5 hosts seed 12');
   assert(html.includes('At-large · First round: at #5'), 'Seed 12 travels to seed 5');
   assert(html.includes('Conference champion'), 'Champions are tagged');
+  assert.equal((html.match(/team-logo/g) || []).length, 12, 'Every seed row carries its school logo');
+  assert(html.includes('picture-team') && html.includes('pic-rec'), 'Rows use the no-wrap record layout');
   w.eval('bracketData = () => ({ rounds: [] });');
   assert.equal(w.playoffPicture(), '', 'The real bracket replaces the picture once playoff games exist');
   w.eval('bracketData = () => null; scope = "mine";');

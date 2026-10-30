@@ -344,7 +344,7 @@ function playoffPicture(){
  const seeds=[...champSeeds,...pool.filter(t=>!champSeeds.includes(t))].slice(0,12);
  if(seeds.length<4)return '';
  const full=seeds.length===12;
- return `<section class="bracket">${section('Playoff picture')}<p class="sport-note">If the season ended today · Top four conference champions earn first-round byes</p>${seeds.map((t,i)=>{const seed=i+1;const isChamp=champs.has(t.id);const bye=seed<=4&&champSeeds.includes(t);const pair=full&&seed>=5?(seed<=8?` · First round: hosts #${17-seed}`:` · First round: at #${17-seed}`):'';const tag=bye?'Conference champion · First-round bye':isChamp?'Conference champion'+pair:'At-large'+pair;return `<div class="office-list-row"><div><b>${seed}. ${esc(t.name)}</b><div class="muted">${esc(t.conf)} · ${tag}</div></div><strong>${t.w}–${t.l}</strong></div>`}).join('')}</section>`;
+ return `<section class="bracket">${section('Playoff picture')}<p class="sport-note">If the season ended today · Top four conference champions earn first-round byes</p>${seeds.map((t,i)=>{const seed=i+1;const isChamp=champs.has(t.id);const bye=seed<=4&&champSeeds.includes(t);const pair=full&&seed>=5?(seed<=8?` · First round: hosts #${17-seed}`:` · First round: at #${17-seed}`):'';const tag=bye?'Conference champion · First-round bye':isChamp?'Conference champion'+pair:'At-large'+pair;return `<div class="office-list-row picture-row"><div class="picture-team">${logo(t.id,t.name)}<div><b>${seed}. ${esc(t.name)}</b><div class="muted">${esc(t.conf)} · ${tag}</div></div></div><strong class="pic-rec">${t.w}–${t.l}</strong></div>`}).join('')}</section>`;
 }
 async function openMarket(){go('market');await loadMarketLines()}
 
