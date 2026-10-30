@@ -97,6 +97,7 @@ function officePage(){
  const disputed=(h2hMeta.results||[]).filter(v=>v.status==='disputed');
  let h=title(dynasty.name,'League office','Keep the season moving.')+`<div class="office-grid"><section>${section('Active week')}<form class="compact-form" onsubmit="event.preventDefault();saveWeek(this)">${field('activeWeek','Week number','number',`min="0" max="30" step="1" value="${week}" required`)}${formStatus()}<button class="primary" type="submit">Update active week</button></form></section><section>${section('Invite a coach')}<form class="compact-form" onsubmit="event.preventDefault();createInvite(this)">${field('inviteUses','Maximum uses','number','min="1" max="100" step="1" value="1" required')}<p class="muted">Invitations grant member access to this league.</p><p id="inviteMessage" role="status" class="muted"></p><button class="primary" type="submit">Create invitation</button></form></section></div>`;
  h+=`${section('Active invitations')}<div id="officeInvites"><p class="muted">Loading invitations…</p></div>`;
+ h+=loadAuditSection();
  if(!activeSeason()){h+=row('Open the active season','Select the current season to use the commissioner desk',`onclick="go('seasons')"`);setTimeout(()=>loadOfficeData(),0);return h}
  h+=`${section('Coach streams')}<form class="compact-form" onsubmit="event.preventDefault();saveStream(this)"><label for="streamCoach">Coach</label><select id="streamCoach" name="streamCoach" onchange="fillStreamForm(this)"><option value="">Select coach</option>${streamList.map(c=>`<option value="${uid(c.person_id)}">${esc(c.coach_name)}${c.current_team_name?' · '+esc(c.current_team_name):''}</option>`).join('')}</select><label for="streamPlatform">Platform</label><select id="streamPlatform" name="streamPlatform"><option>Twitch</option><option>YouTube</option><option>X</option><option>Other</option></select>${field('streamUrl','Stream URL','url','placeholder="https://…"')}${formStatus()}<button class="primary" type="submit">Save stream</button></form><div class="office-list">${streamList.map(c=>`<div class="office-list-row"><div><b>${esc(c.coach_name)}</b><div class="muted">${c.stream_url?esc(c.stream_platform||'Stream')+' · Configured':'No live stream configured'}</div></div></div>`).join('')||'<p class="muted">No coaches yet.</p>'}</div>`;
  h+=`${section('Correct a final')}<p class="muted">Enter or correct the final score for any game in this season, including disputed finals.</p>${disputed.length?`<div class="notice"><strong>Flagged for review</strong><p>${disputed.map(v=>{const g=games().find(x=>x.id===v.game_id);return g?esc(g.away)+' at '+esc(g.home):''}).filter(Boolean).join(' · ')}</p></div>`:''}<form class="compact-form" onsubmit="event.preventDefault();beginCorrection(this.elements.correctGame.value)"><label for="correctGame">Game</label><select id="correctGame" name="correctGame">${slate.map(g=>`<option value="${uid(g.id)}">Wk ${esc(g.week_number)} · ${esc(g.away)} at ${esc(g.home)}${g.final?' · Final '+esc(g.a)+'–'+esc(g.h):' · Not final'}</option>`).join('')}</select>${formStatus()}<button class="primary" type="submit">Open score editor</button></form>`;
@@ -232,6 +233,29 @@ function weekProgress(w){
  const pending=slate.filter(g=>!g.final);
  const waiting=[...new Set(pending.flatMap(g=>[g.team_id,g.opponent_team_id]).filter(id=>human.has(String(id))).map(id=>model.programs.find(p=>String(p.team_id)===String(id))?.coach_name).filter(Boolean))];
  return {total:slate.length,done:slate.length-pending.length,pending,waiting};
+}
+function loadAudit(){
+ const human=new Set(model.programs.filter(p=>p.person_id).map(p=>String(p.team_id)));
+ const byWeek=new Map();
+ games().filter(g=>!g.is_bye&&g.status!=='cancelled').forEach(g=>{
+  const w=Number(g.week_number)||0;
+  if(!byWeek.has(w))byWeek.set(w,{week:w,label:g.week_label||'',scheduled:0,loaded:0,coach:0,coachIn:0,missing:[]});
+  const r=byWeek.get(w);
+  r.scheduled++;
+  if(g.final)r.loaded++;
+  if(human.has(String(g.team_id))||human.has(String(g.opponent_team_id))||g.person_id||g.opponent_person_id){
+   r.coach++;
+   if(g.final)r.coachIn++;else r.missing.push(g);
+  }
+ });
+ return [...byWeek.values()].sort((a,b)=>a.week-b.week);
+}
+function loadAuditSection(){
+ const rows=loadAudit();
+ if(!rows.length)return '';
+ const pollWeeks=[...new Set((model.rankings||[]).map(r=>Number(r.week_number)))].sort((a,b)=>a-b);
+ const state=r=>r.loaded===r.scheduled?'<b class="trend up">Loaded</b>':r.loaded===0?'<span class="muted">Not loaded</span>':'<b>Partial</b>';
+ return `${section('Load audit')}<p class="muted">Finals loaded per week for this season${pollWeeks.length?` · Top 25 polls in for weeks ${pollWeeks.join(', ')}`:''}.</p>${rows.map(r=>`<div class="office-list-row"><div><b>${esc(r.label||'Week '+r.week)}</b><div class="muted">${r.loaded} of ${r.scheduled} finals in · Coach games ${r.coachIn}/${r.coach}</div>${r.missing.length?`<div class="muted">Waiting on: ${r.missing.map(g=>esc(g.away)+' at '+esc(g.home)).join(' · ')}</div>`:''}</div>${state(r)}</div>`).join('')}`;
 }
 function weekProgressStrip(){
  if(!season?.is_active)return '';
