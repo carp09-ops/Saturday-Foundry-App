@@ -11,7 +11,7 @@ test('postseason presentation: card chip, game banner, bracket hook in scores', 
   assert(league.includes('function postseasonChip(g)'), 'Card chip helper should exist');
   assert(league.includes('${postseasonChip(g)}'), 'Game cards should render the postseason chip');
   assert(league.includes('postseason-banner'), 'Game page should render a postseason banner');
-  assert(league.includes("bracketSection==='function'?bracketSection():''"), 'Scores should include the bracket section');
+  assert(league.includes("bracketSection==='function'?bracketSection()||playoffPicture():''"), 'Scores should include the bracket section with the playoff-picture fallback');
   const wf = read('assets/graphite/workflows.js');
   for (const fn of ['function bracketData(', 'function bracketActiveRound(', 'function bracketSection(', 'function setBracketRound('])
     assert(wf.includes(fn), `Missing ${fn}`);

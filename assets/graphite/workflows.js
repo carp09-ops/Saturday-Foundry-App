@@ -303,6 +303,26 @@ function bracketSection(){
  const active=bracketActiveRound(data);
  return `<section class="bracket">${section('College Football Playoff')}<div class="filterbar bracket-pills">${labels.map((l,i)=>`<button class="${i===active?'sel':''}" aria-pressed="${i===active}" onclick="setBracketRound(${i})">${l}</button>`).join('')}</div>${data.rounds[active].map(g=>bracketGameHTML(g,active===3)).join('')}</section>`;
 }
+function playoffPicture(){
+ if(scope!=='all')return '';
+ if(bracketData())return '';
+ const cm=conferenceModel(model);
+ const played=cm.teams.filter(t=>t.w+t.l>0);
+ if(played.length<4)return '';
+ const diff={};
+ games().filter(g=>g.final).forEach(g=>{diff[g.awayId]=(diff[g.awayId]||0)+Number(g.a)-Number(g.h);diff[g.homeId]=(diff[g.homeId]||0)+Number(g.h)-Number(g.a)});
+ const better=(a,b)=>{const pa=a.w/(a.w+a.l),pb=b.w/(b.w+b.l);return pb-pa||b.w-a.w||(diff[b.id]||0)-(diff[a.id]||0)||String(a.name).localeCompare(String(b.name))};
+ const byConf=new Map();
+ cm.teams.forEach(t=>{if(!byConf.has(t.conf))byConf.set(t.conf,[]);byConf.get(t.conf).push(t)});
+ const champs=new Set();
+ byConf.forEach(list=>{const lead=[...list].sort(cm.sortRows)[0];if(lead&&(lead.w+lead.l)>0)champs.add(lead.id)});
+ const pool=[...played].sort(better);
+ const champSeeds=pool.filter(t=>champs.has(t.id)).slice(0,4);
+ const seeds=[...champSeeds,...pool.filter(t=>!champSeeds.includes(t))].slice(0,12);
+ if(seeds.length<4)return '';
+ const full=seeds.length===12;
+ return `<section class="bracket">${section('Playoff picture')}<p class="sport-note">If the season ended today · Top four conference champions earn first-round byes</p>${seeds.map((t,i)=>{const seed=i+1;const isChamp=champs.has(t.id);const bye=seed<=4&&champSeeds.includes(t);const pair=full&&seed>=5?(seed<=8?` · First round: hosts #${17-seed}`:` · First round: at #${17-seed}`):'';const tag=bye?'Conference champion · First-round bye':isChamp?'Conference champion'+pair:'At-large'+pair;return `<div class="office-list-row"><div><b>${seed}. ${esc(t.name)}</b><div class="muted">${esc(t.conf)} · ${tag}</div></div><strong>${t.w}–${t.l}</strong></div>`}).join('')}</section>`;
+}
 async function openMarket(){go('market');await loadMarketLines()}
 
 function marketPage(){const all=games().filter(g=>g.week_number===week),rows=all.map(g=>({g,v:marketLineFor(g)})).filter(x=>x.v);return title(dynasty.name,'Lines & predictions','Recorded model estimates · Week '+week)+`<p class="sport-note">Model estimates are forecasts, not game results.</p>`+(marketStatus==='loading'?empty('Loading the market…'):marketStatus==='error'?empty(entryError)+`<button class="secondary" onclick="openMarket()">Retry</button>`:rows.map(({g,v})=>`<article class="market-card">${card(g)}${statline([[v.spread_home==null?'—':String(v.spread_home),'Home spread'],[v.total_line??'—','Total'],[v.home_win_probability==null?'—':Math.round(v.home_win_probability*100)+'%','Home win chance']])}</article>`).join('')||empty('No market lines are recorded for this week.'))}
