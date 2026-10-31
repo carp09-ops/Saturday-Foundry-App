@@ -43,3 +43,7 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .platform-icon path{fill:currentColor}
 .pi-youtube{color:#ff0000}
 .pi-twitch{color:#9146ff}
+.score-line{display:flex;gap:10px;align-items:flex-end}
+.score-line .score-field{flex:1;min-width:0}
+.score-line .rank-field{width:92px;flex:none}
+.score-input-row .rank-field input{font-size:19px;font-weight:700;text-align:center;padding:11px 6px}
