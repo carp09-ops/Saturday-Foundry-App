@@ -16,6 +16,14 @@ test('load screen footer rests low and the card right column has air',()=>{
   const css=fs.readFileSync('assets/graphite/site.css','utf8');
   assert.ok(css.includes('.viewport{display:flex;flex-direction:column}'),'viewport is a column flex');
   assert.ok(css.includes('.viewport .content{flex:1 0 auto}'),'main grows so the footer drops to the bottom on short screens');
-  assert.ok(css.includes('.match-team{grid-template-columns:32px 1fr 128px}'),'both rows share one fixed right track so the records form a single column');
   assert.ok(css.includes('.match-team>:last-child{justify-self:end;text-align:right}'),'right column content right-aligns');
+  // The 10.1.48 failure mode: a fixed track declared in site.css was silently
+  // overridden by responsive.css layers later in the bundle. Guard the win,
+  // not the declaration — no .match-team rule in ANY layer may use auto.
+  for(const f of ['assets/graphite/site.css','assets/graphite/responsive.css','assets/graphite/report.css','assets/graphite/career-hub.css']){
+    const src=fs.readFileSync(f,'utf8');
+    assert.ok(!/\.match-team\{[^}]*1fr auto/.test(src),f+' must not redeclare the card right track as auto');
+  }
+  const resp=fs.readFileSync('assets/graphite/responsive.css','utf8');
+  assert.ok(resp.includes('grid-template-columns:30px 1fr 128px'),'the phone layer carries the fixed track');
 });
