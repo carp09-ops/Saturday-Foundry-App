@@ -62,5 +62,6 @@ test('watch links show the platform app icon instead of the platform word',()=>{
   assert.ok(out.includes('platform-icon pi-youtube'),'youtube app icon renders');
   assert.ok(out.includes('platform-icon pi-twitch'),'twitch app icon renders');
   assert.ok(!out.includes('<small class="stream-plat">YouTube'),'platform word replaced by the icon');
+  assert.ok(!out.includes('↗'),'no leftover external-link arrow next to the icons');
   assert.ok(out.includes('Watch Corey on youtube'),'accessible label still names the platform');
 });

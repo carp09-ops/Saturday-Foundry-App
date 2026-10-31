@@ -80,7 +80,7 @@ function homeGameStreams(g){
    seen.add(coach.person_id);
    const name=String(coach.coach_name||'Coach');
    const platform=['youtube','twitch'].includes(String(coach.stream_platform||'').toLowerCase())?coach.stream_platform:'Stream';
-   const live=liveRowFor(coach.person_id);links.push(`<a class="game-stream-link${live?' is-live':''}" href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${esc(name)} on ${esc(platform)} (opens a new tab)">${ico('play')}<span>Watch ${esc(name)}</span><small class="stream-plat">${platformIcon(platform)||esc(platform)} ↗</small>${live?'<span class="live-badge">LIVE</span>':''}</a>`);
+   const live=liveRowFor(coach.person_id);links.push(`<a class="game-stream-link${live?' is-live':''}" href="${esc(url)}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${esc(name)} on ${esc(platform)} (opens a new tab)">${ico('play')}<span>Watch ${esc(name)}</span><small class="stream-plat">${platformIcon(platform)||(esc(platform)+' ↗')}</small>${live?'<span class="live-badge">LIVE</span>':''}</a>`);
  }
  return links.length?`<div class="game-stream-links" aria-label="Player streams">${links.join('')}</div>`:'';
 }
