@@ -29,3 +29,8 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .weekstrip button small{font-size:9px;font-weight:700;letter-spacing:.07em;opacity:.72;white-space:nowrap}
 .gameday-head{font-size:15px;font-weight:800;letter-spacing:-.01em;color:var(--ink);margin:20px 0 4px}
 .team-rank{color:var(--muted);font-size:11px;font-weight:800;margin-right:5px}
+.rank-team .team-logo{width:28px;height:28px}
+.leaders-table .table{table-layout:fixed}
+.leaders-table .table th:nth-child(1),.leaders-table .table td:nth-child(1){width:52%}
+.leaders-table .table th:nth-child(2),.leaders-table .table td:nth-child(2){width:24%}
+.leaders-table .table td{padding-top:11px;padding-bottom:11px}

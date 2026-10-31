@@ -18,6 +18,7 @@ test('rankings show ESPN-style movement versus the previous recorded poll', () =
     var empty = t => 'EMPTY:' + t;
     var table = (heads, rows) => heads.join(',') + '::' + rows.map(r => r.join('|')).join(';;');
     var teamData = id => ({ name: ({t1:'Alpha', t2:'Bravo', t3:'Charlie', t4:'Delta'})[id] || id });
+    var logo = id => '<img data-logo="' + id + '">';
     var model = { rankings: [
       {team_id:'t1', rank:3, week_number:5, wins:4, losses:1},
       {team_id:'t2', rank:1, week_number:5, wins:5, losses:0},
@@ -36,7 +37,7 @@ test('rankings show ESPN-style movement versus the previous recorded poll', () =
   assert(html.includes('TREND'), 'Trend column renders');
   const rows = html.split('::')[1].split(';;');
   assert.equal(rows.length, 5, 'Five ranked teams in the latest poll');
-  assert(rows[0].startsWith('1|Alpha'), 'Rows sort by rank, not storage order');
+  assert(rows[0].startsWith('1|') && rows[0].includes('Alpha') && rows[0].includes('data-logo="t1"'), 'Rows sort by rank, not storage order, and carry logos');
   assert(rows[0].includes('▲2'), 'Alpha climbed from 3 to 1');
   assert(rows[1].includes('—') && !rows[1].includes('▲') && !rows[1].includes('▼'), 'Charlie held at 2');
   assert(rows[2].includes('▼2'), 'Bravo fell from 1 to 3');

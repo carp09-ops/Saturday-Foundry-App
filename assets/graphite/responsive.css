@@ -207,3 +207,10 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
  html.sf-standalone .sf-bottom-ribbon{bottom:var(--sf-dock-safe-bottom);height:34px;align-items:center}
  html.sf-standalone .viewport{padding-bottom:calc(112px + var(--sf-dock-safe-bottom,0px))}
 }
+
+/* Filter pills, ESPN-style: one geometry for every state. The global .primary
+   CTA class (display:block;width:100%) must never leak into a filter bar —
+   that collision is what stretched the selected Standings pill into a blob. */
+.filterbar{align-items:center}
+.filterbar button{display:inline-flex;align-items:center;justify-content:center;width:auto;height:38px;flex:none;padding:0 16px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:1;background:var(--white);color:var(--muted);border:1px solid var(--line)}
+.filterbar button.sel{background:var(--graphite);border-color:var(--graphite);color:#fff}
