@@ -71,9 +71,14 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .watch-stand-names b{display:block;font-size:15px}
 .watch-stand-names small{color:var(--muted)}
 .watch-stand-cta{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-strong);flex:none}
-/* Card right column (10.1.47): real air between the record and the time/score —
-   the right cell's content starts 20px after the name cell ends. */
-.match-team>:last-child{padding-left:20px}
+/* Card columns (10.1.48): the right track is a fixed 128px on every row, so
+   both records end on the same vertical line — one record column, ESPN-style —
+   and the time/score/channel right-aligns in its own column. (10.1.47's
+   padding gave the pair air but each row's record still landed wherever that
+   row's own right cell began.) */
+.match-team{grid-template-columns:32px 1fr 128px}
+.match-team>:last-child{justify-self:end;text-align:right}
+.match-team .kick-cell.net{font-size:11px}
 /* Sticky footer (10.1.47): the viewport is a column flex and main grows, so on
    short screens (the load screen, sign-in) the version footer rests at the
    bottom where it sits on loaded pages instead of riding up under the hero. */

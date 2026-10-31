@@ -16,5 +16,6 @@ test('load screen footer rests low and the card right column has air',()=>{
   const css=fs.readFileSync('assets/graphite/site.css','utf8');
   assert.ok(css.includes('.viewport{display:flex;flex-direction:column}'),'viewport is a column flex');
   assert.ok(css.includes('.viewport .content{flex:1 0 auto}'),'main grows so the footer drops to the bottom on short screens');
-  assert.ok(css.includes('.match-team>:last-child{padding-left:20px}'),'record and time are separated by a real gap');
+  assert.ok(css.includes('.match-team{grid-template-columns:32px 1fr 128px}'),'both rows share one fixed right track so the records form a single column');
+  assert.ok(css.includes('.match-team>:last-child{justify-self:end;text-align:right}'),'right column content right-aligns');
 });
