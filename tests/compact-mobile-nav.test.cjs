@@ -20,7 +20,7 @@ test('Compact mobile navigation remains in the source and both generated app pag
   assert.match(css, /\.bottomnav \.icon\{width:24px;height:24px\}/);
   assert.match(css, /\.bottomnav button\.on:before\{height:2px;width:26px;/);
   assert.match(css, /env\(safe-area-inset-bottom,0px\)/);
-  assert.match(workflows, /\['Home','home'\],\['Scores','scores'\],\['Teams','teams'\],\['Standings','standings'\],\['Legacy','legacy'\]/);
+  assert.match(workflows, /\['Home','home'\],\['Scores','scores'\],\['Watch','watch'\],\['Standings','standings'\],\['Legacy','legacy'\]/);
 });
 
 

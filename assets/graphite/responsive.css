@@ -214,3 +214,17 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
 .filterbar{align-items:center}
 .filterbar button{display:inline-flex;align-items:center;justify-content:center;width:auto;height:38px;flex:none;padding:0 16px;border-radius:999px;font-size:12.5px;font-weight:700;line-height:1;background:var(--white);color:var(--muted);border:1px solid var(--line)}
 .filterbar button.sel{background:var(--graphite);border-color:var(--graphite);color:#fff}
+
+/* 10.1.45: dock centering — one authoritative geometry. Older layers left the
+   capsule at width:100% (overflowing past its left offset, clipping the last
+   tab) with content-sized, max-width-capped buttons under space-around, so
+   the items bunched left and the last label ran off the edge. The capsule is
+   auto-width between its 10px insets and every tab gets an equal flex cell
+   with its label centered — the menu is centered by construction. */
+@media(max-width:700px){
+ .bottomnav{width:auto;justify-content:space-between}
+ .bottomnav button{flex:1 1 0;max-width:none;min-width:0}
+ .bottomnav button span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ html.sf-standalone .bottomnav{width:auto;justify-content:space-between}
+ html.sf-standalone .bottomnav button{flex:1 1 0;max-width:none;min-width:0}
+}

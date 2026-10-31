@@ -46,7 +46,7 @@ function youtubeLiveUrl(url: string): string {
   }
 }
 
-async function youtubeIsLive(url: string): Promise<{ live: boolean; title?: string }> {
+async function youtubeIsLive(url: string): Promise<{ live: boolean; title?: string; url?: string }> {
   try {
     const res = await fetch(youtubeLiveUrl(url), {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SaturdayFoundry/1.0)' },
@@ -57,7 +57,8 @@ async function youtubeIsLive(url: string): Promise<{ live: boolean; title?: stri
     const live = html.includes('"isLiveBroadcast":true') && !html.includes('"isUpcoming":true');
     if (!live) return { live: false };
     const title = html.match(/"title":"([^"]{3,120})","lengthSeconds/)?.[1];
-    return { live: true, title };
+    const vid = html.match(/"videoId":"([\w-]{11})"/)?.[1];
+    return { live: true, title, url: vid ? `https://www.youtube.com/watch?v=${vid}` : undefined };
   } catch {
     return { live: false };
   }
@@ -117,7 +118,7 @@ Deno.serve(async () => {
   const results: Record<string, unknown>[] = [];
   for (const c of channels) {
     const platform = String(c.platform || '').toLowerCase();
-    let probe = { live: false, title: undefined as string | undefined };
+    let probe = { live: false, title: undefined as string | undefined, url: undefined as string | undefined };
     if (platform === 'youtube') probe = await youtubeIsLive(c.stream_url);
     else if (platform === 'twitch') {
       const login = twitchLogin(c.stream_url);
@@ -135,7 +136,7 @@ Deno.serve(async () => {
       person_id: c.person_id,
       is_live: probe.live,
       live_title: probe.live ? (probe.title || null) : null,
-      live_url: probe.live ? c.stream_url : null,
+      live_url: probe.live ? (probe.url || c.stream_url) : null,
       updated_at: new Date().toISOString(),
     };
     if (probe.live && !wasLive) row.started_at = new Date().toISOString();
