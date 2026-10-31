@@ -34,3 +34,8 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .leaders-table .table th:nth-child(1),.leaders-table .table td:nth-child(1){width:52%}
 .leaders-table .table th:nth-child(2),.leaders-table .table td:nth-child(2){width:24%}
 .leaders-table .table td{padding-top:11px;padding-bottom:11px}
+.live-badge{background:var(--accent);color:#fff;font-size:9px;font-weight:900;letter-spacing:.09em;padding:2px 6px;border-radius:999px;animation:livePulse 1.6s ease-in-out infinite}
+.live-chip{background:var(--accent);color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;padding:2px 7px;border-radius:999px}
+.game-stream-link.is-live{border-color:var(--accent)}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.live-badge{animation:none}}

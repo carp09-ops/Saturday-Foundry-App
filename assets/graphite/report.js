@@ -39,6 +39,9 @@ function upsetLine(g){
 }
 function tickerItems(){
  const items=[];
+ try{ /* Coaches live on their streaming channels right now — always first in the rotation. */
+  for(const r of (model.liveStatus||[])){if(r&&r.is_live)items.push({k:'🔴 LIVE',t:`${r.coach_name||'A coach'} is streaming now${r.live_title?' — '+r.live_title:''}`})}
+ }catch(e){}
  try{ /* Latest finals across the whole league, user and CPU teams alike. */
   const gs=(typeof games==='function'?games():[])||[];
   const finals=gs.filter(g=>g&&!g.is_bye&&g.final&&Number.isFinite(Number(g.a))&&Number.isFinite(Number(g.h)));
