@@ -34,7 +34,7 @@ test('projected TV networks render ESPN-style from the source tree', () => {
   assert(panel.includes('>ABC<') && panel.includes('estimated for this simulated season'), 'Panel shows the channel and disclosure');
   assert.equal(w.broadcastPanel({ network: 'National broadcast (network unspecified)' }), '', 'No projection, no panel');
   // Card wiring: the home team row carries the broadcast tag (ESPN layout).
-  assert(league.includes("g.projected_network?broadcastTag(g):''"), 'Cards prefer the broadcast tag');
+  assert(league.includes("g.projected_network?broadcastTag(g):esc(networkShort(g))"), 'Cards prefer the broadcast tag');
   assert(league.includes('${broadcastPanel(g)}'), 'Game page includes the broadcast panel');
   const css = read('assets/graphite/site.css');
   assert(css.includes('.broadcast-channel{') && css.includes('.broadcast-panel{'), 'Broadcast styles live in the source CSS');
