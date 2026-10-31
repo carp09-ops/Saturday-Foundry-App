@@ -39,3 +39,7 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .game-stream-link.is-live{border-color:var(--accent)}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){.live-badge{animation:none}}
+.platform-icon{width:20px;height:20px;display:inline-block;vertical-align:-5px}
+.platform-icon path{fill:currentColor}
+.pi-youtube{color:#ff0000}
+.pi-twitch{color:#9146ff}

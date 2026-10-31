@@ -7,29 +7,34 @@ badge, and their game cards get a LIVE chip. Until the steps below are done,
 the view doesn't exist, the app finds nothing, and nothing changes. No app
 update is needed after setup.
 
-## Corey's steps (about 10 minutes, all in the Supabase dashboard)
+## Status — ACTIVATED 2026-10-30 (driven by muse in the dashboard)
 
-1. **Create the table + view.** SQL Editor → paste all of
-   [`migration.sql`](migration.sql) → Run. (Everything above the
-   `v_stream_channels` block runs as-is.)
-2. **Point the checker at the streams.** The app saves streams through a
-   database function; find the table it writes to in Table Editor — the one
-   holding `stream_platform` and `stream_url` columns (expected name:
-   `coach_streams`). Uncomment the `v_stream_channels` block at the bottom of
-   `migration.sql`, fix the table name if yours differs, and run just that
-   block.
-3. **Deploy the checker.** Edge Functions → Create function → name it
+Steps 1–4 below are DONE: `coach_live_status` + `v_coach_live` created,
+`v_stream_channels` created (streams live on `public.people`, joined to
+`v_season_programs` — 11 channel rows), and `stream-live-check` deployed.
+A manual flip verified end to end at the database level (Corey marked live;
+the app renders it). Scheduling: a muse cron POSTs to the function every
+5 minutes with the app's publishable key — no pg_cron and no service key
+stored in SQL. Remaining gap: Twitch detection needs `TWITCH_CLIENT_ID` /
+`TWITCH_CLIENT_SECRET` function secrets (Saif streams on Twitch); YouTube
+(Corey, Jared, Pete) works keyless.
+
+## The steps (reference)
+
+1. **Create the table + views.** SQL Editor → paste all of
+   [`migration.sql`](migration.sql) → Run.
+2. **Deploy the checker.** Edge Functions → Create function → name it
    `stream-live-check` → paste
    [`functions/stream-live-check/index.ts`](functions/stream-live-check/index.ts)
    → Deploy. (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are provided to
    functions automatically.)
-4. **Twitch only (optional).** If anyone streams on Twitch: register an app
+3. **Twitch only (optional).** If anyone streams on Twitch: register an app
    at dev.twitch.tv (2 minutes, free), then add `TWITCH_CLIENT_ID` and
    `TWITCH_CLIENT_SECRET` under Edge Functions → Secrets. YouTube needs no
    key — the checker reads the channel's public /live page.
-5. **Schedule it.** Uncomment the cron block at the bottom of
-   `migration.sql` (fill in the project ref + service key) and run it, or use
-   the dashboard's Cron UI to POST to the function every 5 minutes.
+4. **Schedule it.** Either the muse cron (current setup), or uncomment the
+   cron block at the bottom of `migration.sql` (fill in the project ref +
+   service key) and run it.
 
 ## See it work before wiring the checker
 

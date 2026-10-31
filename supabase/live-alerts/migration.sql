@@ -43,16 +43,17 @@ select s.dynasty_id,
 grant select on public.v_coach_live to authenticated;
 
 -- ---------------------------------------------------------------------------
--- Channels the checker watches. It reads dynasty/person/platform/url rows
--- from this view. The streams themselves are saved by the app through the
--- set_coach_stream RPC; point the view at the table that RPC writes to
--- (find it in Table Editor — it holds stream_platform and stream_url columns;
--- expected name: coach_streams). Adjust the FROM line if yours differs.
+-- Channels the checker watches. Streams live on public.people (one channel
+-- per person; the set_coach_stream RPC writes there) and v_season_programs
+-- supplies the dynasty/person mapping. This ran as-is on 2026-10-30.
 -- ---------------------------------------------------------------------------
--- create or replace view public.v_stream_channels as
--- select dynasty_id, person_id, stream_platform as platform, stream_url
---   from public.coach_streams
---  where stream_url is not null and stream_url <> '';
+create or replace view public.v_stream_channels as
+select distinct sp.dynasty_id, sp.person_id, p.stream_platform as platform, p.stream_url
+  from public.v_season_programs sp
+  join public.people p on p.id = sp.person_id
+ where p.stream_url is not null and p.stream_url <> '';
+
+grant select on public.v_stream_channels to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- Optional: schedule the checker every 5 minutes (requires pg_cron + pg_net).

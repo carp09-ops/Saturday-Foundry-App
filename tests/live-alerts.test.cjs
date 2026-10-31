@@ -55,3 +55,12 @@ test('ticker leads with the live item',()=>{
   assert.ok(items.length>=1&&items[0].k==='🔴 LIVE','live item is first in the rotation');
   assert.ok(items[0].t.includes('Corey')&&items[0].t.includes('Week 2 vs Cincinnati'),'names the coach and the stream title');
 });
+
+test('watch links show the platform app icon instead of the platform word',()=>{
+  w.eval("model.liveStatus=[{person_id:'corey',coach_name:'Corey',is_live:true,live_title:'Week 2 vs Cincinnati'}]");
+  const out=w.homeGameStreams(game);
+  assert.ok(out.includes('platform-icon pi-youtube'),'youtube app icon renders');
+  assert.ok(out.includes('platform-icon pi-twitch'),'twitch app icon renders');
+  assert.ok(!out.includes('<small class="stream-plat">YouTube'),'platform word replaced by the icon');
+  assert.ok(out.includes('Watch Corey on youtube'),'accessible label still names the platform');
+});

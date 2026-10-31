@@ -54,7 +54,7 @@ async function youtubeIsLive(url: string): Promise<{ live: boolean; title?: stri
     });
     if (!res.ok) return { live: false };
     const html = await res.text();
-    const live = html.includes('"isLiveBroadcast":true') || html.includes('"isLive":true');
+    const live = html.includes('"isLiveBroadcast":true') && !html.includes('"isUpcoming":true');
     if (!live) return { live: false };
     const title = html.match(/"title":"([^"]{3,120})","lengthSeconds/)?.[1];
     return { live: true, title };
