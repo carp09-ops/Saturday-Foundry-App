@@ -71,3 +71,11 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .watch-stand-names b{display:block;font-size:15px}
 .watch-stand-names small{color:var(--muted)}
 .watch-stand-cta{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--accent-strong);flex:none}
+/* Card right column (10.1.47): real air between the record and the time/score —
+   the right cell's content starts 20px after the name cell ends. */
+.match-team>:last-child{padding-left:20px}
+/* Sticky footer (10.1.47): the viewport is a column flex and main grows, so on
+   short screens (the load screen, sign-in) the version footer rests at the
+   bottom where it sits on loaded pages instead of riding up under the hero. */
+.viewport{display:flex;flex-direction:column}
+.viewport .content{flex:1 0 auto}

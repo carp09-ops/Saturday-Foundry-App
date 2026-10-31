@@ -11,3 +11,10 @@ test('dock centering rules close out the responsive cascade',()=>{
   assert.ok(block.includes('.bottomnav button{flex:1 1 0;max-width:none;min-width:0}'),'browser tabs are equal uncapped cells');
   assert.ok(css.indexOf('10.1.45: dock centering')>css.indexOf('10.1.36: ESPN-style floating capsule dock'),'centering block lands after the capsule block it corrects');
 });
+
+test('load screen footer rests low and the card right column has air',()=>{
+  const css=fs.readFileSync('assets/graphite/site.css','utf8');
+  assert.ok(css.includes('.viewport{display:flex;flex-direction:column}'),'viewport is a column flex');
+  assert.ok(css.includes('.viewport .content{flex:1 0 auto}'),'main grows so the footer drops to the bottom on short screens');
+  assert.ok(css.includes('.match-team>:last-child{padding-left:20px}'),'record and time are separated by a real gap');
+});
