@@ -46,10 +46,16 @@ grant select on public.v_coach_live to authenticated;
 -- Channels the checker watches. Streams live on public.people (one channel
 -- per person; the set_coach_stream RPC writes there) and v_season_programs
 -- supplies the dynasty/person mapping. This ran as-is on 2026-10-30.
+-- The team columns carry the coach's team in the dynasty's ACTIVE season:
+-- the checker matches the stream title against them so a stream lights up
+-- only in the league whose team the title names (migration-title-match.sql).
 -- ---------------------------------------------------------------------------
 create or replace view public.v_stream_channels as
-select distinct sp.dynasty_id, sp.person_id, p.stream_platform as platform, p.stream_url
+select distinct sp.dynasty_id, sp.person_id, p.stream_platform as platform, p.stream_url,
+       sp.team_name, sp.team_slug, sp.abbreviation
   from public.v_season_programs sp
+  join public.v_dynasty_seasons ds
+    on ds.season_id = sp.season_id and ds.is_active
   join public.people p on p.id = sp.person_id
  where p.stream_url is not null and p.stream_url <> '';
 

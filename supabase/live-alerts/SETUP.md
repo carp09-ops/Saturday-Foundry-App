@@ -36,6 +36,24 @@ stored in SQL. Remaining gap: Twitch detection needs `TWITCH_CLIENT_ID` /
    cron block at the bottom of `migration.sql` (fill in the project ref +
    service key) and run it.
 
+## Title-based league matching — added 2026-11-02
+
+Coaches coach different teams in different leagues, so a stream now lights
+up **only in the league whose team the stream title names**. The convention:
+each coach puts their team name in the stream title (nicknames like GATORS
+or WVU also match). If a title names none of the coach's teams, the stream
+falls back to showing in all of their leagues — a forgotten title never
+hides a stream.
+
+Activation (one-time, in order):
+1. SQL Editor → paste [`migration-title-match.sql`](migration-title-match.sql)
+   → Run. (Recreates `v_stream_channels` with the active-season team columns.)
+2. Edge Functions → `stream-live-check` → replace the code with the current
+   [`functions/stream-live-check/index.ts`](functions/stream-live-check/index.ts)
+   → Deploy.
+
+No app update is needed; the app already reads per-dynasty live rows.
+
 ## See it work before wiring the checker
 
 Run the manual test snippet at the bottom of `migration.sql` (flip a coach
