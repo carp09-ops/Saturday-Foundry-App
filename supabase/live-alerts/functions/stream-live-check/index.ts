@@ -54,10 +54,32 @@ async function youtubeIsLive(url: string): Promise<{ live: boolean; title?: stri
     });
     if (!res.ok) return { live: false };
     const html = await res.text();
-    const live = html.includes('"isLiveBroadcast":true') && !html.includes('"isUpcoming":true');
+    // YouTube serves two page variants for /live. The full watch page carries
+    // ytInitialPlayerResponse (liveBroadcastDetails.isLiveNow, an itemprop
+    // meta flag, videoDetails with "isLive":true) plus a canonical watch URL.
+    // The app-shell variant (what this function usually receives) carries
+    // NONE of those: its canonical href is literally "undefined", there is no
+    // player response, and its data is embedded with escaped quotes — but the
+    // broadcast is identified there by currentVideoEndpoint and titled by
+    // playerOverlayVideoDetailsRenderer. Detection and extraction therefore
+    // run against both the raw page and an unescaped copy (esc).
+    // Verified 2026-11-01 against Corey's live "UCONN" broadcast via the
+    // function's own ?debug probes (builds diag3/diag4): in the shell
+    // variant the ONLY correct id was currentVideoEndpoint's; the first
+    // watchEndpoint in the page was a related video.
+    const esc = html.replace(/\\"/g, '"');
+    const live = (html.includes('"isLiveNow":true') || html.includes('itemprop="isLiveBroadcast" content="True"') || esc.includes('"isLive":true') || (esc.includes('"liveIndicatorText":{"simpleText":"Live"}') && esc.includes('watching now'))) && !esc.includes('"isUpcoming":true');
     if (!live) return { live: false };
-    const title = html.match(/"title":"([^"]{3,120})","lengthSeconds/)?.[1];
-    const vid = html.match(/"videoId":"([\w-]{11})"/)?.[1];
+    let vid = html.match(/rel="canonical" href="https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})"/)?.[1] || html.match(/"videoDetails":\{"videoId":"([\w-]{11})"/)?.[1];
+    if (!vid) {
+      const ci = esc.indexOf('"currentVideoEndpoint"');
+      if (ci >= 0) {
+        const seg = esc.slice(ci, ci + 1500);
+        vid = seg.match(/"watchEndpoint":\{"videoId":"([\w-]{11})"/)?.[1] || seg.match(/"url":"\/watch\?v=([\w-]{11})"/)?.[1];
+      }
+    }
+    if (!vid) vid = esc.match(/"videoDetails":\{"videoId":"([\w-]{11})"/)?.[1] || html.match(/"videoId":"([\w-]{11})"/)?.[1];
+    const title = html.match(/"videoDetails":\{"videoId":"[\w-]{11}","title":"([^"]{3,120})"/)?.[1] || esc.match(/"videoDetails":\{"videoId":"[\w-]{11}","title":"([^"]{3,120})"/)?.[1] || esc.match(/"playerOverlayVideoDetailsRenderer":\{"title":\{"simpleText":"([^"]{3,120})"/)?.[1] || html.match(/"title":"([^"]{3,120})","lengthSeconds/)?.[1] || html.match(/property="og:title" content="([^"]{3,120})"/)?.[1];
     return { live: true, title, url: vid ? `https://www.youtube.com/watch?v=${vid}` : undefined };
   } catch {
     return { live: false };
@@ -126,7 +148,7 @@ Deno.serve(async () => {
     } else continue;
 
     const prevRes = await rest(
-      `coach_live_status?dynasty_id=eq.${c.dynasty_id}&person_id=eq.${c.person_id}&select=is_live`,
+      `coach_live_status?dynasty_id=eq.${c.dynasty_id}&person_id=eq.${c.person_id}&select=is_live,live_title,live_url,started_at`,
     );
     const prev = prevRes.ok ? (await prevRes.json())[0] : null;
     const wasLive = !!prev?.is_live;
@@ -141,6 +163,14 @@ Deno.serve(async () => {
     };
     if (probe.live && !wasLive) row.started_at = new Date().toISOString();
     if (!probe.live) row.started_at = null;
+    // Stream just ended: keep the finished broadcast as the coach's most
+    // recent one (Watch tab recents/replay). Otherwise last_* stays as-is.
+    if (!probe.live && wasLive && prev?.live_url) {
+      row.last_title = prev.live_title ?? null;
+      row.last_url = prev.live_url;
+      row.last_started_at = prev.started_at ?? null;
+      row.last_ended_at = new Date().toISOString();
+    }
 
     const up = await rest('coach_live_status?on_conflict=dynasty_id,person_id', {
       method: 'POST',

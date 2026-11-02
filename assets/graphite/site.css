@@ -63,6 +63,16 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
 .watch-slate span{color:#c9c7ca;font-size:12.5px}
 .watch-slate p{margin:6px 0 2px;font-size:13px;color:#e8e6e3;display:flex;align-items:center;gap:8px}
 .watch-open{text-decoration:none;margin-top:8px}
+.replay-badge{background:#3a3a3e;color:#fff;font-size:9px;font-weight:900;letter-spacing:.09em;padding:2px 6px;border-radius:999px;flex:none}
+.watch-slate p.watch-last{color:#a9a6ab;font-size:12px;margin-top:0}
+.watch-replay-meta{margin:-12px 0 20px;font-size:13px;display:flex;align-items:center;gap:8px}
+.watch-recents{margin:0 0 26px}
+.recent-row{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--white);margin-bottom:8px;color:var(--ink)}
+.recent-row.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.recent-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.recent-main b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-main small{color:var(--muted);font-size:12px}
+.recent-meta{font-size:11.5px;color:var(--muted);text-align:right;white-space:nowrap;flex:none}
 .watch-stand{margin:0 0 22px}
 .watch-stand-head{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--white);margin-bottom:10px;color:var(--ink)}
 .watch-stand-head .team-logo{width:34px;height:34px;flex:none}
