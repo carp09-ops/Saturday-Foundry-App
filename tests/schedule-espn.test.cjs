@@ -56,7 +56,7 @@ test('rank prefix maps by team id and stays inside the name cell',()=>{
 
 test('scores page uses pills with ranges and grouped cards',()=>{
   assert.ok(league.includes("weekRange(w)?`<small>${weekRange(w)}</small>`:''"),'pill carries the range');
-  assert.ok(league.includes('${groupedScores(list)||empty('),'scores list renders grouped');
+  assert.ok(league.includes('${groupedScores(list,true)||empty('),'scores list renders grouped with score entry enabled');
   const css=fs.readFileSync('assets/graphite/site.css','utf8');
   assert.ok(css.includes('.gameday-head{')&&css.includes('.team-rank{'),'styles in source CSS');
 });
