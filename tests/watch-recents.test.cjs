@@ -91,3 +91,24 @@ test('stage embeds Twitch from the live row URL when the stored channel data is 
   assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
   assert.ok(out.includes('player.twitch.tv/?channel=saifkawash'), 'embed built from the checker-verified live URL');
 });
+
+test('twitch embed survives the bundle-wide URL shadowing (session.js const URL)', () => {
+  // session.js declares `const URL = "https://…supabase.co"` in the shared
+  // global scope, so a bare `new URL()` anywhere else in the bundle throws.
+  // twitchEmbed/streamPlat must go through window.URL like safeStreamUrl does.
+  const dom2 = new JSDOM('<!doctype html><body></body>', { runScripts: 'outside-only', url: 'https://x/' });
+  const w2 = dom2.window;
+  w2.eval(`
+    const URL = 'https://byenidxnyuqzrcrbwihm.supabase.co';
+    var esc = s => String(s), logo = () => '[logo]', kickoff = () => 'Sat 7:00 PM';
+    var games = () => [], num = v => Number(v) || 0;
+    var safeStreamUrl = v => { try { const u = new window.URL(String(v || '').trim()); return u.protocol === 'https:' ? u.href : ''; } catch { return ''; } };
+    var liveRowFor = id => (model.liveStatus || []).find(r => r && String(r.person_id) === String(id) && r.is_live) || null;
+    var model = { recentBroadcasts: [], liveStatus: [{ person_id: 'saif', is_live: true, live_title: 'NCAA', live_url: 'https://www.twitch.tv/saifkawash' }] };
+    ${src}
+  `);
+  const saif = { person_id: 'saif', coach_name: 'Saif', current_team_id: 'ku', current_team_name: 'Kansas', stream_platform: 'Twitch', stream_url: 'https://www.twitch.tv/saifkawash' };
+  assert.equal(w2.streamPlat(saif, saif.stream_url), 'twitch', 'platform read from the URL despite the shadow');
+  const out = w2.watchStage(saif);
+  assert.ok(out.includes('player.twitch.tv/?channel=saifkawash'), 'player embeds despite the shadow');
+});
