@@ -82,3 +82,12 @@ test('stage embeds Twitch from the channel URL even when the stored platform tex
   assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
   assert.ok(out.includes('player.twitch.tv'), 'twitch player embeds');
 });
+
+test('stage embeds Twitch from the live row URL when the stored channel data is unusable', () => {
+  w.eval(`model.coachStreams.find(c => c.person_id === 'saif').stream_platform = 'unknown'; model.coachStreams.find(c => c.person_id === 'saif').stream_url = 'https://example.com/saif';`);
+  w.selectWatch('saif');
+  const saif = w.watchCoaches().find(c => c.person_id === 'saif');
+  const out = w.watchStage(saif);
+  assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
+  assert.ok(out.includes('player.twitch.tv/?channel=saifkawash'), 'embed built from the checker-verified live URL');
+});
