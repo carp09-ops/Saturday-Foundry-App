@@ -16,7 +16,7 @@ A manual flip verified end to end at the database level (Corey marked live;
 the app renders it). Scheduling: a muse cron POSTs to the function every
 5 minutes with the app's publishable key — no pg_cron and no service key
 stored in SQL. Remaining gap: Twitch detection needs `TWITCH_CLIENT_ID` /
-`TWITCH_CLIENT_SECRET` function secrets (Saif streams on Twitch); YouTube
+`TWITCH_SECRET` function secrets (Saif streams on Twitch); YouTube
 (Corey, Jared, Pete) works keyless.
 
 ## The steps (reference)
@@ -30,7 +30,7 @@ stored in SQL. Remaining gap: Twitch detection needs `TWITCH_CLIENT_ID` /
    functions automatically.)
 3. **Twitch only (optional).** If anyone streams on Twitch: register an app
    at dev.twitch.tv (2 minutes, free), then add `TWITCH_CLIENT_ID` and
-   `TWITCH_CLIENT_SECRET` under Edge Functions → Secrets. YouTube needs no
+   `TWITCH_SECRET` under Edge Functions → Secrets. YouTube needs no
    key — the checker reads the channel's public /live page.
 4. **Schedule it.** Either the muse cron (current setup), or uncomment the
    cron block at the bottom of `migration.sql` (fill in the project ref +

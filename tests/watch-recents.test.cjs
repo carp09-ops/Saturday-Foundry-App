@@ -73,3 +73,12 @@ test('no recents, no section and no slate line', () => {
   assert.ok(!w.watchPage().includes('Recent broadcasts'), 'section hidden');
   assert.ok(!w.watchStage(corey()).includes('Last streamed:'), 'slate line hidden');
 });
+
+test('stage embeds Twitch from the channel URL even when the stored platform text is off', () => {
+  w.eval(`model.liveStatus = [{ person_id: 'saif', coach_name: 'Saif', is_live: true, live_title: 'NCAA', live_url: 'https://www.twitch.tv/saifkawash' }]; model.coachStreams.find(c => c.person_id === 'saif').stream_platform = 'Twitch.tv';`);
+  w.selectWatch('saif');
+  const saif = w.watchCoaches().find(c => c.person_id === 'saif');
+  const out = w.watchStage(saif);
+  assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
+  assert.ok(out.includes('player.twitch.tv'), 'twitch player embeds');
+});

@@ -7,7 +7,7 @@
 // ticker, the Watch badges and the game-card LIVE chips on its own.
 //
 // Detection:
-//   Twitch  — official Helix API (needs TWITCH_CLIENT_ID / TWITCH_CLIENT_SECRET
+//   Twitch  — official Helix API (needs TWITCH_CLIENT_ID / TWITCH_SECRET
 //             function secrets; skipped silently when unset).
 //   YouTube — no API key: fetches the channel's /live page and looks for the
 //             live-broadcast marker YouTube embeds in it. Best-effort by
@@ -20,7 +20,7 @@
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const TWITCH_ID = Deno.env.get('TWITCH_CLIENT_ID') || '';
-const TWITCH_SECRET = Deno.env.get('TWITCH_CLIENT_SECRET') || '';
+const TWITCH_SECRET = Deno.env.get('TWITCH_SECRET') || '';
 
 const rest = (path: string, init: RequestInit = {}) =>
   fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
