@@ -230,7 +230,7 @@ test('an old Home history entry cannot restore a previous season after rollover'
  assert.match(a.w.document.querySelector('.welcome-line').textContent,/Season 2 · Week 7/);assert.deepEqual(a.errors,[]);
 });
 
-test('Home shows configured coach streams for both sides, without unsafe or missing links',async t=>{
+test('Home game cards carry no stream links — streams live on the Watch tab',async t=>{
  const PETER=id(5);
  const streaming=[
   {person_id:ME,coach_name:'Corey',current_team_id:OWN,current_season_id:S,stream_platform:'YouTube',stream_url:'https://www.youtube.com/@corey/live'},
@@ -247,15 +247,10 @@ test('Home shows configured coach streams for both sides, without unsafe or miss
  await a.w.loadDynasty(D);await tick();
  assert(a.calls.some(c=>c.name==='get_dynasty_coaches'),'active league must load stream metadata: '+JSON.stringify(a.calls.map(c=>c.name))+'; loadError='+a.w.eval('loadError')+'; route='+a.w.eval('route')+'; errors='+JSON.stringify(a.errors));
  const cards=[...a.w.document.querySelectorAll('.sports-card')];
- const links=[...a.w.document.querySelectorAll('.game-stream-link')];
- assert(links.some(l=>l.textContent.includes('Corey')),'featured home card needs Corey stream; state='+JSON.stringify(a.w.eval('({route,season:season?.season_id,isActive:season?.is_active,streamCount:model.coachStreams?.length,streamIds:model.coachStreams?.map(c=>c.current_team_id),games:games().map(g=>[g.awayId,g.homeId])})'))+'; html='+a.w.document.querySelector('#mainContent')?.innerHTML.slice(0,900));
- assert(links.some(l=>l.textContent.includes('Pete')),'opponent player stream should appear');
- assert(links.every(l=>l.protocol==='https:'),'only HTTPS stream links may render');
- assert(links.every(l=>l.getAttribute('rel').includes('noopener')),'external links must be isolated');
- assert.equal(links.filter(l=>l.textContent.includes('Old Coach')).length,0);
- assert.equal(links.filter(l=>l.textContent.includes('Unsafe')).length,0);
- assert.equal(cards.filter(c=>c.querySelectorAll('.game-stream-link').length===2).length,1,'head-to-head card should show both coach links');
- a.w.go('scores');assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'stream actions are Home-only');
- await a.w.loadSeason(OLD);assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'archives must not reuse current coach stream links');
+ assert(cards.length>0,'home renders game cards');
+ assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'no stream links under Home scores — the Watch tab is the stream destination');
+ assert(![...a.w.document.querySelectorAll('a')].some(a2=>/youtube\.com\/@corey|twitch\.tv\/pete/.test(a2.href)),'no card anchor bypasses the Watch tab');
+ a.w.go('scores');assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'stream actions are not on Scores either');
+ await a.w.loadSeason(OLD);assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'archives show no stream links');
  assert.deepEqual(a.errors,[]);
 });

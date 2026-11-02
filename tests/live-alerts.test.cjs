@@ -1,7 +1,8 @@
 'use strict';
 /* Live alerts (app side): when the backend marks a coach live (v_coach_live
-   rows in model.liveStatus), the app lights up — a LIVE badge on their Watch
-   link, a chip on their game cards, and a 🔴 LIVE item leading THE LINE.
+   rows in model.liveStatus), the app lights up — a LIVE chip on their game
+   cards and a 🔴 LIVE item leading THE LINE, both pointing at the Watch tab,
+   which is the only place streams play (game cards carry no stream links).
    With no live rows, nothing changes anywhere. */
 const test=require('node:test'),assert=require('node:assert'),fs=require('node:fs');
 const {JSDOM}=require('jsdom');
@@ -22,20 +23,15 @@ w.eval(`
 `);
 const game={awayId:'gt',homeId:'fla'};
 
-test('watch link carries a LIVE badge only for the coach who is live',()=>{
-  const out=w.homeGameStreams(game);
-  assert.ok(out.includes('Watch Corey')&&out.includes('Watch Jared'),'both watch links render');
-  assert.ok(out.includes('<span class="live-badge">LIVE</span>'),'live badge present');
-  assert.equal((out.match(/live-badge/g)||[]).length,1,'exactly one badge — Jared is not live');
-  assert.ok(out.includes('game-stream-link is-live'),'live link highlighted');
+test('game cards carry no stream links — the Watch tab is the only stream destination',()=>{
+  assert.ok(!league.includes('homeGameStreams'),'the card stream-link renderer is gone');
+  assert.ok(!league.includes('game-stream-link'),'no stream-link markup remains in the bundle');
 });
 
 test('game card chip lights when either coach is live, and stays dark when nobody is',()=>{
   assert.ok(w.liveChip(game).includes('live-chip'),'chip renders for a live matchup');
   w.eval("model.liveStatus=[]");
   assert.equal(w.liveChip(game),'','no live rows, no chip');
-  const out=w.homeGameStreams(game);
-  assert.ok(!out.includes('live-badge'),'badges gone too');
 });
 
 test('ticker leads with the live item',()=>{
@@ -56,12 +52,8 @@ test('ticker leads with the live item',()=>{
   assert.ok(items[0].t.includes('Corey')&&items[0].t.includes('Week 2 vs Cincinnati'),'names the coach and the stream title');
 });
 
-test('watch links show the platform app icon instead of the platform word',()=>{
-  w.eval("model.liveStatus=[{person_id:'corey',coach_name:'Corey',is_live:true,live_title:'Week 2 vs Cincinnati'}]");
-  const out=w.homeGameStreams(game);
-  assert.ok(out.includes('platform-icon pi-youtube'),'youtube app icon renders');
-  assert.ok(out.includes('platform-icon pi-twitch'),'twitch app icon renders');
-  assert.ok(!out.includes('<small class="stream-plat">YouTube'),'platform word replaced by the icon');
-  assert.ok(!out.includes('↗'),'no leftover external-link arrow next to the icons');
-  assert.ok(out.includes('Watch Corey on youtube'),'accessible label still names the platform');
+test('platform icons still render for the Watch tab recents and stands',()=>{
+  assert.ok(w.platformIcon('youtube').includes('platform-icon pi-youtube'),'youtube app icon renders');
+  assert.ok(w.platformIcon('twitch').includes('platform-icon pi-twitch'),'twitch app icon renders');
+  assert.ok(!w.platformIcon('youtube').includes('↗')&&!w.platformIcon('twitch').includes('↗'),'no external-link arrow on the icons');
 });
