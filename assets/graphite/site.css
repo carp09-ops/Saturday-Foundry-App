@@ -86,3 +86,14 @@ body{background:var(--canvas)}header.review{height:62px;padding:10px 22px;positi
    bottom where it sits on loaded pages instead of riding up under the hero. */
 .viewport{display:flex;flex-direction:column}
 .viewport .content{flex:1 0 auto}
+
+/* Bye weeks + masthead refresh (10.1.57). */
+.schedule-row.bye{color:var(--muted);cursor:default}
+.schedule-row.bye b{color:var(--muted)}
+.bye-note{font-size:10px;color:var(--muted);margin-top:4px}
+.home-bye{display:flex;align-items:center;gap:11px;padding:13px 14px;border:1px solid var(--line,#dedbd6);border-radius:12px;background:var(--card,#f8f5f1);margin-bottom:12px}
+.home-bye .team-logo{width:34px;height:34px;flex:none}
+.home-bye strong{display:block;font-size:14px;color:var(--ink)}
+.home-bye span{font-size:11px;color:var(--muted)}
+.mast-refresh{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:999px;border:1px solid var(--line,#dedbd6);background:transparent;color:inherit;flex:none}
+.mast-refresh .icon{width:16px;height:16px}
