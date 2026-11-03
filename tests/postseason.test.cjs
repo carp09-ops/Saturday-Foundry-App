@@ -38,6 +38,7 @@ test('bracket builds four rounds with byes, winner-of slots, TBDs and the title 
     ];
     var games=()=>fixture;
     var model={scheduleGames:[{id:'bye1',is_bye:true,team_id:'TB1',team_name:'Georgia',week_number:17,event_name:'CFP First Round Bye',game_type:'playoff'}]};
+    var displayRank=(g,id)=>{const rows=(model&&model.rankings)||[];if(!g.final&&rows.length){const latest=Math.max(...rows.map(r=>Number(r.week_number)));const row=rows.find(r=>Number(r.week_number)===latest&&String(r.team_id)===String(id));const pr=row?Number(row.rank):NaN;return pr>=1&&pr<=25?pr:null}const stored=String(g.team_id)===String(id)?g.team_rank:String(g.opponent_team_id)===String(id)?g.opponent_rank:null;const sn=Number(stored);return sn>=1&&sn<=25?sn:null};
     ${src}
   `);
   const data = w.bracketData();

@@ -1,7 +1,9 @@
 'use strict';
 /* 10.1.37: ESPN-style schedule — week pills carry kickoff date ranges, the
    week's games group under day headers, and Top 25 ranks sit beside team
-   names on cards (read from the entry's team_rank/opponent_rank by team id). */
+   names on cards. (Since 10.1.59 the rank comes from the latest poll for
+   upcoming games via displayRank; this harness runs with no poll recorded,
+   so it exercises the stored-rank fallback.) */
 const test=require('node:test'),assert=require('node:assert'),fs=require('node:fs');
 const league=fs.readFileSync('assets/graphite/league.js','utf8');
 const src=league.slice(league.indexOf('function weekRange('),league.indexOf('function scores('));
@@ -12,6 +14,7 @@ let rows=[];
 w.eval(`
   var num=v=>{const n=Number(v);return isNaN(n)?0:n};
   var esc=s=>String(s);
+  var model={rankings:[]};
   var games=()=>rows;
   var card=g=>'['+g.id+']';
   ${src}

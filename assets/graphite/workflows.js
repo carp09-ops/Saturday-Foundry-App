@@ -335,7 +335,7 @@ function bracketActiveRound(data){
 function setBracketRound(i){bracketRound=i;render()}
 function bracketGameHTML(g,isChamp){
  const decided=g.final&&g.a!=null&&g.h!=null&&g.a!==g.h;
- const homeEntry=String(g.team_id)===String(g.homeId),homeRank=homeEntry?g.team_rank:g.opponent_rank,awayRank=homeEntry?g.opponent_rank:g.team_rank;
+ const homeRank=displayRank(g,g.homeId),awayRank=displayRank(g,g.awayId);
  const row=(name,id,score,rank,winner)=>`<div class="bracket-team${winner?' winner':''}">${logo(id,name)}<span>${rank?`<b class="bracket-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><b>${score??''}</b></div>`;
  const label=g.event_name||(isChamp?'National Championship':'College Football Playoff');
  const inner=`<div class="bracket-game-head"><span>${esc(label)}</span><strong>${g.final?'FINAL':'UPCOMING'}</strong></div>${row(g.away,g.awayId,g.final?g.a:'',awayRank,decided&&g.a>g.h)}${row(g.home,g.homeId,g.final?g.h:'',homeRank,decided&&g.h>g.a)}`;
