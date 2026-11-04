@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Twitch Embed Test — Saturday Foundry</title>
+<style>
+  body { margin:0; padding:16px; background:#0e0e12; color:#eee; font:15px/1.45 -apple-system, system-ui, sans-serif; }
+  h1 { font-size:19px; margin:0 0 6px; }
+  p.how { color:#bbb; margin:0 0 14px; }
+  .channels { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; }
+  .channels button { background:#1d1d26; color:#eee; border:1px solid #3a3a4a; border-radius:999px; padding:7px 13px; font-size:14px; }
+  .channels button.on { background:#9146ff; border-color:#9146ff; color:#fff; }
+  .box { margin:0 0 22px; }
+  .box h2 { font-size:14px; margin:0 0 6px; color:#cdbcf5; }
+  .frame { background:#000; }
+  iframe { display:block; border:0; background:#000; }
+</style>
+</head>
+<body>
+<h1>Twitch embed test</h1>
+<p class="how">Step 1: check Box A and Box B here in Safari. Step 2: Share &rarr; Add to Home Screen, open this page from the new icon, and check both boxes again. If a channel shows as offline, pick another one — both boxes always show the same channel.</p>
+<div class="channels" id="channels"></div>
+<div class="box">
+  <h2>BOX A — 390px wide (the app's current stage width)</h2>
+  <div class="frame" style="width:390px"><iframe id="fa" width="390" height="219" allowfullscreen></iframe></div>
+</div>
+<div class="box">
+  <h2>BOX B — 480px wide (above Twitch's stated 400px minimum)</h2>
+  <div class="frame" style="width:480px"><iframe id="fb" width="480" height="270" allowfullscreen></iframe></div>
+</div>
+<p class="how">Diagnostic page for the Saturday Foundry Watch tab. It will be removed when the test is done.</p>
+<script>
+  var CHANNELS = ['powerrangers', 'valorant', 'rocketleague', 'pokemon', 'insomniac'];
+  var wrap = document.getElementById('channels');
+  function setChannel(ch, btn) {
+    var src = 'https://player.twitch.tv/?channel=' + ch + '&parent=carp09-ops.github.io&parent=localhost&autoplay=true&muted=true';
+    document.getElementById('fa').src = src;
+    document.getElementById('fb').src = src;
+    Array.prototype.forEach.call(wrap.children, function (b) { b.classList.toggle('on', b === btn); });
+  }
+  CHANNELS.forEach(function (ch, i) {
+    var b = document.createElement('button');
+    b.textContent = ch;
+    b.addEventListener('click', function () { setChannel(ch, b); });
+    wrap.appendChild(b);
+    if (i === 0) setChannel(ch, b);
+  });
+</script>
+</body>
+</html>
