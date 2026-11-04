@@ -81,6 +81,9 @@ test('stage embeds Twitch from the channel URL even when the stored platform tex
   const out = w.watchStage(saif);
   assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
   assert.ok(out.includes('player.twitch.tv'), 'twitch player embeds');
+  assert.ok(out.includes('parent=carp09-ops.github.io') && out.includes('parent=localhost'), 'embed carries both parent domains');
+  assert.ok(out.includes('Open in Twitch'), 'live twitch stage offers an escape hatch if the player will not render');
+  assert.ok(!out.includes('referrerpolicy'), 'twitch iframe sends a full referrer for the parent check');
 });
 
 test('stage embeds Twitch from the live row URL when the stored channel data is unusable', () => {
