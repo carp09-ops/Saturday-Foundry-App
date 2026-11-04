@@ -390,14 +390,25 @@ let watchPick=null,replayPick=null;
 function watchCoaches(){if(!season)return [];const seen=new Map();for(const c of model.coachStreams||[]){if(c&&String(c.current_season_id)===String(season.season_id)&&safeStreamUrl(c.stream_url)&&!seen.has(String(c.person_id)))seen.set(String(c.person_id),c)}return [...seen.values()]}
 function coachMatchup(c){const ts=String(c.current_team_id),gs=games().filter(g=>!g.is_bye&&(String(g.awayId)===ts||String(g.homeId)===ts));return gs.find(g=>num(g.week_number)===week)||gs.find(g=>!g.final&&num(g.week_number)>=week)||gs.filter(g=>g.final).at(-1)||gs[0]||null}
 function ytEmbed(live){const m=String(live?.live_url||'').match(/[?&]v=([\w-]{11})/);return m?`https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&mute=1&rel=0`:''}
-function twitchEmbed(url){try{const seg=new window.URL(url).pathname.split('/').filter(Boolean)[0];return seg?`https://player.twitch.tv/?channel=${encodeURIComponent(seg.toLowerCase())}&parent=carp09-ops.github.io&parent=localhost&autoplay=true&muted=true`:''}catch{return ''}}
+function twitchEmbed(url){try{const seg=new window.URL(url).pathname.split('/').filter(Boolean)[0],parent=window.location.hostname;return seg&&parent?`https://player.twitch.tv/?channel=${encodeURIComponent(seg.toLowerCase())}&parent=${encodeURIComponent(parent)}&autoplay=false&muted=true`:''}catch{return ''}}
+// Twitch requires a visible player at least 400 x 300 CSS pixels. Keep the
+// iframe inert on narrow phones; rotation/resizing mounts it when it fits.
+let watchPlayerObserver=null;
+function mountWatchPlayers(){
+ watchPlayerObserver?.disconnect();watchPlayerObserver=null;
+ const host=document.querySelector('.watch-twitch');if(!host)return;
+ const slot=host.querySelector('.watch-twitch-slot'),small=host.querySelector('.watch-twitch-small'),template=host.querySelector('template');
+ const fit=()=>{if(!host.isConnected)return;const fits=host.getBoundingClientRect().width>=400;small.hidden=fits;slot.hidden=!fits;if(fits&&!slot.firstElementChild)slot.append(template.content.cloneNode(true));else if(!fits)slot.replaceChildren()};
+ fit();if(window.ResizeObserver){watchPlayerObserver=new window.ResizeObserver(fit);watchPlayerObserver.observe(host)}
+}
+window.addEventListener('resize',()=>{if(!window.ResizeObserver)mountWatchPlayers()});
 function streamPlat(c,url){try{const h=new window.URL(url).hostname.toLowerCase();if(h.includes('twitch'))return 'twitch';if(h.includes('youtube')||h==='youtu.be')return 'youtube'}catch{}return String(c.stream_platform||'').toLowerCase().trim()}
 function recentFor(personId){return (model.recentBroadcasts||[]).find(r=>r&&String(r.person_id)===String(personId))||null}
 function whenLabel(iso){const t=new Date(iso);if(isNaN(t))return '';const time=t.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(t.toDateString()===new Date().toDateString())return 'Today · '+time;if(t.toDateString()===new Date(Date.now()-864e5).toDateString())return 'Yesterday · '+time;return t.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'})+' · '+time}
 function durLabel(a,b){const ms=new Date(b)-new Date(a);if(!(ms>0))return '';const m=Math.round(ms/6e4);return m<60?m+'m':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'}
 function selectRecent(id){replayPick=String(id);watchPick=String(id);render();document.querySelector('.viewport')?.scrollTo?.({top:0,behavior:'smooth'})}
 function watchStage(c){const live=liveRowFor(c.person_id),url=safeStreamUrl(c.stream_url),liveUrl=live?safeStreamUrl(live.live_url):'',plat=streamPlat(c,liveUrl||url),embed=live?(plat==='youtube'?ytEmbed(live):plat==='twitch'?twitchEmbed(liveUrl||url):''):'';
- if(live&&embed){const stage=`<div class="watch-stage"><iframe src="${esc(embed)}" title="${esc(c.coach_name)} live stream" allow="autoplay; encrypted-media; fullscreen" allowfullscreen${plat==='twitch'?'':' referrerpolicy="strict-origin-when-cross-origin"'}></iframe></div>`;return plat==='twitch'?stage+`<p class="watch-live-open">Player not loading? <a href="${esc(liveUrl||url)}" target="_blank" rel="noopener noreferrer">Open in Twitch</a></p>`:stage}
+ if(live&&embed){const stage=`<div class="watch-stage${plat==='twitch'?' watch-stage-twitch':''}"><iframe src="${esc(embed)}" title="${esc(c.coach_name)} live stream" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;return plat==='twitch'?`<div class="watch-twitch"><template>${stage}</template><div class="watch-twitch-slot" hidden></div><div class="watch-twitch-small" role="status"><span class="live-badge">LIVE</span><strong>${esc(c.coach_name)} is streaming</strong><p>Turn your phone sideways to watch here, or open Twitch below.</p></div><p class="watch-live-open">Tap play to watch. <a href="${esc(liveUrl||url)}" target="_blank" rel="noopener noreferrer">Open in Twitch</a></p></div>`:stage}
  const recent=live?null:recentFor(c.person_id);
  if(recent&&String(replayPick)===String(c.person_id)){const dur=durLabel(recent.last_started_at,recent.last_ended_at),meta=`<span class="replay-badge">REPLAY</span> ${esc(recent.last_title||'Latest broadcast')} · ${esc(whenLabel(recent.last_ended_at))}${dur?' · '+dur:''}`;
   if(plat==='youtube'){const e2=ytEmbed({live_url:recent.last_url});if(e2)return `<div class="watch-stage"><iframe src="${esc(e2)}" title="${esc(c.coach_name)} broadcast replay" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p class="watch-replay-meta">${meta}</p>`}
@@ -428,3 +439,6 @@ render=function(){const signedIn=!!session()?.access_token,ready=signedIn&&!busy
 };
 // Same-origin session changes remain coherent across the new site and league tools.
 window.addEventListener('storage',e=>{if(e.key===STORE&&!e.newValue){++loadSerial;busy=false;loadError='';dynasty=season=null;model.leaguePrograms=[];model.leagueProgramsReady=false;notice='';render()}});
+
+const watchRender=render;
+render=function(){watchRender();mountWatchPlayers()};

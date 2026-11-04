@@ -255,3 +255,24 @@ test('Home game cards carry no stream links — streams live on the Watch tab',a
  await a.w.loadSeason(OLD);assert.equal(a.w.document.querySelectorAll('.game-stream-link').length,0,'archives show no stream links');
  assert.deepEqual(a.errors,[]);
 });
+
+test('built Watch tab mounts Twitch after rotation and releases it on navigation',async t=>{
+ const streams=[{person_id:THEM,coach_name:'Saif',current_season_id:S,current_team_id:OPP,current_team_name:'West Virginia',stream_platform:'Twitch',stream_url:'https://www.twitch.tv/saifkawash'}];
+ const a=await app({coachStreams:streams,intercept:({name})=>name==='v_coach_live'?{ok:true,text:async()=>JSON.stringify([{person_id:THEM,is_live:true,live_url:streams[0].stream_url}])}:null});
+ t.after(()=>a.w.close());
+ let width=390,resize,disconnected=false;
+ a.w.HTMLElement.prototype.getBoundingClientRect=function(){return {width}};
+ a.w.ResizeObserver=class{constructor(fn){resize=fn}observe(){}disconnect(){disconnected=true}};
+ a.w.go('watch');await tick();
+ assert(a.w.document.querySelector('.watch-twitch-small'));
+ assert.equal(a.w.document.querySelector('.watch-twitch iframe'),null);
+ width=800;resize();
+ const frame=a.w.document.querySelector('.watch-twitch iframe');
+ assert(frame,'built render hook mounts the live player after rotation');
+ assert.equal(new URL(frame.src).searchParams.get('parent'),'foundry.test');
+ assert.equal(a.w.document.querySelector('.watch-twitch-small').hidden,true);
+ a.w.go('home');
+ assert.equal(a.w.document.querySelector('.watch-twitch'),null);
+ assert.equal(disconnected,true);
+ assert.deepEqual(a.errors,[]);
+});

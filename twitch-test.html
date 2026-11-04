@@ -19,22 +19,22 @@
 </head>
 <body>
 <h1>Twitch embed test</h1>
-<p class="how">Step 1: check Box A and Box B here in Safari. Step 2: Share &rarr; Add to Home Screen, open this page from the new icon, and check both boxes again. If a channel shows as offline, pick another one — both boxes always show the same channel.</p>
+<p class="how">Step 1: check Box A and Box B here in Safari. Step 2: Share &rarr; Add to Home Screen, open this page from the new icon, and check both boxes again. Tap play in each box. If a channel shows as offline, pick another one — both boxes always show the same channel.</p>
 <div class="channels" id="channels"></div>
 <div class="box">
   <h2>BOX A — 390px wide (the app's current stage width)</h2>
   <div class="frame" style="width:390px"><iframe id="fa" width="390" height="219" allowfullscreen></iframe></div>
 </div>
 <div class="box">
-  <h2>BOX B — 480px wide (above Twitch's stated 400px minimum)</h2>
-  <div class="frame" style="width:480px"><iframe id="fb" width="480" height="270" allowfullscreen></iframe></div>
+  <h2>BOX B — 480 × 300px (meets both Twitch minimum dimensions)</h2>
+  <div class="frame" style="width:480px"><iframe id="fb" width="480" height="300" allowfullscreen></iframe></div>
 </div>
 <p class="how">Diagnostic page for the Saturday Foundry Watch tab. It will be removed when the test is done.</p>
 <script>
   var CHANNELS = ['powerrangers', 'valorant', 'rocketleague', 'pokemon', 'insomniac'];
   var wrap = document.getElementById('channels');
   function setChannel(ch, btn) {
-    var src = 'https://player.twitch.tv/?channel=' + ch + '&parent=carp09-ops.github.io&parent=localhost&autoplay=true&muted=true';
+    var src = 'https://player.twitch.tv/?channel=' + ch + '&parent=' + encodeURIComponent(window.location.hostname) + '&autoplay=false&muted=true';
     document.getElementById('fa').src = src;
     document.getElementById('fb').src = src;
     Array.prototype.forEach.call(wrap.children, function (b) { b.classList.toggle('on', b === btn); });

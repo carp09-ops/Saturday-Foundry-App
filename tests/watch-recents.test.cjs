@@ -81,9 +81,9 @@ test('stage embeds Twitch from the channel URL even when the stored platform tex
   const out = w.watchStage(saif);
   assert.ok(out.includes('<iframe'), 'stage is the player, not the slate');
   assert.ok(out.includes('player.twitch.tv'), 'twitch player embeds');
-  assert.ok(out.includes('parent=carp09-ops.github.io') && out.includes('parent=localhost'), 'embed carries both parent domains');
+  assert.ok(out.includes('parent=x'), 'embed uses the actual page hostname');
   assert.ok(out.includes('Open in Twitch'), 'live twitch stage offers an escape hatch if the player will not render');
-  assert.ok(!out.includes('referrerpolicy'), 'twitch iframe sends a full referrer for the parent check');
+  assert.ok(out.includes('referrerpolicy="strict-origin-when-cross-origin"'), 'Twitch receives the site origin without leaking page paths');
 });
 
 test('stage embeds Twitch from the live row URL when the stored channel data is unusable', () => {
@@ -114,4 +114,46 @@ test('twitch embed survives the bundle-wide URL shadowing (session.js const URL)
   assert.equal(w2.streamPlat(saif, saif.stream_url), 'twitch', 'platform read from the URL despite the shadow');
   const out = w2.watchStage(saif);
   assert.ok(out.includes('player.twitch.tv/?channel=saifkawash'), 'player embeds despite the shadow');
+});
+
+
+test('Twitch parent follows Netlify, GitHub Pages, preview hosts and local development', () => {
+  for (const origin of ['https://saturday-foundry.netlify.app', 'https://carp09-ops.github.io', 'https://preview--saturday-foundry.netlify.app', 'http://localhost:8080']) {
+    dom.reconfigure({ url: origin + '/Saturday-Foundry-App/' });
+    const embed = new URL(w.twitchEmbed('https://www.twitch.tv/SaifKawash'));
+    assert.deepEqual(embed.searchParams.getAll('parent'), [new URL(origin).hostname]);
+    assert.equal(embed.searchParams.get('channel'), 'saifkawash');
+    assert.equal(embed.searchParams.get('autoplay'), 'false', 'viewer starts playback on mobile');
+  }
+});
+
+test('narrow Twitch stage offers rotation; widening mounts a player without replacing it on every resize', () => {
+  const saif = w.watchCoaches().find(c => c.person_id === 'saif');
+  w.document.body.innerHTML = w.watchStage(saif);
+  const host = w.document.querySelector('.watch-twitch');
+  let width = 390, onResize, disconnected = false;
+  host.getBoundingClientRect = () => ({ width });
+  w.ResizeObserver = class {
+    constructor(callback) { onResize = callback; }
+    observe(node) { assert.equal(node, host); }
+    disconnect() { disconnected = true; }
+  };
+  w.mountWatchPlayers();
+  assert.equal(host.querySelector('iframe'), null, 'undersized iframe never mounts');
+  assert.equal(host.querySelector('.watch-twitch-small').hidden, false);
+  assert.match(host.textContent, /Turn your phone sideways/);
+  assert.equal(host.querySelector('a').href, 'https://www.twitch.tv/saifkawash');
+  width = 400; onResize();
+  const frame = host.querySelector('iframe');
+  assert.ok(frame, '400px wide container can load the player');
+  assert.ok(frame.closest('.watch-stage-twitch'), 'Twitch receives its 300px minimum height rule');
+  assert.equal(host.querySelector('.watch-twitch-small').hidden, true);
+  width = 700; onResize();
+  assert.equal(host.querySelector('iframe'), frame, 'normal resizing keeps playback intact');
+  width = 399; onResize();
+  assert.equal(host.querySelector('iframe'), null, 'rotation back to portrait removes the undersized player');
+  w.document.body.innerHTML = ''; w.mountWatchPlayers();
+  assert.equal(disconnected, true, 'navigation cleans up the observer');
+  onResize();
+  w.close();
 });
