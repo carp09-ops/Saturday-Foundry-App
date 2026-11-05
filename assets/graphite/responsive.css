@@ -228,3 +228,11 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
  html.sf-standalone .bottomnav{width:auto;justify-content:space-between}
  html.sf-standalone .bottomnav button{flex:1 1 0;max-width:none;min-width:0}
 }
+
+/* Let a 402/414/430px phone use its full width for Twitch's 400px player.
+   Ordinary content keeps its gutters; the player alone reaches the edges. */
+@media(max-width:760px){
+ .watch-twitch{margin-inline:-18px}
+ .watch-twitch .watch-stage-twitch{border-radius:0}
+ .watch-twitch .watch-twitch-small,.watch-twitch .watch-live-open{margin-left:18px;margin-right:18px}
+}
