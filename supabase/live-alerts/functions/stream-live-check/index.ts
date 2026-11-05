@@ -1,3 +1,4 @@
+import { runCapture } from '../../../score-capture/runner.mjs';
 // Saturday Foundry — stream live checker (Supabase Edge Function, Deno)
 //
 // Deploy as the function `stream-live-check` (see ../SETUP.md). It reads the
@@ -243,5 +244,8 @@ Deno.serve(async () => {
     }
   }
 
-  return Response.json({ ok: true, checked: channels.length, results });
+  let score_capture;
+  try { score_capture = await runCapture({rest,channels,key:Deno.env.get('OPENAI_API_KEY')||'',enabled:Deno.env.get('SCORE_CAPTURE_ENABLED')==='true'}); }
+  catch { score_capture = {state:'error'}; }
+  return Response.json({ ok: true, checked: channels.length, results, score_capture });
 });
