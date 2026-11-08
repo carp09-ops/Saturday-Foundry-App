@@ -20,14 +20,16 @@ export async function runCapture({rest,key,enabled,channels,now=Date.now(),fetch
  const results=[];
  // At most 4 coaches per run, 96 attempted scans per coach/day, one per five-minute bucket.
  for(const [person,c] of [...unique].slice(0,4)){
+  let claimedBucket=null;
   try{
    const day=await json('stream_score_scan_claims?select=bucket&person_id=eq.'+person+'&bucket=gte.'+(Math.floor(now/86400000)*288)+'&limit=96');
    if(day.length>=96){results.push({person_id:person,state:'daily_limit'});continue}
    const bucket=Math.floor(now/300000);
    const claim=await rest('stream_score_scan_claims',{method:'POST',body:JSON.stringify({person_id:person,bucket})});
+   if(claim.ok)claimedBucket=bucket;
    if(claim.status===409){results.push({person_id:person,state:'already_checked'});continue}if(!claim.ok)throw Error('Claim failed');
    const rows=(await json('v_schedule_entries?or=(person_id.eq.'+person+',opponent_person_id.eq.'+person+')&status=neq.completed&is_bye=eq.false')).filter(g=>current.has(g.season_id)&&weeks.get(g.dynasty_id)!=null&&Number(g.week_number)===Number(weeks.get(g.dynasty_id))&&g.status!=='cancelled');
-   if(!rows.length){results.push({person_id:person,state:'no_current_matchup'});continue}
+   if(!rows.length){await rest('stream_score_scan_claims?person_id=eq.'+person+'&bucket=eq.'+bucket,{method:'PATCH',body:JSON.stringify({state:'no_current_matchup',stream_url:c.stream_url})});results.push({person_id:person,state:'no_current_matchup'});continue}
    const r=await fetcher(c.snapshot,{signal:AbortSignal.timeout(10000),redirect:'error'});
    if(!r.ok||!r.headers.get('content-type')?.startsWith('image/jpeg'))throw Error('Snapshot unavailable');
    if(Number(r.headers.get('content-length')||0)>1000000)throw Error('Snapshot too large');
@@ -46,7 +48,7 @@ export async function runCapture({rest,key,enabled,channels,now=Date.now(),fetch
    }
    await rest('stream_score_scan_claims?person_id=eq.'+person+'&bucket=eq.'+bucket,{method:'PATCH',body:JSON.stringify({frame_hash:hash,stream_url:c.stream_url,state:proposal?'proposed':found.status==='in_progress'?'in_progress':'no_final'})});
    results.push({person_id:person,state:proposal?'proposed':'no_final'});
-  }catch(e){results.push({person_id:person,state:'error',message:String(e.message).slice(0,120)})}
+  }catch(e){const message=String(e.message).slice(0,120);if(claimedBucket!==null){try{await rest('stream_score_scan_claims?person_id=eq.'+person+'&bucket=eq.'+claimedBucket,{method:'PATCH',body:JSON.stringify({state:'error:'+message.slice(0,90),stream_url:c.stream_url})})}catch{}}results.push({person_id:person,state:'error',message})}
  }
  // Retain rate-limit/dedup records for two days; evidence remains with proposals.
  await rest('stream_score_scan_claims?bucket=lt.'+(Math.floor(now/300000)-576),{method:'DELETE'});
