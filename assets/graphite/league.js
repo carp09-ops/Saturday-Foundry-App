@@ -226,10 +226,35 @@ function trophyImage(honor, imageClass = '') {
   return `<img class="${imageClass}" src="assets/trophy-renders/${photo}.webp" alt="${esc(name)}" loading="lazy" onerror="this.hidden=true">`;
 }
 
-function trophyGrid(items,limit){const shown=limit?items.slice(0,limit):items;return shown.length?`<div class="${limit?'honors-strip':'trophygrid'}">${shown.map(t=>`<button onclick="showHonor('${uid(t.id)}')">${trophyImage(t)}<strong>${esc(t.name||t.type)}</strong><small>Season ${esc(t.season_number)} · ${esc(t.coach_name||t.recipient_name||t.team_name||'')}</small></button>`).join('')}</div>`:empty('No honors have been recorded here yet.')}
+function trophyName(honor){return honor.name||String(honor.type||'Honor').replaceAll('_',' ')}
+function trophyGameResult(honor){
+  const meta=honor.metadata||{}, linked=honor.game_id||meta.game_id;
+  const direct={...meta,...honor};
+  if(direct.points_for!=null&&direct.points_against!=null&&direct.opponent_team){
+    return {team:honor.team_name||meta.team||'Team',opponent:direct.opponent_team,score:direct.points_for,against:direct.points_against,overtime:direct.overtime};
+  }
+  const type=trophyKey(honor.type),name=trophyKey(honor.name);
+  const category=type.includes('national')?'national_championship':type.includes('conference')?'conference_championship':type.includes('bowl')?'bowl':type.includes('playoff')?'playoff':null;
+  if(!linked&&!category)return null;
+  const candidates=(model.history||[]).filter(g=>{
+    if(g.status!=='completed'||g.points_for==null||g.points_against==null)return false;
+    if(!honor.dynasty_id||g.dynasty_id!==honor.dynasty_id||!honor.season_id||g.season_id!==honor.season_id)return false;
+    if(honor.team_name!==g.team_name)return false;
+    if(linked)return g.id===linked;
+    if(category==='national_championship'||category==='conference_championship')return g.game_type===category;
+    const event=trophyKey(g.event_name);
+    return !!event&&!!name&&(event===name||event.includes(name)||name.includes(event))&&['bowl','playoff','cfp'].includes(g.game_type);
+  });
+  const results=[...new Map(candidates.map(g=>[JSON.stringify([g.team_name,g.opponent_team,g.points_for,g.points_against,g.event_name]),g])).values()];
+  if(results.length!==1)return null;
+  const g=results[0];return {team:g.team_name,opponent:g.opponent_team,score:g.points_for,against:g.points_against,overtime:g.overtime};
+}
+function trophyFinal(honor){const g=trophyGameResult(honor);return g?`Final · ${g.team} ${g.score}–${g.against} ${g.opponent}${g.overtime?' (OT)':''}`:''}
+function trophyFinalMarkup(honor){const final=trophyFinal(honor);return final?`<small class="trophy-final">${esc(final)}</small>`:''}
+function trophyGrid(items,limit){const shown=limit?items.slice(0,limit):items;return shown.length?`<div class="${limit?'honors-strip':'trophygrid'}">${shown.map(t=>`<button onclick="showHonor('${uid(t.id)}')">${trophyImage(t)}<strong>${esc(trophyName(t))}</strong><small>Season ${esc(t.season_number)} · ${esc(t.coach_name||t.recipient_name||t.team_name||'')}</small>${trophyFinalMarkup(t)}</button>`).join('')}</div>`:empty('No honors have been recorded here yet.')}
 function closeSheet(){if(!mutationPending)$('detailSheet').close()}
 function openSheet(name,body){const d=$('detailSheet');d.innerHTML=`<div class="sheet-head"><span id="sheetTitle">${esc(name)}</span><button autofocus onclick="closeSheet()" aria-label="Close detail">${ico('close')}</button></div><div class="sheet-body">${body}</div>`;d.showModal()}
-function showHonor(id){const t=model.trophies.find(t=>t.id===id);if(!t)return;openSheet('Career honor',title('Season '+t.season_number,t.name||t.type)+`${trophyImage(t,'awardhero')}`+table(['Detail','Recorded value'],[['Coach',esc(t.coach_name||'—')],['Team',esc(t.team_name||'—')],['Recipient',esc(t.recipient_name||'—')],['Type',esc(t.type||'—')]]))}
+function showHonor(id){const t=model.trophies.find(t=>t.id===id);if(!t)return;const final=trophyFinal(t);openSheet('Career honor',title('Season '+t.season_number,trophyName(t))+`${trophyImage(t,'awardhero')}`+table(['Detail','Recorded value'],[['Coach',esc(t.coach_name||'—')],['Team',esc(t.team_name||'—')],['Recipient',esc(t.recipient_name||'—')],...(final?[['Final',esc(final.replace(/^Final · /,''))]]:[])]))}
 function showCoachCard(){const c=coachInfo();if(artwork(c.coach_name))openSheet(c.coach_name+' · Coach card',coachArt(c.coach_name,'portrait'))}
 function latestEdition(){return model.stories[0]}
 function storyItems(){const edition=latestEdition(),payload=edition?.payload||{};const seen=new Set();return [payload.lead,...(Array.isArray(payload.recaps)?payload.recaps:[]),...(Array.isArray(payload.previews)?payload.previews:[])].filter(s=>s&&typeof s.headline==='string'&&!/weekly desk/i.test(s.headline)&&!/no completed result recorded/i.test(s.fact||s.body||'')).filter(s=>{const key=s.id||s.headline;if(seen.has(key))return false;seen.add(key);return true})}
