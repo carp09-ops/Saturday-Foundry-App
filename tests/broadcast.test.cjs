@@ -23,7 +23,7 @@ test('projected TV networks render ESPN-style from the source tree', () => {
   // Tier-only games map the stored tier text to ESPN-style labels.
   assert.equal(w.kickoff({ network: 'National broadcast (network unspecified)', final: true, overtime: false }), 'FINAL · National');
   assert.equal(w.kickoff({ network: 'Conference/secondary broadcast (network unspecified)', final: false, kickoff_time: null }), 'UPCOMING · Conference / secondary');
-  assert.equal(w.kickoff({ network: 'Not shown in screenshot', final: true, overtime: false }), 'FINAL · Not shown in screenshot');
+  assert.equal(w.kickoff({ network: 'Not shown in screenshot', final: true, overtime: false }), 'FINAL');
   // The card tag shows the channel name alone — no Projected TV prefix.
   const tag = w.broadcastTag({ projected_network: 'Big Ten Network' });
   assert(tag.includes('broadcast-channel') && tag.includes('>Big Ten Network<'), 'Tag is the bare channel name in a pill');

@@ -26,7 +26,7 @@ test('bracket builds four rounds with byes, winner-of slots, TBDs and the title 
     ({ id, week_number, game_type, away, home, awayId: id + 'a', homeId: id + 'h', team_id: id + 'h', team_rank: null, opponent_rank: null, a, h, final, is_bye: false, status: final ? 'completed' : 'scheduled', event_name: null });
   w.eval(`
     var esc=s=>String(s??''), uid=s=>String(s??''), logo=()=>'', section=t=>'<h2>'+t+'</h2>', render=()=>{};
-    var scope='all', week=17;
+    var scope='all', week=17, season={year: 2028}, teamData=()=>({}), recordChip=()=>'';
     var fixture=[
       ${JSON.stringify(game('g1', 16, 'playoff', 'A', 'B', true, 10, 20))},
       ${JSON.stringify(game('g2', 16, 'playoff', 'C', 'D', true, 30, 27))},
