@@ -223,7 +223,7 @@ function trophyImage(honor, imageClass = '') {
   const photo = trophyPhoto(honor);
   if (!photo) return '';
   const name = honor.name || honor.type;
-  return `<img class="${imageClass}" src="assets/trophy-photos/${photo}.webp" alt="${esc(name)}" loading="lazy" onerror="this.hidden=true">`;
+  return `<img class="${imageClass}" src="assets/trophy-renders/${photo}.webp" alt="${esc(name)}" loading="lazy" onerror="this.hidden=true">`;
 }
 
 function trophyGrid(items,limit){const shown=limit?items.slice(0,limit):items;return shown.length?`<div class="${limit?'honors-strip':'trophygrid'}">${shown.map(t=>`<button onclick="showHonor('${uid(t.id)}')">${trophyImage(t)}<strong>${esc(t.name||t.type)}</strong><small>Season ${esc(t.season_number)} · ${esc(t.coach_name||t.recipient_name||t.team_name||'')}</small></button>`).join('')}</div>`:empty('No honors have been recorded here yet.')}
