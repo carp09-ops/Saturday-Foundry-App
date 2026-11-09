@@ -236,3 +236,8 @@ html.sf-standalone .bottomnav button.on:before{height:2px;width:26px;top:-3px}
  .watch-twitch .watch-stage-twitch{border-radius:0}
  .watch-twitch .watch-twitch-small,.watch-twitch .watch-live-open{margin-left:18px;margin-right:18px}
 }
+.defending-logo{display:inline-flex;position:relative;align-items:center;justify-content:center;vertical-align:middle;flex:none}
+.champion-crown{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:14px;height:9px;background:#af7919;clip-path:polygon(0 12%,30% 48%,50% 0,70% 48%,100% 12%,87% 98%,13% 98%)}
+.team-header>.defending-logo .team-logo{width:80px;height:80px}
+.team-header .champion-crown{width:23px;height:14px;top:-8px}
+@media(max-width:700px){.team-header>.defending-logo .team-logo{width:62px;height:62px}}
