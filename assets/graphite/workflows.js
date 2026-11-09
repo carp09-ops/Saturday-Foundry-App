@@ -333,20 +333,69 @@ function bracketActiveRound(data){
  return best;
 }
 function setBracketRound(i){bracketRound=i;render()}
+
+function bracketSeed(g,id){
+ const n=Number(String(g.team_id)===String(id)?g.team_rank:String(g.opponent_team_id)===String(id)?g.opponent_rank:null);
+ return n>=1&&n<=25?n:null;
+}
+const CFP_TEAM_COLORS={'Army':'#88764b','Kansas State':'#582c83','Ohio State':'#bb243d','Michigan':'#174477','Alabama':'#9e1b32','Miami':'#007c55','Texas A&M':'#773344','Ole Miss':'#17639b','Kansas':'#146ab1','Georgia':'#ba243c','Oregon':'#00864b','Washington':'#694699'};
+function bracketLayout(data){
+ const seed=g=>Math.min(...[g.awayId,g.homeId].filter(Boolean).map(id=>{const n=bracketSeed(g,id);return n||99}),99);
+ const ordered=(items,order)=>[...items].sort((a,b)=>{const ai=order.indexOf(seed(a)),bi=order.indexOf(seed(b));return (ai<0?99:ai)-(bi<0?99:bi)});
+ const first=ordered(data.rounds[0],[5,8,6,7]);
+ const quarters=ordered(data.rounds[1],[4,1,3,2]);
+ // Match real quarterfinals to their first-round feeder, never kickoff order.
+ const used=new Set(),aligned=first.map((g,i)=>{
+  const ids=[g.awayId,g.homeId].filter(Boolean);
+  const match=quarters.find(q=>!used.has(q.id)&&[q.awayId,q.homeId].some(id=>id&&ids.includes(id)));
+  const q=match||quarters.find(q=>!used.has(q.id)&&q===quarters[i])||quarters.find(q=>!used.has(q.id));
+  if(q)used.add(q.id);return q;
+ });
+ const nextRound=(previous,actual,r)=>{
+  const taken=new Set();
+  return Array.from({length:previous.length/2},(_,i)=>{
+   const pair=previous.slice(i*2,i*2+2),ids=pair.flatMap(g=>[g?.awayId,g?.homeId]).filter(Boolean);
+   let g=actual.find(g=>!g.synthetic&&!taken.has(g.id)&&[g.awayId,g.homeId].some(id=>id&&ids.includes(id)));
+   if(!g)g=actual.find(g=>!g.synthetic&&!taken.has(g.id));
+   if(g){taken.add(g.id);return g}
+   const entrant=(p,j)=>p?.final?{name:p.a>p.h?p.away:p.home,id:p.a>p.h?p.awayId:p.homeId}:{name:'Winner of '+(p?.event_name||('Semifinal '+(j+1))),id:null};
+   const a=entrant(pair[0],i*2),h=entrant(pair[1],i*2+1);
+   return {id:'cfp-path-'+r+'-'+i,synthetic:true,away:a.name,awayId:a.id,home:h.name,homeId:h.id,final:false,event_name:r===3?'National Championship':'Semifinal '+(i+1)};
+  });
+ };
+ const semis=nextRound(aligned,data.rounds[2],2);
+ return [first,aligned,semis,nextRound(semis,data.rounds[3],3)];
+}
 function bracketGameHTML(g,isChamp){
- const decided=g.final&&g.a!=null&&g.h!=null&&g.a!==g.h;
- const homeRank=displayRank(g,g.homeId),awayRank=displayRank(g,g.awayId);
- const row=(name,id,score,rank,winner)=>`<div class="bracket-team${winner?' winner':''}">${logo(id,name)}<span>${rank?`<b class="bracket-rank">#${esc(rank)}</b>`:''}${esc(name||'TBD')}</span><b>${score??''}</b></div>`;
- const label=g.event_name||(isChamp?'National Championship':'College Football Playoff');
- const inner=`<div class="bracket-game-head"><span>${esc(label)}</span><strong>${g.final?'FINAL':'UPCOMING'}</strong></div>${row(g.away,g.awayId,g.final?g.a:'',awayRank,decided&&g.a>g.h)}${row(g.home,g.homeId,g.final?g.h:'',homeRank,decided&&g.h>g.a)}`;
- return g.synthetic?`<article class="bracket-game${isChamp?' champ':''}">${inner}</article>`:`<article class="bracket-game${isChamp?' champ':''}"><button class="bracket-open" onclick="openGame('${uid(g.id)}')">${inner}</button></article>`;
+ if(!g)return '';
+ const decided=g.final&&g.a!==g.h;
+ const row=(name,id,score,winner)=>{
+  const team=id?teamData(id):{},raw=String(team.primary_color||CFP_TEAM_COLORS[name]||''),color=/^#?[0-9a-f]{6}$/i.test(raw)?'#'+raw.replace('#',''):'#555b64';
+  const rank=id?bracketSeed(g,id):null;
+  return `<div class="cfp-team${winner?' cfp-winner':''}${!id?' cfp-pending':''}" style="--team-color:${color}"><span class="cfp-seed">${rank||'—'}</span>${id?logo(id,name):'<span class="cfp-empty-logo">—</span>'}<span class="cfp-name">${esc(name||'TBD')}${id?recordChip(id):''}</span><b class="cfp-score">${g.final?esc(score):''}</b></div>`;
+ };
+ const label=g.event_name||(isChamp?'National Championship':'CFP First Round');
+ const inner=`<div class="cfp-match-label"><span>${esc(label)}</span><b>${g.final?'FINAL'+(g.overtime?' · OT':''):g.synthetic?'TBD':'UPCOMING'}</b></div>${row(g.away,g.awayId,g.a,decided&&g.a>g.h)}${row(g.home,g.homeId,g.h,decided&&g.h>g.a)}`;
+ return `<article class="cfp-match${isChamp?' cfp-title-match':''}">${g.synthetic?inner:`<button class="bracket-open" onclick="openGame('${uid(g.id)}')" aria-label="${esc(g.away+' versus '+g.home+', '+label)}">${inner}</button>`}</article>`;
+}
+function focusBracketRound(i){
+ const scroll=document.getElementById('cfp-scroll'),col=document.getElementById('cfp-round-'+i);
+ if(scroll&&col)scroll.scrollTo({left:col.offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
 function bracketSection(){
  if(scope!=='all')return '';
  const data=bracketData();if(!data)return '';
  const labels=['First Round','Quarterfinals','Semifinals','National Championship'];
- const active=bracketActiveRound(data);
- return `<section class="bracket">${section('College Football Playoff')}<div class="filterbar bracket-pills">${labels.map((l,i)=>`<button class="${i===active?'sel':''}" aria-pressed="${i===active}" onclick="setBracketRound(${i})">${l}</button>`).join('')}</div>${data.rounds[active].map(g=>bracketGameHTML(g,active===3)).join('')}${active===3?champBanner(data.rounds[3][0]):''}</section>`;
+ const rounds=bracketLayout(data);
+ const centers=[[100,260,420,580],[100,260,420,580],[180,500],[340]];
+ const lines=[];
+ for(let r=0;r<3;r++)centers[r].forEach((y,i)=>{
+  const next=centers[r+1][r===0?i:Math.floor(i/2)],x=r*264+232,end=(r+1)*264;
+  lines.push(`M${x} ${y} H${x+16} V${next} H${end}`);
+ });
+ lines.push('M1024 340 H1064');
+ const final=rounds[3][0],winner=final.final?(final.a>final.h?final.away:final.home):'National champion';
+ return `<section class="bracket cfp-shell" aria-label="College Football Playoff bracket"><header class="cfp-heading"><div><span class="cfp-eyebrow">${esc(season?.year||'')} POSTSEASON</span><h2>College Football Playoff</h2></div><span class="cfp-format">12 teams. One champion.</span></header><nav class="cfp-jumps" aria-label="Jump to playoff round">${labels.map((l,i)=>`<button onclick="focusBracketRound(${i})">${l}</button>`).join('')}</nav><p class="cfp-scroll-hint">Swipe across to follow the road to the championship. Tap a matchup for details.</p><div class="cfp-scroll" id="cfp-scroll" tabindex="0" role="region" aria-label="Scrollable playoff bracket"><div class="cfp-canvas"><svg class="cfp-connectors" viewBox="0 0 1220 660" aria-hidden="true"><path d="${lines.join(' ')}"/></svg>${rounds.map((rs,r)=>`<section class="cfp-round" id="cfp-round-${r}" style="left:${r*264}px"><h3>${labels[r]}</h3>${rs.map((g,i)=>`<div class="cfp-slot" style="top:${centers[r][i]-56}px">${bracketGameHTML(g,r===3)}</div>`).join('')}</section>`).join('')}<div class="cfp-finish"><img src="assets/trophy-photos/cfp.webp" alt="College Football Playoff trophy" loading="lazy"><span>${final.final?'NATIONAL CHAMPION':'THE NATIONAL CHAMPIONSHIP'}</span><strong>${esc(winner)}</strong></div></div></div></section>`;
 }
 function champBanner(g){
  if(!g||!g.final||g.a===g.h)return '';
@@ -425,7 +474,7 @@ function watchPage(){const coaches=watchCoaches();if(!coaches.length)return titl
  return title('Watch','Coach streams','Live games, straight from the coaches')+watchStage(pick)+recentsHtml+`<section class="watch-stands">${section('Coaches')}${ordered.map(c=>{const g=coachMatchup(c),live=liveRowFor(c.person_id),sel=String(c.person_id)===String(pick.person_id);return `<div class="watch-stand${sel?' sel':''}"><button class="watch-stand-head" onclick="selectWatch('${uid(c.person_id)}')" aria-pressed="${sel}">${logo(c.current_team_id,c.current_team_name)}<span class="watch-stand-names"><b>${esc(c.coach_name)}</b><small>${esc(c.current_team_name||'')}</small></span>${platformIcon(c.stream_platform)}${live?'<span class="live-badge">LIVE</span>':''}<span class="watch-stand-cta">${sel?'On stage':live?'Watch live':'View'}</span></button>${g?card(g):'<p class="sport-note">No matchup scheduled.</p>'}</div>`}).join('')}</section>`}
 function explorePage(){return title('More of your league','Explore the Foundry')+`<div class="explore-grid">${row('Season analysis','Scoring, records and margins',`onclick="go('analysis')"`)}${row('Record book','All-time extremes, streaks and best seasons',`onclick="go('records')"`)}${row('League intelligence','Career power index and luck index',`onclick="go('intelligence')"`)}${row('Lines & predictions','Recorded forecasts and game lines',`onclick="openMarket()"`)}${row('The Saturday report','Published weekly stories',`onclick="go('stories')"`)}${row('Trophy room','Championships and player honors',`onclick="go('trophies')"`)}${row('Season archive','Every season in your dynasty',`onclick="go('seasons')"`)}${canManage()?row('Commissioner office','Active week, invitations and league operations',`onclick="go('office')"`):''}</div>`}
 account=function(){return title('Your Foundry','Account & league')+`<p class="muted">${esc(session()?.user?.email||'Signed in')}</p>${row('Change league',dynasty?.name||'Choose a league',`onclick="go('leagues')"`)}${season?row('Season archive','Browse past seasons',`onclick="go('seasons')"`):''}${!ownProgram()&&activeSeason()?row('Choose your program','Find a school to make yours',`onclick="openTeamSelection()"`):''}${row('Refresh league data',updatedAt?'Last loaded '+updatedAt.toLocaleTimeString():'',`onclick="start()"`)}${dynasty?row('Explore the Foundry','Analysis, market, stories and more',`onclick="go('explore')"`):''}${canManage()?row('Commissioner office','League management',`onclick="go('office')"`):''}<div class="entry-actions">${button('Join a league','joinleague','secondary')}${button('Create a league','createleague','secondary')}</div><button class="secondary" onclick="logout()">Sign out</button><p class="sport-note">Saturday Foundry ${SITE_VERSION} · Connected to your live league.</p>`};
-home=function(){const mine=myTeam(),gs=mine?teamGames(mine):games(),featured=gs.find(g=>num(g.week_number)===week)||gs.filter(g=>!g.final)[0]||gs.filter(g=>g.final).at(-1),lead=storyItems()[0];const waiting=(h2hMeta.results||[]).filter(v=>v.status==='pending'&&v.opponent_person===myCoach());const myBye=mine&&regularWeeks().includes(week)&&teamOnBye(mine,week),nextGame=myBye?teamGames(mine).find(g=>num(g.week_number)>week):null,byeBanner=myBye?`<div class="home-bye">${logo(mine,teamData(mine).name)}<div><strong>${esc(teamData(mine).name)} — bye week</strong><span>Week ${week} off${nextGame?` · Next up: Week ${esc(nextGame.week_number)} ${nextGame.homeId===mine?'vs':'at'} ${esc(nextGame.homeId===mine?nextGame.away:nextGame.home)}`:''}</span></div></div>`:'';return `<div class="welcome-line"><button class="leaguepick" onclick="go('leagues')">${esc(dynasty.name)} ${ico('down')}</button><button onclick="go('seasons')">Season ${esc(season.season_number)} · Week ${week}</button></div>${title('For you','Your league, your Saturday')}<div class="home-layout"><div class="home-main">${!mine&&activeSeason()?`<div class="join-callout"><span class="eyebrow">A PROGRAM IS WAITING</span><h2>Make your mark.</h2><p>Choose a team and start your next chapter.</p><button class="primary" onclick="openTeamSelection()">Choose your program</button></div>`:''}${byeBanner}${featured?card(featured,!!mine):empty('The schedule is ready for its first matchup.')}${featured&&scoreEntryAllowed(featured)?`<button class="primary result-cta" onclick="beginResult('${uid(featured.id)}')">Enter final score</button>`:''}${waiting.length?row('Finals to validate',waiting.length+' '+(waiting.length===1?'game needs':'games need')+' your confirmation',`onclick="openGame('${uid(waiting[0].game_id)}')"`):''}<section class="league-week" aria-label="This week in your league">${section('This week in your league','scores','All scores')}<p class="sport-note">Week ${week} · User matchups</p>${games().filter(g=>num(g.week_number)===week&&g.id!==featured?.id&&model.programs.some(p=>p.person_id&&(p.team_id===g.awayId||p.team_id===g.homeId))).map(g=>card(g)).join('')||empty('No other user matchups are scheduled for this week.')}</section><div class="quicklinks">${button('All scores','scores','chip')}${mine?`<button onclick="openTeam('${uid(mine)}')">My team</button>`:''}${myCoach()?`<button onclick="openCoach('${uid(myCoach())}')">My coach</button>`:''}</div>${homeReport()}</div><aside class="home-rail">${section('The league picture')}${row('Conference standings','Follow the current race',`onclick="go('standings')"`)}${row('Top 25','Latest recorded poll',`onclick="go('rankings')"`)}${row('Power rankings','Foundry power index for this season',`onclick="go('intelligence')"`)}${row('Explore the Foundry','Analysis, market, history and league tools',`onclick="go('explore')"`)}</aside></div>`};
+home=function(){const stage=postseasonStage(games(),model.seasonWeek,week),mine=myTeam(),gs=mine?teamGames(mine):games(),featured=gs.find(g=>num(g.week_number)===week)||(stage?games().find(g=>num(g.week_number)===week):gs.filter(g=>!g.final)[0]||gs.filter(g=>g.final).at(-1)),lead=storyItems()[0];const waiting=(h2hMeta.results||[]).filter(v=>v.status==='pending'&&v.opponent_person===myCoach());const myBye=mine&&regularWeeks().includes(week)&&teamOnBye(mine,week),nextGame=myBye?teamGames(mine).find(g=>num(g.week_number)>week):null,byeBanner=myBye?`<div class="home-bye">${logo(mine,teamData(mine).name)}<div><strong>${esc(teamData(mine).name)} — bye week</strong><span>Week ${week} off${nextGame?` · Next up: Week ${esc(nextGame.week_number)} ${nextGame.homeId===mine?'vs':'at'} ${esc(nextGame.homeId===mine?nextGame.away:nextGame.home)}`:''}</span></div></div>`:'';return `<div class="welcome-line"><button class="leaguepick" onclick="go('leagues')">${esc(dynasty.name)} ${ico('down')}</button><button onclick="go('seasons')">Season ${esc(season.season_number)} · Week ${week}</button></div>${stage?title('Postseason',stage==='championships'?'Conference Championships':'Bowls & Playoff'):title('For you','Your league, your Saturday')}<div class="home-layout"><div class="home-main">${!mine&&activeSeason()?`<div class="join-callout"><span class="eyebrow">A PROGRAM IS WAITING</span><h2>Make your mark.</h2><p>Choose a team and start your next chapter.</p><button class="primary" onclick="openTeamSelection()">Choose your program</button></div>`:''}${byeBanner}${featured?card(featured,!!mine&&[featured.awayId,featured.homeId].includes(mine)):empty('The schedule is ready for its first matchup.')}${featured&&scoreEntryAllowed(featured)?`<button class="primary result-cta" onclick="beginResult('${uid(featured.id)}')">Enter final score</button>`:''}${waiting.length?row('Finals to validate',waiting.length+' '+(waiting.length===1?'game needs':'games need')+' your confirmation',`onclick="openGame('${uid(waiting[0].game_id)}')"`):''}<section class="league-week" aria-label="This week in your league">${section('This week in your league','scores','All scores')}<p class="sport-note">Week ${week} · User matchups</p>${games().filter(g=>num(g.week_number)===week&&g.id!==featured?.id&&model.programs.some(p=>p.person_id&&(p.team_id===g.awayId||p.team_id===g.homeId))).map(g=>card(g)).join('')||empty('No other user matchups are scheduled for this week.')}</section><div class="quicklinks">${button('All scores','scores','chip')}${mine?`<button onclick="openTeam('${uid(mine)}')">My team</button>`:''}${myCoach()?`<button onclick="openCoach('${uid(myCoach())}')">My coach</button>`:''}</div>${homeReport()}</div><aside class="home-rail">${section('The league picture')}${row('Conference standings','Follow the current race',`onclick="go('standings')"`)}${row('Top 25','Latest recorded poll',`onclick="go('rankings')"`)}${row('Power rankings','Foundry power index for this season',`onclick="go('intelligence')"`)}${row('Explore the Foundry','Analysis, market, history and league tools',`onclick="go('explore')"`)}</aside></div>`};
 scores=function(){const body=nativeScores();return body+(myTeam()&&activeSeason()?`<button class="secondary" onclick="openAddGame()">Add a matchup</button>`:'')};
 team=function(){return nativeTeam()+(selectedTeam===myTeam()&&activeSeason()?`<button class="secondary" onclick="openAddGame()">Add a matchup</button>`:'')};
 const nativeHome=home;

@@ -44,3 +44,28 @@
 .ms-bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
 .ms-foot{font-size:11px;color:var(--muted);font-weight:650}
 @media(max-width:700px){.tier-card{flex-wrap:wrap}.tier-stats{gap:14px;width:100%;justify-content:space-between}.tier-stats div{align-items:flex-start}.drought-cells{gap:14px}}
+
+/* Connected playoff tree: fixed geometry inside a keyboard-scrollable viewport. */
+.cfp-shell{background:#24262b;color:#fff;border:1px solid #41434a;border-radius:14px;overflow:hidden;margin:20px 0 28px}
+.cfp-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 22px 14px}
+.cfp-eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;color:#d2b77e}
+.cfp-heading h2{font-size:22px;line-height:1.2;margin:5px 0;color:#fff}.cfp-format{color:#bbbcc1;font-size:12px}
+.cfp-jumps{display:flex;gap:6px;flex-wrap:wrap;padding:0 22px 10px}.cfp-jumps button{color:#eee;border:1px solid #575961;border-radius:6px;padding:8px 10px;font-size:11px;font-weight:700}.cfp-jumps button:hover,.cfp-jumps button:focus-visible{background:#41434b}
+.cfp-scroll-hint{font-size:11px;color:#bbbcc1;margin:0;padding:0 22px 14px}
+.cfp-scroll{overflow-x:auto;overscroll-behavior-x:contain;padding:0 22px 18px;scrollbar-color:#9d8a65 #303239}
+.cfp-canvas{position:relative;width:1220px;height:660px}
+.cfp-connectors{position:absolute;inset:0;width:1220px;height:660px;pointer-events:none}.cfp-connectors path{fill:none;stroke:#92949b;stroke-width:2;stroke-linejoin:round}
+.cfp-round{position:absolute;top:0;width:232px;height:660px}
+.cfp-round h3{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:#d2b77e;margin:0;line-height:30px}
+.cfp-slot{position:absolute;left:0;width:232px;height:112px}
+.cfp-match{background:#303239;border:1px solid #62646d;border-radius:7px;overflow:hidden;height:112px;box-shadow:0 3px 9px #0002}
+.cfp-match .bracket-open{height:100%}.cfp-match .bracket-open:hover{background:#ffffff0a}.cfp-match .bracket-open:focus-visible{outline-offset:-3px}
+.cfp-match-label{height:26px;padding:5px 8px;display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:9px;color:#d5d5d9;text-transform:uppercase;letter-spacing:.025em}
+.cfp-match-label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cfp-match-label b{font-size:8px;flex-shrink:0}
+.cfp-team{height:42px;display:flex;align-items:center;gap:6px;padding:3px 7px;border-top:1px solid #ffffff1a;border-left:4px solid var(--team-color);background:linear-gradient(90deg,color-mix(in srgb,var(--team-color) 35%,#303239),#303239)}
+.cfp-team .team-logo,.cfp-team .football-art{width:25px;height:25px;min-width:25px;object-fit:contain}.cfp-seed{width:18px;text-align:center;font-size:12px;color:#e2e2e5;font-weight:800;flex-shrink:0}
+.cfp-name{font-size:12px;line-height:1.1;font-weight:650;min-width:0;flex:1}.cfp-name .team-rec{display:block;font-size:9px;color:#c9c9ce;font-weight:400;margin:3px 0 0}
+.cfp-score{font-size:15px;min-width:21px;text-align:right}.cfp-winner{background:linear-gradient(90deg,color-mix(in srgb,var(--team-color) 65%,#303239),#383b43)}.cfp-winner .cfp-name,.cfp-winner .cfp-score{font-weight:900;color:white}
+.cfp-pending{background:#303239;border-left-color:#666b76;color:#c1c3c9}.cfp-pending .cfp-name{font-size:10px;font-weight:400}.cfp-empty-logo{width:25px;text-align:center;color:#92959e}
+.cfp-title-match{border-color:#d2b77e}.cfp-finish{position:absolute;left:1064px;top:207px;width:150px;display:flex;align-items:center;flex-direction:column;text-align:center;gap:9px}.cfp-finish img{height:205px;width:110px;object-fit:contain}.cfp-finish span{font-size:8px;letter-spacing:.1em;color:#d2b77e}.cfp-finish strong{font-size:16px;line-height:1.2}
+@media(max-width:600px){.cfp-heading{padding:18px 14px 12px}.cfp-heading h2{font-size:19px}.cfp-format{display:none}.cfp-jumps{padding-left:14px;padding-right:14px}.cfp-scroll-hint{padding-left:14px;padding-right:14px}.cfp-scroll{padding-left:14px;padding-right:14px}.cfp-jumps button{font-size:10px;padding:9px 7px}}
